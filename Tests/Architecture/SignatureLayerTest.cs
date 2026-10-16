@@ -24,7 +24,7 @@ public class SignatureLayerTest
         AssertThat(layers[signature].ToString()).IsEqual(nameof(Layer.Data));
         var references = LayerAnchors.References(graph)[signature].Select(ShortName).OrderBy(name => name).ToArray();
         AssertThat(references).IsEqual(new[] { "Element" });
-        AssertThat(layers[IdOf(layers.Keys, "CardSignatureHash")].ToString()).IsNotEqual(nameof(Layer.Data));
+        AssertThat(layers[IdOf(layers.Keys, "SignatureRandom")].ToString()).IsNotEqual(nameof(Layer.Data));
     }
 
     // ASSUMPTION: graph node ids are bare class names (the probe showed "CardSignature", not a dotted full name);

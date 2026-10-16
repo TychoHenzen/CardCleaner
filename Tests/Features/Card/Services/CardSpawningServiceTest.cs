@@ -108,10 +108,10 @@ public class CardSpawningServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TestSpawnRandomCardGivesTheCardSignatureHashCreateSignature()
+    public void TestSpawnRandomCardGivesTheSignatureRandomCreateSignature()
     {
         _rng.Seed = 42;
-        var expected = CardSignatureHash.Create(_rng);
+        var expected = SignatureRandom.Create(_rng);
         _rng.Seed = 42;
 
         var spawnedCard = _service.SpawnRandomCard(Transform3D.Identity, _cardParent);

@@ -49,7 +49,7 @@ public partial class DeterminismProperties : MapGenerationPropertyBase
 
     #endregion
 
-    #region CardSignatureHash.Create Determinism
+    #region SignatureRandom.Create Determinism
 
     [TestCase]
     public void CardSignatureRandomIsDeterministic()
@@ -62,8 +62,8 @@ public partial class DeterminismProperties : MapGenerationPropertyBase
                     var rng1 = RandomSources.Create((ulong)seed );
                     var rng2 = RandomSources.Create((ulong)seed );
 
-                    var sig1 = CardSignatureHash.Create(rng1);
-                    var sig2 = CardSignatureHash.Create(rng2);
+                    var sig1 = SignatureRandom.Create(rng1);
+                    var sig2 = SignatureRandom.Create(rng2);
 
                     return sig1.DistanceTo(sig2) < SignatureTolerance;
                 })
@@ -87,8 +87,8 @@ public partial class DeterminismProperties : MapGenerationPropertyBase
                     var rng2 = RandomSources.Create((ulong)args.Seed );
 
                     return Enumerable.Range(0, args.Count)
-                        .All(_ => CardSignatureHash.Create(rng1)
-                            .DistanceTo(CardSignatureHash.Create(rng2)) <= SignatureTolerance);
+                        .All(_ => SignatureRandom.Create(rng1)
+                            .DistanceTo(SignatureRandom.Create(rng2)) <= SignatureTolerance);
                 })
             .Iterations(100));
     }

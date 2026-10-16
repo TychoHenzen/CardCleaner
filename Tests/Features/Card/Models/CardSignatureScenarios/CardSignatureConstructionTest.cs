@@ -4,7 +4,7 @@ using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
-using CardSignatureHash = CardCleaner.Scripts.Features.Card.Models.CardSignatureHash;
+using SignatureRandom = CardCleaner.Scripts.Features.Card.Models.SignatureRandom;
 
 namespace CardCleaner.Tests.Features.Card.Models.CardSignatureScenarios;
 
@@ -86,7 +86,7 @@ public class CardSignatureConstructionTest
         var rng = RandomSources.Create();
         rng.Seed = 12345;
 
-        var signature = CardSignatureHash.Create(rng);
+        var signature = SignatureRandom.Create(rng);
 
         for (var i = 0; i < 8; i++)
         {
@@ -99,11 +99,11 @@ public class CardSignatureConstructionTest
     {
         var rng1 = RandomSources.Create();
         rng1.Seed = 42;
-        var sig1 = CardSignatureHash.Create(rng1);
+        var sig1 = SignatureRandom.Create(rng1);
 
         var rng2 = RandomSources.Create();
         rng2.Seed = 42;
-        var sig2 = CardSignatureHash.Create(rng2);
+        var sig2 = SignatureRandom.Create(rng2);
 
         for (var i = 0; i < 8; i++)
         {
