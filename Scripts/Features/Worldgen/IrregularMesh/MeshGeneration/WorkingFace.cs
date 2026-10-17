@@ -22,11 +22,13 @@ internal sealed record WorkingFace
         int vertexCount = VertexIds.Count;
         for (int index = 0; index < vertexCount; index++)
         {
-            yield return new MeshEdge(VertexIds[index], VertexIds[(index + 1) % vertexCount]);
+            int next = (index + 1) % vertexCount;
+            yield return new MeshEdge(VertexIds[index], VertexIds[next]);
         }
     }
 
-    // Faces are keys by identity (ASSUMPTION: no caller wants value equality of two faces).
+    // Faces are keys by identity.
+    // ASSUMPTION: no caller wants value equality of two faces.
     public bool Equals(WorkingFace? other) => ReferenceEquals(this, other);
 
     public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
