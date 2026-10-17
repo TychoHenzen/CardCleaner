@@ -66,7 +66,7 @@ public class MeshTerrainFailurePathTest
         });
 
         // With no biome registered, no terrain tile is allowed in any biome, so the candidate set is empty.
-        var foreground = new MeshForegroundWfc(new MeshTerrainWfcSetup(solver, registry));
+        var foreground = new MeshForegroundWfc(registry, solver.SolveGraphWithCatalog);
         var generated = foreground.Generate(mesh, new BiomeRegistry(), 4243UL);
 
         AssertBool(generated).IsFalse();

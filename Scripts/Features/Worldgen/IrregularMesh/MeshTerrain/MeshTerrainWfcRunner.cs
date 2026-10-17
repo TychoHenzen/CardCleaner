@@ -20,8 +20,15 @@ internal sealed class MeshTerrainWfcRunner
         _solver = setup.Solver;
         _tileRegistry = setup.TileRegistry;
         _projection = new MeshTerrainProjection(setup.TileRegistry, tileToTerrainType);
-        _foregroundWfc = new MeshForegroundWfc(setup);
+        _foregroundWfc = new MeshForegroundWfc(setup.TileRegistry, SolveForeground);
     }
+
+    internal WfcGraphSolution SolveForeground(
+        int[][] neighbors,
+        IReadOnlyCollection<string> initialTiles,
+        ulong seed,
+        Func<string, bool>? gapTileFilter) =>
+        _solver.SolveGraphWithCatalog(neighbors, initialTiles, seed, gapTileFilter);
 
     public IrregularMesh Generate(
         IrregularMesh mesh,

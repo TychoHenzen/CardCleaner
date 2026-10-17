@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -7,13 +9,15 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 
 internal sealed class MeshForegroundWfc
 {
-    private readonly IWfcTerrainSolver _solver;
     private readonly ITileRegistry? _tileRegistry;
+    private readonly Func<int[][], IReadOnlyCollection<string>, ulong, Func<string, bool>?, WfcGraphSolution> _solve;
 
-    public MeshForegroundWfc(MeshTerrainWfcSetup setup)
+    public MeshForegroundWfc(
+        ITileRegistry? tileRegistry,
+        Func<int[][], IReadOnlyCollection<string>, ulong, Func<string, bool>?, WfcGraphSolution> solve)
     {
-        _solver = setup.Solver;
-        _tileRegistry = setup.TileRegistry;
+        _tileRegistry = tileRegistry;
+        _solve = solve;
     }
 
     public bool Generate(IrregularMesh mesh, BiomeRegistry biomeRegistry, ulong seed)
@@ -36,7 +40,7 @@ internal sealed class MeshForegroundWfc
             $"[MeshTerrainGen] Starting direct mesh WFC with {initialTiles.Count} tiles " +
             $"on {mesh.Vertices.Count} vertices");
 
-        var solution = _solver.SolveGraphWithCatalog(
+        var solution = _solve(
             IrregularMeshNeighbors.BuildNeighbors(mesh),
             initialTiles,
             seed,
