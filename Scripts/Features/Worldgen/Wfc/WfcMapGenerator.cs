@@ -121,9 +121,10 @@ public class WfcMapGenerator
     /// Generates one map for a single biome. The tiles are the adjacency-rule tiles that the tile catalog contains and
     /// allows in the biome (WfcTileSetBuilder.ForBiome). Each candidate gets a uniform base weight, so biome pool
     /// weights do not choose the tile; they still feed the weighted entropy that orders cell collapses. For biome
-    /// affinity, use GenerateMultiBiome with a gradient. With a catalog and EnableConnectivity, a disconnected passable
-    /// result is retried with derived seeds, up to MaxConnectivityAttempts, and the call fails if every attempt is
-    /// disconnected. A solver failure on any attempt ends the call; the solver has already retried that seed.
+    /// affinity, use GenerateMultiBiome with a signature sampler. With a catalog and EnableConnectivity, a
+    /// disconnected passable result is retried with derived seeds, up to MaxConnectivityAttempts, and the call fails
+    /// if every attempt is disconnected. A solver failure on any attempt ends the call; the solver has already retried
+    /// that seed.
     /// </summary>
     /// <exception cref="OperationCanceledException">Thrown when the token is cancelled during a solve.</exception>
     public WfcGenerationResult Generate(
@@ -188,9 +189,10 @@ public class WfcMapGenerator
     }
 
     /// <summary>
-    /// Generates one map across all registered biomes; with a gradient, BiomeAffinityConstraint weights tiles toward
-    /// the local biome. Unlike Generate, there is no post-solve connectivity check or retry: with a catalog and
-    /// EnableConnectivity only the reactive ConnectivityConstraint runs, so a disconnected map can be returned.
+    /// Generates one map across all registered biomes; with a signature sampler, BiomeAffinityConstraint weights
+    /// tiles toward the local biome. Unlike Generate, there is no post-solve connectivity check or retry: with a
+    /// catalog and EnableConnectivity only the reactive ConnectivityConstraint runs, so a disconnected map can be
+    /// returned.
     /// </summary>
     /// <exception cref="OperationCanceledException">Thrown when the token is cancelled during the solve.</exception>
     public WfcGenerationResult GenerateMultiBiome(
@@ -198,7 +200,7 @@ public class WfcMapGenerator
         Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I size,
         ulong seed,
-        BaselineGradient? gradient = null,
+        Func<Vector2I, Vector2I, CardSignature>? signatureAt = null,
         Func<string, bool>? tileFilter = null,
         CancellationToken cancellationToken = default)
     {
@@ -211,14 +213,14 @@ public class WfcMapGenerator
 
         _spatialCoherence.Reset(size.X, size.Y);
 
-        if (gradient != null)
+        if (signatureAt != null)
         {
             ConfigureConstraints();
-            var biomeStrengthGrid = new BiomeStrengthGrid(size, gradient, biomeRegistry);
+            var biomeStrengthGrid = new BiomeStrengthGrid(size, signatureAt, biomeRegistry);
             _selector.AddConstraint(new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry, _tileCatalog));
         }
 
-        var solver = CreateSolver(skipBaseConstraints: gradient != null, size);
+        var solver = CreateSolver(skipBaseConstraints: signatureAt != null, size);
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, allTiles);
 

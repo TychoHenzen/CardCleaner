@@ -38,7 +38,7 @@ public class WorldMapTerrainRendererPinTest
         biomeRegistry.RegisterDefaultBiomes();
         var rng = RandomSources.Create(GridSeed);
         var gradient = new CardBasedGradient(MapCards(), rng);
-        var biomeProvider = new BiomeMapGenerator(biomeRegistry, gradient, GridSize);
+        var biomeProvider = new BiomeMapGenerator(biomeRegistry, gradient.GetSignatureAt, GridSize);
         var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),

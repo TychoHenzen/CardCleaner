@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen;
@@ -52,7 +53,12 @@ public sealed class GridMapGenerator : IGridMapGenerator
         // so the same seed and cards always give the same map.
         var rng = RandomSources.Create(config.Seed);
         var gradient = new CardBasedGradient(config.MapSeeds, rng);
-        var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, config.Size, _metadataProvider);
+        var biomeProvider = new BiomeMapGenerator(
+            _biomeRegistry,
+            gradient.GetSignatureAt,
+            config.Size,
+            _metadataProvider.GetDefaultPassableTileId(),
+            _metadataProvider.GetDefaultSolidTileId());
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(_transitionPairs.Pairs),
             new TileRegistryWfcCatalog(_tileRegistry));
@@ -94,6 +100,10 @@ public sealed class GridMapGenerator : IGridMapGenerator
         ArgumentNullException.ThrowIfNull(tileRegistry);
         ArgumentNullException.ThrowIfNull(metadataProvider);
 
+        Func<Vector2I, Vector2I, CardSignature>? signatureAt = null;
+        if (gradient != null)
+            signatureAt = gradient.GetSignatureAt;
+
         return new GridMapGenerationPipeline(new GridMapGenerationContext
         {
             Rng = rng,
@@ -102,7 +112,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
             MetadataProvider = metadataProvider,
             WfcGenerator = wfcGenerator,
             BiomeRegistry = biomeRegistry,
-            Gradient = gradient,
+            SignatureAt = signatureAt,
             DefaultPassableTileId = metadataProvider.GetDefaultPassableTileId() ?? "floor",
             DefaultSolidTileId = metadataProvider.GetDefaultSolidTileId() ?? "wall"
         });

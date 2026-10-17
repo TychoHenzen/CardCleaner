@@ -68,7 +68,7 @@ public abstract class MapGenerationPropertyBase : PropertyTestBase
     {
         var rng = RandomSources.Create(request.RngSeed);
         var gradient = new ConstantSignatureGradient(signature);
-        var biomeProvider = new BiomeMapGenerator(_registry, gradient, request.Size);
+        var biomeProvider = new BiomeMapGenerator(_registry, gradient.GetSignatureAt, request.Size);
         var generator = GridMapGenerator.CreatePipeline(rng, biomeProvider, _tileRegistry, _tileRegistry);
         return generator.GenerateMap(request.Size);
     }

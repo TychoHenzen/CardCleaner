@@ -1,4 +1,6 @@
+using System;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -15,7 +17,7 @@ internal sealed class GridMapGenerationContext
     public required ITileMetadataProvider MetadataProvider { get; init; }
     public WfcMapGenerator? WfcGenerator { get; init; }
     public BiomeRegistry? BiomeRegistry { get; init; }
-    public BaselineGradient? Gradient { get; init; }
+    public Func<Vector2I, Vector2I, CardSignature>? SignatureAt { get; init; }
     public IProfiler Profiler { get; set; } = new NoOpProfiler();
     public int MaxWfcRetries { get; set; } = 5;
     public required string DefaultPassableTileId { get; init; }

@@ -60,7 +60,7 @@ internal sealed class GridMapWfcGenerator
             position => _context.BiomeProvider.GetBiomeAt(position),
             size,
             _context.Rng.Randi(),
-            _context.Gradient,
+            _context.SignatureAt,
             tileId => _context.TileRegistry.GetTile(tileId)?.HasAutoTileVariants == false,
             cancellationToken: cancellationToken);
         RecordTimings(result.Timings);
@@ -85,7 +85,7 @@ internal sealed class GridMapWfcGenerator
             position => _context.BiomeProvider.GetBiomeAt(position),
             size,
             _context.Rng.Randi(),
-            _context.Gradient,
+            _context.SignatureAt,
             cancellationToken: cancellationToken);
         RecordTimings(result.Timings);
 

@@ -68,7 +68,7 @@ public class GridMapWfcTimingsTest
         var setup = new WfcSetup();
 
         var result = setup.WfcGenerator.GenerateMultiBiome(
-            setup.BiomeRegistry, setup.BiomeProvider.GetBiomeAt, Size, Seed, setup.Gradient);
+            setup.BiomeRegistry, setup.BiomeProvider.GetBiomeAt, Size, Seed, setup.Gradient.GetSignatureAt);
 
         AssertBool(result.Success).IsTrue();
         var timings = result.Timings;
@@ -101,7 +101,7 @@ public class GridMapWfcTimingsTest
         {
             BiomeRegistry.RegisterDefaultBiomes();
             Gradient = new CardBasedGradient(MapCards(), Rng);
-            BiomeProvider = new BiomeMapGenerator(BiomeRegistry, Gradient, Size);
+            BiomeProvider = new BiomeMapGenerator(BiomeRegistry, Gradient.GetSignatureAt, Size);
             var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
             WfcGenerator = new WfcMapGenerator(
                 new WfcAdjacencyRules(transitionPairs),
