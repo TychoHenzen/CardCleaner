@@ -6,7 +6,6 @@ using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;

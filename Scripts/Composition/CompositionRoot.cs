@@ -8,7 +8,7 @@ using CardCleaner.Scripts.Features.Player.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
-using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;

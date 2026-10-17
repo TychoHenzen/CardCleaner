@@ -1,6 +1,6 @@
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
-using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Features.Worldgen;
 
 namespace CardCleaner.Tests.TestUtilities;
 

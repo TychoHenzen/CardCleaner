@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
-using CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 

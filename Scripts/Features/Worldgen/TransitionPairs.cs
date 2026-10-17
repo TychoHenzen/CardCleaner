@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
+namespace CardCleaner.Scripts.Features.Worldgen;
 
 /// <summary>
 /// The tile pairs that may touch, as plain data. The composition root builds it once from the compiled transition

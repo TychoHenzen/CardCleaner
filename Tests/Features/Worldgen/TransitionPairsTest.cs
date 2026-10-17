@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
-using CardCleaner.Scripts.Features.Worldgen.Wfc;
 
-namespace CardCleaner.Tests.Features.Worldgen.Wfc;
+namespace CardCleaner.Tests.Features.Worldgen;
 
 [TestSuite]
 [RequireGodotRuntime]
