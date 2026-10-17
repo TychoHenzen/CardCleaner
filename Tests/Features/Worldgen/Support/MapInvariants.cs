@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRendererSupport;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
 
@@ -58,7 +59,7 @@ public static class MapInvariants
     /// </summary>
     public static bool DecorationOverlaysWithinVisualGrid(SimpleMapData map, int width, int height)
     {
-        return map.DecorationOverlays.Keys.All(position =>
+        return DualGridOverlays(map).Keys.All(position =>
             position.X >= 0 && position.X < width + 1 && position.Y >= 0 && position.Y < height + 1);
     }
 
@@ -67,8 +68,21 @@ public static class MapInvariants
     /// </summary>
     public static bool DecorationBitmasksValid(SimpleMapData map)
     {
-        return map.DecorationOverlays.Values.All(overlay =>
+        return DualGridOverlays(map).Values.All(overlay =>
             overlay.Bitmask >= 0 && overlay.Bitmask <= MaxCornerBitmask);
+    }
+
+    /// <summary>
+    ///     The dual-grid overlays the renderer derives from the map's two WFC layers.
+    /// </summary>
+    private static Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> DualGridOverlays(
+        SimpleMapData map)
+    {
+        var registry = map.TileRegistry!;
+        var builder = new DualGridOverlayBuilder(
+            registry,
+            DualGridOverlayBuilder.ResolveDefaultPassableTileId(registry));
+        return builder.Build(map.BackgroundLayer!, map.ForegroundLayer!, map.Size);
     }
 
     public static bool AllPassableTilesConnected(SimpleMapData map)
