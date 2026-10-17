@@ -52,7 +52,7 @@ public static class WfcTestFixtures
     /// </summary>
     public static BiomeDefinition CreateAbcdBiome()
     {
-        var passable = new TilePool();
+        var passable = new TilePool.Builder();
         passable.Add("A", 1.0f);
         passable.Add("B", 1.0f);
         passable.Add("C", 1.0f);
@@ -61,8 +61,8 @@ public static class WfcTestFixtures
         return new BiomeDefinition(
             TestBiomeId,
             new CardSignature(),
-            passable,
-            new TilePool(),
+            passable.Build(),
+            TilePool.Empty,
             0.0f);
     }
 

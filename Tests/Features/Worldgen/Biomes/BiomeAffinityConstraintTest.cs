@@ -58,13 +58,9 @@ public partial class BiomeAffinityConstraintTest
         var fireSignature = new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f });
         var waterSignature = new CardSignature(new[] { 0f, -1f, 0f, 0f, 0f, 0f, 0f, 0f });
 
-        var firePool = new TilePool();
-        firePool.Add("fire_tile");
-
-        var waterPool = new TilePool();
-        waterPool.Add("water_tile");
-
-        var emptyPool = new TilePool();
+        var firePool = new TilePool.Builder().Add("fire_tile").Build();
+        var waterPool = new TilePool.Builder().Add("water_tile").Build();
+        var emptyPool = TilePool.Empty;
 
         _registry.Register(new BiomeDefinition("fire", fireSignature, firePool, emptyPool));
         _registry.Register(new BiomeDefinition("water", waterSignature, waterPool, emptyPool));

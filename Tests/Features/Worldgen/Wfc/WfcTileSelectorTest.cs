@@ -143,7 +143,7 @@ public class WfcTileSelectorTest
 
     private static BiomeDefinition CreatePlainsBiome(Dictionary<string, float> passableWeights)
     {
-        var passable = new TilePool();
+        var passable = new TilePool.Builder();
         foreach (var (tileId, weight) in passableWeights)
         {
             passable.Add(tileId, weight);
@@ -152,8 +152,8 @@ public class WfcTileSelectorTest
         return new BiomeDefinition(
             "plains",
             new CardSignature(),
-            passable,
-            new TilePool(),
+            passable.Build(),
+            TilePool.Empty,
             0.15f);
     }
 

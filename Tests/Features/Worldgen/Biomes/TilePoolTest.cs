@@ -21,7 +21,7 @@ public class TilePoolTest
     [TestCase]
     public void TestEmptyPoolReturnsNull()
     {
-        var pool = new TilePool();
+        var pool = TilePool.Empty;
 
         var result = pool.SelectRandom(_rng);
 
@@ -31,8 +31,9 @@ public class TilePoolTest
     [TestCase]
     public void TestSingleEntryAlwaysReturned()
     {
-        var pool = new TilePool();
-        pool.Add("grass");
+        var builder = new TilePool.Builder();
+        builder.Add("grass");
+        var pool = builder.Build();
 
         for (var i = 0; i < 10; i++)
         {
@@ -44,9 +45,10 @@ public class TilePoolTest
     [TestCase]
     public void TestWeightedSelectionFavorsHigherWeight()
     {
-        var pool = new TilePool();
-        pool.Add("common", 9.0f);
-        pool.Add("rare");
+        var builder = new TilePool.Builder();
+        builder.Add("common", 9.0f);
+        builder.Add("rare");
+        var pool = builder.Build();
 
         var commonCount = 0;
         var rareCount = 0;
@@ -63,30 +65,25 @@ public class TilePoolTest
     }
 
     [TestCase]
-    public void TestCountReturnsCorrectValue()
+    public static void TestCountReturnsCorrectValue()
     {
-        var pool = new TilePool();
-        AssertThat(pool.Count).IsEqual(0);
+        AssertThat(TilePool.Empty.Count).IsEqual(0);
 
-        pool.Add("grass");
-        AssertThat(pool.Count).IsEqual(1);
+        AssertThat(new TilePool.Builder().Add("grass").Build().Count).IsEqual(1);
 
-        pool.Add("dirt");
-        AssertThat(pool.Count).IsEqual(2);
+        AssertThat(new TilePool.Builder().Add("grass").Add("dirt").Build().Count).IsEqual(2);
     }
 
     [TestCase]
-    public void TestIsEmptyReturnsCorrectValue()
+    public static void TestIsEmptyReturnsCorrectValue()
     {
-        var pool = new TilePool();
-        AssertBool(pool.IsEmpty).IsTrue();
+        AssertBool(TilePool.Empty.IsEmpty).IsTrue();
 
-        pool.Add("grass");
-        AssertBool(pool.IsEmpty).IsFalse();
+        AssertBool(new TilePool.Builder().Add("grass").Build().IsEmpty).IsFalse();
     }
 
     [TestCase]
-    public void TestTilePoolEntryProperties()
+    public static void TestTilePoolEntryProperties()
     {
         var entry = new TilePoolEntry("floor", 2.5f);
 
@@ -97,10 +94,11 @@ public class TilePoolTest
     [TestCase]
     public void TestDeterministicWithSameSeed()
     {
-        var pool = new TilePool();
-        pool.Add("a");
-        pool.Add("b");
-        pool.Add("c");
+        var builder = new TilePool.Builder();
+        builder.Add("a");
+        builder.Add("b");
+        builder.Add("c");
+        var pool = builder.Build();
 
         _rng.Seed = 42;
         var results1 = new string[10];
@@ -114,5 +112,24 @@ public class TilePoolTest
 
         for (var i = 0; i < 10; i++)
             AssertString(results1[i]).IsEqual(results2[i]);
+    }
+
+    [TestCase]
+    public void TestZeroTotalWeightReturnsFirstEntry()
+    {
+        var pool = new TilePool.Builder().Add("first", 0.0f).Add("second", 0.0f).Build();
+
+        AssertString(pool.SelectRandom(_rng)).IsEqual("first");
+    }
+
+    [TestCase]
+    public static void TestBuildCopiesTheBuilderEntries()
+    {
+        var builder = new TilePool.Builder().Add("grass");
+        var pool = builder.Build();
+
+        builder.Add("dirt");
+
+        AssertThat(pool.Count).IsEqual(1);
     }
 }

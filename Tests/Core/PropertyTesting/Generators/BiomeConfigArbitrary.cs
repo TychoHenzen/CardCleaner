@@ -52,12 +52,12 @@ public static class BiomeConfigArbitrary
 
     private static TilePool CreateTilePool((string TileId, float Weight)[] entries)
     {
-        var pool = new TilePool();
+        var builder = new TilePool.Builder();
         // Deduplicate by tile ID to avoid weird behavior
         var uniqueEntries = entries.GroupBy(e => e.TileId).Select(g => g.First());
         foreach (var (tileId, weight) in uniqueEntries)
-            pool.Add(tileId, weight);
-        return pool;
+            builder.Add(tileId, weight);
+        return builder.Build();
     }
 
     private static IEnumerable<BiomeDefinition> ShrinkBiome(BiomeDefinition biome)

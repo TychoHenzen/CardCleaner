@@ -24,9 +24,9 @@ public partial class BiomeStrengthGridTest
         var waterSignature = new CardSignature(new[] { 0f, -1f, 0f, 0f, 0f, 0f, 0f, 0f }); // Low Febris (water)
         var neutralSignature = new CardSignature(); // All zeros
 
-        var fireBiome = new BiomeDefinition("fire", fireSignature, new TilePool(), new TilePool());
-        var waterBiome = new BiomeDefinition("water", waterSignature, new TilePool(), new TilePool());
-        var neutralBiome = new BiomeDefinition("neutral", neutralSignature, new TilePool(), new TilePool());
+        var fireBiome = new BiomeDefinition("fire", fireSignature, TilePool.Empty, TilePool.Empty);
+        var waterBiome = new BiomeDefinition("water", waterSignature, TilePool.Empty, TilePool.Empty);
+        var neutralBiome = new BiomeDefinition("neutral", neutralSignature, TilePool.Empty, TilePool.Empty);
 
         _registry.Register(fireBiome);
         _registry.Register(waterBiome);
@@ -86,7 +86,7 @@ public partial class BiomeStrengthGridTest
         for (var i = 0; i < 5; i++)
         {
             var signature = new CardSignature(new[] { i * 0.2f, 0f, 0f, 0f, 0f, 0f, 0f, 0f });
-            largeRegistry.Register(new BiomeDefinition($"biome_{i}", signature, new TilePool(), new TilePool()));
+            largeRegistry.Register(new BiomeDefinition($"biome_{i}", signature, TilePool.Empty, TilePool.Empty));
         }
 
         _gradient.SignatureToReturn = new CardSignature();
@@ -135,7 +135,7 @@ public partial class BiomeStrengthGridTest
     /// </summary>
     private sealed partial class TestGradient : BaselineGradient
     {
-        public CardSignature SignatureToReturn { get; set; } = new();
+        public CardSignature SignatureToReturn { get; set; }
 
         public override CardSignature GetSignatureAt(Vector2I position, Vector2I mapSize)
         {

@@ -13,13 +13,9 @@ public class TilePoolSelectionPinTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void FixedSeedSequenceIsPinned()
+    public static void FixedSeedSequenceIsPinned()
     {
-        var pool = new TilePool();
-        pool.Add("a", 1.0f);
-        pool.Add("b", 2.5f);
-        pool.Add("c", 0.5f);
-        pool.Add("d", 4.0f);
+        var pool = new TilePool.Builder().Add("a", 1.0f).Add("b", 2.5f).Add("c", 0.5f).Add("d", 4.0f).Build();
         var rng = RandomSources.Create();
         rng.Seed = 777;
 

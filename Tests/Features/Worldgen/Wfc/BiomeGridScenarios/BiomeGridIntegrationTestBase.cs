@@ -69,13 +69,9 @@ public abstract class BiomeGridIntegrationTestBase
         var fireSignature = new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }); // High Febris (fire)
         var waterSignature = new CardSignature(new[] { 0f, -1f, 0f, 0f, 0f, 0f, 0f, 0f }); // Low Febris (water)
 
-        var firePool = new TilePool();
-        firePool.Add("fire_tile", 1.0f);
-
-        var waterPool = new TilePool();
-        waterPool.Add("water_tile", 1.0f);
-
-        var emptyPool = new TilePool();
+        var firePool = new TilePool.Builder().Add("fire_tile", 1.0f).Build();
+        var waterPool = new TilePool.Builder().Add("water_tile", 1.0f).Build();
+        var emptyPool = TilePool.Empty;
 
         _registry.Register(new BiomeDefinition("fire", fireSignature, firePool, emptyPool));
         _registry.Register(new BiomeDefinition("water", waterSignature, waterPool, emptyPool));

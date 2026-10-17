@@ -3,29 +3,33 @@ using CardCleaner.Scripts.Core.Interfaces;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 
-public class TilePool
+public sealed record TilePool
 {
-    private float _totalWeight;
-    private bool _weightsDirty = true;
+    private readonly float _totalWeight;
 
-    public List<TilePoolEntry> Entries { get; set; } = [];
+    private TilePool(List<TilePoolEntry> entries)
+    {
+        Entries = entries.AsReadOnly();
+        var total = 0f;
+        foreach (var entry in entries)
+            total += entry.Weight;
+        _totalWeight = total;
+    }
+
+    /// <summary>The shared pool with no entries.</summary>
+    public static TilePool Empty { get; } = new(new List<TilePoolEntry>());
+
+    // Record equality compares Entries by reference, as the former class did.
+    public IReadOnlyList<TilePoolEntry> Entries { get; }
 
     public bool IsEmpty => Entries.Count == 0;
 
     public int Count => Entries.Count;
 
-    public void Add(string tileId, float weight = 1.0f)
-    {
-        Entries.Add(new TilePoolEntry(tileId, weight));
-        _weightsDirty = true;
-    }
-
     public string? SelectRandom(IRandom rng)
     {
         if (Entries.Count == 0)
             return null;
-
-        RecalculateWeightsIfNeeded();
 
         if (_totalWeight <= 0)
             return Entries[0].TileId;
@@ -43,23 +47,7 @@ public class TilePool
         return Entries[Entries.Count - 1].TileId;
     }
 
-    private void RecalculateWeightsIfNeeded()
-    {
-        if (!_weightsDirty)
-            return;
-
-        _totalWeight = 0f;
-        foreach (var entry in Entries)
-            _totalWeight += entry.Weight;
-
-        _weightsDirty = false;
-    }
-
-    public void MarkDirty() => _weightsDirty = true;
-
-    /// <summary>
-    /// Get all tile IDs in this pool.
-    /// </summary>
+    /// <summary>Get all tile IDs in this pool.</summary>
     public IEnumerable<string> GetAllTileIds()
     {
         foreach (var entry in Entries)
@@ -67,5 +55,19 @@ public class TilePool
             if (!string.IsNullOrEmpty(entry.TileId))
                 yield return entry.TileId;
         }
+    }
+
+    /// <summary>Collects entries in insertion order and builds the immutable pool.</summary>
+    public sealed class Builder
+    {
+        private readonly List<TilePoolEntry> _entries = [];
+
+        public Builder Add(string tileId, float weight = 1.0f)
+        {
+            _entries.Add(new TilePoolEntry(tileId, weight));
+            return this;
+        }
+
+        public TilePool Build() => new(new List<TilePoolEntry>(_entries));
     }
 }
