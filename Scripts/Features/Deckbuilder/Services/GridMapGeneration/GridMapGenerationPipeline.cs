@@ -16,7 +16,6 @@ internal sealed class GridMapGenerationPipeline
     internal const string BiomeMapBuildScope = "BiomeMapBuild";
     internal const string TwoPhaseWfcScope = "TwoPhaseWfcGeneration";
     internal const string PassableTilesScope = "PassableTileCollection";
-    internal const string TerrainTransitionsScope = "TerrainTransitions";
 
     /// <summary>
     /// Each profiler scope GenerateMap opens, with its share of a whole generation's progress. The shares add up to
@@ -26,20 +25,17 @@ internal sealed class GridMapGenerationPipeline
     {
         [VariantSelectionScope] = 0.05f,
         [BiomeMapBuildScope] = 0.10f,
-        [TwoPhaseWfcScope] = 0.75f,
-        [PassableTilesScope] = 0.05f,
-        [TerrainTransitionsScope] = 0.05f
+        [TwoPhaseWfcScope] = 0.80f,
+        [PassableTilesScope] = 0.05f
     };
 
     private readonly GridMapGenerationContext _context;
     private readonly GridMapWfcGenerator _wfcGenerator;
-    private readonly GridMapTerrainGenerator _terrainGenerator;
 
     public GridMapGenerationPipeline(GridMapGenerationContext context)
     {
         _context = context;
         _wfcGenerator = new GridMapWfcGenerator(context);
-        _terrainGenerator = new GridMapTerrainGenerator(context);
     }
 
     public int MaxWfcRetries
@@ -62,10 +58,6 @@ internal sealed class GridMapGenerationPipeline
         var biomeMap = BuildBiomeMap(size);
         var twoPhaseResult = GenerateTwoPhaseWfc(size, biomeMap, cancellationToken);
         var passableTiles = CollectPassableTiles(size, twoPhaseResult.MergedGrid);
-        var decorationOverlays = GenerateTerrainTransitions(
-            twoPhaseResult.BackgroundLayer,
-            twoPhaseResult.ForegroundLayer,
-            size);
         var finalTileIds = CopyGrid(twoPhaseResult.MergedGrid);
         var contextualVariants = new Dictionary<Vector2I, int>();
         var map = new SimpleMapData
@@ -79,7 +71,6 @@ internal sealed class GridMapGenerationPipeline
             PerGenerationVariants = variants.PerGenerationVariants,
             PerGenerationGroupVariants = variants.PerGenerationGroupVariants,
             ContextualVariants = contextualVariants,
-            DecorationOverlays = decorationOverlays,
             TileRegistry = _context.TileRegistry
         };
 
@@ -154,27 +145,6 @@ internal sealed class GridMapGenerationPipeline
             }
 
             return passableTiles;
-        }
-    }
-
-    private Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)>
-        GenerateTerrainTransitions(
-            string[,] backgroundLayer,
-            string[,] foregroundLayer,
-            Vector2I size)
-    {
-        using (_context.Profiler.BeginScope(TerrainTransitionsScope))
-        {
-            var overlays = _terrainGenerator.GenerateTerrainTransitions(
-                backgroundLayer,
-                foregroundLayer,
-                size);
-            var transitionCount = overlays.Count(kvp => kvp.Value.Bitmask > 0 && kvp.Value.Bitmask < 15);
-            ILog.Print(
-                $"Dual-grid terrain: {overlays.Count} visual tiles, " +
-                $"{transitionCount} transitions");
-            GridMapDiagnostics.ValidateBitmaskConsistency(overlays, size.X + 1, size.Y + 1);
-            return overlays;
         }
     }
 

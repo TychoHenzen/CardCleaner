@@ -1,3 +1,4 @@
+using CardCleaner.Tests.TestUtilities;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -58,7 +59,8 @@ public class GridMapGoldenTest
         var tileRegistry = new TileRegistry();
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes();
-        var generator = new GridMapGenerator(tileRegistry, tileRegistry, biomeRegistry);
+        var generator = new GridMapGenerator(
+            tileRegistry, tileRegistry, biomeRegistry, CompiledTransitionPairs.Load());
         var seeds = cards.ToArray();
 
         var generated = await generator.GenerateAsync(new MapGenerationConfig

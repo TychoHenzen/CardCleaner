@@ -57,8 +57,8 @@ public sealed class TileRegistryWfcCatalog : IWfcTileCatalog
     }
 
     public bool? IsBitmaskAllowed(string tileId, int bitmask) =>
-        _registry.GetTile(tileId)?.GetAutoTileFormat()?.IsBitmaskAllowed(bitmask);
+        _registry.GetTile(tileId)?.AllowedBitmasks?.Contains(bitmask);
 
     public (Vector2I Size, Vector2I Offset)? GetMultiCellBounds(string tileId) =>
-        _registry.GetTile(tileId)?.GetAutoTileFormat()?.GetMaxMultiCellBounds();
+        _registry.GetTile(tileId)?.MultiCellBounds;
 }

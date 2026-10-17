@@ -1,29 +1,43 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
-using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
+namespace CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRendererSupport;
 
-internal sealed class GridMapTerrainGenerator
+/// <summary>
+/// Turns the two WFC layers of a grid map into the dual-grid overlays the terrain renderer draws: one entry per
+/// visual tile, holding its base tile, its top auto-tile and its Corner16 bitmask.
+/// </summary>
+internal sealed class DualGridOverlayBuilder
 {
-    private readonly GridMapGenerationContext _context;
+    private readonly ITileRegistry _registry;
+    private readonly string _defaultPassableTileId;
 
-    public GridMapTerrainGenerator(GridMapGenerationContext context)
+    public DualGridOverlayBuilder(ITileRegistry registry, string defaultPassableTileId)
     {
-        _context = context;
+        _registry = registry ?? throw new ArgumentNullException(nameof(registry));
+        _defaultPassableTileId = defaultPassableTileId
+            ?? throw new ArgumentNullException(nameof(defaultPassableTileId));
     }
 
-    public Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)>
-        GenerateTerrainTransitions(
-            string[,] backgroundLayer,
-            string[,] foregroundLayer,
-            Vector2I size)
+    /// <summary>
+    /// The default passable tile id the map generator used: the registry's own default when it has one, else "floor".
+    /// </summary>
+    public static string ResolveDefaultPassableTileId(ITileRegistry registry)
+    {
+        // ASSUMPTION: this is the id GridMapGenerator handed to the generation context (metadata default, else
+        // "floor"), so the renderer fills the same base tiles the generator filled.
+        return registry is ITileMetadataProvider metadata
+            ? metadata.GetDefaultPassableTileId() ?? "floor"
+            : "floor";
+    }
+
+    public Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> Build(
+        string[,] backgroundLayer,
+        string[,] foregroundLayer,
+        Vector2I size)
     {
         var visualWidth = size.X + 1;
         var visualHeight = size.Y + 1;
@@ -38,7 +52,7 @@ internal sealed class GridMapTerrainGenerator
             var topTerrain = FindDominantAutoTile(foregroundCorners);
             var baseTerrain = FindDominantBaseTile(backgroundCorners);
 
-            baseTerrain ??= _context.DefaultPassableTileId;
+            baseTerrain ??= _defaultPassableTileId;
             topTerrain ??= baseTerrain;
 
             var bitmask = ComputeTransitionBitmask(foregroundCorners, topTerrain);
@@ -69,7 +83,7 @@ internal sealed class GridMapTerrainGenerator
             if (string.IsNullOrEmpty(corner))
                 continue;
 
-            var tile = _context.TileRegistry.GetTile(corner);
+            var tile = _registry.GetTile(corner);
             if (tile?.HasAutoTileVariants == true && tile.Dominance > topDominance)
             {
                 topTerrain = corner;
@@ -90,7 +104,7 @@ internal sealed class GridMapTerrainGenerator
             if (string.IsNullOrEmpty(corner))
                 continue;
 
-            var tile = _context.TileRegistry.GetTile(corner);
+            var tile = _registry.GetTile(corner);
             if (tile != null && tile.Dominance < baseDominance)
             {
                 baseTerrain = corner;
@@ -104,13 +118,13 @@ internal sealed class GridMapTerrainGenerator
     private int ComputeTransitionBitmask(IReadOnlyList<string> foregroundCorners, string topTerrain)
     {
         var bitmask = 0;
-        if (_context.TileRegistry.AreSameTerrainType(foregroundCorners[1], topTerrain))
+        if (_registry.AreSameTerrainType(foregroundCorners[1], topTerrain))
             bitmask |= NeighborBitmaskCorner.NorthEast;
-        if (_context.TileRegistry.AreSameTerrainType(foregroundCorners[3], topTerrain))
+        if (_registry.AreSameTerrainType(foregroundCorners[3], topTerrain))
             bitmask |= NeighborBitmaskCorner.SouthEast;
-        if (_context.TileRegistry.AreSameTerrainType(foregroundCorners[2], topTerrain))
+        if (_registry.AreSameTerrainType(foregroundCorners[2], topTerrain))
             bitmask |= NeighborBitmaskCorner.SouthWest;
-        if (_context.TileRegistry.AreSameTerrainType(foregroundCorners[0], topTerrain))
+        if (_registry.AreSameTerrainType(foregroundCorners[0], topTerrain))
             bitmask |= NeighborBitmaskCorner.NorthWest;
         return bitmask;
     }

@@ -98,6 +98,7 @@ public static partial class TileDataLoader
     private static TileDefinition CreateTileDefinition(TileData data, int fileIndex)
     {
         var formatName = NormalizeAutoTileFormatName(data.AutoTileFormat);
+        var shape = TileShapeFacts.Resolve(formatName);
 
         return new TileDefinition(
             data.Id!,
@@ -115,6 +116,8 @@ public static partial class TileDataLoader
                 DecorationDensity = GetValueOrDefault(data.DecorationDensity, 1.0f),
                 AutoTileVariants = ParseAutoTileVariants(data.AutoTileVariants, formatName),
                 AutoTileFormatName = formatName,
+                AllowedBitmasks = shape.AllowedBitmasks,
+                MultiCellBounds = shape.MultiCellBounds,
                 Variations = ParseVariations(data.Variations),
                 VariationMode = ParseVariationMode(data.VariationMode),
                 Animation = ParseAnimation(data.Animation),

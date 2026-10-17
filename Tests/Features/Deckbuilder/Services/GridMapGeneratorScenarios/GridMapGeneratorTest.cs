@@ -1,3 +1,4 @@
+using CardCleaner.Tests.TestUtilities;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -61,7 +62,8 @@ public class GridMapGeneratorTest
         var tileRegistry = new TileRegistry();
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes();
-        return new GridMapGenerator(tileRegistry, tileRegistry, biomeRegistry);
+        return new GridMapGenerator(
+            tileRegistry, tileRegistry, biomeRegistry, CompiledTransitionPairs.Load());
     }
 
     private static MapGenerationConfig Config() => new()

@@ -58,8 +58,7 @@ public class GridMapWfcTimingsTest
             GridMapGenerationPipeline.VariantSelectionScope,
             GridMapGenerationPipeline.BiomeMapBuildScope,
             GridMapGenerationPipeline.TwoPhaseWfcScope,
-            GridMapGenerationPipeline.PassableTilesScope,
-            GridMapGenerationPipeline.TerrainTransitionsScope);
+            GridMapGenerationPipeline.PassableTilesScope);
     }
 
     [TestCase]

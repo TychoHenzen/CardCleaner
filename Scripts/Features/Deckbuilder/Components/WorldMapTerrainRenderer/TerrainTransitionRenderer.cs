@@ -27,16 +27,29 @@ internal sealed class TerrainTransitionRenderer
         if (_terrainLayer == null || _tileRegistry == null)
             return;
 
-        if (mapData.DecorationOverlays.Count == 0)
+        if (mapData.BackgroundLayer == null || mapData.ForegroundLayer == null)
         {
             ILog.Print("[DUAL-GRID] No terrain data available, skipping dual-grid rendering");
             return;
         }
 
+        var builder = new DualGridOverlayBuilder(
+            _tileRegistry,
+            DualGridOverlayBuilder.ResolveDefaultPassableTileId(_tileRegistry));
+        var overlays = builder.Build(mapData.BackgroundLayer, mapData.ForegroundLayer, mapData.Size);
+        if (overlays.Count == 0)
+        {
+            ILog.Print("[DUAL-GRID] No terrain data available, skipping dual-grid rendering");
+            return;
+        }
+
+        DualGridDiagnostics.LogSummary(overlays);
+        DualGridDiagnostics.ValidateBitmaskConsistency(overlays, mapData.Size.X + 1, mapData.Size.Y + 1);
+
         _terrainLayer.Position = Vector2.Zero;
         var state = new RenderState();
 
-        foreach (var (position, (baseTileId, topTileId, bitmask)) in mapData.DecorationOverlays)
+        foreach (var (position, (baseTileId, topTileId, bitmask)) in overlays)
             RenderOverlay(position, baseTileId, topTileId, bitmask, state);
 
         var atlasStatus = _resolver.UsingCompiledAtlas

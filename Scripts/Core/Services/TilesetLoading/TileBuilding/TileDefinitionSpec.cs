@@ -27,6 +27,7 @@ internal sealed class TileDefinitionSpec
 
     internal TileDefinition ToDefinition()
     {
+        var shape = TileShapeFacts.Resolve(AutoTileFormat);
         return new TileDefinition(
             Id,
             Name,
@@ -43,6 +44,8 @@ internal sealed class TileDefinitionSpec
                 DecorationDensity = Common.DecorationDensity,
                 AutoTileVariants = AutoTileVariants,
                 AutoTileFormatName = AutoTileFormat,
+                AllowedBitmasks = shape.AllowedBitmasks,
+                MultiCellBounds = shape.MultiCellBounds,
                 Variations = Variations,
                 VariationMode = VariationMode,
                 Animation = Animation,

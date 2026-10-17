@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -7,7 +6,6 @@ using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Core.Randomness;
@@ -26,15 +24,18 @@ public sealed class GridMapGenerator : IGridMapGenerator
     private readonly ITileRegistry _tileRegistry;
     private readonly ITileMetadataProvider _metadataProvider;
     private readonly BiomeRegistry _biomeRegistry;
+    private readonly TransitionPairs _transitionPairs;
 
     public GridMapGenerator(
         ITileRegistry tileRegistry,
         ITileMetadataProvider metadataProvider,
-        BiomeRegistry biomeRegistry)
+        BiomeRegistry biomeRegistry,
+        TransitionPairs transitionPairs)
     {
         _tileRegistry = tileRegistry ?? throw new ArgumentNullException(nameof(tileRegistry));
         _metadataProvider = metadataProvider ?? throw new ArgumentNullException(nameof(metadataProvider));
         _biomeRegistry = biomeRegistry ?? throw new ArgumentNullException(nameof(biomeRegistry));
+        _transitionPairs = transitionPairs ?? throw new ArgumentNullException(nameof(transitionPairs));
     }
 
     /// <inheritdoc />
@@ -52,9 +53,8 @@ public sealed class GridMapGenerator : IGridMapGenerator
         var rng = RandomSources.Create(config.Seed);
         var gradient = new CardBasedGradient(config.MapSeeds, rng);
         var biomeProvider = new BiomeMapGenerator(_biomeRegistry, gradient, config.Size, _metadataProvider);
-        var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
-            new WfcAdjacencyRules(transitionPairs),
+            new WfcAdjacencyRules(_transitionPairs.Pairs),
             new TileRegistryWfcCatalog(_tileRegistry));
         var pipeline = CreatePipeline(
             rng, biomeProvider, _tileRegistry, _metadataProvider, wfcGenerator, _biomeRegistry, gradient);

@@ -34,11 +34,17 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
 
     private readonly ITileRegistry _tileRegistry;
     private readonly BiomeRegistry _biomeRegistry;
+    private readonly TransitionPairs _transitionPairs;
     private readonly int _rings;
 
     /// <param name="rings">Rings of hexes around the mesh centre; more rings make a larger map.</param>
-    public MeshMapGenerator(ITileRegistry tileRegistry, BiomeRegistry biomeRegistry, int rings = DefaultRings)
+    public MeshMapGenerator(
+        ITileRegistry tileRegistry,
+        BiomeRegistry biomeRegistry,
+        TransitionPairs transitionPairs,
+        int rings = DefaultRings)
     {
+        _transitionPairs = transitionPairs ?? throw new ArgumentNullException(nameof(transitionPairs));
         _tileRegistry = tileRegistry ?? throw new ArgumentNullException(nameof(tileRegistry));
         _biomeRegistry = biomeRegistry ?? throw new ArgumentNullException(nameof(biomeRegistry));
         ArgumentOutOfRangeException.ThrowIfLessThan(rings, 1);
@@ -75,7 +81,7 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
         // The terrain generator takes an int seed; the session's ulong seed is cut to its low 32 bits.
         var seed = unchecked((int)config.Seed);
 
-        var terrain = TerrainGeneratorFactory.Create(_tileRegistry, _biomeRegistry);
+        var terrain = TerrainGeneratorFactory.Create(_tileRegistry, _biomeRegistry, _transitionPairs);
         var mesh = terrain.GenerateWithCards(rings, config.MapSeeds, seed, RelaxationIterations);
         progress?.Report(0.9f);
         cancellationToken.ThrowIfCancellationRequested();

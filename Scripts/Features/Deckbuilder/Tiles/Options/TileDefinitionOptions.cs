@@ -21,6 +21,12 @@ internal sealed class TileDefinitionOptions
     internal float DecorationDensity { get; init; } = 1.0f;
     internal Vector2I?[]? AutoTileVariants { get; init; }
     internal string AutoTileFormatName { get; init; } = "corner16";
+
+    /// <summary>The bitmasks the auto-tile format allows; null means no constraint is known.</summary>
+    internal IReadOnlySet<int>? AllowedBitmasks { get; init; }
+
+    /// <summary>The largest multi-cell variant bounds of the format; null means no constraint is known.</summary>
+    internal (Vector2I Size, Vector2I Offset)? MultiCellBounds { get; init; }
     internal Vector2I[]? Variations { get; init; }
     internal VariationMode VariationMode { get; init; } = VariationMode.PerInstance;
     internal TileAnimation? Animation { get; init; }

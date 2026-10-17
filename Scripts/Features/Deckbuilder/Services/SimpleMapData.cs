@@ -51,22 +51,8 @@ public class SimpleMapData : IGridMap
     /// </summary>
     public Dictionary<Vector2I, int> ContextualVariants { get; set; } = new();
 
-    /// <summary>
-    /// Dual-grid terrain data mapping visual positions to base/top IDs and Corner16 bitmasks.
-    /// </summary>
-    public Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)>
-        DecorationOverlays { get; set; } = new();
-
     // ASSUMPTION (#241): readers get read-only views of the settable collections; the generator keeps writing.
-    IReadOnlyDictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> IGridMap.DecorationOverlays =>
-        DecorationOverlays;
-
     IReadOnlyList<Vector2I> IGridMap.EnemyPositions => EnemyPositions;
-
-    /// <summary>
-    /// Whether decoration overlays use half-tile dual-grid positioning.
-    /// </summary>
-    public bool UsesDualGridOverlays { get; set; } = true;
 
     public string GetBiomeAt(Vector2I pos)
     {
@@ -129,76 +115,4 @@ public class SimpleMapData : IGridMap
         return TileIds[pos.Y, pos.X];
     }
 
-    /// <summary>
-    /// Cache of terrain positions that are covered by edge tile overlays.
-    /// Used to prevent other decorations from spawning at these positions.
-    /// </summary>
-    private HashSet<Vector2I>? _edgeTileCoverage;
-
-    /// <summary>
-    /// Check if a terrain position is covered by an edge tile overlay.
-    /// With dual-grid overlays, a visual tile at (vx, vy) covers terrain cells
-    /// at its 4 corners: (vx-1, vy-1), (vx, vy-1), (vx-1, vy), (vx, vy).
-    /// </summary>
-    public bool HasEdgeTileOverlay(Vector2I terrainPos)
-    {
-        if (DecorationOverlays.Count == 0)
-            return false;
-
-        // Build cache on first access
-        if (_edgeTileCoverage == null)
-        {
-            _edgeTileCoverage = new HashSet<Vector2I>();
-
-            foreach (var (visualPos, (_, _, bitmask)) in DecorationOverlays)
-            {
-                // Only count positions with actual transitions (not 0 or 15)
-                // Note: 15 = all corners filled in Corner16 format (NE=1 + SE=2 + SW=4 + NW=8)
-                if (bitmask == 0 || bitmask == 15)
-                    continue;
-
-                // Visual tile at (vx, vy) covers terrain cells at its 4 corners
-                // TL corner: (vx-1, vy-1)
-                // TR corner: (vx, vy-1)
-                // BL corner: (vx-1, vy)
-                // BR corner: (vx, vy)
-                if (UsesDualGridOverlays)
-                {
-                    _edgeTileCoverage.Add(new Vector2I(visualPos.X - 1, visualPos.Y - 1));
-                    _edgeTileCoverage.Add(new Vector2I(visualPos.X, visualPos.Y - 1));
-                    _edgeTileCoverage.Add(new Vector2I(visualPos.X - 1, visualPos.Y));
-                    _edgeTileCoverage.Add(new Vector2I(visualPos.X, visualPos.Y));
-                }
-                else
-                {
-                    // Legacy non-dual-grid: position is terrain position
-                    _edgeTileCoverage.Add(visualPos);
-                }
-            }
-        }
-
-        return _edgeTileCoverage.Contains(terrainPos);
-    }
-
-    /// <summary>
-    /// Get all terrain positions that should block other decorations
-    /// due to edge tile overlays.
-    /// </summary>
-    public IReadOnlySet<Vector2I> GetEdgeTileCoverage()
-    {
-        // Ensure cache is built
-        if (_edgeTileCoverage == null)
-        {
-            HasEdgeTileOverlay(Vector2I.Zero); // Triggers cache build
-        }
-        return _edgeTileCoverage ?? new HashSet<Vector2I>();
-    }
-
-    /// <summary>
-    /// Clear the edge tile coverage cache (call when DecorationOverlays changes).
-    /// </summary>
-    public void InvalidateEdgeTileCache()
-    {
-        _edgeTileCoverage = null;
-    }
 }
