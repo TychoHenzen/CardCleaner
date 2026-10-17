@@ -9,7 +9,8 @@ namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 [RequireGodotRuntime]
 public class TilePoolSelectionPinTest
 {
-    private const string PinnedSequence = "b,a,d,b,d,d,b,a,d,a,c,b,a,d,c,d,d,d,b,d,b,d,a,d,b,b,c,a,d,a,c,b,b,b,a,d,b,c,b,d,";
+    private const string PinnedSequence =
+        "b,a,d,b,d,d,b,a,d,a,c,b,a,d,c,d,d,d,b,d,b,d,a,d,b,b,c,a,d,a,c,b,b,b,a,d,b,c,b,d,";
 
     [TestCase]
     [TestCategory("Unit")]

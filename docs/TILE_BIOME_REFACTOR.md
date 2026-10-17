@@ -79,9 +79,10 @@ public enum BiomeType
 // BiomeRegistry.cs - HARDCODED EXAMPLE
 private void RegisterPlains()
 {
-    var passable = new TilePool();
-    passable.Add("plains_grass", 0.40f);      // ❌ Hardcoded strings
-    passable.Add("plains_grass_tall", 0.25f); // ❌ Can't edit without rebuild
+    var passable = new TilePool.Builder()
+        .Add("plains_grass", 0.40f)      // ❌ Hardcoded strings
+        .Add("plains_grass_tall", 0.25f) // ❌ Can't edit without rebuild
+        .Build();
     // ...
 }
 ```
@@ -672,13 +673,15 @@ public void LoadFromData(Dictionary<string, BiomeJsonData> biomeData)
 {
     foreach (var (id, data) in biomeData)
     {
-        var passable = new TilePool();
+        var passableBuilder = new TilePool.Builder();
         foreach (var (tileId, weight) in data.PassableTiles)
-            passable.Add(tileId, weight);
+            passableBuilder.Add(tileId, weight);
+        var passable = passableBuilder.Build();
 
-        var blocked = new TilePool();
+        var blockedBuilder = new TilePool.Builder();
         foreach (var (tileId, weight) in data.BlockedTiles)
-            blocked.Add(tileId, weight);
+            blockedBuilder.Add(tileId, weight);
+        var blocked = blockedBuilder.Build();
 
         var definition = new BiomeDefinition(
             id,

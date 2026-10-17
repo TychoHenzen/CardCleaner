@@ -40,7 +40,8 @@ public class ImmutableDefinitionsTest
     public static void NoDefinitionHasAPublicVoidMethod()
     {
         var offenders = Definitions
-            .SelectMany(type => type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+            .SelectMany(type => type.GetMethods(
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             .Where(method => method.ReturnType == typeof(void) && !method.IsSpecialName && method.Name != "Deconstruct")
             .Select(method => $"{method.DeclaringType!.Name}.{method.Name}")
             .ToList();

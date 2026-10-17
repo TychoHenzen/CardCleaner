@@ -159,7 +159,8 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
         var blocked = new TilePool.Builder();
         blocked.Add("wall", 1.0f);
 
-        var biome = new BiomeDefinition("test_biome", new CardSignature(), CreateSweepPassable(), blocked.Build(), 0.0f);
+        var biome = new BiomeDefinition(
+            "test_biome", new CardSignature(), CreateSweepPassable(), blocked.Build(), 0.0f);
 
         // Custom adjacency rules that include both passable and impassable tiles
         var catalog = CreateCatalog(
