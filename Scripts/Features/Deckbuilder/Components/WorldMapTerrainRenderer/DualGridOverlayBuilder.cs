@@ -18,7 +18,8 @@ internal sealed class DualGridOverlayBuilder
     public DualGridOverlayBuilder(ITileRegistry registry, string defaultPassableTileId)
     {
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
-        _defaultPassableTileId = defaultPassableTileId ?? throw new ArgumentNullException(nameof(defaultPassableTileId));
+        _defaultPassableTileId = defaultPassableTileId
+            ?? throw new ArgumentNullException(nameof(defaultPassableTileId));
     }
 
     /// <summary>
