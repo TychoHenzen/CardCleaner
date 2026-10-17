@@ -5,7 +5,6 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -32,12 +31,12 @@ public class MeshTerrainGenerator
     }
 
     /// <summary>
-    /// Generates terrain using card signatures to influence biome distribution. Without cards or biomes the mesh
-    /// gets the fallback terrain.
+    /// Generates terrain using a signature sampler to influence biome distribution. Without a sampler or biomes the
+    /// mesh gets the fallback terrain.
     /// </summary>
-    public IrregularMesh GenerateWithCards(
+    public IrregularMesh GenerateWithSampler(
         int rings,
-        CardSignature[] inputCards,
+        Func<Vector2I, Vector2I, CardSignature>? signatureAt,
         int seed,
         int relaxationIterations = 15,
         bool useConstraints = true)
@@ -51,22 +50,19 @@ public class MeshTerrainGenerator
             return mesh;
         }
 
-        if (inputCards.Length == 0)
+        if (signatureAt == null)
         {
-            ILog.Error("[MeshTerrainGen] No input cards, using fallback terrain");
+            ILog.Error("[MeshTerrainGen] No signature sampler, using fallback terrain");
             _terrainWfc.ApplyFallbackTerrain(mesh);
             return mesh;
         }
 
         var bounds = mesh.Bounds;
         var effectiveSize = GetEffectiveSize(bounds);
-        var rng = RandomSources.Create((ulong)seed );
-        var gradient = new CardBasedGradient(inputCards, rng);
-        var getBiomeAt = CreateBiomeSelector(gradient, effectiveSize, biomeRegistry);
+        var getBiomeAt = CreateBiomeSelector(signatureAt, effectiveSize, biomeRegistry);
 
         ILog.Print(
-            $"[MeshTerrainGen] Generating with {inputCards.Length} cards, " +
-            $"{biomeRegistry.Count} biomes, effective size: {effectiveSize}");
+            $"[MeshTerrainGen] Generating with {biomeRegistry.Count} biomes, effective size: {effectiveSize}");
 
         return _terrainWfc.Generate(
             mesh,
@@ -96,13 +92,13 @@ public class MeshTerrainGenerator
     }
 
     private static Func<Vector2I, BiomeDefinition> CreateBiomeSelector(
-        CardBasedGradient gradient,
+        Func<Vector2I, Vector2I, CardSignature> signatureAt,
         Vector2I effectiveSize,
         BiomeRegistry biomeRegistry)
     {
         return position =>
         {
-            var signature = gradient.GetSignatureAt(position, effectiveSize);
+            var signature = signatureAt(position, effectiveSize);
             return biomeRegistry.FindClosestBySignature(signature)
                 ?? biomeRegistry.GetAllBiomes().First();
         };

@@ -14,7 +14,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 /// <summary>
 /// Generates the irregular map on the path the game runs: the mesh terrain from the seed cards
-/// (<see cref="TerrainGeneratorFactory"/> and <see cref="MeshTerrainGenerator.GenerateWithCards"/>) over the
+/// (<see cref="TerrainGeneratorFactory"/> and <see cref="MeshTerrainGenerator.GenerateWithSampler"/>) over the
 /// registered tile and biome registries, then the player start and the enemies from <see cref="MapPopulation"/>.
 /// Runs off the main thread and returns an <see cref="IMeshGeneratedMap"/>.
 /// </summary>
@@ -82,7 +82,8 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
         var seed = unchecked((int)config.Seed);
 
         var terrain = TerrainGeneratorFactory.Create(_tileRegistry, _biomeRegistry, _transitionPairs);
-        var mesh = terrain.GenerateWithCards(rings, config.MapSeeds, seed, RelaxationIterations);
+        var sampler = TerrainGeneratorFactory.CardSampler(config.MapSeeds, seed);
+        var mesh = terrain.GenerateWithSampler(rings, sampler, seed, RelaxationIterations);
         progress?.Report(0.9f);
         cancellationToken.ThrowIfCancellationRequested();
 
