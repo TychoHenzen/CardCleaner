@@ -1,18 +1,14 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
-using Godot;
-using Godot.Collections;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 
-[Tool]
-[GlobalClass]
-public partial class TilePool : Resource
+public class TilePool
 {
     private float _totalWeight;
     private bool _weightsDirty = true;
 
-    [Export] public Array<TilePoolEntry> Entries { get; set; } = new();
+    public List<TilePoolEntry> Entries { get; set; } = [];
 
     public bool IsEmpty => Entries.Count == 0;
 

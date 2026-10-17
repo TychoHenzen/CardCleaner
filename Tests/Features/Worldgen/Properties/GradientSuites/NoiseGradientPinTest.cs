@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using Godot;
@@ -35,7 +36,7 @@ public class NoiseGradientPinTest
         [0.45129442f, -0.43497905f, 0.3207733f, -0.0022786448f, 0.8272873f, -0.20280027f, 0.17466456f, -1f],
     ];
 
-    private static NoiseGradient Build(int seed) => new()
+    private static NoiseGradient Build(int seed) => new(GodotNoiseSource.Create)
     {
         BaseSignature = new CardSignature(BaseValues), NoiseScale = 0.1f, NoiseStrength = 0.3f, NoiseSeed = seed
     };

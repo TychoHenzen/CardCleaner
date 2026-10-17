@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using FsCheck;
@@ -43,7 +44,7 @@ public static class GradientArbitraries
         from scale in Gen.Choose(1, 100).Select(i => i / 100f) // 0.01 to 1.0
         from strength in Gen.Choose(1, 50).Select(i => i / 100f) // 0.01 to 0.5
         from seed in Gen.Choose(1, 100000)
-        select new NoiseGradient
+        select new NoiseGradient(GodotNoiseSource.Create)
         {
             BaseSignature = baseSig, NoiseScale = scale, NoiseStrength = strength, NoiseSeed = seed
         };

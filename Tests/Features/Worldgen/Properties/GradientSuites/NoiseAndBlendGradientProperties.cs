@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Tests.Core.PropertyTesting.Generators;
@@ -25,12 +26,12 @@ public class NoiseAndBlendGradientProperties : GradientPropertyBase
                 Arb.From(NoiseInputs),
                 args =>
                 {
-                    var gradient1 = new NoiseGradient
+                    var gradient1 = new NoiseGradient(GodotNoiseSource.Create)
                     {
                         BaseSignature = args.BaseSig, NoiseScale = 0.1f, NoiseStrength = 0.3f, NoiseSeed = args.Seed
                     };
 
-                    var gradient2 = new NoiseGradient
+                    var gradient2 = new NoiseGradient(GodotNoiseSource.Create)
                     {
                         BaseSignature = args.BaseSig, NoiseScale = 0.1f, NoiseStrength = 0.3f, NoiseSeed = args.Seed
                     };
@@ -51,7 +52,7 @@ public class NoiseAndBlendGradientProperties : GradientPropertyBase
                 Arb.From(NoiseDeviationInputs),
                 args =>
                 {
-                    var gradient = new NoiseGradient
+                    var gradient = new NoiseGradient(GodotNoiseSource.Create)
                     {
                         BaseSignature = args.BaseSig,
                         NoiseScale = 0.1f,
@@ -81,7 +82,7 @@ public class NoiseAndBlendGradientProperties : GradientPropertyBase
                 Arb.From(NoiseVariationInputs),
                 args =>
                 {
-                    var gradient = new NoiseGradient
+                    var gradient = new NoiseGradient(GodotNoiseSource.Create)
                     {
                         BaseSignature = args.BaseSig, NoiseScale = 0.2f, NoiseStrength = 0.3f, NoiseSeed = args.Seed
                     };

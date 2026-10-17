@@ -1,55 +1,29 @@
+using System;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen;
 
-[Tool]
-[GlobalClass]
-public partial class NoiseGradient : BaselineGradient
+public class NoiseGradient(Func<int, float, INoiseSource> noiseSourceFactory) : BaselineGradient
 {
-    // Default values as constants
-    private const float DefaultNoiseScale = 0.1f;
-    private const float DefaultNoiseStrength = 0.3f;
-    private const int DefaultNoiseSeed = 42;
-
     public CardSignature BaseSignature { get; set; } = new();
-    [Export] public float NoiseScale { get; set; } = DefaultNoiseScale;
-    [Export] public float NoiseStrength { get; set; } = DefaultNoiseStrength;
-    [Export] public int NoiseSeed { get; set; } = DefaultNoiseSeed;
+    public float NoiseScale { get; set; } = 0.1f;
+    public float NoiseStrength { get; set; } = 0.3f;
+    public int NoiseSeed { get; set; } = 42;
 
-    private FastNoiseLite? _noise;
-
-    public override bool _PropertyCanRevert(StringName property)
-    {
-        return property.ToString() switch
-        {
-            nameof(NoiseScale) => true,
-            nameof(NoiseStrength) => true,
-            nameof(NoiseSeed) => true,
-            _ => base._PropertyCanRevert(property)
-        };
-    }
-
-    public override Variant _PropertyGetRevert(StringName property)
-    {
-        return property.ToString() switch
-        {
-            nameof(NoiseScale) => DefaultNoiseScale,
-            nameof(NoiseStrength) => DefaultNoiseStrength,
-            nameof(NoiseSeed) => DefaultNoiseSeed,
-            _ => base._PropertyGetRevert(property)
-        };
-    }
+    private INoiseSource? _noise;
 
     public override CardSignature GetSignatureAt(Vector2I position, Vector2I mapSize)
     {
-        _noise ??= new FastNoiseLite { Seed = NoiseSeed, Frequency = NoiseScale };
+        _noise ??= noiseSourceFactory(NoiseSeed, NoiseScale);
 
         var elements = new float[8];
         for (var i = 0; i < 8; i++)
         {
             var noiseValue = _noise.GetNoise2D(position.X + i * 100, position.Y + i * 100);
-            elements[i] = Mathf.Clamp(BaseSignature[i] + noiseValue * NoiseStrength, -1f, 1f);
+            elements[i] = CoreMath.Clamp(BaseSignature[i] + noiseValue * NoiseStrength, -1f, 1f);
         }
 
         return new CardSignature(elements);
