@@ -44,7 +44,8 @@ internal sealed class WorkingMesh
             return existingId;
         }
 
-        var midpoint = (Vertices[firstVertexId] + Vertices[secondVertexId]) / 2f;
+        var midpoint =
+            (Vertices[firstVertexId] + Vertices[secondVertexId]) / 2f;
         int id = GetOrCreateVertex(midpoint);
         _midpointCache[key] = id;
         return id;
