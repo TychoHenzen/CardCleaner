@@ -132,6 +132,7 @@ public partial class BiomeStrengthGridTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void GetStrength_UsesTheGivenSampler()
     {
         var fireSample = new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f });
@@ -141,6 +142,7 @@ public partial class BiomeStrengthGridTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void GetStrength_SamplerReceivesTheMapSize()
     {
         var sizes = new List<Vector2I>();

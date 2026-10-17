@@ -119,6 +119,7 @@ public class BiomeMapGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestSamplerReceivesPositionAndMapSize()
     {
         var hotSignature = new CardSignature(new[] { 0.3f, 0.8f, 0.3f, 0.2f, 0f, -0.2f, -0.1f, 0.2f });
@@ -140,6 +141,7 @@ public class BiomeMapGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestFallbackBiomeUsesTheGivenTileIds()
     {
         var generator = new BiomeMapGenerator(new BiomeRegistry(), (_, _) => new CardSignature(),
@@ -152,6 +154,7 @@ public class BiomeMapGeneratorTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public void TestNullSamplerThrows()
     {
         AssertThrown(() => new BiomeMapGenerator(_registry, null!, new Vector2I(20, 20)))

@@ -326,9 +326,10 @@ The map generator uses a **two-phase Wave Function Collapse** approach with dual
 - `Constraints/SpatialCoherenceConstraint.cs`: Encourages contiguous tile regions
 
 Map generators and `BiomeStrengthGrid` take a signature sampler, a `Func<Vector2I, Vector2I, CardSignature>`
-(position, map size), not a gradient. Only the map builders create the gradient: `GridMapGenerator` for the grid
+(position, map size), not a gradient. The map builders create the gradient for a map: `GridMapGenerator` for the grid
 path and `TerrainGeneratorFactory.CardSampler` for the mesh path, each from one seeded rng, so the draw order and the
-seeded maps stay the same. A null sampler on the mesh path means fallback terrain.
+seeded maps stay the same. `BiomeDistributionCalculator` also builds one, per simulation run, to estimate biome
+shares. A null sampler on the mesh path means fallback terrain.
 
 **CRITICAL - WFC Soft Constraints and Entropy**:
 - **Tiles are NOT removed from possibility sets** - constraints set weights to 0 instead
