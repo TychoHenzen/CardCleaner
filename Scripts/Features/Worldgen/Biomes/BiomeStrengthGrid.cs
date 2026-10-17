@@ -105,22 +105,13 @@ public class BiomeStrengthGrid
     }
 
     /// <summary>
-    /// Calculates biome strength from signature distance.
+    /// Maps signature distance to [-1, 1]: 0 is a perfect match (+1), MaxDistance is maximally distant (-1).
     /// </summary>
-    /// <remarks>
-    /// Uses Euclidean distance in 8D signature space.
-    /// Converts distance to [-1, 1] range where:
-    /// - 0 distance → +1 strength (perfect match)
-    /// - MaxDistance → -1 strength (maximally distant)
-    /// </remarks>
     private static float CalculateBiomeStrength(CardSignature positionSignature, CardSignature biomeSignature)
     {
         var distance = positionSignature.DistanceTo(biomeSignature);
 
-        // Normalize distance to [0, 1] range
         var normalizedDistance = CoreMath.Clamp(distance / MaxDistance, 0f, 1f);
-
-        // Convert to [-1, 1] range: 0 distance → +1, max distance → -1
         return 1f - 2f * normalizedDistance;
     }
 }
