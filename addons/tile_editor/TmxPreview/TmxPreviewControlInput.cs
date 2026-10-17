@@ -136,7 +136,7 @@ public partial class TmxPreviewControl
 
         var variantIndex = GetVariantIndex(bitmask);
         return variantIndex >= 0
-            && variantIndex < _autoTileDef.AutoTileVariants.Length
+            && variantIndex < _autoTileDef.AutoTileVariants.Count
             && _autoTileDef.AutoTileVariants[variantIndex].HasValue;
     }
 

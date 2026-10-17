@@ -39,16 +39,16 @@ public abstract class GridMapGeneratorTestBase
     protected void RegisterMockBiomes()
     {
         // Create biomes that use the mock tile IDs (grass, stone, dirt, rock)
-        var passablePool = new TilePool();
+        var passablePool = new TilePool.Builder();
         passablePool.Add("grass", 1.0f);
         passablePool.Add("dirt", 1.0f);
-        var blockedPool = new TilePool();
+        var blockedPool = new TilePool.Builder();
         blockedPool.Add("stone", 1.0f);
         blockedPool.Add("rock", 1.0f);
 
         // Register a single test biome - all positions will use this
         var signature = new CardSignature();
-        _registry.Register(new BiomeDefinition("test_biome", signature, passablePool, blockedPool));
+        _registry.Register(new BiomeDefinition("test_biome", signature, passablePool.Build(), blockedPool.Build()));
     }
 
     private protected GridMapGenerationPipeline CreateGenerator(Vector2I mapSize, CardSignature? signature = null)

@@ -69,7 +69,7 @@ public class TiledTilesetLoaderTest
 
         foreach (var tile in tilesWithVariants.Take(5))
         {
-            AssertThat(tile.AutoTileVariants!.Length).IsEqual(16); // Corner4 = 16 variants
+            AssertThat(tile.AutoTileVariants!.Count).IsEqual(16); // Corner4 = 16 variants
 
             // Count how many variants are populated
             var populatedCount = tile.AutoTileVariants.Count(v => v.HasValue);
@@ -110,7 +110,7 @@ public class TiledTilesetLoaderTest
         {
             if (tile.AutoTileVariants == null) continue;
 
-            for (var i = 0; i < tile.AutoTileVariants.Length; i++)
+            for (var i = 0; i < tile.AutoTileVariants.Count; i++)
             {
                 var variant = tile.AutoTileVariants[i];
                 if (!variant.HasValue) continue;

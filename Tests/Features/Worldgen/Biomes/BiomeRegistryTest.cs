@@ -175,15 +175,15 @@ public class BiomeRegistryTest
 
     private static BiomeDefinition CreateTestBiome(string id, CardSignature? signature = null)
     {
-        var passable = new TilePool();
+        var passable = new TilePool.Builder();
         passable.Add("grass");
-        var blocked = new TilePool();
+        var blocked = new TilePool.Builder();
         blocked.Add("wall");
 
         return new BiomeDefinition(
             id,
             signature ?? new CardSignature(),
-            passable,
-            blocked);
+            passable.Build(),
+            blocked.Build());
     }
 }

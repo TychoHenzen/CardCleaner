@@ -169,13 +169,13 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
 
     private static BiomeDefinition ForcedBoundaryBiome(IWfcTileCatalog catalog)
     {
-        var passable = new TilePool();
+        var passable = new TilePool.Builder();
         foreach (var tileId in catalog.TileIds)
         {
             passable.Add(tileId);
         }
 
-        return new BiomeDefinition("forced", new CardSignature(), passable, new TilePool(), 0.0f);
+        return new BiomeDefinition("forced", new CardSignature(), passable.Build(), TilePool.Empty, 0.0f);
     }
 
     /// <summary>

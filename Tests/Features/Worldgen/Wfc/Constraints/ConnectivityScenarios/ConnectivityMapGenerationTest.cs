@@ -60,14 +60,15 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
         var generator = new WfcMapGenerator(customRules, catalog);
         generator.EnableConnectivity = true;
 
-        var passable = new TilePool();
-        passable.Add("A", 1.0f);
-        passable.Add("B", 1.0f);
+        var passableBuilder = new TilePool.Builder();
+        passableBuilder.Add("A", 1.0f);
+        passableBuilder.Add("B", 1.0f);
+        var passable = passableBuilder.Build();
 
-        var blocked = new TilePool();
+        var blocked = new TilePool.Builder();
         blocked.Add("X", 1.0f);
 
-        var biome = new BiomeDefinition("test", new CardSignature(), passable, blocked, 0.0f);
+        var biome = new BiomeDefinition("test", new CardSignature(), passable, blocked.Build(), 0.0f);
 
         for (var seed = 1; seed <= 10; seed++)
         {
@@ -141,10 +142,10 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
     /// </summary>
     private static TilePool CreateSweepPassable()
     {
-        var passable = new TilePool();
+        var passable = new TilePool.Builder();
         passable.Add("grass", 1.0f);
         passable.Add("water", 1.0f);
-        return passable;
+        return passable.Build();
     }
 
     /// <summary>
@@ -155,10 +156,11 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
     private static SweepSetup CreateSweepSetup(
         int? maxConnectivityAttempts = null)
     {
-        var blocked = new TilePool();
+        var blocked = new TilePool.Builder();
         blocked.Add("wall", 1.0f);
 
-        var biome = new BiomeDefinition("test_biome", new CardSignature(), CreateSweepPassable(), blocked, 0.0f);
+        var biome = new BiomeDefinition(
+            "test_biome", new CardSignature(), CreateSweepPassable(), blocked.Build(), 0.0f);
 
         // Custom adjacency rules that include both passable and impassable tiles
         var catalog = CreateCatalog(

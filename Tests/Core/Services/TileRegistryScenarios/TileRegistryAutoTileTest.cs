@@ -47,7 +47,7 @@ public class TileRegistryAutoTileTest : TileRegistryTestBase
         foreach (var tile in tilesWithVariants)
         {
             var expected = tile.ExpectedVariantCount;
-            var actual = tile.AutoTileVariants!.Length;
+            var actual = tile.AutoTileVariants!.Count;
 
             if (actual != expected)
                 incorrectCounts.Add($"{tile.Id}: {tile.AutoTileFormatName} expects {expected}, has {actual}");

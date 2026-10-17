@@ -16,7 +16,7 @@ internal sealed class TileDefinitionOptions
 
     /// <summary>When null, a tile is transparent exactly when it is passable.</summary>
     internal bool? IsTransparent { get; init; }
-    internal HashSet<string>? AllowedBiomes { get; init; }
+    internal IReadOnlySet<string>? AllowedBiomes { get; init; }
     internal Vector2I? Size { get; init; }
     internal float DecorationDensity { get; init; } = 1.0f;
     internal Vector2I?[]? AutoTileVariants { get; init; }

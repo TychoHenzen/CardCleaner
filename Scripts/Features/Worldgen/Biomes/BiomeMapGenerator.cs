@@ -40,19 +40,19 @@ public class BiomeMapGenerator : IBiomeProvider
         var passableTileId = metadataProvider?.GetDefaultPassableTileId();
         var solidTileId = metadataProvider?.GetDefaultSolidTileId();
 
-        var passable = new TilePool();
+        var passable = new TilePool.Builder();
         if (!string.IsNullOrEmpty(passableTileId))
             passable.Add(passableTileId);
 
-        var blocked = new TilePool();
+        var blocked = new TilePool.Builder();
         if (!string.IsNullOrEmpty(solidTileId))
             blocked.Add(solidTileId);
 
         return new BiomeDefinition(
             "plains",
             new CardSignature(),
-            passable,
-            blocked);
+            passable.Build(),
+            blocked.Build());
     }
 
     /// <summary>

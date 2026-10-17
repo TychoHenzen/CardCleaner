@@ -32,7 +32,7 @@ public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
         var generator = new WfcMapGenerator(customRules, new TileRegistryWfcCatalog(tileRegistry));
 
         // Create simple biome with A, B, C tiles
-        var passable = new TilePool();
+        var passable = new TilePool.Builder();
         passable.Add("A", 1.0f);
         passable.Add("B", 1.0f);
         passable.Add("C", 1.0f);
@@ -40,8 +40,8 @@ public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
         var biome = new BiomeDefinition(
             "plains",
             new CardSignature(),
-            passable,
-            new TilePool(),
+            passable.Build(),
+            TilePool.Empty,
             0.0f);
 
         var result = generator.Generate(biome, new Vector2I(5, 5), 12345);
@@ -68,7 +68,7 @@ public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
         var generator = new WfcMapGenerator(rules, new TileRegistryWfcCatalog(tileRegistry));
         generator.MaxRetries = 5;
 
-        var passable = new TilePool();
+        var passable = new TilePool.Builder();
         passable.Add("A", 1.0f);
         passable.Add("B", 1.0f);
         passable.Add("C", 1.0f);
@@ -76,8 +76,8 @@ public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
         var biome = new BiomeDefinition(
             "plains",
             new CardSignature(),
-            passable,
-            new TilePool(),
+            passable.Build(),
+            TilePool.Empty,
             0.0f);
 
         var result = generator.Generate(biome, new Vector2I(5, 5), 12345);

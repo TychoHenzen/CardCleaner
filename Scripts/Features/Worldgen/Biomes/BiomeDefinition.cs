@@ -4,11 +4,13 @@ using CardCleaner.Scripts.Features.Card.Models;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 
-public class BiomeDefinition
+public sealed record BiomeDefinition
 {
     // Default values as constants
     private const string DefaultId = "plains";
     private const float DefaultBlockedPercentage = 0.3f;
+
+    private float _blockedPercentage = DefaultBlockedPercentage;
 
     public BiomeDefinition() { }
 
@@ -23,7 +25,7 @@ public class BiomeDefinition
         AffinitySignature = affinitySignature;
         PassableTiles = passableTiles;
         BlockedTiles = blockedTiles;
-        BlockedPercentage = CoreMath.Clamp(blockedPercentage, 0f, 1f);
+        BlockedPercentage = blockedPercentage;
     }
 
     /// <summary>
@@ -33,31 +35,35 @@ public class BiomeDefinition
     {
         var signature = new CardSignature(data.Signature);
 
-        var passableTiles = new TilePool();
+        var passableTiles = new TilePool.Builder();
         foreach (var (tileId, weight) in data.PassableTiles)
             passableTiles.Add(tileId, weight);
 
-        var blockedTiles = new TilePool();
+        var blockedTiles = new TilePool.Builder();
         foreach (var (tileId, weight) in data.BlockedTiles)
             blockedTiles.Add(tileId, weight);
 
         return new BiomeDefinition(
             biomeId,
             signature,
-            passableTiles,
-            blockedTiles,
+            passableTiles.Build(),
+            blockedTiles.Build(),
             data.BlockedPercentage);
     }
 
-    public string Id { get; set; } = DefaultId;
+    public string Id { get; init; } = DefaultId;
 
-    public CardSignature AffinitySignature { get; set; } = new();
+    public CardSignature AffinitySignature { get; init; }
 
-    public TilePool PassableTiles { get; set; } = new();
+    public TilePool PassableTiles { get; init; } = TilePool.Empty;
 
-    public TilePool BlockedTiles { get; set; } = new();
+    public TilePool BlockedTiles { get; init; } = TilePool.Empty;
 
-    public float BlockedPercentage { get; set; } = DefaultBlockedPercentage;
+    public float BlockedPercentage
+    {
+        get => _blockedPercentage;
+        init => _blockedPercentage = CoreMath.Clamp(value, 0f, 1f);
+    }
 
     public string? SelectPassableTile(IRandom rng) => PassableTiles.SelectRandom(rng);
 

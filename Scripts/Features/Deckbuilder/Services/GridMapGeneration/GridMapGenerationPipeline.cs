@@ -162,7 +162,7 @@ internal sealed class GridMapGenerationPipeline
         {
             if (tile.VariationMode == VariationMode.PerGeneration && tile.HasVariations)
             {
-                var variantIndex = _context.Rng.RandiRange(0, tile.Variations!.Length - 1);
+                var variantIndex = _context.Rng.RandiRange(0, tile.Variations!.Count - 1);
                 variants[tile.Id] = variantIndex;
             }
         }

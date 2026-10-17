@@ -44,13 +44,14 @@ internal sealed class WorkingMesh
             return existingId;
         }
 
-        var midpoint = (Vertices[firstVertexId] + Vertices[secondVertexId]) / 2f;
+        var midpoint =
+            (Vertices[firstVertexId] + Vertices[secondVertexId]) / 2f;
         int id = GetOrCreateVertex(midpoint);
         _midpointCache[key] = id;
         return id;
     }
 
-    public int GetCentroidVertex(int[] vertexIds)
+    public int GetCentroidVertex(IReadOnlyList<int> vertexIds)
     {
         var centroid = new Vector2(
             vertexIds.Average(id => Vertices[id].X),

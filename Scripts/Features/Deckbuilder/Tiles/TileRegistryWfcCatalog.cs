@@ -27,7 +27,7 @@ public sealed class TileRegistryWfcCatalog : IWfcTileCatalog
     public bool IsAutoTile(string tileId) => _registry.GetTile(tileId)?.HasAutoTileVariants == true;
 
     public bool HasSolidFillVariant(string tileId) =>
-        _registry.GetTile(tileId)?.AutoTileVariants is { Length: > SolidFillBitmask } variants
+        _registry.GetTile(tileId)?.AutoTileVariants is { Count: > SolidFillBitmask } variants
         && variants[SolidFillBitmask].HasValue;
 
     public bool IsPassable(string tileId) => _registry.GetTile(tileId)?.IsPassable ?? false;

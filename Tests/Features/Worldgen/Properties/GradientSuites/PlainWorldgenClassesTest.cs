@@ -47,8 +47,8 @@ public class PlainWorldgenClassesTest
     [TestCategory("Unit")]
     public static void BiomeDefinitionConstructorClampsTheBlockedPercentage()
     {
-        var high = new BiomeDefinition("a", new CardSignature(), new TilePool(), new TilePool(), 1.7f);
-        var low = new BiomeDefinition("b", new CardSignature(), new TilePool(), new TilePool(), -2f);
+        var high = new BiomeDefinition("a", new CardSignature(), TilePool.Empty, TilePool.Empty, 1.7f);
+        var low = new BiomeDefinition("b", new CardSignature(), TilePool.Empty, TilePool.Empty, -2f);
         AssertFloat(high.BlockedPercentage).IsEqual(1f);
         AssertFloat(low.BlockedPercentage).IsEqual(0f);
     }

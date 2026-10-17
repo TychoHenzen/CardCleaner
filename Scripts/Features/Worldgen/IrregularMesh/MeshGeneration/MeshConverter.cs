@@ -36,7 +36,7 @@ internal static class MeshConverter
         {
             if (!face.IsQuad)
             {
-                ILog.Error($"Non-quad face found in final mesh: {face.VertexIds.Length} vertices");
+                ILog.Error($"Non-quad face found in final mesh: {face.VertexIds.Count} vertices");
                 continue;
             }
 
