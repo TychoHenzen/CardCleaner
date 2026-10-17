@@ -41,6 +41,8 @@ internal sealed class CompiledAtlasTileTranslator
                 DecorationDensity = original.DecorationDensity,
                 AutoTileVariants = TranslateAutoTileVariants(original),
                 AutoTileFormatName = original.AutoTileFormatName,
+                AllowedBitmasks = original.AllowedBitmasks,
+                MultiCellBounds = original.MultiCellBounds,
                 Variations = TranslateVariations(original),
                 VariationMode = original.VariationMode,
                 Animation = TranslateAnimation(original),

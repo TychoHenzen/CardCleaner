@@ -170,4 +170,29 @@ public class TileRegistryWfcCatalogTest
         AssertBool(catalog.AreSameTerrainType("flower1", "flower2")).IsTrue();
         AssertBool(catalog.AreSameTerrainType("meadow", "dirt")).IsFalse();
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TileWithShapeFacts_AnswersFromTheTileData()
+    {
+        var registry = new MockTileRegistry();
+        registry.RegisterTile(new TileDefinition(
+            "shaped",
+            "Shaped",
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                AllowedBitmasks = new HashSet<int> { 0, 15 },
+                MultiCellBounds = (new Vector2I(1, 3), new Vector2I(0, -2))
+            }));
+        registry.RegisterTile(new TileDefinition("plain", "Plain", TilePassability.Passable, Vector2I.Zero));
+        var catalog = new TileRegistryWfcCatalog(registry);
+
+        AssertBool(catalog.IsBitmaskAllowed("shaped", 15) == true).IsTrue();
+        AssertBool(catalog.IsBitmaskAllowed("shaped", 5) == false).IsTrue();
+        AssertBool(catalog.GetMultiCellBounds("shaped") == (new Vector2I(1, 3), new Vector2I(0, -2))).IsTrue();
+        AssertBool(catalog.IsBitmaskAllowed("plain", 5) == null).IsTrue();
+        AssertBool(catalog.GetMultiCellBounds("plain") == null).IsTrue();
+    }
 }

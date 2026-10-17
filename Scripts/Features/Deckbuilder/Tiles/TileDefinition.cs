@@ -37,6 +37,8 @@ public class TileDefinition
         DecorationDensity = options.DecorationDensity;
         AutoTileVariants = options.AutoTileVariants;
         AutoTileFormatName = options.AutoTileFormatName;
+        AllowedBitmasks = options.AllowedBitmasks;
+        MultiCellBounds = options.MultiCellBounds;
         Variations = options.Variations;
         VariationMode = options.VariationMode;
         Animation = options.Animation;
@@ -79,6 +81,18 @@ public class TileDefinition
     /// Resolved via <see cref="AutoTileFormatRegistry"/> at runtime.
     /// </summary>
     public string AutoTileFormatName { get; }
+
+    /// <summary>
+    /// The bitmasks this tile's auto-tile format allows and the largest multi-cell variant bounds,
+    /// resolved when the tile is built; null when the format is not known.
+    /// </summary>
+    public IReadOnlySet<int>? AllowedBitmasks { get; }
+
+    /// <summary>
+    /// The largest multi-cell variant bounds of this tile's auto-tile format, resolved when the tile is built;
+    /// null when the format is not known.
+    /// </summary>
+    public (Vector2I Size, Vector2I Offset)? MultiCellBounds { get; }
 
     /// <summary>
     /// Gets the auto-tile format definition from the registry.

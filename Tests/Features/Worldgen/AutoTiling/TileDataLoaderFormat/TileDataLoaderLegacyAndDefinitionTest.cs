@@ -104,6 +104,36 @@ public class TileDataLoaderLegacyAndDefinitionTest : TileDataLoaderFormatTestBas
         AssertThat(format.GetExpectedVariantCount()).IsEqual(47);
     }
 
+    /// <summary>
+    /// Test a loaded tile carries its format's allowed bitmasks as tile data.
+    /// </summary>
+    [TestCase]
+    public void TestTileDefinition_AllowedBitmasksMatchFormat()
+    {
+        var json = """
+        {
+          "tiles": [
+            {
+              "id": "blob_tile",
+              "name": "Blob Tile",
+              "passability": "passable",
+              "atlasCoords": {"x": 0, "y": 0},
+              "autoTileFormat": "blob47"
+            }
+          ]
+        }
+        """;
+        var result = LoadFromJson(json);
+
+        var tile = result.Tiles[0];
+        var format = tile.GetAutoTileFormat();
+
+        AssertThat(format).IsNotNull();
+        AssertThat(tile.AllowedBitmasks).IsNotNull();
+        AssertInt(tile.AllowedBitmasks!.Count).IsEqual(format!.AllowedBitmasks.Count);
+        AssertBool(tile.AllowedBitmasks.SetEquals(format.AllowedBitmasks)).IsTrue();
+    }
+
     // ==================== Error Handling ====================
 
     /// <summary>
