@@ -23,7 +23,7 @@ internal sealed class MeshTerrainWfcRunner
         _foregroundWfc = new MeshForegroundWfc(setup.TileRegistry, SolveForeground);
     }
 
-    internal WfcGraphSolution SolveForeground(
+    private WfcGraphSolution SolveForeground(
         int[][] neighbors,
         IReadOnlyCollection<string> initialTiles,
         ulong seed,

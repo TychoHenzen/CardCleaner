@@ -73,16 +73,12 @@ internal sealed class MeshForegroundWfc
             }
 
             var tile = tileRegistry.GetTile(tileId);
-            if (tile?.HasAutoTileVariants == true)
+            var visibleTileId = tile?.HasAutoTileVariants == true ? tileId : null;
+            vertex.ForegroundTileId = visibleTileId;
+            vertex.TileId = visibleTileId;
+            if (visibleTileId != null)
             {
-                vertex.ForegroundTileId = tileId;
-                vertex.TileId = tileId;
                 autoTileCount++;
-            }
-            else
-            {
-                vertex.ForegroundTileId = null;
-                vertex.TileId = null;
             }
 
             vertex.TerrainType = tile?.IsPassable == true ? 1 : 0;
