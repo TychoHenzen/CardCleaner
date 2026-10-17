@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Enumeration;
@@ -10,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 /// <summary>
 /// Defines a tile type with all its properties
 /// </summary>
-public class TileDefinition
+public sealed record TileDefinition
 {
     public TileDefinition(string id, string name, TilePassability passability, Vector2I atlasCoords)
         : this(id, name, passability, atlasCoords, new TileDefinitionOptions())
@@ -32,14 +33,18 @@ public class TileDefinition
         Layer = options.Layer;
         Elevation = options.Elevation;
         IsTransparent = options.IsTransparent ?? (passability == TilePassability.Passable);
-        AllowedBiomes = options.AllowedBiomes;
+        AllowedBiomes = options.AllowedBiomes is null ? null : new HashSet<string>(options.AllowedBiomes);
         Size = options.Size ?? Vector2I.One;
         DecorationDensity = options.DecorationDensity;
-        AutoTileVariants = options.AutoTileVariants;
+        AutoTileVariants = options.AutoTileVariants is null
+            ? null
+            : Array.AsReadOnly((Vector2I?[])options.AutoTileVariants.Clone());
         AutoTileFormatName = options.AutoTileFormatName;
         AllowedBitmasks = options.AllowedBitmasks;
         MultiCellBounds = options.MultiCellBounds;
-        Variations = options.Variations;
+        Variations = options.Variations is null
+            ? null
+            : Array.AsReadOnly((Vector2I[])options.Variations.Clone());
         VariationMode = options.VariationMode;
         Animation = options.Animation;
         Dominance = options.Dominance;
@@ -57,7 +62,7 @@ public class TileDefinition
     public TileLayer Layer { get; }
     public float Elevation { get; }
     public bool IsTransparent { get; }
-    public HashSet<string>? AllowedBiomes { get; }
+    public IReadOnlySet<string>? AllowedBiomes { get; }
 
     /// <summary>
     /// Size of this tile in grid cells (width, height). Default is (1, 1).
@@ -74,7 +79,7 @@ public class TileDefinition
     /// <summary>
     /// Auto-tile variant atlas coordinates indexed by bitmask; null entries use the base atlas coordinates.
     /// </summary>
-    public Vector2I?[]? AutoTileVariants { get; }
+    public IReadOnlyList<Vector2I?>? AutoTileVariants { get; }
 
     /// <summary>
     /// The name of the auto-tile format used by this tile (e.g., "corner16", "edge16", "blob47").
@@ -118,7 +123,7 @@ public class TileDefinition
     /// <summary>
     /// Visual variations for this tile; null means the base AtlasCoords is always used.
     /// </summary>
-    public Vector2I[]? Variations { get; }
+    public IReadOnlyList<Vector2I>? Variations { get; }
 
     /// <summary>
     /// How variations are selected during map generation, per instance or per generation.
@@ -162,7 +167,7 @@ public class TileDefinition
     /// <summary>
     /// Whether this tile has visual variations.
     /// </summary>
-    public bool HasVariations => Variations != null && Variations.Length > 0;
+    public bool HasVariations => Variations != null && Variations.Count > 0;
 
     /// <summary>
     /// Whether this tile has animation frames.
@@ -236,7 +241,7 @@ public class TileDefinition
 
         // All auto-tiles use Corner16 format (16 variants indexed 0-15)
         // Dual-grid only samples 4 corners, so this is the native format
-        if (bitmask < 0 || bitmask >= AutoTileVariants.Length)
+        if (bitmask < 0 || bitmask >= AutoTileVariants.Count)
             return AtlasCoords;
 
         return AutoTileVariants[bitmask] ?? AtlasCoords;

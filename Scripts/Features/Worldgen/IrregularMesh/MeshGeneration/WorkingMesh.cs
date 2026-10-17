@@ -50,7 +50,7 @@ internal sealed class WorkingMesh
         return id;
     }
 
-    public int GetCentroidVertex(int[] vertexIds)
+    public int GetCentroidVertex(IReadOnlyList<int> vertexIds)
     {
         var centroid = new Vector2(
             vertexIds.Average(id => Vertices[id].X),

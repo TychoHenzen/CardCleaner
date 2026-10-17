@@ -86,7 +86,7 @@ public class TileRegistryLookupTest : TileRegistryTestBase
             new Vector2I(0, 0),
             new TileDefinitionOptions
             {
-                AllowedBiomes = ["forest", "plains"]
+                AllowedBiomes = new HashSet<string> { "forest", "plains" }
             });
 
         AssertThat(tile.AllowedBiomes).IsNotNull();
@@ -127,7 +127,7 @@ public class TileRegistryLookupTest : TileRegistryTestBase
             new Vector2I(0, 0),
             new TileDefinitionOptions
             {
-                AllowedBiomes = ["forest"]
+                AllowedBiomes = new HashSet<string> { "forest" }
             }));
 
         _registry.RegisterTile(new TileDefinition(
@@ -137,7 +137,7 @@ public class TileRegistryLookupTest : TileRegistryTestBase
             new Vector2I(1, 0),
             new TileDefinitionOptions
             {
-                AllowedBiomes = ["desert"]
+                AllowedBiomes = new HashSet<string> { "desert" }
             }));
 
         _registry.RegisterTile(new TileDefinition(
@@ -191,7 +191,7 @@ public class TileRegistryLookupTest : TileRegistryTestBase
             new Vector2I(2, 0),
             new TileDefinitionOptions
             {
-                AllowedBiomes = ["forest"]
+                AllowedBiomes = new HashSet<string> { "forest" }
             }));
         _registry.RegisterTile(new TileDefinition(
             "desert1",
@@ -200,7 +200,7 @@ public class TileRegistryLookupTest : TileRegistryTestBase
             new Vector2I(3, 0),
             new TileDefinitionOptions
             {
-                AllowedBiomes = ["desert"]
+                AllowedBiomes = new HashSet<string> { "desert" }
             }));
 
         var forestTiles = _registry.GetTilesByBiome("forest").ToList();

@@ -9,7 +9,7 @@ namespace CardCleaner.Scripts.Core.Services;
 /// For PerGeneration mode: one variant is selected for the entire map.
 /// For PerInstance mode: variants are randomly selected per tile placement.
 /// </summary>
-public class VariationGroup
+public sealed record VariationGroup
 {
     private readonly List<VariantWeight> _variants;
     private readonly float _maxWeight;
@@ -19,6 +19,7 @@ public class VariationGroup
         BaseName = baseName;
         Mode = mode;
         _variants = variants.ToList();
+        Variants = _variants.AsReadOnly();
         _maxWeight = _variants.Count > 0 ? _variants.Max(v => v.Weight) : 1f;
     }
 
@@ -35,7 +36,7 @@ public class VariationGroup
     /// <summary>
     /// All variants in this group with their weights.
     /// </summary>
-    public IReadOnlyList<VariantWeight> Variants => _variants;
+    public IReadOnlyList<VariantWeight> Variants { get; }
 
     /// <summary>
     /// The maximum weight in this group - used as the group's density value.

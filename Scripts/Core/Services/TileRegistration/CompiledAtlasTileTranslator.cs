@@ -65,8 +65,8 @@ internal sealed class CompiledAtlasTileTranslator
         if (original.AutoTileVariants == null)
             return null;
 
-        var translatedVariants = new Vector2I?[original.AutoTileVariants.Length];
-        for (var i = 0; i < original.AutoTileVariants.Length; i++)
+        var translatedVariants = new Vector2I?[original.AutoTileVariants.Count];
+        for (var i = 0; i < original.AutoTileVariants.Count; i++)
         {
             var variant = original.AutoTileVariants[i];
             if (variant.HasValue)
@@ -81,8 +81,8 @@ internal sealed class CompiledAtlasTileTranslator
         if (original.Variations == null)
             return null;
 
-        var translatedVars = new Vector2I[original.Variations.Length];
-        for (var i = 0; i < original.Variations.Length; i++)
+        var translatedVars = new Vector2I[original.Variations.Count];
+        for (var i = 0; i < original.Variations.Count; i++)
             translatedVars[i] = TranslateCoords(original.SourceId, original.Variations[i]);
 
         return translatedVars;
