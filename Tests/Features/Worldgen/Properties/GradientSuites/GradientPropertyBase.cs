@@ -25,17 +25,17 @@ public abstract class GradientPropertyBase : PropertyTestBase
 
     #region Generators
 
-    protected static Gen<(RadialGradient Gradient, Vector2I Position, Vector2I MapSize)> RadialGradientWithPos =>
+    internal static Gen<(RadialGradient Gradient, Vector2I Position, Vector2I MapSize)> RadialGradientWithPos =>
         from gradient in GradientArbitraries.RadialGradient
         from posMap in GradientArbitraries.PositionWithMapSize
         select (gradient, posMap.Position, posMap.MapSize);
 
-    protected static Gen<(NoiseGradient Gradient, Vector2I Position, Vector2I MapSize)> NoiseGradientWithPos =>
+    internal static Gen<(NoiseGradient Gradient, Vector2I Position, Vector2I MapSize)> NoiseGradientWithPos =>
         from gradient in GradientArbitraries.NoiseGradient
         from posMap in GradientArbitraries.PositionWithMapSize
         select (gradient, posMap.Position, posMap.MapSize);
 
-    protected static Gen<RadialGradientWithSizeInput> RadialGradientWithSize =>
+    internal static Gen<RadialGradientWithSizeInput> RadialGradientWithSize =>
         from gradient in GradientArbitraries.RadialGradient
         from size in Gen.Choose(10, 30)
         select new RadialGradientWithSizeInput(gradient, size);
@@ -65,7 +65,7 @@ public abstract class GradientPropertyBase : PropertyTestBase
         from t in GradientArbitraries.BlendFactor
         select (a, b, t);
 
-    protected readonly record struct RadialGradientWithSizeInput(RadialGradient Gradient, int Size);
+    internal readonly record struct RadialGradientWithSizeInput(RadialGradient Gradient, int Size);
 
     protected readonly record struct NoiseVariationInput(CardSignature BaseSig, int Seed);
 

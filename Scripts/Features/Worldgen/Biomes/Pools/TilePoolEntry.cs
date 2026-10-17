@@ -1,12 +1,6 @@
-using System.Collections.Generic;
-using Godot;
-using Godot.Collections;
-
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 
-[Tool]
-[GlobalClass]
-public partial class TilePoolEntry : Resource
+public class TilePoolEntry
 {
     // Default values as constants
     private const string DefaultTileId = "";
@@ -20,26 +14,6 @@ public partial class TilePoolEntry : Resource
         Weight = weight;
     }
 
-    [Export] public string TileId { get; set; } = DefaultTileId;
-    [Export] public float Weight { get; set; } = DefaultWeight;
-
-    public override bool _PropertyCanRevert(StringName property)
-    {
-        return property.ToString() switch
-        {
-            nameof(TileId) => true,
-            nameof(Weight) => true,
-            _ => base._PropertyCanRevert(property)
-        };
-    }
-
-    public override Variant _PropertyGetRevert(StringName property)
-    {
-        return property.ToString() switch
-        {
-            nameof(TileId) => DefaultTileId,
-            nameof(Weight) => DefaultWeight,
-            _ => base._PropertyGetRevert(property)
-        };
-    }
+    public string TileId { get; set; } = DefaultTileId;
+    public float Weight { get; set; } = DefaultWeight;
 }

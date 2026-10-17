@@ -3,7 +3,7 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen;
 
-public abstract partial class BaselineGradient : Resource
+public abstract class BaselineGradient
 {
     public abstract CardSignature GetSignatureAt(Vector2I position, Vector2I mapSize);
 }

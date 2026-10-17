@@ -9,9 +9,7 @@ namespace CardCleaner.Scripts.Features.Worldgen;
 /// Grid-based gradient that uses CardGradientCore for signature generation.
 /// Provides the BaselineGradient interface for grid-based map systems.
 /// </summary>
-[Tool]
-[GlobalClass]
-public partial class CardBasedGradient : BaselineGradient
+public class CardBasedGradient : BaselineGradient
 {
     private CardSignature[] _inputCards = [];
     private IRandom _rng = RandomSources.Create();
