@@ -25,7 +25,7 @@ public partial class BiomeGridGenerationTest : BiomeGridIntegrationTestBase
             pos => _registry.GetBiome("fire")!,
             new Vector2I(5, 5),
             12345,
-            gradient);
+            gradient.GetSignatureAt);
 
         // Assert
         // Should succeed (BiomeGrid is created and BiomeAffinityConstraint is registered)

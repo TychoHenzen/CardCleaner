@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -35,8 +36,9 @@ public class MeshTerrainFailurePathTest
             new Dictionary<string, int>(),
             MeshMapGeneratorFixture.DefaultBiomes());
 
-        var mesh = generator.GenerateWithCards(
-            3, MeshMapGeneratorFixture.TerrainCards(), 4242, relaxationIterations: 8);
+        var cards = MeshMapGeneratorFixture.TerrainCards();
+        var mesh = generator.GenerateWithSampler(
+            3, TerrainGeneratorFactory.CardSampler(cards, 4242), 4242, relaxationIterations: 8);
 
         AssertThat(solver.CatalogSolveCalls).IsEqual(1);
         AssertBool(mesh.Vertices.All(vertex => vertex.ForegroundTileId == null)).IsTrue();
@@ -70,6 +72,29 @@ public class MeshTerrainFailurePathTest
         AssertBool(generated).IsFalse();
         AssertThat(solver.CatalogSolveCalls).IsEqual(0);
         AssertBool(mesh.Vertices.All(vertex => vertex.ForegroundTileId == null)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void NullSamplerUsesFallbackTerrainAndNeverCallsTheSolver()
+    {
+        var registry = new TileRegistry();
+        var solver = new FailingSolver(
+            new WfcTerrainSolver(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
+            AutoTileId(registry));
+        var generator = new IrregularMeshNs.MeshTerrainGenerator(
+            new MeshTerrainWfcSetup(solver, registry),
+            new Dictionary<string, int>(),
+            MeshMapGeneratorFixture.DefaultBiomes());
+
+        var mesh = generator.GenerateWithSampler(3, null, 4242, relaxationIterations: 8);
+
+        AssertThat(solver.CatalogSolveCalls).IsEqual(0);
+        AssertBool(mesh.Vertices.All(vertex => vertex.ForegroundTileId == null)).IsTrue();
+        // The fallback writes one background id to every quad, so the quads share exactly one non-empty id.
+        var backgroundIds = mesh.Quads.Select(quad => quad.BackgroundTileId).Distinct().ToList();
+        AssertThat(backgroundIds.Count).IsEqual(1);
+        AssertBool(!string.IsNullOrEmpty(backgroundIds[0])).IsTrue();
     }
 
     private static IReadOnlyList<(string tileA, string tileB)> TransitionPairs() =>

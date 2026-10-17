@@ -71,7 +71,7 @@ public partial class BiomeAffinityConstraintTest
     {
         // Arrange: Create gradient that returns fire-like signature (high strength for fire biome)
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
-        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
+        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient.GetSignatureAt, _registry);
         var constraint = new BiomeAffinityConstraint(strengthGrid, _registry, _tileCatalog);
 
         var context = new WfcConstraintContext
@@ -93,7 +93,7 @@ public partial class BiomeAffinityConstraintTest
     {
         // Arrange: Create gradient that returns water-like signature (negative strength for fire biome)
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, -1f, 0f, 0f, 0f, 0f, 0f, 0f }));
-        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
+        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient.GetSignatureAt, _registry);
         var constraint = new BiomeAffinityConstraint(strengthGrid, _registry, _tileCatalog);
 
         var context = new WfcConstraintContext
@@ -115,7 +115,7 @@ public partial class BiomeAffinityConstraintTest
     {
         // Arrange: Create gradient that returns neutral signature
         var gradient = new FixedGradient(new CardSignature()); // All zeros
-        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
+        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient.GetSignatureAt, _registry);
         var constraint = new BiomeAffinityConstraint(strengthGrid, _registry, _tileCatalog);
 
         var context = new WfcConstraintContext
@@ -137,7 +137,7 @@ public partial class BiomeAffinityConstraintTest
     {
         // Arrange
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
-        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
+        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient.GetSignatureAt, _registry);
         var constraint = new BiomeAffinityConstraint(strengthGrid, _registry, _tileCatalog);
 
         var context = new WfcConstraintContext
@@ -159,7 +159,7 @@ public partial class BiomeAffinityConstraintTest
     {
         // Arrange: Create extremely negative conditions
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, -1f, 0f, 0f, 0f, 0f, 0f, 0f }));
-        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
+        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient.GetSignatureAt, _registry);
         var constraint = new BiomeAffinityConstraint(strengthGrid, _registry, _tileCatalog)
         {
             BoostFactor = 2.0f, // Higher boost factor to test minimum clamp
@@ -185,7 +185,7 @@ public partial class BiomeAffinityConstraintTest
     {
         // Arrange
         var gradient = new FixedGradient(new CardSignature());
-        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient, _registry);
+        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient.GetSignatureAt, _registry);
 
         // Act
         var constraint = new BiomeAffinityConstraint(strengthGrid, _registry, _tileCatalog);

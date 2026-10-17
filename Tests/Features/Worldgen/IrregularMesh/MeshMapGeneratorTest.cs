@@ -48,8 +48,10 @@ public class MeshMapGeneratorTest
     {
         var registry = new TileRegistry();
         var biomes = MeshMapGeneratorFixture.DefaultBiomes();
+        var cards = MeshMapGeneratorFixture.TerrainCards();
         var expected = TerrainGeneratorFactory.Create(registry, biomes, CompiledTransitionPairs.Load())
-            .GenerateWithCards(SmallRings, MeshMapGeneratorFixture.TerrainCards(), Seed, relaxationIterations: 8);
+            .GenerateWithSampler(
+                SmallRings, TerrainGeneratorFactory.CardSampler(cards, Seed), Seed, relaxationIterations: 8);
 
         var generator = new IrregularMeshNs.MeshMapGenerator(
             registry, biomes, CompiledTransitionPairs.Load(), SmallRings);

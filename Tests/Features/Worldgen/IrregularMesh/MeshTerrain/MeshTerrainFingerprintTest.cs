@@ -27,8 +27,9 @@ public class MeshTerrainFingerprintTest
     {
         var generator = TerrainGeneratorFactory.Create(
             new TileRegistry(), MeshMapGeneratorFixture.DefaultBiomes(), CompiledTransitionPairs.Load());
-        var mesh = generator.GenerateWithCards(
-            3, MeshMapGeneratorFixture.TerrainCards(), 4242, relaxationIterations: 8);
+        var cards = MeshMapGeneratorFixture.TerrainCards();
+        var mesh = generator.GenerateWithSampler(
+            3, TerrainGeneratorFactory.CardSampler(cards, 4242), 4242, relaxationIterations: 8);
 
         var backgroundTiles = mesh.Quads
             .Select(quad => quad.BackgroundTileId)

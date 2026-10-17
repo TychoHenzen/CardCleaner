@@ -53,7 +53,7 @@ public class DualGridOverlayBuilderTest
         biomeRegistry.RegisterDefaultBiomes();
         var rng = RandomSources.Create(4242);
         var gradient = new CardBasedGradient(MapCards(), rng);
-        var biomeProvider = new BiomeMapGenerator(biomeRegistry, gradient, GridSize);
+        var biomeProvider = new BiomeMapGenerator(biomeRegistry, gradient.GetSignatureAt, GridSize);
         var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),

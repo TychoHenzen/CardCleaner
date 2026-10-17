@@ -1,7 +1,11 @@
+using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
+using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 
@@ -20,6 +24,21 @@ internal static class TerrainGeneratorFactory
         var setup = MeshTerrainWfcSetup.ForRegistry(transitionPairs.Pairs, tileRegistry);
         var tileToTerrainType = AssignTerrainTypes(setup.Solver.RuleTileIds, tileRegistry);
         return new MeshTerrainGenerator(setup, tileToTerrainType, biomeRegistry);
+    }
+
+    /// <summary>
+    /// The signature sampler a map's seed cards define: a gradient over the cards, seeded from the map seed. Returns
+    /// null for no cards, which makes the generator use its fallback terrain.
+    /// </summary>
+    internal static Func<Vector2I, Vector2I, CardSignature>? CardSampler(CardSignature[] inputCards, int seed)
+    {
+        ArgumentNullException.ThrowIfNull(inputCards);
+        if (inputCards.Length == 0)
+            return null;
+
+        // The generator used to seed its own stream with exactly this cast; keep it so large seeds stay the same.
+        var rng = RandomSources.Create((ulong)seed);
+        return new CardBasedGradient(inputCards, rng).GetSignatureAt;
     }
 
     /// <summary>

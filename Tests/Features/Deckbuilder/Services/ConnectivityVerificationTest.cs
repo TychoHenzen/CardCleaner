@@ -46,7 +46,7 @@ public class ConnectivityVerificationTest
     private GridMapGenerationPipeline CreateGeneratorWithWfcConnectivity(Vector2I mapSize, IRandom rng)
     {
         var gradient = new CardBasedGradient([new CardSignature()], rng);
-        var biomeProvider = new BiomeMapGenerator(_registry, gradient, mapSize);
+        var biomeProvider = new BiomeMapGenerator(_registry, gradient.GetSignatureAt, mapSize);
 
         // Create WfcMapGenerator with connectivity enabled
         var wfcGenerator = CreateWfcGenerator();

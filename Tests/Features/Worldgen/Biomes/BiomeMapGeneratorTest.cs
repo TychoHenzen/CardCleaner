@@ -1,3 +1,4 @@
+using System;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -29,7 +30,7 @@ public class BiomeMapGeneratorTest
     {
         var gradient = new CardBasedGradient(new[] { new CardSignature() }, _rng);
         var mapSize = new Vector2I(20, 20);
-        var generator = new BiomeMapGenerator(_registry, gradient, mapSize);
+        var generator = new BiomeMapGenerator(_registry, gradient.GetSignatureAt, mapSize);
 
         var biome = generator.GetBiomeAt(new Vector2I(10, 10));
 
@@ -42,7 +43,7 @@ public class BiomeMapGeneratorTest
         var inputSignature = new CardSignature(new[] { 0.5f, 0.5f, 0f, 0f, 0f, 0f, 0f, 0f });
         var gradient = new CardBasedGradient(new[] { inputSignature }, _rng);
         var mapSize = new Vector2I(20, 20);
-        var generator = new BiomeMapGenerator(_registry, gradient, mapSize);
+        var generator = new BiomeMapGenerator(_registry, gradient.GetSignatureAt, mapSize);
 
         var signature = generator.GetSignatureAt(new Vector2I(10, 10));
 
@@ -55,7 +56,7 @@ public class BiomeMapGeneratorTest
         var hotSignature = new CardSignature(new[] { 0.3f, 0.8f, 0.3f, 0.2f, 0f, -0.2f, -0.1f, 0.2f });
         var gradient = new ConstantSignatureGradient(hotSignature);
         var mapSize = new Vector2I(20, 20);
-        var generator = new BiomeMapGenerator(_registry, gradient, mapSize);
+        var generator = new BiomeMapGenerator(_registry, gradient.GetSignatureAt, mapSize);
 
         var biome = generator.GetBiomeAt(new Vector2I(10, 10));
 
@@ -68,7 +69,7 @@ public class BiomeMapGeneratorTest
         var coldSignature = new CardSignature(new[] { 0.1f, -0.8f, 0.4f, 0.3f, 0f, 0.1f, 0f, -0.1f });
         var gradient = new ConstantSignatureGradient(coldSignature);
         var mapSize = new Vector2I(20, 20);
-        var generator = new BiomeMapGenerator(_registry, gradient, mapSize);
+        var generator = new BiomeMapGenerator(_registry, gradient.GetSignatureAt, mapSize);
 
         var biome = generator.GetBiomeAt(new Vector2I(10, 10));
 
@@ -81,7 +82,7 @@ public class BiomeMapGeneratorTest
         var forestSignature = new CardSignature(new[] { 0f, -0.4f, -0.2f, -0.2f, 0f, 0.2f, 0.3f, 0f });
         var gradient = new ConstantSignatureGradient(forestSignature);
         var mapSize = new Vector2I(20, 20);
-        var generator = new BiomeMapGenerator(_registry, gradient, mapSize);
+        var generator = new BiomeMapGenerator(_registry, gradient.GetSignatureAt, mapSize);
 
         var biome = generator.GetBiomeAt(new Vector2I(10, 10));
 
@@ -95,7 +96,7 @@ public class BiomeMapGeneratorTest
         var signature2 = new CardSignature(new[] { 0f, 0.6f, 0f, 0f, 0f, 0f, 0f, 0f });
         var gradient = new TwoZoneGradient(signature1, signature2);
         var mapSize = new Vector2I(20, 20);
-        var generator = new BiomeMapGenerator(_registry, gradient, mapSize);
+        var generator = new BiomeMapGenerator(_registry, gradient.GetSignatureAt, mapSize);
 
         var biomeLeft = generator.GetBiomeAt(new Vector2I(0, 10));
         var biomeRight = generator.GetBiomeAt(new Vector2I(19, 10));
@@ -109,11 +110,54 @@ public class BiomeMapGeneratorTest
         var emptyRegistry = new BiomeRegistry();
         var gradient = new CardBasedGradient(new[] { new CardSignature() }, _rng);
         var mapSize = new Vector2I(20, 20);
-        var generator = new BiomeMapGenerator(emptyRegistry, gradient, mapSize);
+        var generator = new BiomeMapGenerator(emptyRegistry, gradient.GetSignatureAt, mapSize);
 
         var biome = generator.GetBiomeAt(new Vector2I(10, 10));
 
         AssertThat(biome).IsNotNull();
         AssertThat(biome.Id).IsEqual("plains");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TestSamplerReceivesPositionAndMapSize()
+    {
+        var hotSignature = new CardSignature(new[] { 0.3f, 0.8f, 0.3f, 0.2f, 0f, -0.2f, -0.1f, 0.2f });
+        var recordedPosition = new Vector2I(-1, -1);
+        var recordedSize = new Vector2I(-1, -1);
+        var mapSize = new Vector2I(20, 20);
+        var generator = new BiomeMapGenerator(_registry, (position, size) =>
+        {
+            recordedPosition = position;
+            recordedSize = size;
+            return hotSignature;
+        }, mapSize);
+
+        var biome = generator.GetBiomeAt(new Vector2I(3, 4));
+
+        AssertBool(recordedPosition == new Vector2I(3, 4)).IsTrue();
+        AssertBool(recordedSize == new Vector2I(20, 20)).IsTrue();
+        AssertThat(biome.Id).IsEqual("desert");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TestFallbackBiomeUsesTheGivenTileIds()
+    {
+        var generator = new BiomeMapGenerator(new BiomeRegistry(), (_, _) => new CardSignature(),
+            new Vector2I(20, 20), "grass_tile", "rock_tile");
+
+        var biome = generator.GetBiomeAt(new Vector2I(1, 1));
+
+        AssertThat(biome.Id).IsEqual("plains");
+        AssertThat(biome.SelectPassableTile(_rng)).IsEqual("grass_tile");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TestNullSamplerThrows()
+    {
+        AssertThrown(() => new BiomeMapGenerator(_registry, null!, new Vector2I(20, 20)))
+            .IsInstanceOf<ArgumentNullException>();
     }
 }

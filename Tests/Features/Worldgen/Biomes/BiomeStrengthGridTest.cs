@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
@@ -39,7 +40,7 @@ public partial class BiomeStrengthGridTest
         // Arrange: Gradient returns a signature close to fire biome at (0,0)
         _gradient.SignatureToReturn = new CardSignature(new[] { 0f, 0.8f, 0f, 0f, 0f, 0f, 0f, 0f });
 
-        var grid = new BiomeStrengthGrid(new Vector2I(10, 10), _gradient, _registry);
+        var grid = new BiomeStrengthGrid(new Vector2I(10, 10), _gradient.GetSignatureAt, _registry);
 
         // Act
         var strength = grid.GetStrength(new Vector2I(0, 0), "fire");
@@ -55,7 +56,7 @@ public partial class BiomeStrengthGridTest
     {
         // Arrange
         _gradient.SignatureToReturn = new CardSignature();
-        var grid = new BiomeStrengthGrid(new Vector2I(10, 10), _gradient, _registry);
+        var grid = new BiomeStrengthGrid(new Vector2I(10, 10), _gradient.GetSignatureAt, _registry);
 
         // Act
         var strength = grid.GetStrength(new Vector2I(5, 5), "nonexistent_biome");
@@ -69,7 +70,7 @@ public partial class BiomeStrengthGridTest
     {
         // Arrange
         _gradient.SignatureToReturn = new CardSignature();
-        var grid = new BiomeStrengthGrid(new Vector2I(10, 10), _gradient, _registry);
+        var grid = new BiomeStrengthGrid(new Vector2I(10, 10), _gradient.GetSignatureAt, _registry);
 
         // Act & Assert
         AssertFloat(grid.GetStrength(new Vector2I(-1, 0), "fire")).IsEqual(0f);
@@ -93,7 +94,7 @@ public partial class BiomeStrengthGridTest
 
         // Act
         var stopwatch = Stopwatch.StartNew();
-        var grid = new BiomeStrengthGrid(new Vector2I(75, 75), _gradient, largeRegistry);
+        var grid = new BiomeStrengthGrid(new Vector2I(75, 75), _gradient.GetSignatureAt, largeRegistry);
         stopwatch.Stop();
 
         // Assert
@@ -107,7 +108,7 @@ public partial class BiomeStrengthGridTest
     {
         // Arrange: Gradient returns exactly the fire biome's signature
         _gradient.SignatureToReturn = new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f });
-        var grid = new BiomeStrengthGrid(new Vector2I(10, 10), _gradient, _registry);
+        var grid = new BiomeStrengthGrid(new Vector2I(10, 10), _gradient.GetSignatureAt, _registry);
 
         // Act
         var strength = grid.GetStrength(new Vector2I(0, 0), "fire");
@@ -121,13 +122,40 @@ public partial class BiomeStrengthGridTest
     {
         // Arrange: Gradient returns opposite of fire biome (water-like)
         _gradient.SignatureToReturn = new CardSignature(new[] { 0f, -1f, 0f, 0f, 0f, 0f, 0f, 0f });
-        var grid = new BiomeStrengthGrid(new Vector2I(10, 10), _gradient, _registry);
+        var grid = new BiomeStrengthGrid(new Vector2I(10, 10), _gradient.GetSignatureAt, _registry);
 
         // Act
         var strength = grid.GetStrength(new Vector2I(0, 0), "fire");
 
         // Assert: Opposite signature should give negative strength
         AssertFloat(strength).IsLess(0f);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void GetStrength_UsesTheGivenSampler()
+    {
+        var fireSample = new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f });
+        var grid = new BiomeStrengthGrid(new Vector2I(4, 4), (_, _) => fireSample, _registry);
+
+        AssertFloat(grid.GetStrength(new Vector2I(2, 2), "fire")).IsEqualApprox(1f, 0.0001f);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void GetStrength_SamplerReceivesTheMapSize()
+    {
+        var sizes = new List<Vector2I>();
+        var grid = new BiomeStrengthGrid(new Vector2I(4, 3), (_, size) =>
+        {
+            sizes.Add(size);
+            return new CardSignature();
+        }, _registry);
+
+        grid.GetStrength(new Vector2I(0, 0), "fire");
+
+        AssertBool(sizes.Count > 0).IsTrue();
+        AssertBool(sizes.TrueForAll(size => size == new Vector2I(4, 3))).IsTrue();
     }
 
     /// <summary>

@@ -28,7 +28,7 @@ public partial class BiomeGridTileAffinityTest : BiomeGridIntegrationTestBase
             pos => _registry.GetBiome("fire")!,
             new Vector2I(8, 8),
             42,
-            fireMatchingGradient);
+            fireMatchingGradient.GetSignatureAt);
 
         // Assert: Map should generate successfully
         AssertBool(result.Success).IsTrue();
@@ -77,7 +77,7 @@ public partial class BiomeGridTileAffinityTest : BiomeGridIntegrationTestBase
             pos => _registry.GetBiome("fire")!,
             new Vector2I(8, 8),
             12345,
-            gradient);
+            gradient.GetSignatureAt);
 
         // Assert: Should succeed - neutral_tile gets modifier 1.0 (not penalized)
         AssertBool(result.Success).IsTrue();

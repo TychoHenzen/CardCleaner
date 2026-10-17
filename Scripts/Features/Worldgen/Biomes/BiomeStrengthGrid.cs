@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Numerics;
@@ -33,9 +34,12 @@ public class BiomeStrengthGrid
     /// Creates a BiomeStrengthGrid by pre-computing strengths for all positions.
     /// </summary>
     /// <param name="mapSize">Size of the map in tiles</param>
-    /// <param name="gradient">Gradient providing signatures at each position</param>
+    /// <param name="signatureAt">Gives the signature at each position</param>
     /// <param name="registry">Registry of biomes to compute strengths for</param>
-    public BiomeStrengthGrid(Vector2I mapSize, BaselineGradient gradient, BiomeRegistry registry)
+    public BiomeStrengthGrid(
+        Vector2I mapSize,
+        Func<Vector2I, Vector2I, CardSignature> signatureAt,
+        BiomeRegistry registry)
     {
         _width = mapSize.X;
         _height = mapSize.Y;
@@ -48,7 +52,7 @@ public class BiomeStrengthGrid
         }
 
         _strengths = new float[_height, _width, biomes.Count];
-        ComputeStrengths(gradient, biomes, mapSize);
+        ComputeStrengths(signatureAt, biomes, mapSize);
     }
 
     /// <summary>
@@ -78,14 +82,17 @@ public class BiomeStrengthGrid
     /// </summary>
     public Vector2I Size => new(_width, _height);
 
-    private void ComputeStrengths(BaselineGradient gradient, List<BiomeDefinition> biomes, Vector2I mapSize)
+    private void ComputeStrengths(
+        Func<Vector2I, Vector2I, CardSignature> signatureAt,
+        List<BiomeDefinition> biomes,
+        Vector2I mapSize)
     {
         for (var y = 0; y < _height; y++)
         {
             for (var x = 0; x < _width; x++)
             {
                 var pos = new Vector2I(x, y);
-                var signature = gradient.GetSignatureAt(pos, mapSize);
+                var signature = signatureAt(pos, mapSize);
 
                 for (var b = 0; b < biomes.Count; b++)
                 {
@@ -98,22 +105,13 @@ public class BiomeStrengthGrid
     }
 
     /// <summary>
-    /// Calculates biome strength from signature distance.
+    /// Maps signature distance to [-1, 1]: 0 is a perfect match (+1), MaxDistance is maximally distant (-1).
     /// </summary>
-    /// <remarks>
-    /// Uses Euclidean distance in 8D signature space.
-    /// Converts distance to [-1, 1] range where:
-    /// - 0 distance → +1 strength (perfect match)
-    /// - MaxDistance → -1 strength (maximally distant)
-    /// </remarks>
     private static float CalculateBiomeStrength(CardSignature positionSignature, CardSignature biomeSignature)
     {
         var distance = positionSignature.DistanceTo(biomeSignature);
 
-        // Normalize distance to [0, 1] range
         var normalizedDistance = CoreMath.Clamp(distance / MaxDistance, 0f, 1f);
-
-        // Convert to [-1, 1] range: 0 distance → +1, max distance → -1
         return 1f - 2f * normalizedDistance;
     }
 }
