@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 
@@ -12,12 +11,14 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 /// </summary>
 internal static class TerrainGeneratorFactory
 {
-    internal static MeshTerrainGenerator Create(ITileRegistry tileRegistry, BiomeRegistry biomeRegistry)
+    internal static MeshTerrainGenerator Create(
+        ITileRegistry tileRegistry,
+        BiomeRegistry biomeRegistry,
+        TransitionPairs transitionPairs)
     {
         // The solver and the mesh code share the registry: it drives the background and foreground solves and
         // decides passability in the terrain-type map.
-        var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
-        var setup = MeshTerrainWfcSetup.ForRegistry(transitionPairs, tileRegistry);
+        var setup = MeshTerrainWfcSetup.ForRegistry(transitionPairs.Pairs, tileRegistry);
         var tileToTerrainType = AssignTerrainTypes(setup.Solver.RuleTileIds, tileRegistry);
         return new MeshTerrainGenerator(setup, tileToTerrainType, biomeRegistry);
     }

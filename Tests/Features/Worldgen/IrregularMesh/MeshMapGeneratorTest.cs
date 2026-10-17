@@ -1,3 +1,4 @@
+using CardCleaner.Tests.TestUtilities;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,10 +48,11 @@ public class MeshMapGeneratorTest
     {
         var registry = new TileRegistry();
         var biomes = MeshMapGeneratorFixture.DefaultBiomes();
-        var expected = TerrainGeneratorFactory.Create(registry, biomes)
+        var expected = TerrainGeneratorFactory.Create(registry, biomes, CompiledTransitionPairs.Load())
             .GenerateWithCards(SmallRings, MeshMapGeneratorFixture.TerrainCards(), Seed, relaxationIterations: 8);
 
-        var generator = new IrregularMeshNs.MeshMapGenerator(registry, biomes, SmallRings);
+        var generator = new IrregularMeshNs.MeshMapGenerator(
+            registry, biomes, CompiledTransitionPairs.Load(), SmallRings);
         var generated = (IrregularMeshNs.IMeshGeneratedMap)await generator.GenerateAsync(Config());
 
         var expectedTerrain = MeshMapGeneratorFixture.TerrainOf(expected);

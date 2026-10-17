@@ -5,8 +5,10 @@ using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Player.Services;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
@@ -126,8 +128,11 @@ public partial class CompositionRoot : Node
         biomeRegistry.RegisterDefaultBiomes();
         // ASSUMPTION: the issues ask for [Service], but AutoServiceProvider only discovers Nodes in the current scene;
         // the generators are plain classes, so the composition root registers them.
-        container.RegisterSingleton<IGridMapGenerator>(new GridMapGenerator(tileRegistry, tileRegistry, biomeRegistry));
-        container.RegisterSingleton<IMeshMapGenerator>(new MeshMapGenerator(tileRegistry, biomeRegistry));
+        var transitionPairs = new TransitionPairs(new CompiledTransitionResolver().GetAllTransitionPairs());
+        container.RegisterSingleton<IGridMapGenerator>(
+            new GridMapGenerator(tileRegistry, tileRegistry, biomeRegistry, transitionPairs));
+        container.RegisterSingleton<IMeshMapGenerator>(
+            new MeshMapGenerator(tileRegistry, biomeRegistry, transitionPairs));
 
         container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
         container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();

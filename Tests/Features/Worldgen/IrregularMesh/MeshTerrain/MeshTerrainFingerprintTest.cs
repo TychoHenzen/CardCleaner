@@ -1,3 +1,4 @@
+using CardCleaner.Tests.TestUtilities;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
@@ -24,7 +25,8 @@ public class MeshTerrainFingerprintTest
     [TestCategory("Unit")]
     public static void FactoryPathWithCardsMatchesMasterFingerprint()
     {
-        var generator = TerrainGeneratorFactory.Create(new TileRegistry(), MeshMapGeneratorFixture.DefaultBiomes());
+        var generator = TerrainGeneratorFactory.Create(
+            new TileRegistry(), MeshMapGeneratorFixture.DefaultBiomes(), CompiledTransitionPairs.Load());
         var mesh = generator.GenerateWithCards(
             3, MeshMapGeneratorFixture.TerrainCards(), 4242, relaxationIterations: 8);
 
