@@ -4,7 +4,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 
-public class BiomeRegistry
+public class BiomeRegistry : IBiomeCatalog
 {
     private readonly Dictionary<string, BiomeDefinition> _biomes = new();
 

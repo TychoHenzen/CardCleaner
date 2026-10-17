@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
@@ -53,6 +54,7 @@ internal sealed class WorldMapRuntime : ISessionView
         ShowStatus("Waiting for map data...");
 
         _services.Get<ITileRegistry>(_components.Initialize);
+        _services.Get<IBiomeCatalog>(_biomePreview.UseCatalog);
         _services.Get<IGameSessionService>(_link.Connect);
     }
 

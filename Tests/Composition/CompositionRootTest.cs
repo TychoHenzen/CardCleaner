@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Composition;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Core.DependencyInjection;
 using CardCleaner.Tests.Mocking;
@@ -140,6 +141,26 @@ public class CompositionRootTest
             var live = TestServices.Autoload.GetChildren().Where(node => !node.IsQueuedForDeletion()).ToList();
             Assertions.AssertInt(live.OfType<IInputService>().Count()).IsEqual(1);
             Assertions.AssertInt(live.OfType<IPlayerResetService>().Count()).IsEqual(1);
+        }
+        finally
+        {
+            QueueFreeAll(created);
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TestBiomeCatalogIsRegisteredOnceAsTheRootsRegistry()
+    {
+        TestServices.Reinitialize();
+        var created = ReinitializedNodes();
+        try
+        {
+            var first = TestServices.Resolver.Get<IBiomeCatalog>();
+            var second = TestServices.Resolver.Get<IBiomeCatalog>();
+            Assertions.AssertThat(first).IsSame(second);
+            Assertions.AssertThat(first).IsInstanceOf<BiomeRegistry>();
+            Assertions.AssertInt(first.Count).IsGreater(0);
         }
         finally
         {
