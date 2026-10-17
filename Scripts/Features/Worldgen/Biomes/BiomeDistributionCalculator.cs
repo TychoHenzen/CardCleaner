@@ -15,24 +15,18 @@ public static class BiomeDistributionCalculator
     private const int SampleGridSize = 16;
     private const int SimulationCount = 10;
 
-    /// <summary>
-    /// Estimates biome distribution for the given card signatures.
-    /// Runs multiple simulations and averages results for stability.
-    /// </summary>
-    /// <param name="cards">The input card signatures (empty returns uniform distribution)</param>
-    /// <param name="registry">The biome registry with registered biomes</param>
-    /// <returns>Dictionary mapping each biome ID to its estimated percentage (0-1)</returns>
-    public static Dictionary<string, float> Calculate(CardSignature[] cards, BiomeRegistry registry)
+    /// <summary>Estimates each biome's share of the map for the card signatures, averaged over runs.</summary>
+    public static Dictionary<string, float> Calculate(CardSignature[] cards, IBiomeCatalog catalog)
     {
         var accumulatedCounts = new Dictionary<string, float>();
 
         // Initialize counts for all biome IDs
-        foreach (var biome in registry.GetAllBiomes())
+        foreach (var biome in catalog.GetAllBiomes())
         {
             accumulatedCounts[biome.Id] = 0f;
         }
 
-        if (cards.Length == 0 || registry.Count == 0)
+        if (cards.Length == 0 || catalog.Count == 0)
         {
             // No cards or no biomes - return uniform distribution
             return ToUniformDistribution(accumulatedCounts);
@@ -41,7 +35,7 @@ public static class BiomeDistributionCalculator
         // Run multiple simulations and accumulate results
         for (var sim = 0; sim < SimulationCount; sim++)
         {
-            var simCounts = RunSingleSimulation(cards, registry);
+            var simCounts = RunSingleSimulation(cards, catalog);
 
             foreach (var (biomeId, count) in simCounts)
             {
@@ -57,12 +51,12 @@ public static class BiomeDistributionCalculator
     /// <summary>
     /// Runs a single simulation with a fresh random seed.
     /// </summary>
-    private static Dictionary<string, int> RunSingleSimulation(CardSignature[] cards, BiomeRegistry registry)
+    private static Dictionary<string, int> RunSingleSimulation(CardSignature[] cards, IBiomeCatalog catalog)
     {
         var counts = new Dictionary<string, int>();
 
         // Initialize counts for all biome IDs
-        foreach (var biome in registry.GetAllBiomes())
+        foreach (var biome in catalog.GetAllBiomes())
         {
             counts[biome.Id] = 0;
         }
@@ -80,7 +74,7 @@ public static class BiomeDistributionCalculator
             {
                 var position = new Vector2I(x, y);
                 var signature = gradient.GetSignatureAt(position, mapSize);
-                var biome = registry.FindClosestBySignature(signature);
+                var biome = catalog.FindClosestBySignature(signature);
 
                 if (biome != null)
                 {

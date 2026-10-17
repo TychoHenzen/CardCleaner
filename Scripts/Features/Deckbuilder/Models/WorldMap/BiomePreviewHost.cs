@@ -11,8 +11,10 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
 /// </summary>
 internal sealed class BiomePreviewHost
 {
-    private BiomeRegistry? _biomeRegistry;
+    private IBiomeCatalog? _catalog;
     private BiomeDistributionPreview? _biomePreview;
+
+    internal IBiomeCatalog? Catalog => _catalog;
 
     internal void Setup(SubViewport? viewport)
     {
@@ -20,12 +22,11 @@ internal sealed class BiomePreviewHost
         if (viewport == null)
             return;
 
-        _biomeRegistry = new BiomeRegistry();
-        _biomeRegistry.RegisterDefaultBiomes();
-
         _biomePreview = CreateFullRectPreview();
         viewport.AddChild(_biomePreview);
     }
+
+    internal void UseCatalog(IBiomeCatalog catalog) => _catalog = catalog;
 
     private static BiomeDistributionPreview CreateFullRectPreview()
     {
@@ -40,7 +41,7 @@ internal sealed class BiomePreviewHost
 
     internal void Update(CardSignature[] cards)
     {
-        if (_biomePreview == null || _biomeRegistry == null) return;
+        if (_biomePreview == null || _catalog == null) return;
 
         if (cards.Length == 0)
         {
@@ -48,7 +49,7 @@ internal sealed class BiomePreviewHost
             return;
         }
 
-        var distribution = BiomeDistributionCalculator.Calculate(cards, _biomeRegistry);
+        var distribution = BiomeDistributionCalculator.Calculate(cards, _catalog);
         _biomePreview.UpdateDistribution(distribution);
     }
 
