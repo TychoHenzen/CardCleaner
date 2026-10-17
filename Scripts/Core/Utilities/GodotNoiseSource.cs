@@ -4,7 +4,7 @@ using Godot;
 namespace CardCleaner.Scripts.Core.Utilities;
 
 /// <summary>FastNoiseLite behind INoiseSource. Create is a stateless static factory on the class.</summary>
-public sealed class GodotNoiseSource : INoiseSource
+internal sealed class GodotNoiseSource : INoiseSource
 {
     private readonly FastNoiseLite _noise;
 

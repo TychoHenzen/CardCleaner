@@ -4,7 +4,7 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen;
 
-public class RadialGradient : BaselineGradient
+internal class RadialGradient : BaselineGradient
 {
     // Default values as constants
     private const float DefaultFalloff = 1.0f;

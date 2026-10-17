@@ -6,7 +6,7 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen;
 
-public class NoiseGradient(Func<int, float, INoiseSource> noiseSourceFactory) : BaselineGradient
+internal class NoiseGradient(Func<int, float, INoiseSource> noiseSourceFactory) : BaselineGradient
 {
     public CardSignature BaseSignature { get; set; } = new();
     public float NoiseScale { get; set; } = 0.1f;

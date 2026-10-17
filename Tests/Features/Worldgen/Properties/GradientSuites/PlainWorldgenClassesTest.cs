@@ -8,7 +8,8 @@ using Godot;
 namespace CardCleaner.Tests.Features.Worldgen.Properties.GradientSuites;
 
 /// <summary>
-///     Pins that the worldgen definitions and gradients are plain C# classes with the defaults the inspector used to show.
+///     Pins that the worldgen definitions and gradients are plain C# classes with the defaults
+///     the inspector used to show.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
