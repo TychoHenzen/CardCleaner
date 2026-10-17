@@ -15,6 +15,12 @@ public interface IGridMap
     /// <summary>The biome id of every tile, indexed [y, x], or null when the map has no biome data.</summary>
     string[,]? BiomeMap { get; }
 
+    /// <summary>The background terrain layer (WFC phase 1), indexed [y, x], or null when the map has none.</summary>
+    string[,]? BackgroundLayer { get; }
+
+    /// <summary>The foreground auto-tile layer (WFC phase 2), indexed [y, x], or null when the map has none.</summary>
+    string[,]? ForegroundLayer { get; }
+
     /// <summary>Dual-grid terrain data: visual position to base and top tile ids and Corner16 bitmask.</summary>
     IReadOnlyDictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> DecorationOverlays { get; }
 
