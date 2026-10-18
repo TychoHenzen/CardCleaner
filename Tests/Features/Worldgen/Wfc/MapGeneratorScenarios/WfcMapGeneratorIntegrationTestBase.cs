@@ -18,7 +18,7 @@ public abstract class WfcMapGeneratorIntegrationTestBase
     [BeforeTest]
     public void Setup()
     {
-        _transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
+        _transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
         _biomeRegistry = new BiomeRegistry();
         _biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
     }

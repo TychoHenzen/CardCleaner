@@ -1,4 +1,5 @@
 using System.Linq;
+using CardCleaner.Scripts.Core.Services;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -127,7 +128,7 @@ public partial class IrregularTerrainRenderer : Node2D
 
         if (_transitionResolver == null)
         {
-            _transitionResolver = new CompiledTransitionResolver();
+            _transitionResolver = new CompiledTransitionResolver(new GodotAssetPaths());
             GD.Print("[IrregularTerrainRenderer] Created transition resolver");
         }
 

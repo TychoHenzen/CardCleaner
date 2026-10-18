@@ -98,7 +98,7 @@ public class MeshTerrainFailurePathTest
     }
 
     private static IReadOnlyList<(string tileA, string tileB)> TransitionPairs() =>
-        new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
+        new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
 
     private static string AutoTileId(ITileRegistry registry) =>
         registry.GetAllTiles().First(tile => tile.HasAutoTileVariants).Id;

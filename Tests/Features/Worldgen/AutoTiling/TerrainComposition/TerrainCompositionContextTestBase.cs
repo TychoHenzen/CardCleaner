@@ -16,6 +16,6 @@ public abstract class TerrainCompositionContextTestBase
     public void Setup()
     {
         _registry = new TileRegistry();
-        _resolver = new CompiledTransitionResolver();
+        _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
     }
 }

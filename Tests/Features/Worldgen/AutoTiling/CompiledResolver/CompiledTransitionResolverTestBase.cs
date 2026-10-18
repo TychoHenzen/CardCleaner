@@ -18,7 +18,7 @@ public abstract class CompiledTransitionResolverTestBase
     [BeforeTest]
     public void Setup()
     {
-        _resolver = new CompiledTransitionResolver();
+        _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
         // Load from Tiled source to match transition_map.json source
         _registry = new TileRegistry();
         _registry.Clear();

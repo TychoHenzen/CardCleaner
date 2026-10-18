@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
+using CardCleaner.Scripts.Core.Services;
 
 namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.TransitionMap;
 
@@ -186,7 +187,7 @@ public class TransitionMapContentTest : TransitionMapValidationTestBase
     [TestCase]
     public void TestResolverCanLoadTransitionMap()
     {
-        var resolver = new CompiledTransitionResolver();
+        var resolver = new CompiledTransitionResolver(new GodotAssetPaths());
 
         // Should load without exceptions
         AssertThat(resolver).IsNotNull();
@@ -208,7 +209,7 @@ public class TransitionMapContentTest : TransitionMapValidationTestBase
         var (borderId, outerTerrain) = CompiledTransitionMap.ParseKey(firstKey);
         var entry = _transitionMap.Transitions[firstKey];
 
-        var resolver = new CompiledTransitionResolver();
+        var resolver = new CompiledTransitionResolver(new GodotAssetPaths());
         var coords = resolver.ResolveTransition(borderId, outerTerrain, 1); // bitmask 1
 
         AssertThat(coords).IsNotNull();
