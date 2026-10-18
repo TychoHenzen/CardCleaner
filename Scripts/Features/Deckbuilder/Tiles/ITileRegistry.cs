@@ -8,20 +8,9 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 public interface ITileRegistry
 {
     /// <summary>
-    /// Path to the tileset resource used by these tiles.
-    /// When using compiled atlas, this returns the atlas path.
+    /// The visual side of the catalog: the tileset path, whether the compiled atlas is used, and the tileset config.
     /// </summary>
-    string TilesetPath { get; }
-
-    /// <summary>
-    /// Whether the registry is using a compiled atlas instead of source textures.
-    /// </summary>
-    bool UsingCompiledAtlas { get; }
-
-    /// <summary>
-    /// Configuration for tileset-level spatial properties (tile size, grid offset).
-    /// </summary>
-    TilesetConfig TilesetConfig { get; }
+    TileVisualCatalog Visuals { get; }
 
     void RegisterTile(TileDefinition tile);
     TileDefinition? GetTile(string id);

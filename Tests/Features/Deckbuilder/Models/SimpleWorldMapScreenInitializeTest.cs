@@ -138,7 +138,7 @@ public class SimpleWorldMapScreenInitializeTest
 
             new WorldMapComponents(screen).Initialize(registry);
 
-            AssertBool(registry.UsingCompiledAtlas).IsTrue();
+            AssertBool(registry.Visuals.UsingCompiledAtlas).IsTrue();
             AssertThat(layer.TileSet).IsNotNull();
             AssertThat(layer.TileSet).IsSame(CompiledAtlasLoader.LoadCompiledTileSet());
             AssertThat(errors).IsEmpty();
@@ -177,10 +177,10 @@ public class SimpleWorldMapScreenInitializeTest
             var components = new WorldMapComponents(screen);
             components.Initialize(registry);
 
-            AssertBool(registry.UsingCompiledAtlas).IsFalse();
-            AssertString(registry.TilesetPath)
+            AssertBool(registry.Visuals.UsingCompiledAtlas).IsFalse();
+            AssertString(registry.Visuals.TilesetPath)
                 .IsEqual(TileDataLoader.LoadTileRegistry(new GodotAssetPaths()).TilesetPath);
-            AssertInt(components.TileSize).IsEqual(registry.TilesetConfig.BaseTileSize.X);
+            AssertInt(components.TileSize).IsEqual(registry.Visuals.TilesetConfig.BaseTileSize.X);
             AssertThat(layer.TileSet).IsNotSame(CompiledAtlasLoader.LoadCompiledTileSet());
         }
         finally

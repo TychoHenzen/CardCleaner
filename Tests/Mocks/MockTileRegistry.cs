@@ -19,9 +19,7 @@ public class MockTileRegistry : ITileRegistry, ITileMetadataProvider
     private readonly Dictionary<string, TileDefinition> _tiles = new();
     private readonly VariationGroupCollection _variationGroups = new();
 
-    public string TilesetPath => "res://test.tres";
-    public bool UsingCompiledAtlas => false;
-    public TilesetConfig TilesetConfig => TilesetConfig.Default;
+    public TileVisualCatalog Visuals { get; set; } = new("res://test.tres", false, TilesetConfig.Default, []);
 
     public void RegisterTile(TileDefinition tile) => _tiles[tile.Id] = tile;
 

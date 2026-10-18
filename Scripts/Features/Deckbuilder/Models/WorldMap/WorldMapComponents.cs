@@ -34,9 +34,9 @@ internal sealed class WorldMapComponents
     {
         var tileSet = LoadCompiledTileSet(registry);
         var usingCompiledAtlas = tileSet != null;
-        TileSize = registry.TilesetConfig.BaseTileSize.X;
+        TileSize = registry.Visuals.TilesetConfig.BaseTileSize.X;
 
-        ILog.Print($"[SimpleWorldMapScreen] TileRegistry: UsingCompiledAtlas={registry.UsingCompiledAtlas}, " +
+        ILog.Print($"[SimpleWorldMapScreen] TileRegistry: UsingCompiledAtlas={registry.Visuals.UsingCompiledAtlas}, " +
                    $"TileSize={TileSize}");
 
         // Initialize components that need tile registry
@@ -48,13 +48,13 @@ internal sealed class WorldMapComponents
             _screen.TerrainLayer, _screen.DecorationLayer, _screen.StructureLayer,
             _screen.EffectLayer, _screen.OverlayLayer, _screen.BiomeOverlayLayer
         ];
-        AssignTileSet(tileSet, registry.TilesetPath, layers);
+        AssignTileSet(tileSet, registry.Visuals.TilesetPath, layers);
     }
 
     // The registry only decides the mode; the UI-layer loader owns the compiled TileSet.
     private static TileSet? LoadCompiledTileSet(ITileRegistry registry)
     {
-        if (!registry.UsingCompiledAtlas) return null;
+        if (!registry.Visuals.UsingCompiledAtlas) return null;
 
         var tileSet = CompiledAtlasLoader.LoadCompiledTileSet();
         if (tileSet == null)

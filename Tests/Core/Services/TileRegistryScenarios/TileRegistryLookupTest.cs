@@ -56,9 +56,9 @@ public class TileRegistryLookupTest : TileRegistryTestBase
 
             _registry.Reload(null, mappingPath);
 
-            AssertBool(_registry.UsingCompiledAtlas).IsFalse();
-            AssertString(_registry.TilesetPath).IsEqual(original.TilesetPath);
-            AssertThat(_registry.TilesetConfig).IsEqual(original.TilesetConfig);
+            AssertBool(_registry.Visuals.UsingCompiledAtlas).IsFalse();
+            AssertString(_registry.Visuals.TilesetPath).IsEqual(original.TilesetPath);
+            AssertThat(_registry.Visuals.TilesetConfig).IsEqual(original.TilesetConfig);
             AssertInt(_registry.GetAllTiles().Count()).IsEqual(original.Tiles.Count);
             foreach (var tile in original.Tiles)
             {
