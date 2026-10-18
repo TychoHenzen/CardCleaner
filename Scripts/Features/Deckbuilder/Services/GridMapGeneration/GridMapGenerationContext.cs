@@ -16,7 +16,7 @@ internal sealed class GridMapGenerationContext
     public required ITileRegistry TileRegistry { get; init; }
     public required ITileMetadataProvider MetadataProvider { get; init; }
     public WfcMapGenerator? WfcGenerator { get; init; }
-    public BiomeRegistry? BiomeRegistry { get; init; }
+    public BiomeSet? Biomes { get; init; }
     public Func<Vector2I, Vector2I, CardSignature>? SignatureAt { get; init; }
     public IProfiler Profiler { get; set; } = new NoOpProfiler();
     public int MaxWfcRetries { get; set; } = 5;

@@ -29,7 +29,7 @@ internal sealed class MeshForegroundWfc
             return false;
         }
 
-        var initialTiles = MeshForegroundTileCandidates.Collect(tileRegistry, biomes);
+        var initialTiles = MeshForegroundTileCandidates.Collect(tileRegistry, biomes.Ids);
         if (initialTiles.Count == 0)
         {
             ILog.Error("[MeshTerrainGen] No valid tiles for mesh WFC");

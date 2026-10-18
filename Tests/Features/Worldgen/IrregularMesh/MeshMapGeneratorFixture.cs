@@ -27,11 +27,11 @@ public static class MeshMapGeneratorFixture
     /// <summary>A generator whose maps never arrive, for tests that need a generation still running.</summary>
     public static IrregularMeshNs.IMeshMapGenerator Pending() => new PendingMeshGenerator();
 
-    public static BiomeRegistry DefaultBiomes()
+    public static BiomeSet DefaultBiomes()
     {
         var biomes = new BiomeRegistry();
         biomes.RegisterDefaultBiomes(new GodotAssetPaths());
-        return biomes;
+        return biomes.ToBiomeSet();
     }
 
     public static CardSignature[] TerrainCards() => new[]

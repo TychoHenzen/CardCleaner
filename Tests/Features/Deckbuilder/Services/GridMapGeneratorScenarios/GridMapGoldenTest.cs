@@ -60,7 +60,7 @@ public class GridMapGoldenTest
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var generator = new GridMapGenerator(
-            tileRegistry, tileRegistry, biomeRegistry, CompiledTransitionPairs.Load());
+            tileRegistry, tileRegistry, biomeRegistry.ToBiomeSet(), CompiledTransitionPairs.Load());
         var seeds = cards.ToArray();
 
         var generated = await generator.GenerateAsync(new MapGenerationConfig

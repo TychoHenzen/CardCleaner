@@ -12,7 +12,7 @@ public class BiomeMapGenerator : IBiomeProvider
     private readonly BiomeDefinition _fallbackBiome;
     private readonly Func<Vector2I, Vector2I, CardSignature> _signatureAt;
     private readonly Vector2I _mapSize;
-    private readonly BiomeRegistry _registry;
+    private readonly BiomeSet _biomes;
 
     /// <param name="signatureAt">Gives the signature at a position of a map of the given size.</param>
     /// <param name="defaultPassableTileId">
@@ -22,16 +22,16 @@ public class BiomeMapGenerator : IBiomeProvider
     ///     The fallback biome's solid tile; without it the fallback biome's blocked pool is empty.
     /// </param>
     public BiomeMapGenerator(
-        BiomeRegistry registry,
+        BiomeSet biomes,
         Func<Vector2I, Vector2I, CardSignature> signatureAt,
         Vector2I mapSize,
         string? defaultPassableTileId = null,
         string? defaultSolidTileId = null)
     {
-        ArgumentNullException.ThrowIfNull(registry);
+        ArgumentNullException.ThrowIfNull(biomes);
         ArgumentNullException.ThrowIfNull(signatureAt);
 
-        _registry = registry;
+        _biomes = biomes;
         _signatureAt = signatureAt;
         _mapSize = mapSize;
 
@@ -64,7 +64,7 @@ public class BiomeMapGenerator : IBiomeProvider
     public BiomeDefinition GetBiomeAt(Vector2I position)
     {
         var signature = GetSignatureAt(position);
-        var biome = _registry.FindClosestBySignature(signature) ?? _fallbackBiome;
+        var biome = _biomes.FindClosestBySignature(signature) ?? _fallbackBiome;
 
         // Track biome statistics
         _biomeStats.TryGetValue(biome.Id, out var count);

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Worldgen.Biomes;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 
@@ -14,13 +13,13 @@ internal static class MeshForegroundTileCandidates
 {
     internal static bool IsCandidate(TileDefinition tile) => tile.Layer == TileLayer.Terrain;
 
-    internal static HashSet<string> Collect(ITileRegistry tileRegistry, BiomeSet biomes)
+    internal static HashSet<string> Collect(ITileRegistry tileRegistry, IEnumerable<string> biomeIds)
     {
-        var biomeIds = biomes.Ids.ToList();
+        var ids = biomeIds.ToList();
 
         return tileRegistry.GetAllTiles()
             .Where(IsCandidate)
-            .Where(tile => biomeIds.Any(tile.IsAllowedInBiome))
+            .Where(tile => ids.Any(tile.IsAllowedInBiome))
             .Select(tile => tile.Id)
             .ToHashSet();
     }

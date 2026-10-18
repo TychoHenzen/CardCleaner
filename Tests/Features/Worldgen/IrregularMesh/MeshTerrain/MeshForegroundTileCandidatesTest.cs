@@ -42,7 +42,7 @@ public class MeshForegroundTileCandidatesTest
     [TestCase]
     public void OnlyTerrainLayerTilesAreCandidates()
     {
-        var candidates = MeshForegroundTileCandidates.Collect(MixedLayerRegistry(), _biomes.ToBiomeSet());
+        var candidates = MeshForegroundTileCandidates.Collect(MixedLayerRegistry(), _biomes.ToBiomeSet().Ids);
 
         AssertThat(candidates.OrderBy(id => id).ToList()).IsEqual(new[] { "dirt", "grass" }.ToList());
     }
@@ -52,7 +52,7 @@ public class MeshForegroundTileCandidatesTest
     {
         var registry = new TileRegistry(new GodotAssetPaths());
 
-        var candidates = MeshForegroundTileCandidates.Collect(registry, _biomes.ToBiomeSet());
+        var candidates = MeshForegroundTileCandidates.Collect(registry, _biomes.ToBiomeSet().Ids);
 
         var offenders = candidates.Where(id => registry.GetTile(id)!.Layer != TileLayer.Terrain).ToList();
         AssertInt(candidates.Count).IsGreater(0);

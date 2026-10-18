@@ -42,13 +42,13 @@ public class WfcGridFingerprintTest
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var rng = RandomSources.Create(GridSeed);
         var gradient = new CardBasedGradient(MapCards(), rng);
-        var biomeProvider = new BiomeMapGenerator(biomeRegistry, gradient.GetSignatureAt, GridSize);
+        var biomeProvider = new BiomeMapGenerator(biomeRegistry.ToBiomeSet(),gradient.GetSignatureAt, GridSize);
         var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),
             new TileRegistryWfcCatalog(tileRegistry));
         var generator = GridMapGenerator.CreatePipeline(
-            rng, biomeProvider, tileRegistry, tileRegistry, wfcGenerator, biomeRegistry, gradient);
+            rng, biomeProvider, tileRegistry, tileRegistry, wfcGenerator, biomeRegistry.ToBiomeSet(), gradient);
 
         // ASSUMPTION: the progress and cancellation profiler that GridMapGenerator.GenerateAsync installs
         // does not change the map, so the pin runs GenerateMap with the default profiler.
