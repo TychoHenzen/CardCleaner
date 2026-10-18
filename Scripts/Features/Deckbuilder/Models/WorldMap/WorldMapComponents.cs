@@ -1,7 +1,9 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
+using CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRendererSupport;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Models;
@@ -80,6 +82,7 @@ internal sealed class WorldMapComponents
         BiomeOverlay = new WorldMapBiomeOverlay(viewport, TileSize);
         Terrain = new WorldMapTerrainRenderer(
             _screen.TerrainLayer, _screen.DecorationLayer, _screen.StructureLayer, _screen.EffectLayer,
-            registry, usingCompiledAtlas);
+            registry,
+            TerrainTransitions.Create(usingCompiledAtlas ? TransitionResolvers.Create(new GodotAssetPaths()) : null));
     }
 }

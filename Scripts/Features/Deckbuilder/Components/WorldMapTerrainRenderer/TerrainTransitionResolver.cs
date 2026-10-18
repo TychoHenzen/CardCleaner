@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
@@ -6,19 +5,16 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRendererSupport;
 
-internal sealed class TerrainTransitionResolver
+internal sealed class TerrainTransitionResolver : ITerrainTransitionResolver
 {
-    private readonly bool _usingCompiledAtlas;
     private readonly ITransitionResolver? _transitionResolver;
 
-    public TerrainTransitionResolver(bool usingCompiledAtlas)
+    internal TerrainTransitionResolver(ITransitionResolver? transitionResolver)
     {
-        _usingCompiledAtlas = usingCompiledAtlas;
-        if (usingCompiledAtlas)
-            _transitionResolver = new CompiledTransitionResolver(new GodotAssetPaths());
+        _transitionResolver = transitionResolver;
     }
 
-    public bool UsingCompiledAtlas => _usingCompiledAtlas;
+    public bool UsingCompiledAtlas => _transitionResolver != null;
 
     public TileRenderCoordinates Resolve(
         TileDefinition baseTile,
@@ -28,7 +24,7 @@ internal sealed class TerrainTransitionResolver
         int bitmask,
         ref int transitionsResolved)
     {
-        if (!_usingCompiledAtlas || _transitionResolver == null)
+        if (_transitionResolver == null)
             return ResolveWithoutCompiledAtlas(baseTile, topTile, bitmask);
 
         if (bitmask == 0)

@@ -22,13 +22,13 @@ public class WorldMapTerrainRenderer
     private readonly NonTerrainTileRenderer _nonTerrainTileRenderer;
     private bool _hasLoggedTileInfo;
 
-    public WorldMapTerrainRenderer(
+    internal WorldMapTerrainRenderer(
         TileMapLayer? terrainLayer,
         TileMapLayer? decorationLayer,
         TileMapLayer? structureLayer,
         TileMapLayer? effectLayer,
         ITileRegistry? tileRegistry,
-        bool usingCompiledAtlas)
+        ITerrainTransitionResolver transitionResolver)
     {
         _terrainLayer = terrainLayer;
         _decorationLayer = decorationLayer;
@@ -39,7 +39,7 @@ public class WorldMapTerrainRenderer
         _terrainTransitionRenderer = new TerrainTransitionRenderer(
             terrainLayer,
             tileRegistry,
-            usingCompiledAtlas);
+            transitionResolver);
         _nonTerrainTileRenderer = new NonTerrainTileRenderer(
             decorationLayer,
             structureLayer,

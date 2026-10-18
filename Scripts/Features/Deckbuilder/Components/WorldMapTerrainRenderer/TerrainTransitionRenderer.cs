@@ -10,16 +10,16 @@ internal sealed class TerrainTransitionRenderer
 {
     private readonly TileMapLayer? _terrainLayer;
     private readonly ITileRegistry? _tileRegistry;
-    private readonly TerrainTransitionResolver _resolver;
+    private readonly ITerrainTransitionResolver _resolver;
 
     public TerrainTransitionRenderer(
         TileMapLayer? terrainLayer,
         ITileRegistry? tileRegistry,
-        bool usingCompiledAtlas)
+        ITerrainTransitionResolver transitionResolver)
     {
         _terrainLayer = terrainLayer;
         _tileRegistry = tileRegistry;
-        _resolver = new TerrainTransitionResolver(usingCompiledAtlas);
+        _resolver = transitionResolver;
     }
 
     public void Render(IGridMap mapData)

@@ -40,4 +40,31 @@ public interface ITransitionResolver
 
     /// <summary>Finds solid-fill coordinates for a terrain, or null if unavailable.</summary>
     Vector2I? ResolveSolidFill(string terrainId);
+
+    /// <summary>
+    /// Resolves coordinates for a transition with a position-based variant choice.
+    /// Returns null when no transition exists for the pair.
+    /// </summary>
+    /// <param name="innerTerrainId">The dominant terrain (border terrain).</param>
+    /// <param name="outerTerrainId">The background terrain.</param>
+    /// <param name="bitmask">The Corner16 neighbor bitmask.</param>
+    /// <param name="x">Position seed x, used to pick a variant deterministically.</param>
+    /// <param name="y">Position seed y, used to pick a variant deterministically.</param>
+    Vector2I? ResolveTransitionWithVariant(string innerTerrainId, string outerTerrainId, int bitmask, int x, int y);
+
+    /// <summary>
+    /// Finds coordinates by looking up the terrain as the outer terrain in any transition.
+    /// Returns null when the terrain is never used as an outer terrain for that bitmask.
+    /// </summary>
+    /// <param name="terrainId">The terrain used as the background.</param>
+    /// <param name="bitmask">The bitmask variant (0 to 15).</param>
+    Vector2I? ResolveAsOuterTerrain(string terrainId, int bitmask);
+
+    /// <summary>
+    /// Finds coordinates for a bitmask variant by looking up any transition with the terrain as its inner terrain.
+    /// Returns null when no transition has that variant.
+    /// </summary>
+    /// <param name="terrainId">The terrain used as the border (inner) terrain.</param>
+    /// <param name="bitmask">The bitmask variant (0 to 15).</param>
+    Vector2I? ResolveAnyVariant(string terrainId, int bitmask);
 }

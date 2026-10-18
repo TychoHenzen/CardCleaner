@@ -21,7 +21,7 @@ public partial class IrregularTerrainRenderer : Node2D
 
     private MeshInstance2D? _meshInstance;
     private Texture2D? _atlasTexture;
-    private CompiledTransitionResolver? _transitionResolver;
+    private ITransitionResolver? _transitionResolver;
     private Vector2 _atlasSize;
     private ITileRegistry? _tileRegistry;
 
@@ -128,7 +128,7 @@ public partial class IrregularTerrainRenderer : Node2D
 
         if (_transitionResolver == null)
         {
-            _transitionResolver = new CompiledTransitionResolver(new GodotAssetPaths());
+            _transitionResolver = TransitionResolvers.Create(new GodotAssetPaths());
             GD.Print("[IrregularTerrainRenderer] Created transition resolver");
         }
 
@@ -154,7 +154,7 @@ public partial class IrregularTerrainRenderer : Node2D
         if (_transitionResolver == null || _atlasTexture == null || _tileRegistry == null)
             return null;
 
-        var quadResolver = new TerrainQuadResolver(_transitionResolver);
+        var quadResolver = TerrainQuads.Create(_transitionResolver);
         var meshWriter = new TerrainQuadMeshWriter(_atlasSize, TileSize);
         var surfaceTool = new SurfaceTool();
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
