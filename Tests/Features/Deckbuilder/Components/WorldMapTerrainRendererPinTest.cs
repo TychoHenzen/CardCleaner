@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
+using CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRendererSupport;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen;
@@ -60,7 +61,8 @@ public class WorldMapTerrainRendererPinTest
             effect.TileSet = tileSet;
 
             var renderer = new WorldMapTerrainRenderer(
-                terrain, decoration, structure, effect, tileRegistry, tileRegistry.UsingCompiledAtlas);
+                terrain, decoration, structure, effect, tileRegistry,
+                TerrainTransitions.Create(TransitionResolvers.Create(new GodotAssetPaths())));
             renderer.RenderTerrainTransitions(map);
             renderer.RenderNonTerrainTiles(map);
 

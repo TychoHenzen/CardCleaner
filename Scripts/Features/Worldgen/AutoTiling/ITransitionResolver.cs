@@ -40,4 +40,14 @@ public interface ITransitionResolver
 
     /// <summary>Finds solid-fill coordinates for a terrain, or null if unavailable.</summary>
     Vector2I? ResolveSolidFill(string terrainId);
+
+    /// <summary>Transition coordinates with a variant picked from the position, or null.</summary>
+    Vector2I? ResolveTransitionWithVariant(
+        string innerTerrainId, string outerTerrainId, int bitmask, int x, int y);
+
+    /// <summary>Coordinates of the terrain used as the outer terrain of any transition, or null.</summary>
+    Vector2I? ResolveAsOuterTerrain(string terrainId, int bitmask);
+
+    /// <summary>Coordinates of a bitmask variant of any transition whose inner terrain matches, or null.</summary>
+    Vector2I? ResolveAnyVariant(string terrainId, int bitmask);
 }

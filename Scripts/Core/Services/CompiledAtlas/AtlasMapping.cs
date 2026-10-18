@@ -119,25 +119,25 @@ public static class AtlasMapping
     // JSON deserialization classes (matching compiler output)
     public class AtlasMappingData
     {
-        [JsonPropertyName("version")] public string? Version { get; set; }
-        [JsonPropertyName("atlas")] public AtlasInfo? Atlas { get; set; }
+        [JsonPropertyName("version")] public string? Version { get; init; }
+        [JsonPropertyName("atlas")] public AtlasInfo? Atlas { get; init; }
         [JsonPropertyName("sources")]
-        public Dictionary<string, Dictionary<string, TileAtlasRect>>? Sources { get; set; }
+        public Dictionary<string, Dictionary<string, TileAtlasRect>>? Sources { get; init; }
     }
 
     public class AtlasInfo
     {
-        [JsonPropertyName("path")] public string Path { get; set; } = "";
-        [JsonPropertyName("width")] public int Width { get; set; }
-        [JsonPropertyName("height")] public int Height { get; set; }
-        [JsonPropertyName("tileSize")] public int TileSize { get; set; }
+        [JsonPropertyName("path")] public string Path { get; init; } = "";
+        [JsonPropertyName("width")] public int Width { get; init; }
+        [JsonPropertyName("height")] public int Height { get; init; }
+        [JsonPropertyName("tileSize")] public int TileSize { get; init; }
     }
 
     public class TileAtlasRect
     {
-        [JsonPropertyName("x")] public int X { get; set; }
-        [JsonPropertyName("y")] public int Y { get; set; }
-        [JsonPropertyName("w")] public int W { get; set; }
-        [JsonPropertyName("h")] public int H { get; set; }
+        [JsonPropertyName("x")] public int X { get; init; }
+        [JsonPropertyName("y")] public int Y { get; init; }
+        [JsonPropertyName("w")] public int W { get; init; }
+        [JsonPropertyName("h")] public int H { get; init; }
     }
 }

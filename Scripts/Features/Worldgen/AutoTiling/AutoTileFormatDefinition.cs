@@ -32,8 +32,8 @@ public sealed class AutoTileFormatDefinition
         Name = name;
         BitmaskType = bitmaskType;
         IsBuiltIn = isBuiltIn;
-        _allowedBitmasks = allowedBitmasks;
-        _variantMappings = variantMappings;
+        _allowedBitmasks = new HashSet<int>(allowedBitmasks);
+        _variantMappings = new Dictionary<int, VariantDefinition>(variantMappings);
     }
 
     /// <summary>

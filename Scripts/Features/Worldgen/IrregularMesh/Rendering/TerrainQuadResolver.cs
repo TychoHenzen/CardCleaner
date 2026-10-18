@@ -6,13 +6,13 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Rendering;
 /// <summary>
 /// Picks the compiled-atlas tile for a quad from its background tile and corner foreground tiles.
 /// </summary>
-internal sealed class TerrainQuadResolver
+internal sealed class TerrainQuadResolver : ITerrainQuadResolver
 {
     private const int AllCornersMask = 15;
 
-    private readonly CompiledTransitionResolver _transitionResolver;
+    private readonly ITransitionResolver _transitionResolver;
 
-    internal TerrainQuadResolver(CompiledTransitionResolver transitionResolver)
+    internal TerrainQuadResolver(ITransitionResolver transitionResolver)
     {
         _transitionResolver = transitionResolver;
     }
@@ -20,7 +20,7 @@ internal sealed class TerrainQuadResolver
     /// <summary>
     /// Returns the atlas tile for the quad, or null when the quad cannot be rendered.
     /// </summary>
-    internal TerrainTileChoice? Resolve(IMeshQuad quad)
+    public TerrainTileChoice? Resolve(IMeshQuad quad)
     {
         var backgroundTileId = quad.BackgroundTileId;
         if (string.IsNullOrEmpty(backgroundTileId))
