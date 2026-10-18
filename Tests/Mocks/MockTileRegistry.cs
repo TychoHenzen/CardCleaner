@@ -124,6 +124,11 @@ public class MockTileRegistry : ITileRegistry, ITileMetadataProvider
         return registry;
     }
 
+    /// <summary>
+    /// Takes a <see cref="TileCatalogData"/> snapshot of this registry's current tiles and variation groups.
+    /// </summary>
+    public TileCatalogData ToCatalogData() => TileCatalogData.From(this);
+
     #region ITileMetadataProvider Implementation
 
     public IReadOnlyList<TileDefinition> GetSimpleTerrainTiles()

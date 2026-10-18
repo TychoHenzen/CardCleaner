@@ -27,7 +27,7 @@ public class AutoTileGapConstraintTest
     {
         // Use mock registry with controlled tile properties
         _tileRegistry = MockTileRegistry.CreateWithTestTiles();
-        _constraint = new AutoTileGapConstraint(new TileRegistryWfcCatalog(_tileRegistry));
+        _constraint = new AutoTileGapConstraint(TileCatalogData.From(_tileRegistry));
         _grid = new WfcGrid(5, 5, AllTiles);
     }
 

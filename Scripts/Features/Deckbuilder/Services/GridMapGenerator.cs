@@ -61,7 +61,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
             _metadataProvider.GetDefaultSolidTileId());
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(_transitionPairs.Pairs),
-            new TileRegistryWfcCatalog(_tileRegistry));
+            TileCatalogData.From(_tileRegistry));
         var pipeline = CreatePipeline(
             rng, biomeProvider, _tileRegistry, _metadataProvider, wfcGenerator, _biomes, gradient);
         pipeline.SetProfiler(new CancellableProgressProfiler(

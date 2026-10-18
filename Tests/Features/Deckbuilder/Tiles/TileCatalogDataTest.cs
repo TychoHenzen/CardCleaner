@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Tests.Mocks;
@@ -9,31 +11,126 @@ using Godot;
 namespace CardCleaner.Tests.Features.Deckbuilder.Tiles;
 
 /// <summary>
-/// Pins the answers TileRegistryWfcCatalog gives for the registry shapes WFC meets: unknown ids, known tiles,
-/// gap tiles, auto-tiles with and without a solid-fill variant, and variation groups.
+/// Pins TileCatalogData, the immutable snapshot of a registry that WFC reads. The snapshot must answer like the
+/// registry it was taken from, keep the registry's order, pick per-map variants the way the registry does, and leave
+/// out tiles registered after it was taken. The shape answers and the unknown-id answers of the deleted
+/// TileRegistryWfcCatalog are kept here.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
-public class TileRegistryWfcCatalogTest
+public class TileCatalogDataTest
 {
     [TestCase]
     [TestCategory("Unit")]
-    public static void TileRegisteredAfterConstruction_IsSeenByContainsAndTileIds()
+    public static void SnapshotAnswersLikeTheRegistryItWasTakenFrom()
+    {
+        var registry = MockTileRegistry.CreateWithTestTiles();
+        var catalog = TileCatalogData.From(registry);
+
+        AssertThat(Ids(catalog.GetAllTiles())).IsEqual(Ids(registry.GetAllTiles()));
+        AssertThat(Ids(catalog.GetSimpleTerrainTiles())).IsEqual(Ids(registry.GetSimpleTerrainTiles()));
+        AssertThat(Ids(catalog.GetAutoTiles())).IsEqual(Ids(registry.GetAutoTiles()));
+        AssertThat(Ids(catalog.GetGapTiles())).IsEqual(Ids(registry.GetGapTiles()));
+        AssertThat(Ids(catalog.GetPassableTerrainTiles())).IsEqual(Ids(registry.GetPassableTerrainTiles()));
+        AssertThat(Ids(catalog.GetSolidTerrainTiles())).IsEqual(Ids(registry.GetSolidTerrainTiles()));
+        AssertThat(Ids(catalog.GetDecorationTiles())).IsEqual(Ids(registry.GetDecorationTiles()));
+        AssertThat(Ids(catalog.GetBackgroundTerrainTiles())).IsEqual(Ids(registry.GetBackgroundTerrainTiles()));
+        AssertThat(Ids(catalog.GetTilesByLayer(TileLayer.Terrain)))
+            .IsEqual(Ids(registry.GetTilesByLayer(TileLayer.Terrain)));
+        AssertThat(Ids(catalog.GetTilesByBiome("any"))).IsEqual(Ids(registry.GetTilesByBiome("any")));
+        AssertThat(catalog.GetWfcTileIds().ToArray()).IsEqual(registry.GetWfcTileIds().ToArray());
+        AssertThat(catalog.GetDefaultPassableTileId()).IsEqual(registry.GetDefaultPassableTileId());
+        AssertThat(catalog.GetDefaultSolidTileId()).IsEqual(registry.GetDefaultSolidTileId());
+        AssertThat(catalog.GetDefaultGapTileId()).IsEqual(registry.GetDefaultGapTileId());
+
+        foreach (var id in new[] { "grass", "stone", "dirt", "rock", "missing" })
+        {
+            AssertBool(catalog.IsAutoTile(id)).IsEqual(registry.IsAutoTile(id));
+            AssertBool(catalog.IsPassable(id)).IsEqual(registry.IsPassable(id));
+            AssertBool(catalog.IsSolid(id)).IsEqual(registry.IsSolid(id));
+            AssertBool(catalog.IsGapTile(id)).IsEqual(registry.IsGapTile(id));
+            AssertBool(catalog.IsTransparent(id)).IsEqual(registry.IsTransparent(id));
+        }
+
+        AssertBool(catalog.AreSameTerrainType("grass", "stone")).IsEqual(registry.AreSameTerrainType("grass", "stone"));
+        AssertBool(catalog.AreSameTerrainType("dirt", "rock")).IsEqual(registry.AreSameTerrainType("dirt", "rock"));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void AllTilesKeepTheRegistryInsertionOrder()
+    {
+        string[] order = { "sand", "grass", "water", "stone", "dirt", "rock" };
+        var registry = new MockTileRegistry();
+        foreach (var id in order)
+            registry.RegisterTile(MockTileRegistry.CreateGapTile(id));
+
+        var catalog = TileCatalogData.From(registry);
+
+        AssertThat(Ids(catalog.GetAllTiles())).IsEqual(order);
+        AssertThat(catalog.TileIds.ToArray()).IsEqual(order);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void SelectPerMapVariantMatchesTheSelectorAndLeavesTheRngAtTheSameStep()
     {
         var registry = new MockTileRegistry();
-        var catalog = new TileRegistryWfcCatalog(registry);
+        registry.RegisterTile(MockTileRegistry.CreateGapTile("flower1"));
+        registry.RegisterTile(MockTileRegistry.CreateGapTile("flower2"));
+        registry.AddVariationGroup(new VariationGroup("flower", VariationMode.PerGeneration, new[]
+        {
+            new VariantWeight("flower1", 2f),
+            new VariantWeight("flower2", 1f)
+        }));
+        var catalog = TileCatalogData.From(registry);
+
+        var catalogRng = RandomSources.Create(42UL);
+        var expectedRng = RandomSources.Create(42UL);
+
+        var picked = catalog.SelectPerMapVariant("flower", catalogRng);
+        var expected = WeightedVariantSelector.Select(registry.GetVariationGroupByBaseName("flower"), expectedRng);
+
+        AssertBool(picked != null).IsTrue();
+        AssertThat(picked).IsEqual(expected);
+        AssertThat(catalogRng.Randi()).IsEqual(expectedRng.Randi());
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void UnknownIdAnswersAreNeutral()
+    {
+        var catalog = TileCatalogData.From(MockTileRegistry.CreateWithTestTiles());
+
+        AssertBool(catalog.GetTile("missing") == null).IsTrue();
+        AssertBool(catalog.Contains("missing")).IsFalse();
+        AssertBool(catalog.IsAutoTile("missing")).IsFalse();
+        AssertBool(catalog.IsPassable("missing")).IsFalse();
+        AssertBool(catalog.HasSolidFillVariant("missing")).IsFalse();
+        AssertFloat(catalog.GetProbability("missing")).IsEqual(1f);
+        AssertBool(catalog.GetVariation("missing") == null).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TileRegisteredAfterTheSnapshotIsNotVisible()
+    {
+        var registry = new MockTileRegistry();
+        var catalog = TileCatalogData.From(registry);
 
         registry.RegisterTile(MockTileRegistry.CreateGapTile("dirt"));
 
-        AssertBool(catalog.Contains("dirt")).IsTrue();
-        AssertThat(catalog.TileIds.ToArray()).IsEqual(new[] { "dirt" });
+        AssertBool(catalog.Contains("dirt")).IsFalse();
+        AssertBool(catalog.GetTile("dirt") == null).IsTrue();
+        AssertThat(catalog.TileIds.ToArray()).IsEqual(Array.Empty<string>());
+        AssertThat(catalog.GetAllTiles().Count).IsEqual(0);
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public static void UnknownTile_IsNotAutoTileAndHasNoSolidFill()
     {
-        var catalog = new TileRegistryWfcCatalog(new MockTileRegistry());
+        var catalog = TileCatalogData.From(new MockTileRegistry());
 
         AssertBool(catalog.IsAutoTile("missing")).IsFalse();
         AssertBool(catalog.HasSolidFillVariant("missing")).IsFalse();
@@ -45,7 +142,7 @@ public class TileRegistryWfcCatalogTest
     {
         var registry = new MockTileRegistry();
         registry.RegisterTile(MockTileRegistry.CreateGapTile("dirt"));
-        var catalog = new TileRegistryWfcCatalog(registry);
+        var catalog = TileCatalogData.From(registry);
 
         AssertBool(catalog.IsAutoTile("dirt")).IsFalse();
         AssertBool(catalog.HasSolidFillVariant("dirt")).IsFalse();
@@ -57,7 +154,7 @@ public class TileRegistryWfcCatalogTest
     {
         var registry = new MockTileRegistry();
         registry.RegisterTile(MockTileRegistry.CreateAutoTile("grass"));
-        var catalog = new TileRegistryWfcCatalog(registry);
+        var catalog = TileCatalogData.From(registry);
 
         AssertBool(catalog.IsAutoTile("grass")).IsTrue();
         AssertBool(catalog.HasSolidFillVariant("grass")).IsFalse();
@@ -76,7 +173,7 @@ public class TileRegistryWfcCatalogTest
             TilePassability.Passable,
             Vector2I.Zero,
             new TileDefinitionOptions { AutoTileVariants = variants }));
-        var catalog = new TileRegistryWfcCatalog(registry);
+        var catalog = TileCatalogData.From(registry);
 
         AssertBool(catalog.IsAutoTile("stone")).IsTrue();
         AssertBool(catalog.HasSolidFillVariant("stone")).IsTrue();
@@ -86,7 +183,7 @@ public class TileRegistryWfcCatalogTest
     [TestCategory("Unit")]
     public static void UnknownTile_HasNoBitmaskOrMultiCellAnswer()
     {
-        var catalog = new TileRegistryWfcCatalog(new MockTileRegistry());
+        var catalog = TileCatalogData.From(new MockTileRegistry());
 
         AssertBool(catalog.IsBitmaskAllowed("missing", 0) == null).IsTrue();
         AssertBool(catalog.GetMultiCellBounds("missing") == null).IsTrue();
@@ -105,7 +202,7 @@ public class TileRegistryWfcCatalogTest
             new VariantWeight("flower1", 2f),
             new VariantWeight("flower2", 1f)
         }));
-        var catalog = new TileRegistryWfcCatalog(registry);
+        var catalog = TileCatalogData.From(registry);
 
         var variation = catalog.GetVariation("flower2");
 
@@ -122,7 +219,7 @@ public class TileRegistryWfcCatalogTest
     [TestCategory("Unit")]
     public static void UnknownTile_AnswersAreNeutral()
     {
-        var catalog = new TileRegistryWfcCatalog(new MockTileRegistry());
+        var catalog = TileCatalogData.From(new MockTileRegistry());
 
         AssertBool(catalog.Contains("missing")).IsFalse();
         AssertBool(catalog.IsPassable("missing")).IsFalse();
@@ -157,7 +254,7 @@ public class TileRegistryWfcCatalogTest
             new VariantWeight("flower1", 2f),
             new VariantWeight("flower2", 1f)
         }));
-        var catalog = new TileRegistryWfcCatalog(registry);
+        var catalog = TileCatalogData.From(registry);
 
         AssertBool(catalog.IsPassable("meadow")).IsTrue();
         AssertFloat(catalog.GetProbability("meadow")).IsEqual(0.25f);
@@ -187,7 +284,7 @@ public class TileRegistryWfcCatalogTest
                 MultiCellBounds = (new Vector2I(1, 3), new Vector2I(0, -2))
             }));
         registry.RegisterTile(new TileDefinition("plain", "Plain", TilePassability.Passable, Vector2I.Zero));
-        var catalog = new TileRegistryWfcCatalog(registry);
+        var catalog = TileCatalogData.From(registry);
 
         AssertBool(catalog.IsBitmaskAllowed("shaped", 15) == true).IsTrue();
         AssertBool(catalog.IsBitmaskAllowed("shaped", 5) == false).IsTrue();
@@ -195,4 +292,6 @@ public class TileRegistryWfcCatalogTest
         AssertBool(catalog.IsBitmaskAllowed("plain", 5) == null).IsTrue();
         AssertBool(catalog.GetMultiCellBounds("plain") == null).IsTrue();
     }
+
+    private static string[] Ids(IEnumerable<TileDefinition> tiles) => tiles.Select(tile => tile.Id).ToArray();
 }

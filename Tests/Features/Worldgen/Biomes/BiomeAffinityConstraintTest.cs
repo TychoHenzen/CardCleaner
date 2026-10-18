@@ -17,7 +17,7 @@ public partial class BiomeAffinityConstraintTest
 {
     private BiomeRegistry _registry = null!;
     private TileRegistry _tileRegistry = null!;
-    private TileRegistryWfcCatalog _tileCatalog = null!;
+    private TileCatalogData _tileCatalog = null!;
     private WfcGrid _grid = null!;
 
     [BeforeTest]
@@ -28,7 +28,6 @@ public partial class BiomeAffinityConstraintTest
 
         // Create tile registry with tiles that have AllowedBiomes set
         _tileRegistry = new TileRegistry(new GodotAssetPaths());
-        _tileCatalog = new TileRegistryWfcCatalog(_tileRegistry);
         _tileRegistry.RegisterTile(new TileDefinition(
             "fire_tile",
             "Fire Tile",
@@ -53,6 +52,7 @@ public partial class BiomeAffinityConstraintTest
             "Neutral Tile",
             TilePassability.Passable,
             Vector2I.Zero));
+        _tileCatalog = TileCatalogData.From(_tileRegistry);
 
         // Create test biomes with tiles
         var fireSignature = new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f });

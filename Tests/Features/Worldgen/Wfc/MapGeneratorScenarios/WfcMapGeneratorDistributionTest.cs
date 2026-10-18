@@ -20,7 +20,7 @@ public class WfcMapGeneratorDistributionTest : WfcMapGeneratorIntegrationTestBas
         var tileRegistry = WfcTestFixtures.CreateTestTileRegistry(WfcTestFixtures.TestBiomeId, "A", "B", "C", "D");
         var generator = new WfcMapGenerator(
             WfcTestFixtures.FullAdjacencyRules(),
-            new TileRegistryWfcCatalog(tileRegistry));
+            TileCatalogData.From(tileRegistry));
         generator.EnableSpatialCoherence = false;
         generator.EnableDiminishingReturns = false;
         generator.EnableCompactness = false;
@@ -60,7 +60,7 @@ public class WfcMapGeneratorDistributionTest : WfcMapGeneratorIntegrationTestBas
         var tileRegistry = WfcTestFixtures.CreateTestTileRegistry(WfcTestFixtures.TestBiomeId, "A", "B", "C", "D");
         var generator = new WfcMapGenerator(
             WfcTestFixtures.StrictChainRules(),
-            new TileRegistryWfcCatalog(tileRegistry));
+            TileCatalogData.From(tileRegistry));
         generator.MaxRetries = 3;
 
         var biome = WfcTestFixtures.CreateAbcdBiome();

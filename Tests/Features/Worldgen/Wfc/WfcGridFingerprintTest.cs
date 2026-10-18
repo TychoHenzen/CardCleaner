@@ -46,7 +46,7 @@ public class WfcGridFingerprintTest
         var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),
-            new TileRegistryWfcCatalog(tileRegistry));
+            TileCatalogData.From(tileRegistry));
         var generator = GridMapGenerator.CreatePipeline(
             rng, biomeProvider, tileRegistry, tileRegistry, wfcGenerator, biomeRegistry.ToBiomeSet(), gradient);
 

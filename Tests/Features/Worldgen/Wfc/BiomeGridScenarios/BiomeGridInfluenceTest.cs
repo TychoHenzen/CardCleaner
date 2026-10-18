@@ -20,7 +20,7 @@ public partial class BiomeGridInfluenceTest : BiomeGridIntegrationTestBase
         // We compare maps generated with different gradients.
 
         // Arrange
-        var generator = new WfcMapGenerator(_rules, new TileRegistryWfcCatalog(_tileRegistry));
+        var generator = new WfcMapGenerator(_rules, TileCatalogData.From(_tileRegistry));
 
         // Gradient that matches fire biome
         var fireGradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
@@ -79,7 +79,7 @@ public partial class BiomeGridInfluenceTest : BiomeGridIntegrationTestBase
         var strengthGrid = BiomeStrengthGrid.Sample(
             new Vector2I(10, 10), gradient.GetSignatureAt, _registry.ToBiomeSet());
         var constraint = new Scripts.Features.Worldgen.Wfc.Constraints.BiomeAffinityConstraint(
-            strengthGrid, _registry.ToBiomeSet(), new TileRegistryWfcCatalog(_tileRegistry));
+            strengthGrid, _registry.ToBiomeSet(), TileCatalogData.From(_tileRegistry));
 
         // Act: Check constraint behavior for different tile types
         var grid = new WfcGrid(10, 10, new[] { "fire_tile", "water_tile", "neutral_tile" });

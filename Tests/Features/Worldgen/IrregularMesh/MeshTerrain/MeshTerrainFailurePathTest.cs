@@ -29,7 +29,7 @@ public class MeshTerrainFailurePathTest
         // ASSUMPTION: seed 4242 with these cards reaches the foreground step, as MeshTerrainFingerprintTest pins.
         var registry = new TileRegistry(new GodotAssetPaths());
         var solver = new FailingSolver(
-            new WfcTerrainSolver(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
+            new WfcTerrainSolver(TransitionPairs(), TileCatalogData.From(registry)),
             AutoTileId(registry));
         var generator = new IrregularMeshNs.MeshTerrainGenerator(
             new MeshTerrainWfcSetup(solver, registry),
@@ -56,7 +56,7 @@ public class MeshTerrainFailurePathTest
     {
         var registry = new TileRegistry(new GodotAssetPaths());
         var solver = new FailingSolver(
-            new WfcTerrainSolver(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
+            new WfcTerrainSolver(TransitionPairs(), TileCatalogData.From(registry)),
             AutoTileId(registry));
         var mesh = IrregularMeshNs.MeshGenerator.Generate(new IrregularMeshNs.MeshGenerator.GenerationConfig
         {
@@ -80,7 +80,7 @@ public class MeshTerrainFailurePathTest
     {
         var registry = new TileRegistry(new GodotAssetPaths());
         var solver = new FailingSolver(
-            new WfcTerrainSolver(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
+            new WfcTerrainSolver(TransitionPairs(), TileCatalogData.From(registry)),
             AutoTileId(registry));
         var generator = new IrregularMeshNs.MeshTerrainGenerator(
             new MeshTerrainWfcSetup(solver, registry),

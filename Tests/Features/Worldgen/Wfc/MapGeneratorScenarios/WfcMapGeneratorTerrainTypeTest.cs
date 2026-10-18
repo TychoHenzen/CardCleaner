@@ -24,7 +24,7 @@ public class WfcMapGeneratorTerrainTypeTest : WfcMapGeneratorIntegrationTestBase
         var tileRegistry = WfcTestFixtures.CreateTestTileRegistry(WfcTestFixtures.TestBiomeId, "A", "B", "C", "D");
         var generator = new WfcMapGenerator(
             WfcTestFixtures.FullAdjacencyRules(),
-            new TileRegistryWfcCatalog(tileRegistry));
+            TileCatalogData.From(tileRegistry));
         var biome = WfcTestFixtures.CreateAbcdBiome();
 
         // Generate multiple maps with different seeds

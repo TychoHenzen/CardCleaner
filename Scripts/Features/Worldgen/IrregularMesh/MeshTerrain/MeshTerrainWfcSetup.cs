@@ -21,7 +21,7 @@ internal sealed record MeshTerrainWfcSetup(
     {
         var solver = new WfcTerrainSolver(
             transitionPairs,
-            registry != null ? new TileRegistryWfcCatalog(registry) : null);
+            registry != null ? TileCatalogData.From(registry) : null);
         return new MeshTerrainWfcSetup(solver, registry);
     }
 }

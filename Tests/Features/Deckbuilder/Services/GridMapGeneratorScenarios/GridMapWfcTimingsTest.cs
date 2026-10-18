@@ -107,7 +107,7 @@ public class GridMapWfcTimingsTest
                 new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
             WfcGenerator = new WfcMapGenerator(
                 new WfcAdjacencyRules(transitionPairs),
-                new TileRegistryWfcCatalog(TileRegistry));
+                TileCatalogData.From(TileRegistry));
         }
 
         private static CardSignature[] MapCards() => new[]
