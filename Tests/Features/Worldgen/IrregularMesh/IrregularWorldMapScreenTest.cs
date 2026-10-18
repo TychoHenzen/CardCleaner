@@ -56,7 +56,7 @@ public class IrregularWorldMapScreenTest
     {
         TestServices.Reset();
         TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry(new GodotAssetPaths()));
-        _session = new GameSessionService();
+        _session = TestServices.CreateGameSession();
         TestServices.Container.RegisterSingleton<IGameSessionService>(_session);
         AddNode(_session);
         _screen = CreateScreen();
