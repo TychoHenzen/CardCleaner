@@ -17,9 +17,9 @@ public class TilePassabilityDiagnosticTest
     public void FindPassabilityMismatches()
     {
         var registry = new BiomeRegistry();
-        registry.RegisterDefaultBiomes();
+        registry.RegisterDefaultBiomes(new GodotAssetPaths());
 
-        var tileRegistry = new TileRegistry();
+        var tileRegistry = new TileRegistry(new GodotAssetPaths());
 
         var missingTiles = new List<string>();
         var passabilityMismatches = new List<string>();

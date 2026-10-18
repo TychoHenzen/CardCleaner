@@ -120,16 +120,19 @@ public partial class CompositionRoot : Node
         AddOwnedChild(inputService);
         container.RegisterSingleton<IInputService>(inputService);
 
-        var tileRegistry = new TileRegistry();
+        var assetPaths = new GodotAssetPaths();
+        container.RegisterSingleton<IAssetPaths>(assetPaths);
+
+        var tileRegistry = new TileRegistry(assetPaths);
         container.RegisterSingleton<ITileRegistry>(tileRegistry);
         container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
 
         var biomeRegistry = new BiomeRegistry();
-        biomeRegistry.RegisterDefaultBiomes();
+        biomeRegistry.RegisterDefaultBiomes(assetPaths);
         container.RegisterSingleton<IBiomeCatalog>(biomeRegistry);
         // ASSUMPTION: the issues ask for [Service], but AutoServiceProvider only discovers Nodes in the current scene;
         // the generators are plain classes, so the composition root registers them.
-        var transitionPairs = new TransitionPairs(new CompiledTransitionResolver().GetAllTransitionPairs());
+        var transitionPairs = new TransitionPairs(new CompiledTransitionResolver(assetPaths).GetAllTransitionPairs());
         container.RegisterSingleton<IGridMapGenerator>(
             new GridMapGenerator(tileRegistry, tileRegistry, biomeRegistry, transitionPairs));
         container.RegisterSingleton<IMeshMapGenerator>(

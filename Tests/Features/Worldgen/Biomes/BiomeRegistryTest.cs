@@ -1,5 +1,6 @@
 using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 
 namespace CardCleaner.Tests.Features.Worldgen.Biomes;
@@ -108,7 +109,7 @@ public class BiomeRegistryTest
     [TestCase]
     public void TestRegisterDefaultBiomesCreatesAllBiomes()
     {
-        _registry.RegisterDefaultBiomes();
+        _registry.RegisterDefaultBiomes(new GodotAssetPaths());
 
         AssertThat(_registry.Count).IsEqual(10);
         AssertThat(_registry.GetBiome("plains")).IsNotNull();
@@ -126,7 +127,7 @@ public class BiomeRegistryTest
     [TestCase]
     public void TestDefaultBiomesKeepTheirTilesJsonContent()
     {
-        _registry.RegisterDefaultBiomes();
+        _registry.RegisterDefaultBiomes(new GodotAssetPaths());
 
         // Pinned from the biomes section of Data/Tiles/tiles.json on master (#205): affinity signature, blocked
         // percentage, passable tile count and blocked tile count for each default biome.

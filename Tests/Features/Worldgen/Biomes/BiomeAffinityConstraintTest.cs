@@ -27,7 +27,7 @@ public partial class BiomeAffinityConstraintTest
         _grid = new WfcGrid(10, 10, new[] { "fire_tile", "water_tile", "neutral_tile" });
 
         // Create tile registry with tiles that have AllowedBiomes set
-        _tileRegistry = new TileRegistry();
+        _tileRegistry = new TileRegistry(new GodotAssetPaths());
         _tileCatalog = new TileRegistryWfcCatalog(_tileRegistry);
         _tileRegistry.RegisterTile(new TileDefinition(
             "fire_tile",

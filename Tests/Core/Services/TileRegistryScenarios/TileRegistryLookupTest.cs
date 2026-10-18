@@ -52,7 +52,7 @@ public class TileRegistryLookupTest : TileRegistryTestBase
                 Sources = new Dictionary<string, Dictionary<string, AtlasMapping.TileAtlasRect>>()
             };
             File.WriteAllText(absolutePath, JsonSerializer.Serialize(mapping));
-            var original = TileDataLoader.LoadTileRegistry();
+            var original = TileDataLoader.LoadTileRegistry(new GodotAssetPaths());
 
             _registry.Reload(null, mappingPath);
 

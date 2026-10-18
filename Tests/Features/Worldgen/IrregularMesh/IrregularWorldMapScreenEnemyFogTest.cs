@@ -36,7 +36,7 @@ public class IrregularWorldMapScreenEnemyFogTest
     public async Task Setup()
     {
         TestServices.Reset();
-        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
+        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry(new GodotAssetPaths()));
         var session = new GameSessionService();
         TestServices.Container.RegisterSingleton<IGameSessionService>(session);
         AddNode(session);

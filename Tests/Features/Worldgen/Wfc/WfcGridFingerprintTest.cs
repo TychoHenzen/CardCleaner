@@ -37,13 +37,13 @@ public class WfcGridFingerprintTest
     [TestCategory("Unit")]
     public static void DefaultSessionGridPathMatchesMasterFingerprint()
     {
-        var tileRegistry = new TileRegistry();
+        var tileRegistry = new TileRegistry(new GodotAssetPaths());
         var biomeRegistry = new BiomeRegistry();
-        biomeRegistry.RegisterDefaultBiomes();
+        biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var rng = RandomSources.Create(GridSeed);
         var gradient = new CardBasedGradient(MapCards(), rng);
         var biomeProvider = new BiomeMapGenerator(biomeRegistry, gradient.GetSignatureAt, GridSize);
-        var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
+        var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),
             new TileRegistryWfcCatalog(tileRegistry));

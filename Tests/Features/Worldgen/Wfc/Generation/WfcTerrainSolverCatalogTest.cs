@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Core.Services;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.Generation;
 
@@ -17,7 +18,7 @@ public class WfcTerrainSolverCatalogTest
     [TestCategory("Unit")]
     public static void SolveGraphWithCatalogWithoutCatalogThrows()
     {
-        var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
+        var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
         var solver = new WfcTerrainSolver(transitionPairs, null);
 
         AssertThrown(() => solver.SolveGraphWithCatalog(Array.Empty<int[]>(), Array.Empty<string>(), 1UL, null))

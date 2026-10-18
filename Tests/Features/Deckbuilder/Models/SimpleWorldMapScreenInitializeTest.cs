@@ -125,11 +125,11 @@ public class SimpleWorldMapScreenInitializeTest
     }
 
     [TestCase]
-    public void ACompiledAtlasRegistryGivesTheLayersTheLoadersTileSet()
+    public static void ACompiledAtlasRegistryGivesTheLayersTheLoadersTileSet()
     {
         var errors = new List<string>();
         var previousSink = ILog.Sink;
-        var registry = new TileRegistry();
+        var registry = new TileRegistry(new GodotAssetPaths());
         var layer = new TileMapLayer();
         var screen = new SimpleWorldMapScreen { TerrainLayer = layer };
         try
@@ -153,11 +153,11 @@ public class SimpleWorldMapScreenInitializeTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void AnAtlasWhoseImageDoesNotLoadLeavesTheRegistryOnTheOriginalTileset()
+    public static void AnAtlasWhoseImageDoesNotLoadLeavesTheRegistryOnTheOriginalTileset()
     {
         var mappingPath = $"user://world-map-atlas-{Guid.NewGuid():N}.json";
         var absolutePath = ProjectSettings.GlobalizePath(mappingPath);
-        var registry = new TileRegistry();
+        var registry = new TileRegistry(new GodotAssetPaths());
         var layer = new TileMapLayer();
         var screen = new SimpleWorldMapScreen { TerrainLayer = layer };
         try
@@ -178,7 +178,8 @@ public class SimpleWorldMapScreenInitializeTest
             components.Initialize(registry);
 
             AssertBool(registry.UsingCompiledAtlas).IsFalse();
-            AssertString(registry.TilesetPath).IsEqual(TileDataLoader.LoadTileRegistry().TilesetPath);
+            AssertString(registry.TilesetPath)
+                .IsEqual(TileDataLoader.LoadTileRegistry(new GodotAssetPaths()).TilesetPath);
             AssertInt(components.TileSize).IsEqual(registry.TilesetConfig.BaseTileSize.X);
             AssertThat(layer.TileSet).IsNotSame(CompiledAtlasLoader.LoadCompiledTileSet());
         }

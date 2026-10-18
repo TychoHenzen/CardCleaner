@@ -122,7 +122,7 @@ public class CompiledAtlasFilesAndMappingTest : CompiledAtlasLoaderTestBase
         // Non-compositable tiles should be in atlas_mapping
         AssertThat(_mapping).IsNotNull();
 
-        var registry = new TileRegistry();
+        var registry = new TileRegistry(new GodotAssetPaths());
         var nonCompositableTiles = registry.GetAllTiles()
             .Where(t => !t.IsCompositable && t.SourceId == TileRegistry.DefaultSourceId)
             .ToList();

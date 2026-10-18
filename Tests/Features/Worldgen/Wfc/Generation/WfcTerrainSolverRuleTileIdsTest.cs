@@ -22,8 +22,8 @@ public class WfcTerrainSolverRuleTileIdsTest
     [TestCategory("Unit")]
     public static void RuleTileIdsAreTheTransitionIdsBeforeGapTilesAreAdded()
     {
-        var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
-        var registry = new TileRegistry();
+        var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var registry = new TileRegistry(new GodotAssetPaths());
         // A passable tile without auto-tile variants is a gap tile. Its id is unique, so no transition names it.
         registry.RegisterTile(new TileDefinition(ProbeGapTileId, "Probe", TilePassability.Passable, Vector2I.Zero));
 

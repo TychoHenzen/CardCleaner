@@ -26,7 +26,7 @@ public class DualGridOverlayBuilderTest
     [TestCategory("Unit")]
     public static void SingleAutoTileCellProducesTheExpectedBitmask()
     {
-        var registry = new TileRegistry();
+        var registry = new TileRegistry(new GodotAssetPaths());
         var autoTileId = registry.GetAllTiles().First(tile => tile.HasAutoTileVariants).Id;
         var baseTileId = DualGridOverlayBuilder.ResolveDefaultPassableTileId(registry);
         var background = Filled(3, 3, baseTileId);
@@ -48,13 +48,13 @@ public class DualGridOverlayBuilderTest
     [TestCategory("Unit")]
     public static void AllBitmasksStayInCorner16Range()
     {
-        var tileRegistry = new TileRegistry();
+        var tileRegistry = new TileRegistry(new GodotAssetPaths());
         var biomeRegistry = new BiomeRegistry();
-        biomeRegistry.RegisterDefaultBiomes();
+        biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var rng = RandomSources.Create(4242);
         var gradient = new CardBasedGradient(MapCards(), rng);
         var biomeProvider = new BiomeMapGenerator(biomeRegistry, gradient.GetSignatureAt, GridSize);
-        var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
+        var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),
             new TileRegistryWfcCatalog(tileRegistry));

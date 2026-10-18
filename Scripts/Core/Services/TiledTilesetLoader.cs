@@ -19,9 +19,9 @@ public static class TiledTilesetLoader
     /// <summary>
     /// Load tiles from a TMX map file (loads all referenced tilesets).
     /// </summary>
-    public static TileRegistryResult LoadFromTmx(string tmxPath)
+    public static TileRegistryResult LoadFromTmx(IAssetPaths paths, string tmxPath)
     {
-        var absolutePath = ProjectSettings.GlobalizePath(tmxPath);
+        var absolutePath = paths.Globalize(tmxPath);
         if (!File.Exists(absolutePath))
         {
             ILog.Print($"[TiledTilesetLoader] TMX file not found: {absolutePath}");
@@ -30,7 +30,7 @@ public static class TiledTilesetLoader
 
         try
         {
-            return ReadTmx(absolutePath, tmxPath);
+            return ReadTmx(paths, absolutePath, tmxPath);
         }
         catch (Exception ex)
         {
@@ -39,7 +39,7 @@ public static class TiledTilesetLoader
         }
     }
 
-    private static TileRegistryResult ReadTmx(string absolutePath, string tmxPath)
+    private static TileRegistryResult ReadTmx(IAssetPaths paths, string absolutePath, string tmxPath)
     {
         var doc = XDocument.Load(absolutePath);
         var map = doc.Root;
@@ -51,7 +51,7 @@ public static class TiledTilesetLoader
 
         var tmxDir = Path.GetDirectoryName(absolutePath) ?? "";
         var allTiles = new List<TileDefinition>();
-        var config = LoadReferencedTilesets(map, tmxDir, allTiles);
+        var config = LoadReferencedTilesets(paths, map, tmxDir, allTiles);
 
         ILog.Print($"[TiledTilesetLoader] Loaded {allTiles.Count} tiles from TMX {tmxPath}");
         return new TileRegistryResult("", allTiles, config ?? TilesetConfig.Default);
@@ -61,7 +61,8 @@ public static class TiledTilesetLoader
     /// Loads every tileset referenced by the map into <paramref name="allTiles"/> and returns the
     /// config of the first one.
     /// </summary>
-    private static TilesetConfig? LoadReferencedTilesets(XElement map, string tmxDir, List<TileDefinition> allTiles)
+    private static TilesetConfig? LoadReferencedTilesets(
+        IAssetPaths paths, XElement map, string tmxDir, List<TileDefinition> allTiles)
     {
         TilesetConfig? config = null;
 
@@ -77,7 +78,7 @@ public static class TiledTilesetLoader
 
             ILog.Print($"[TiledTilesetLoader] Loading tileset from TMX: {source} (firstgid={firstGid})");
 
-            var result = LoadFromTsx(tsxAbsolutePath, firstGid);
+            var result = LoadFromTsx(paths, tsxAbsolutePath, firstGid);
             allTiles.AddRange(result.Tiles);
 
             // Use config from first tileset
@@ -90,9 +91,9 @@ public static class TiledTilesetLoader
     /// <summary>
     /// Load tiles from a TSX tileset file.
     /// </summary>
-    public static TileRegistryResult LoadFromTsx(string tsxPath, int sourceId = 0)
+    public static TileRegistryResult LoadFromTsx(IAssetPaths paths, string tsxPath, int sourceId = 0)
     {
-        var absolutePath = ProjectSettings.GlobalizePath(tsxPath);
+        var absolutePath = paths.Globalize(tsxPath);
         if (!File.Exists(absolutePath))
         {
             ILog.Print($"[TiledTilesetLoader] TSX file not found: {absolutePath}");
@@ -173,6 +174,6 @@ public static class TiledTilesetLoader
     /// <summary>
     /// Loads a TMX map file with full tile resolution support.
     /// </summary>
-    internal static TmxMapData? LoadTmxMap(string tmxPath)
-        => TmxMapLoader.LoadTmxMap(tmxPath);
+    internal static TmxMapData? LoadTmxMap(IAssetPaths paths, string tmxPath)
+        => TmxMapLoader.LoadTmxMap(paths, tmxPath);
 }

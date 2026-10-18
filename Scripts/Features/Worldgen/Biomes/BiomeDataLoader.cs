@@ -5,7 +5,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 
@@ -17,11 +16,11 @@ public static class BiomeDataLoader
     /// <summary>
     /// Load biome definitions from a tiles JSON file. Returns no biomes when the file is missing or unreadable.
     /// </summary>
-    public static Dictionary<string, BiomeData> LoadBiomes(string? path = null)
+    public static Dictionary<string, BiomeData> LoadBiomes(IAssetPaths paths, string? path = null)
     {
         path ??= TileDataLoader.DefaultTilesPath;
 
-        var absolutePath = ProjectSettings.GlobalizePath(path);
+        var absolutePath = paths.Globalize(path);
         if (!File.Exists(absolutePath))
         {
             ILog.Print($"[BiomeDataLoader] File not found for biomes: {absolutePath}");

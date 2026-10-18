@@ -35,7 +35,7 @@ public abstract class GameSessionServiceTestBase
     public async Task Setup()
     {
         // Load the real tile registry so map generation works
-        _tileRegistry = new TileRegistry();
+        _tileRegistry = new TileRegistry(new GodotAssetPaths());
 
         // SimpleMapData looks the tile registry up in the container
         TestServices.Container.RegisterSingleton<ITileRegistry>(_tileRegistry);

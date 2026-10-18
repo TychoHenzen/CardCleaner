@@ -9,6 +9,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.Mocks;
@@ -36,7 +37,7 @@ public class ConnectivityVerificationTest
     public void Setup()
     {
         _registry = new BiomeRegistry();
-        _registry.RegisterDefaultBiomes();
+        _registry.RegisterDefaultBiomes(new GodotAssetPaths());
         _tileRegistry = MockTileRegistry.CreateWithTestTiles();
     }
 

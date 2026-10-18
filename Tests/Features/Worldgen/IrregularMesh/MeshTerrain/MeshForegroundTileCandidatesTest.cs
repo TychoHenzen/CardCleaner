@@ -21,12 +21,12 @@ public class MeshForegroundTileCandidatesTest
     public void Setup()
     {
         _biomes = new BiomeRegistry();
-        _biomes.RegisterDefaultBiomes();
+        _biomes.RegisterDefaultBiomes(new GodotAssetPaths());
     }
 
     private static TileRegistry MixedLayerRegistry()
     {
-        var registry = new TileRegistry();
+        var registry = new TileRegistry(new GodotAssetPaths());
         registry.Clear();
         registry.RegisterTile(Tile("grass", TileLayer.Terrain));
         registry.RegisterTile(Tile("dirt", TileLayer.Terrain));
@@ -50,7 +50,7 @@ public class MeshForegroundTileCandidatesTest
     [TestCase]
     public void TheShippedRegistryYieldsTerrainTilesOnly()
     {
-        var registry = new TileRegistry();
+        var registry = new TileRegistry(new GodotAssetPaths());
 
         var candidates = MeshForegroundTileCandidates.Collect(registry, _biomes);
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling.Transitions;
 using Godot;
 
@@ -25,19 +26,22 @@ public class CompiledTransitionResolver : ITransitionResolver
     /// <summary>
     /// Creates a resolver with the default transition map path.
     /// </summary>
-    public CompiledTransitionResolver() : this(DefaultTransitionMapPath, DefaultCompiledAtlasSourceId)
+    /// <param name="paths">Maps the res:// transition map path to a file system path.</param>
+    public CompiledTransitionResolver(IAssetPaths paths)
+        : this(paths, DefaultTransitionMapPath, DefaultCompiledAtlasSourceId)
     {
     }
 
     /// <summary>
     /// Creates a resolver with a custom transition map path.
     /// </summary>
+    /// <param name="paths">Maps the res:// transition map path to a file system path.</param>
     /// <param name="transitionMapPath">Path to the transition_map.json file.</param>
     /// <param name="compiledAtlasSourceId">Source ID for the compiled atlas in the TileSet.</param>
-    public CompiledTransitionResolver(string transitionMapPath, int compiledAtlasSourceId)
+    public CompiledTransitionResolver(IAssetPaths paths, string transitionMapPath, int compiledAtlasSourceId)
     {
         _compiledAtlasSourceId = compiledAtlasSourceId;
-        _transitionMap = TransitionMapLoader.Load(transitionMapPath);
+        _transitionMap = TransitionMapLoader.Load(paths, transitionMapPath);
     }
 
     /// <summary>

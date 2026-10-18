@@ -56,9 +56,9 @@ public class GridMapGoldenTest
     // Generates through the grid generator the cabinet hands the session, with the seed and size the session derives.
     private static async Task<string> GenerateAsync(List<CardSignature> cards)
     {
-        var tileRegistry = new TileRegistry();
+        var tileRegistry = new TileRegistry(new GodotAssetPaths());
         var biomeRegistry = new BiomeRegistry();
-        biomeRegistry.RegisterDefaultBiomes();
+        biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var generator = new GridMapGenerator(
             tileRegistry, tileRegistry, biomeRegistry, CompiledTransitionPairs.Load());
         var seeds = cards.ToArray();

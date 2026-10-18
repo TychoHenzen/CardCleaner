@@ -1,5 +1,5 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
@@ -15,7 +15,7 @@ internal sealed class TerrainTransitionResolver
     {
         _usingCompiledAtlas = usingCompiledAtlas;
         if (usingCompiledAtlas)
-            _transitionResolver = new CompiledTransitionResolver();
+            _transitionResolver = new CompiledTransitionResolver(new GodotAssetPaths());
     }
 
     public bool UsingCompiledAtlas => _usingCompiledAtlas;

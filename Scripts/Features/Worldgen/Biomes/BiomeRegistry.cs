@@ -44,9 +44,9 @@ public class BiomeRegistry : IBiomeCatalog
     /// <summary>
     /// Load biomes from tiles.json data file
     /// </summary>
-    public void LoadFromData(string? path = null)
+    public void LoadFromData(IAssetPaths paths, string? path = null)
     {
-        var biomeData = BiomeDataLoader.LoadBiomes(path);
+        var biomeData = BiomeDataLoader.LoadBiomes(paths, path);
         if (biomeData.Count == 0)
         {
             ILog.Print("[BiomeRegistry] No biomes loaded from data");
@@ -65,5 +65,5 @@ public class BiomeRegistry : IBiomeCatalog
     /// <summary>
     /// Register all biomes from tiles.json data file.
     /// </summary>
-    public void RegisterDefaultBiomes() => LoadFromData();
+    public void RegisterDefaultBiomes(IAssetPaths paths) => LoadFromData(paths);
 }

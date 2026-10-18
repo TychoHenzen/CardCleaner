@@ -90,7 +90,7 @@ public class GridMapWfcTimingsTest
     /// <summary>The grid WFC setup WfcGridFingerprintTest uses: default biomes, two map cards, a shared RNG.</summary>
     private sealed class WfcSetup
     {
-        public TileRegistry TileRegistry { get; } = new();
+        public TileRegistry TileRegistry { get; } = new(new GodotAssetPaths());
         public BiomeRegistry BiomeRegistry { get; } = new();
         public IRandom Rng { get; } = RandomSources.Create(Seed);
         public CardBasedGradient Gradient { get; }
@@ -99,10 +99,11 @@ public class GridMapWfcTimingsTest
 
         public WfcSetup()
         {
-            BiomeRegistry.RegisterDefaultBiomes();
+            BiomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
             Gradient = new CardBasedGradient(MapCards(), Rng);
             BiomeProvider = new BiomeMapGenerator(BiomeRegistry, Gradient.GetSignatureAt, Size);
-            var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
+            var transitionPairs =
+                new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
             WfcGenerator = new WfcMapGenerator(
                 new WfcAdjacencyRules(transitionPairs),
                 new TileRegistryWfcCatalog(TileRegistry));

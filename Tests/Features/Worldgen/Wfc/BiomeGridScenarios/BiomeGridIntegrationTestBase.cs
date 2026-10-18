@@ -36,7 +36,7 @@ public abstract class BiomeGridIntegrationTestBase
 
         // Create a tile registry with test tiles
         // Tiles need AllowedBiomes set for BiomeAffinityConstraint to work
-        _tileRegistry = new TileRegistry();
+        _tileRegistry = new TileRegistry(new GodotAssetPaths());
         _tileRegistry.Clear(); // Clear production tiles loaded by constructor
         _tileRegistry.RegisterTile(new TileDefinition(
             "fire_tile",

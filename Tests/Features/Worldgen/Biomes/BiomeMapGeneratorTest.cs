@@ -1,6 +1,7 @@
 using System;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Tests.Features.Worldgen.Support;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -20,7 +21,7 @@ public class BiomeMapGeneratorTest
     public void Setup()
     {
         _registry = new BiomeRegistry();
-        _registry.RegisterDefaultBiomes();
+        _registry.RegisterDefaultBiomes(new GodotAssetPaths());
         _rng = RandomSources.Create();
         _rng.Seed = 12345;
     }

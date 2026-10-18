@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Text.Json;
 using CardCleaner.Scripts.Core.Interfaces;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.AutoTiling.Transitions;
 
@@ -16,11 +15,11 @@ internal static class TransitionMapLoader
         PropertyNameCaseInsensitive = true
     };
 
-    internal static CompiledTransitionMap Load(string path)
+    internal static CompiledTransitionMap Load(IAssetPaths paths, string path)
     {
         try
         {
-            var absolutePath = ProjectSettings.GlobalizePath(path);
+            var absolutePath = paths.Globalize(path);
             if (!File.Exists(absolutePath))
             {
                 ILog.Print($"[CompiledTransitionResolver] Transition map not found: {absolutePath}");

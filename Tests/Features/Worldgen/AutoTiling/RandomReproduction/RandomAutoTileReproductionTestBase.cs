@@ -22,8 +22,8 @@ public abstract class RandomAutoTileReproductionTestBase
     [BeforeTest]
     public void Setup()
     {
-        _registry = new TileRegistry();
-        _resolver = new CompiledTransitionResolver();
+        _registry = new TileRegistry(new GodotAssetPaths());
+        _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
 
         var transitionPath = ProjectSettings.GlobalizePath(TransitionMapPath);
         if (File.Exists(transitionPath))

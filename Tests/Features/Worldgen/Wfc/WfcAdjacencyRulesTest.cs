@@ -1,4 +1,5 @@
 using System.Linq;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 
@@ -8,7 +9,7 @@ namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 [RequireGodotRuntime]
 public class WfcAdjacencyRulesTest
 {
-    private readonly CompiledTransitionResolver _resolver = new();
+    private readonly CompiledTransitionResolver _resolver = new(new GodotAssetPaths());
 
     [TestCase]
     public void TestPairConstructorPopulatesCompiledTransitions()
