@@ -26,7 +26,9 @@ public class MeshTerrainFingerprintTest
     public static void FactoryPathWithCardsMatchesMasterFingerprint()
     {
         var generator = TerrainGeneratorFactory.Create(
-            new TileRegistry(new GodotAssetPaths()), MeshMapGeneratorFixture.DefaultBiomes(), CompiledTransitionPairs.Load());
+            new TileRegistry(new GodotAssetPaths()),
+            MeshMapGeneratorFixture.DefaultBiomes(),
+            CompiledTransitionPairs.Load());
         var cards = MeshMapGeneratorFixture.TerrainCards();
         var mesh = generator.GenerateWithSampler(
             3, TerrainGeneratorFactory.CardSampler(cards, 4242), 4242, relaxationIterations: 8);
