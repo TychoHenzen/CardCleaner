@@ -14,7 +14,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session.Generation;
 internal sealed class MapGenerationCoordinator
 {
     private readonly Node _owner;
-    private readonly SessionWorld _world;
+    private readonly ISessionWorld _world;
     private readonly GenerationTracker _tracker;
 
     internal event Action<IGeneratedMap>? GeneratedMapReady;
@@ -28,7 +28,7 @@ internal sealed class MapGenerationCoordinator
 
     internal MapGenerationCoordinator(
         Node owner,
-        SessionWorld world,
+        ISessionWorld world,
         GenerationTracker tracker)
     {
         _owner = owner;
