@@ -64,10 +64,10 @@ public class DualGridRenderingUtilityTest
         // Test all 16 possible bitmask values (0-15)
         for (var expected = 0; expected < 16; expected++)
         {
-            var hasNW = (expected & NeighborBitmaskCorner.NorthWest) != 0;
-            var hasNE = (expected & NeighborBitmaskCorner.NorthEast) != 0;
-            var hasSW = (expected & NeighborBitmaskCorner.SouthWest) != 0;
-            var hasSE = (expected & NeighborBitmaskCorner.SouthEast) != 0;
+            var hasNW = (expected & (int)NeighborCorner.NorthWest) != 0;
+            var hasNE = (expected & (int)NeighborCorner.NorthEast) != 0;
+            var hasSW = (expected & (int)NeighborCorner.SouthWest) != 0;
+            var hasSE = (expected & (int)NeighborCorner.SouthEast) != 0;
 
             var dataGrid = new[,]
             {
@@ -103,7 +103,7 @@ public class DualGridRenderingUtilityTest
         // Visual (1,1) samples: NW=(0,0), NE=(1,0), SW=(0,1), SE=(1,1)
         // Only (0,0) satisfies x%2==0 && y%2==0
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, IsDataCellFilled);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthWest); // 8
+        AssertThat(mask).IsEqual((int)NeighborCorner.NorthWest); // 8
     }
 
     // ==================== Visual Tile Position ====================

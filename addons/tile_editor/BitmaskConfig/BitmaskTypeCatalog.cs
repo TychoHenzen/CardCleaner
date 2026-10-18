@@ -42,7 +42,7 @@ internal static class BitmaskTypeCatalog
     /// </summary>
     internal static int GetEdgeCount(int bitmask)
     {
-        return BitOperations.PopCount((uint)(bitmask & NeighborBitmask8.AllEdges));
+        return BitOperations.PopCount((uint)(bitmask & (int)Neighbor8.AllEdges));
     }
 }
 #endif

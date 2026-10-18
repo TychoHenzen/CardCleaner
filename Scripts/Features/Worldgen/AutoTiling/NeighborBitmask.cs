@@ -9,18 +9,6 @@ namespace CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 /// </summary>
 public static class NeighborBitmask
 {
-    /// <summary>North neighbor bit (0b0001)</summary>
-    public const int North = 1;
-
-    /// <summary>East neighbor bit (0b0010)</summary>
-    public const int East = 2;
-
-    /// <summary>South neighbor bit (0b0100)</summary>
-    public const int South = 4;
-
-    /// <summary>West neighbor bit (0b1000)</summary>
-    public const int West = 8;
-
     /// <summary>
     ///     Direction offsets for NESW, matching bitmask bit order.
     ///     Index 0 = North (0,-1), Index 1 = East (1,0), Index 2 = South (0,1), Index 3 = West (-1,0)
@@ -101,27 +89,31 @@ public static class NeighborBitmask
     /// <summary>
     ///     Check if a specific direction bit is set in a bitmask.
     /// </summary>
-    public static bool HasDirection(int bitmask, int direction) => (bitmask & direction) != 0;
+    public static bool HasDirection(int bitmask, Neighbor4 direction) => (bitmask & (int)direction) != 0;
 
     /// <summary>
     ///     Check if north neighbor is set.
     /// </summary>
-    public static bool HasNorth(int bitmask) => HasDirection(bitmask, North);
+    public static bool HasNorth(int bitmask) =>
+        HasDirection(bitmask, Neighbor4.North);
 
     /// <summary>
     ///     Check if east neighbor is set.
     /// </summary>
-    public static bool HasEast(int bitmask) => HasDirection(bitmask, East);
+    public static bool HasEast(int bitmask) =>
+        HasDirection(bitmask, Neighbor4.East);
 
     /// <summary>
     ///     Check if south neighbor is set.
     /// </summary>
-    public static bool HasSouth(int bitmask) => HasDirection(bitmask, South);
+    public static bool HasSouth(int bitmask) =>
+        HasDirection(bitmask, Neighbor4.South);
 
     /// <summary>
     ///     Check if west neighbor is set.
     /// </summary>
-    public static bool HasWest(int bitmask) => HasDirection(bitmask, West);
+    public static bool HasWest(int bitmask) =>
+        HasDirection(bitmask, Neighbor4.West);
 
     /// <summary>
     ///     Get a human-readable description of a bitmask.

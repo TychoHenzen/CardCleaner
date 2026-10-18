@@ -26,10 +26,10 @@ public static class DualGridAutoTile
 
         // Build bitmask using Corner16 format: NE=1, SE=2, SW=4, NW=8
         var mask = 0;
-        if (hasNE) mask |= NeighborBitmaskCorner.NorthEast; // 1
-        if (hasSE) mask |= NeighborBitmaskCorner.SouthEast; // 2
-        if (hasSW) mask |= NeighborBitmaskCorner.SouthWest; // 4
-        if (hasNW) mask |= NeighborBitmaskCorner.NorthWest; // 8
+        if (hasNE) mask |= (int)NeighborCorner.NorthEast; // 1
+        if (hasSE) mask |= (int)NeighborCorner.SouthEast; // 2
+        if (hasSW) mask |= (int)NeighborCorner.SouthWest; // 4
+        if (hasNW) mask |= (int)NeighborCorner.NorthWest; // 8
 
         return mask;
     }
@@ -51,10 +51,10 @@ public static class DualGridAutoTile
 
         // Build bitmask using Corner16 format: NE=1, SE=2, SW=4, NW=8
         var mask = 0;
-        if (hasNE) mask |= NeighborBitmaskCorner.NorthEast; // 1
-        if (hasSE) mask |= NeighborBitmaskCorner.SouthEast; // 2
-        if (hasSW) mask |= NeighborBitmaskCorner.SouthWest; // 4
-        if (hasNW) mask |= NeighborBitmaskCorner.NorthWest; // 8
+        if (hasNE) mask |= (int)NeighborCorner.NorthEast; // 1
+        if (hasSE) mask |= (int)NeighborCorner.SouthEast; // 2
+        if (hasSW) mask |= (int)NeighborCorner.SouthWest; // 4
+        if (hasNW) mask |= (int)NeighborCorner.NorthWest; // 8
 
         return mask;
     }
@@ -115,14 +115,14 @@ public static class DualGridAutoTile
 
         // Corners only valid when both adjacent edges are set (blob constraint)
         // AND the actual corner data cell is filled
-        return BitIf(hasN, NeighborBitmask8.North)
-               | BitIf(hasE, NeighborBitmask8.East)
-               | BitIf(hasS, NeighborBitmask8.South)
-               | BitIf(hasW, NeighborBitmask8.West)
-               | BitIf(hasNE & hasN & hasE, NeighborBitmask8.NorthEast)
-               | BitIf(hasSE & hasE & hasS, NeighborBitmask8.SouthEast)
-               | BitIf(hasSW & hasS & hasW, NeighborBitmask8.SouthWest)
-               | BitIf(hasNW & hasW & hasN, NeighborBitmask8.NorthWest);
+        return BitIf(hasN, (int)Neighbor8.North)
+               | BitIf(hasE, (int)Neighbor8.East)
+               | BitIf(hasS, (int)Neighbor8.South)
+               | BitIf(hasW, (int)Neighbor8.West)
+               | BitIf(hasNE & hasN & hasE, (int)Neighbor8.NorthEast)
+               | BitIf(hasSE & hasE & hasS, (int)Neighbor8.SouthEast)
+               | BitIf(hasSW & hasS & hasW, (int)Neighbor8.SouthWest)
+               | BitIf(hasNW & hasW & hasN, (int)Neighbor8.NorthWest);
     }
 
     private static int BitIf(bool condition, int bit)
@@ -138,10 +138,10 @@ public static class DualGridAutoTile
     /// <returns>8-bit Blob47 bitmask</returns>
     public static int Corner16ToFull8(int corner16Mask)
     {
-        var hasNE = (corner16Mask & NeighborBitmaskCorner.NorthEast) != 0;
-        var hasSE = (corner16Mask & NeighborBitmaskCorner.SouthEast) != 0;
-        var hasSW = (corner16Mask & NeighborBitmaskCorner.SouthWest) != 0;
-        var hasNW = (corner16Mask & NeighborBitmaskCorner.NorthWest) != 0;
+        var hasNE = (corner16Mask & (int)NeighborCorner.NorthEast) != 0;
+        var hasSE = (corner16Mask & (int)NeighborCorner.SouthEast) != 0;
+        var hasSW = (corner16Mask & (int)NeighborCorner.SouthWest) != 0;
+        var hasNW = (corner16Mask & (int)NeighborCorner.NorthWest) != 0;
 
         return CornersToFull8Bitmask(hasNE, hasSE, hasSW, hasNW);
     }
@@ -156,10 +156,10 @@ public static class DualGridAutoTile
     public static int Full8ToCorner16(int full8Mask)
     {
         var mask = 0;
-        if ((full8Mask & NeighborBitmask8.NorthEast) != 0) mask |= NeighborBitmaskCorner.NorthEast; // 1
-        if ((full8Mask & NeighborBitmask8.SouthEast) != 0) mask |= NeighborBitmaskCorner.SouthEast; // 2
-        if ((full8Mask & NeighborBitmask8.SouthWest) != 0) mask |= NeighborBitmaskCorner.SouthWest; // 4
-        if ((full8Mask & NeighborBitmask8.NorthWest) != 0) mask |= NeighborBitmaskCorner.NorthWest; // 8
+        if ((full8Mask & (int)Neighbor8.NorthEast) != 0) mask |= (int)NeighborCorner.NorthEast; // 1
+        if ((full8Mask & (int)Neighbor8.SouthEast) != 0) mask |= (int)NeighborCorner.SouthEast; // 2
+        if ((full8Mask & (int)Neighbor8.SouthWest) != 0) mask |= (int)NeighborCorner.SouthWest; // 4
+        if ((full8Mask & (int)Neighbor8.NorthWest) != 0) mask |= (int)NeighborCorner.NorthWest; // 8
         return mask;
     }
 

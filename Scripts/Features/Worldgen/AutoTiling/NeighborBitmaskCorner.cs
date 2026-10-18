@@ -10,18 +10,6 @@ namespace CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 /// </summary>
 public static class NeighborBitmaskCorner
 {
-    /// <summary>NE corner bit (0b0001)</summary>
-    public const int NorthEast = 1;
-
-    /// <summary>SE corner bit (0b0010)</summary>
-    public const int SouthEast = 2;
-
-    /// <summary>SW corner bit (0b0100)</summary>
-    public const int SouthWest = 4;
-
-    /// <summary>NW corner bit (0b1000)</summary>
-    public const int NorthWest = 8;
-
     /// <summary>
     ///     Direction offsets for diagonal corners, matching bitmask bit order.
     ///     Index 0 = NE (1,-1), Index 1 = SE (1,1), Index 2 = SW (-1,1), Index 3 = NW (-1,-1)
@@ -116,19 +104,19 @@ public static class NeighborBitmaskCorner
     /// <summary>
     ///     Check if a specific corner bit is set in a bitmask.
     /// </summary>
-    public static bool HasCorner(int bitmask, int corner) => (bitmask & corner) != 0;
+    public static bool HasCorner(int bitmask, NeighborCorner corner) => (bitmask & (int)corner) != 0;
 
     /// <summary>Check if NE corner is set.</summary>
-    public static bool HasNorthEast(int bitmask) => HasCorner(bitmask, NorthEast);
+    public static bool HasNorthEast(int bitmask) => HasCorner(bitmask, NeighborCorner.NorthEast);
 
     /// <summary>Check if SE corner is set.</summary>
-    public static bool HasSouthEast(int bitmask) => HasCorner(bitmask, SouthEast);
+    public static bool HasSouthEast(int bitmask) => HasCorner(bitmask, NeighborCorner.SouthEast);
 
     /// <summary>Check if SW corner is set.</summary>
-    public static bool HasSouthWest(int bitmask) => HasCorner(bitmask, SouthWest);
+    public static bool HasSouthWest(int bitmask) => HasCorner(bitmask, NeighborCorner.SouthWest);
 
     /// <summary>Check if NW corner is set.</summary>
-    public static bool HasNorthWest(int bitmask) => HasCorner(bitmask, NorthWest);
+    public static bool HasNorthWest(int bitmask) => HasCorner(bitmask, NeighborCorner.NorthWest);
 
     /// <summary>
     ///     Get a human-readable description of a bitmask.

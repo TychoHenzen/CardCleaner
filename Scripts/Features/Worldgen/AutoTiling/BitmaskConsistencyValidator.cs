@@ -63,9 +63,9 @@ public static class BitmaskConsistencyValidator
                 // A.NE and B.NW share data cell [vy-1, vx]
                 // A.SE and B.SW share data cell [vy, vx]
                 CheckSharedCorner(violations, posA, posB, overlayA, overlayB,
-                    new SharedCorner(NeighborBitmaskCorner.NorthEast, NeighborBitmaskCorner.NorthWest, "NE", "NW"));
+                    new SharedCorner((int)NeighborCorner.NorthEast, (int)NeighborCorner.NorthWest, "NE", "NW"));
                 CheckSharedCorner(violations, posA, posB, overlayA, overlayB,
-                    new SharedCorner(NeighborBitmaskCorner.SouthEast, NeighborBitmaskCorner.SouthWest, "SE", "SW"));
+                    new SharedCorner((int)NeighborCorner.SouthEast, (int)NeighborCorner.SouthWest, "SE", "SW"));
             }
 
             // Check vertical neighbor (tile below)
@@ -75,9 +75,9 @@ public static class BitmaskConsistencyValidator
                 // A.SW and B.NW share data cell [vy, vx-1]
                 // A.SE and B.NE share data cell [vy, vx]
                 CheckSharedCorner(violations, posA, posB, overlayA, overlayB,
-                    new SharedCorner(NeighborBitmaskCorner.SouthWest, NeighborBitmaskCorner.NorthWest, "SW", "NW"));
+                    new SharedCorner((int)NeighborCorner.SouthWest, (int)NeighborCorner.NorthWest, "SW", "NW"));
                 CheckSharedCorner(violations, posA, posB, overlayA, overlayB,
-                    new SharedCorner(NeighborBitmaskCorner.SouthEast, NeighborBitmaskCorner.NorthEast, "SE", "NE"));
+                    new SharedCorner((int)NeighborCorner.SouthEast, (int)NeighborCorner.NorthEast, "SE", "NE"));
             }
         }
 
