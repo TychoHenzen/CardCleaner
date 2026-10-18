@@ -4,8 +4,9 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 namespace CardCleaner.Scripts.Core.Services.TilesetLoading.WangSets;
 
 /// <summary>
-/// A Tiled wangid decoded into "terrain present" flags. Tiled orders the eight positions
-/// N, NE, E, SE, S, SW, W, NW; position i is stored in bit i of the mask.
+/// A Tiled wangid decoded into "terrain present" flags. Tiled orders the
+/// eight positions N, NE, E, SE, S, SW, W, NW; position i is stored in bit i
+/// of the mask.
 /// </summary>
 internal readonly struct WangId
 {
@@ -27,7 +28,8 @@ internal readonly struct WangId
     private const int NorthWest = 7;
 
     /// <summary>
-    /// Decodes a wangid string; returns null when it does not hold exactly eight values.
+    /// Decodes a wangid string; returns null when it does not hold exactly
+    /// eight values.
     /// </summary>
     internal static WangId? Parse(string wangidStr, int terrainColorIndex)
     {

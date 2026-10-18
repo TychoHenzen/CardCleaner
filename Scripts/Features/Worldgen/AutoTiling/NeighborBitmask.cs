@@ -94,22 +94,26 @@ public static class NeighborBitmask
     /// <summary>
     ///     Check if north neighbor is set.
     /// </summary>
-    public static bool HasNorth(int bitmask) => HasDirection(bitmask, Neighbor4.North);
+    public static bool HasNorth(int bitmask) =>
+        HasDirection(bitmask, Neighbor4.North);
 
     /// <summary>
     ///     Check if east neighbor is set.
     /// </summary>
-    public static bool HasEast(int bitmask) => HasDirection(bitmask, Neighbor4.East);
+    public static bool HasEast(int bitmask) =>
+        HasDirection(bitmask, Neighbor4.East);
 
     /// <summary>
     ///     Check if south neighbor is set.
     /// </summary>
-    public static bool HasSouth(int bitmask) => HasDirection(bitmask, Neighbor4.South);
+    public static bool HasSouth(int bitmask) =>
+        HasDirection(bitmask, Neighbor4.South);
 
     /// <summary>
     ///     Check if west neighbor is set.
     /// </summary>
-    public static bool HasWest(int bitmask) => HasDirection(bitmask, Neighbor4.West);
+    public static bool HasWest(int bitmask) =>
+        HasDirection(bitmask, Neighbor4.West);
 
     /// <summary>
     ///     Get a human-readable description of a bitmask.

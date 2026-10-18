@@ -110,7 +110,8 @@ public static class NeighborBitmask8
         return NormalizeToBlobMask(mask) == (mask & (int)Neighbor8.All);
     }
 
-    private static int KeepCornerIfEdgesSet(int mask, Neighbor8 corner, Neighbor8 edgeA, Neighbor8 edgeB)
+    private static int KeepCornerIfEdgesSet(
+        int mask, Neighbor8 corner, Neighbor8 edgeA, Neighbor8 edgeB)
     {
         var required = (int)(corner | edgeA | edgeB);
         return (mask & required) == required ? (int)corner : 0;
@@ -118,7 +119,8 @@ public static class NeighborBitmask8
 
     /// <summary>
     ///     Get all 47 valid blob mask values.
-    ///     These are the only masks that can occur with blob-normalized computation.
+    ///     These are the only masks that can occur with
+    ///     blob-normalized computation.
     /// </summary>
     public static IReadOnlyList<int> GetValid47Masks()
     {
@@ -171,11 +173,15 @@ public static class NeighborBitmask8
 
     // Helper methods for checking individual directions
     public static bool HasNorth(int mask) => (mask & (int)Neighbor8.North) != 0;
-    public static bool HasNorthEast(int mask) => (mask & (int)Neighbor8.NorthEast) != 0;
+    public static bool HasNorthEast(int mask) =>
+        (mask & (int)Neighbor8.NorthEast) != 0;
     public static bool HasEast(int mask) => (mask & (int)Neighbor8.East) != 0;
-    public static bool HasSouthEast(int mask) => (mask & (int)Neighbor8.SouthEast) != 0;
+    public static bool HasSouthEast(int mask) =>
+        (mask & (int)Neighbor8.SouthEast) != 0;
     public static bool HasSouth(int mask) => (mask & (int)Neighbor8.South) != 0;
-    public static bool HasSouthWest(int mask) => (mask & (int)Neighbor8.SouthWest) != 0;
+    public static bool HasSouthWest(int mask) =>
+        (mask & (int)Neighbor8.SouthWest) != 0;
     public static bool HasWest(int mask) => (mask & (int)Neighbor8.West) != 0;
-    public static bool HasNorthWest(int mask) => (mask & (int)Neighbor8.NorthWest) != 0;
+    public static bool HasNorthWest(int mask) =>
+        (mask & (int)Neighbor8.NorthWest) != 0;
 }
