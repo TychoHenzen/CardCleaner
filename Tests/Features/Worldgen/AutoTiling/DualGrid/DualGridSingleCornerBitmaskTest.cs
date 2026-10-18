@@ -39,7 +39,7 @@ public class DualGridSingleCornerBitmaskTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthEast); // 1
+        AssertThat(mask).IsEqual((int)NeighborCorner.NorthEast); // 1
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public class DualGridSingleCornerBitmaskTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.SouthEast); // 2
+        AssertThat(mask).IsEqual((int)NeighborCorner.SouthEast); // 2
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public class DualGridSingleCornerBitmaskTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.SouthWest); // 4
+        AssertThat(mask).IsEqual((int)NeighborCorner.SouthWest); // 4
     }
 
     /// <summary>
@@ -87,6 +87,6 @@ public class DualGridSingleCornerBitmaskTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthWest); // 8
+        AssertThat(mask).IsEqual((int)NeighborCorner.NorthWest); // 8
     }
 }

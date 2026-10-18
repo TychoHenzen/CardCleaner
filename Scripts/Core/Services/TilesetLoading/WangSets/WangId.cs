@@ -71,10 +71,10 @@ internal readonly struct WangId
     private int EdgeBitmask()
     {
         var bitmask = 0;
-        if (Has(North)) bitmask |= NeighborBitmask8.North;
-        if (Has(East)) bitmask |= NeighborBitmask8.East;
-        if (Has(South)) bitmask |= NeighborBitmask8.South;
-        if (Has(West)) bitmask |= NeighborBitmask8.West;
+        if (Has(North)) bitmask |= (int)Neighbor8.North;
+        if (Has(East)) bitmask |= (int)Neighbor8.East;
+        if (Has(South)) bitmask |= (int)Neighbor8.South;
+        if (Has(West)) bitmask |= (int)Neighbor8.West;
         return bitmask;
     }
 }

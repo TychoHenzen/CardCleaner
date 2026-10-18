@@ -50,7 +50,7 @@ public class Blob47ComputeMaskTest
         var mask = NeighborBitmask8.Compute(new Vector2I(1, 1), "test", tileIds, new Vector2I(3, 3));
 
         // W + E
-        var expected = NeighborBitmask8.West | NeighborBitmask8.East;
+        var expected = (int)Neighbor8.West | (int)Neighbor8.East;
         AssertThat(mask).IsEqual(expected);
     }
 
@@ -66,7 +66,7 @@ public class Blob47ComputeMaskTest
         var mask = NeighborBitmask8.Compute(new Vector2I(1, 1), "test", tileIds, new Vector2I(3, 3));
 
         // N + W + NW (all valid because N and W are present)
-        var expected = NeighborBitmask8.North | NeighborBitmask8.West | NeighborBitmask8.NorthWest;
+        var expected = (int)Neighbor8.North | (int)Neighbor8.West | (int)Neighbor8.NorthWest;
         AssertThat(mask).IsEqual(expected);
     }
 
@@ -90,8 +90,8 @@ public class Blob47ComputeMaskTest
     {
         var validMasks = NeighborBitmask8.GetValid47Masks();
 
-        var edgesOnlyCount = validMasks.Count(m => (m & NeighborBitmask8.AllCorners) == 0);
-        var fullCornersCount = validMasks.Count(m => (m & NeighborBitmask8.AllCorners) == NeighborBitmask8.AllCorners);
+        var edgesOnlyCount = validMasks.Count(m => (m & (int)Neighbor8.AllCorners) == 0);
+        var fullCornersCount = validMasks.Count(m => (m & (int)Neighbor8.AllCorners) == (int)Neighbor8.AllCorners);
 
         GD.Print("Blob47 Mask Statistics:");
         GD.Print($"  Total valid masks: {validMasks.Count}");

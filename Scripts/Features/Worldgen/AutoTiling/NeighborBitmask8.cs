@@ -13,23 +13,6 @@ namespace CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 /// </summary>
 public static class NeighborBitmask8
 {
-    // Edge bits (cardinal directions)
-    public const int North = 1;      // 0b00000001
-    public const int East = 4;       // 0b00000100
-    public const int South = 16;     // 0b00010000
-    public const int West = 64;      // 0b01000000
-
-    // Corner bits (diagonal directions)
-    public const int NorthEast = 2;  // 0b00000010
-    public const int SouthEast = 8;  // 0b00001000
-    public const int SouthWest = 32; // 0b00100000
-    public const int NorthWest = 128;// 0b10000000
-
-    // Combined masks for convenience
-    public const int AllEdges = North | East | South | West;      // 85 = 0b01010101
-    public const int AllCorners = NorthEast | SouthEast | SouthWest | NorthWest; // 170 = 0b10101010
-    public const int All = AllEdges | AllCorners;                  // 255
-
     /// <summary>
     ///     Direction offsets for all 8 directions, matching bitmask bit order.
     ///     Alternates: edge, corner, edge, corner, etc.
@@ -112,11 +95,11 @@ public static class NeighborBitmask8
     /// <returns>Blob-normalized mask (one of 47 valid values)</returns>
     public static int NormalizeToBlobMask(int rawMask)
     {
-        return (rawMask & AllEdges)
-               | KeepCornerIfEdgesSet(rawMask, NorthEast, North, East)
-               | KeepCornerIfEdgesSet(rawMask, SouthEast, East, South)
-               | KeepCornerIfEdgesSet(rawMask, SouthWest, South, West)
-               | KeepCornerIfEdgesSet(rawMask, NorthWest, West, North);
+        return (rawMask & (int)Neighbor8.AllEdges)
+               | KeepCornerIfEdgesSet(rawMask, Neighbor8.NorthEast, Neighbor8.North, Neighbor8.East)
+               | KeepCornerIfEdgesSet(rawMask, Neighbor8.SouthEast, Neighbor8.East, Neighbor8.South)
+               | KeepCornerIfEdgesSet(rawMask, Neighbor8.SouthWest, Neighbor8.South, Neighbor8.West)
+               | KeepCornerIfEdgesSet(rawMask, Neighbor8.NorthWest, Neighbor8.West, Neighbor8.North);
     }
 
     /// <summary>
@@ -124,13 +107,13 @@ public static class NeighborBitmask8
     /// </summary>
     public static bool IsValidBlobMask(int mask)
     {
-        return NormalizeToBlobMask(mask) == (mask & All);
+        return NormalizeToBlobMask(mask) == (mask & (int)Neighbor8.All);
     }
 
-    private static int KeepCornerIfEdgesSet(int mask, int corner, int edgeA, int edgeB)
+    private static int KeepCornerIfEdgesSet(int mask, Neighbor8 corner, Neighbor8 edgeA, Neighbor8 edgeB)
     {
-        var required = corner | edgeA | edgeB;
-        return (mask & required) == required ? corner : 0;
+        var required = (int)(corner | edgeA | edgeB);
+        return (mask & required) == required ? (int)corner : 0;
     }
 
     /// <summary>
@@ -174,7 +157,7 @@ public static class NeighborBitmask8
     public static string GetDescription(int bitmask)
     {
         if (bitmask == 0) return "None (0)";
-        if (bitmask == All) return "All (255)";
+        if (bitmask == (int)Neighbor8.All) return "All (255)";
 
         var parts = new List<string>();
         for (var i = 0; i < 8; i++)
@@ -187,12 +170,12 @@ public static class NeighborBitmask8
     }
 
     // Helper methods for checking individual directions
-    public static bool HasNorth(int mask) => (mask & North) != 0;
-    public static bool HasNorthEast(int mask) => (mask & NorthEast) != 0;
-    public static bool HasEast(int mask) => (mask & East) != 0;
-    public static bool HasSouthEast(int mask) => (mask & SouthEast) != 0;
-    public static bool HasSouth(int mask) => (mask & South) != 0;
-    public static bool HasSouthWest(int mask) => (mask & SouthWest) != 0;
-    public static bool HasWest(int mask) => (mask & West) != 0;
-    public static bool HasNorthWest(int mask) => (mask & NorthWest) != 0;
+    public static bool HasNorth(int mask) => (mask & (int)Neighbor8.North) != 0;
+    public static bool HasNorthEast(int mask) => (mask & (int)Neighbor8.NorthEast) != 0;
+    public static bool HasEast(int mask) => (mask & (int)Neighbor8.East) != 0;
+    public static bool HasSouthEast(int mask) => (mask & (int)Neighbor8.SouthEast) != 0;
+    public static bool HasSouth(int mask) => (mask & (int)Neighbor8.South) != 0;
+    public static bool HasSouthWest(int mask) => (mask & (int)Neighbor8.SouthWest) != 0;
+    public static bool HasWest(int mask) => (mask & (int)Neighbor8.West) != 0;
+    public static bool HasNorthWest(int mask) => (mask & (int)Neighbor8.NorthWest) != 0;
 }

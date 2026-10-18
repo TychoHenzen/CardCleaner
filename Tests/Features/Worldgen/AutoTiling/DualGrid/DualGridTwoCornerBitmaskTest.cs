@@ -24,7 +24,7 @@ public class DualGridTwoCornerBitmaskTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthEast | NeighborBitmaskCorner.SouthEast); // 3
+        AssertThat(mask).IsEqual((int)NeighborCorner.NorthEast | (int)NeighborCorner.SouthEast); // 3
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public class DualGridTwoCornerBitmaskTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthEast | NeighborBitmaskCorner.SouthWest); // 5
+        AssertThat(mask).IsEqual((int)NeighborCorner.NorthEast | (int)NeighborCorner.SouthWest); // 5
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public class DualGridTwoCornerBitmaskTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.SouthEast | NeighborBitmaskCorner.SouthWest); // 6
+        AssertThat(mask).IsEqual((int)NeighborCorner.SouthEast | (int)NeighborCorner.SouthWest); // 6
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ public class DualGridTwoCornerBitmaskTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthEast | NeighborBitmaskCorner.NorthWest); // 9
+        AssertThat(mask).IsEqual((int)NeighborCorner.NorthEast | (int)NeighborCorner.NorthWest); // 9
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public class DualGridTwoCornerBitmaskTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.SouthEast | NeighborBitmaskCorner.NorthWest); // 10
+        AssertThat(mask).IsEqual((int)NeighborCorner.SouthEast | (int)NeighborCorner.NorthWest); // 10
     }
 
     /// <summary>
@@ -104,6 +104,6 @@ public class DualGridTwoCornerBitmaskTest
         };
 
         var mask = DualGridAutoTile.ComputeBitmask(1, 1, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.SouthWest | NeighborBitmaskCorner.NorthWest); // 12
+        AssertThat(mask).IsEqual((int)NeighborCorner.SouthWest | (int)NeighborCorner.NorthWest); // 12
     }
 }

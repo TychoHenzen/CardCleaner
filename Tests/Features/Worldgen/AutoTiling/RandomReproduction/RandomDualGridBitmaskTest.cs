@@ -37,8 +37,8 @@ public class RandomDualGridBitmaskTest : RandomAutoTileReproductionTestBase
         // Only (0,0) is filled
         mask = DualGridAutoTile.ComputeBitmask(0, 0, IsDataFilled);
         // SE corner only = bitmask 2
-        if (mask != NeighborBitmaskCorner.SouthEast)
-            results.Add($"Visual (0,0) expected bitmask {NeighborBitmaskCorner.SouthEast} (SE), got {mask}");
+        if (mask != (int)NeighborCorner.SouthEast)
+            results.Add($"Visual (0,0) expected bitmask {(int)NeighborCorner.SouthEast} (SE), got {mask}");
 
         if (results.Count > 0)
         {
@@ -66,11 +66,11 @@ public class RandomDualGridBitmaskTest : RandomAutoTileReproductionTestBase
         var expectedMasks = new Dictionary<(int, int), int>
         {
             // Diagonal data cells should produce the NW+SE mask (10).
-            { (1, 1), NeighborBitmaskCorner.NorthWest | NeighborBitmaskCorner.SouthEast }, // 10
+            { (1, 1), (int)NeighborCorner.NorthWest | (int)NeighborCorner.SouthEast }, // 10
 
             // Visual tile at (2,2) samples (1,1), (2,1), (1,2), (2,2)
             // Filled: (1,1) and (2,2) = NW(8) + SE(2) = 10
-            { (2, 2), NeighborBitmaskCorner.NorthWest | NeighborBitmaskCorner.SouthEast }, // 10
+            { (2, 2), (int)NeighborCorner.NorthWest | (int)NeighborCorner.SouthEast }, // 10
         };
 
         var results = new List<string>();

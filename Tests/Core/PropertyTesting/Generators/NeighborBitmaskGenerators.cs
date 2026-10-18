@@ -17,7 +17,7 @@ public static class NeighborBitmaskGenerators
 
     public static Gen<int> Blob47WithEdgeCount(int count) =>
         Gen.Elements(NeighborBitmask8.GetValid47Masks()
-            .Where(m => CountSetBits(m & NeighborBitmask8.AllEdges) == count)
+            .Where(m => CountSetBits(m & (int)Neighbor8.AllEdges) == count)
             .ToArray());
 
     private static int CountSetBits(int mask)

@@ -44,10 +44,10 @@ internal static class WangSetTileLookup
         for (var corner16 = 0; corner16 < Corner16VariantCount; corner16++)
         {
             var full8Mask = DualGridAutoTile.CornersToFull8Bitmask(
-                (corner16 & NeighborBitmaskCorner.NorthEast) != 0,
-                (corner16 & NeighborBitmaskCorner.SouthEast) != 0,
-                (corner16 & NeighborBitmaskCorner.SouthWest) != 0,
-                (corner16 & NeighborBitmaskCorner.NorthWest) != 0);
+                (corner16 & (int)NeighborCorner.NorthEast) != 0,
+                (corner16 & (int)NeighborCorner.SouthEast) != 0,
+                (corner16 & (int)NeighborCorner.SouthWest) != 0,
+                (corner16 & (int)NeighborCorner.NorthWest) != 0);
 
             if (!context.WangData.BitmaskToTiles.TryGetValue((wangSetName, full8Mask), out var tilesForMask)
                 || tilesForMask.Count == 0)

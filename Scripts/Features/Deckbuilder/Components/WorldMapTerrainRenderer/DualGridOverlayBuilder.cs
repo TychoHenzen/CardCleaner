@@ -119,13 +119,13 @@ internal sealed class DualGridOverlayBuilder
     {
         var bitmask = 0;
         if (_registry.AreSameTerrainType(foregroundCorners[1], topTerrain))
-            bitmask |= NeighborBitmaskCorner.NorthEast;
+            bitmask |= (int)NeighborCorner.NorthEast;
         if (_registry.AreSameTerrainType(foregroundCorners[3], topTerrain))
-            bitmask |= NeighborBitmaskCorner.SouthEast;
+            bitmask |= (int)NeighborCorner.SouthEast;
         if (_registry.AreSameTerrainType(foregroundCorners[2], topTerrain))
-            bitmask |= NeighborBitmaskCorner.SouthWest;
+            bitmask |= (int)NeighborCorner.SouthWest;
         if (_registry.AreSameTerrainType(foregroundCorners[0], topTerrain))
-            bitmask |= NeighborBitmaskCorner.NorthWest;
+            bitmask |= (int)NeighborCorner.NorthWest;
         return bitmask;
     }
 

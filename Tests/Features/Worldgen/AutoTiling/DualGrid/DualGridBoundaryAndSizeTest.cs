@@ -24,7 +24,7 @@ public class DualGridBoundaryAndSizeTest
         // Visual (0,0) samples: NW=(-1,-1), NE=(0,-1), SW=(-1,0), SE=(0,0)
         // Only SE is in bounds
         var mask = DualGridAutoTile.ComputeBitmask(0, 0, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.SouthEast); // 2 - only SE is in bounds and true
+        AssertThat(mask).IsEqual((int)NeighborCorner.SouthEast); // 2 - only SE is in bounds and true
     }
 
     [TestCase]
@@ -39,7 +39,7 @@ public class DualGridBoundaryAndSizeTest
         // Visual (2,0) samples: NW=(1,-1), NE=(2,-1), SW=(1,0), SE=(2,0)
         // Only SW is in bounds (col=1 valid, row=0 valid); SE col=2 is out of bounds
         var mask = DualGridAutoTile.ComputeBitmask(2, 0, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.SouthWest); // 4
+        AssertThat(mask).IsEqual((int)NeighborCorner.SouthWest); // 4
     }
 
     [TestCase]
@@ -54,7 +54,7 @@ public class DualGridBoundaryAndSizeTest
         // Visual (0,2) samples: NW=(-1,1), NE=(0,1), SW=(-1,2), SE=(0,2)
         // Only NE is in bounds (col=0 valid, row=1 valid); SE row=2 is out of bounds
         var mask = DualGridAutoTile.ComputeBitmask(0, 2, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthEast); // 1
+        AssertThat(mask).IsEqual((int)NeighborCorner.NorthEast); // 1
     }
 
     [TestCase]
@@ -69,7 +69,7 @@ public class DualGridBoundaryAndSizeTest
         // Visual (2,2) samples: NW=(1,1), NE=(2,1), SW=(1,2), SE=(2,2)
         // Only NW is in bounds (col=1, row=1 valid); others are out of bounds
         var mask = DualGridAutoTile.ComputeBitmask(2, 2, dataGrid);
-        AssertThat(mask).IsEqual(NeighborBitmaskCorner.NorthWest); // 8
+        AssertThat(mask).IsEqual((int)NeighborCorner.NorthWest); // 8
     }
 
     // ==================== Visual Grid Size ====================

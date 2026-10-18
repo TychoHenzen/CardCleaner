@@ -24,49 +24,49 @@ public class Blob47CornerRuleTest
     public void TestNorthEastCornerRequiresNorthAndEast()
     {
         // NE corner alone is invalid
-        var neOnly = NeighborBitmask8.NorthEast;
+        var neOnly = (int)Neighbor8.NorthEast;
         AssertBool(NeighborBitmask8.IsValidBlobMask(neOnly)).IsFalse();
 
         // NE with N but not E is invalid
-        var neN = NeighborBitmask8.NorthEast | NeighborBitmask8.North;
+        var neN = (int)Neighbor8.NorthEast | (int)Neighbor8.North;
         AssertBool(NeighborBitmask8.IsValidBlobMask(neN)).IsFalse();
 
         // NE with E but not N is invalid
-        var neE = NeighborBitmask8.NorthEast | NeighborBitmask8.East;
+        var neE = (int)Neighbor8.NorthEast | (int)Neighbor8.East;
         AssertBool(NeighborBitmask8.IsValidBlobMask(neE)).IsFalse();
 
         // NE with both N and E is valid
-        var neNE = NeighborBitmask8.NorthEast | NeighborBitmask8.North | NeighborBitmask8.East;
+        var neNE = (int)Neighbor8.NorthEast | (int)Neighbor8.North | (int)Neighbor8.East;
         AssertBool(NeighborBitmask8.IsValidBlobMask(neNE)).IsTrue();
     }
 
     [TestCase]
     public void TestSouthEastCornerRequiresSouthAndEast()
     {
-        var seOnly = NeighborBitmask8.SouthEast;
+        var seOnly = (int)Neighbor8.SouthEast;
         AssertBool(NeighborBitmask8.IsValidBlobMask(seOnly)).IsFalse();
 
-        var seSE = NeighborBitmask8.SouthEast | NeighborBitmask8.South | NeighborBitmask8.East;
+        var seSE = (int)Neighbor8.SouthEast | (int)Neighbor8.South | (int)Neighbor8.East;
         AssertBool(NeighborBitmask8.IsValidBlobMask(seSE)).IsTrue();
     }
 
     [TestCase]
     public void TestSouthWestCornerRequiresSouthAndWest()
     {
-        var swOnly = NeighborBitmask8.SouthWest;
+        var swOnly = (int)Neighbor8.SouthWest;
         AssertBool(NeighborBitmask8.IsValidBlobMask(swOnly)).IsFalse();
 
-        var swSW = NeighborBitmask8.SouthWest | NeighborBitmask8.South | NeighborBitmask8.West;
+        var swSW = (int)Neighbor8.SouthWest | (int)Neighbor8.South | (int)Neighbor8.West;
         AssertBool(NeighborBitmask8.IsValidBlobMask(swSW)).IsTrue();
     }
 
     [TestCase]
     public void TestNorthWestCornerRequiresNorthAndWest()
     {
-        var nwOnly = NeighborBitmask8.NorthWest;
+        var nwOnly = (int)Neighbor8.NorthWest;
         AssertBool(NeighborBitmask8.IsValidBlobMask(nwOnly)).IsFalse();
 
-        var nwNW = NeighborBitmask8.NorthWest | NeighborBitmask8.North | NeighborBitmask8.West;
+        var nwNW = (int)Neighbor8.NorthWest | (int)Neighbor8.North | (int)Neighbor8.West;
         AssertBool(NeighborBitmask8.IsValidBlobMask(nwNW)).IsTrue();
     }
 
@@ -76,7 +76,7 @@ public class Blob47CornerRuleTest
     public void TestNormalizationClearsInvalidCorners()
     {
         // Raw mask with all corners but no edges
-        var raw = NeighborBitmask8.AllCorners; // 170
+        var raw = (int)Neighbor8.AllCorners; // 170
         var normalized = NeighborBitmask8.NormalizeToBlobMask(raw);
 
         // All corners should be cleared since no edges
@@ -87,7 +87,7 @@ public class Blob47CornerRuleTest
     public void TestNormalizationPreservesValidCorners()
     {
         // Raw mask with N+E edges and NE corner
-        var raw = NeighborBitmask8.North | NeighborBitmask8.East | NeighborBitmask8.NorthEast;
+        var raw = (int)Neighbor8.North | (int)Neighbor8.East | (int)Neighbor8.NorthEast;
         var normalized = NeighborBitmask8.NormalizeToBlobMask(raw);
 
         // All bits should be preserved
@@ -98,11 +98,11 @@ public class Blob47CornerRuleTest
     public void TestNormalizationClearsPartiallyValidCorners()
     {
         // N + NE (NE invalid because no E)
-        var raw = NeighborBitmask8.North | NeighborBitmask8.NorthEast;
+        var raw = (int)Neighbor8.North | (int)Neighbor8.NorthEast;
         var normalized = NeighborBitmask8.NormalizeToBlobMask(raw);
 
         // Only N should remain
-        AssertThat(normalized).IsEqual(NeighborBitmask8.North);
+        AssertThat(normalized).IsEqual((int)Neighbor8.North);
     }
 
     [TestCase]
