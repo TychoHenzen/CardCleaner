@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
@@ -144,7 +145,7 @@ public class BiomePreviewHostTest
         private static BiomeRegistry CreateDefault()
         {
             var registry = new BiomeRegistry();
-            registry.RegisterDefaultBiomes();
+            registry.RegisterDefaultBiomes(new GodotAssetPaths());
             return registry;
         }
     }

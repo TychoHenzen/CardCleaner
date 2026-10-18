@@ -99,7 +99,7 @@ public class GridMapWfcTimingsTest
 
         public WfcSetup()
         {
-            BiomeRegistry.RegisterDefaultBiomes();
+            BiomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
             Gradient = new CardBasedGradient(MapCards(), Rng);
             BiomeProvider = new BiomeMapGenerator(BiomeRegistry, Gradient.GetSignatureAt, Size);
             var transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();

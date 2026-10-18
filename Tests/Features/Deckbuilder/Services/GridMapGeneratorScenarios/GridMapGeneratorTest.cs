@@ -61,7 +61,7 @@ public class GridMapGeneratorTest
     {
         var tileRegistry = new TileRegistry();
         var biomeRegistry = new BiomeRegistry();
-        biomeRegistry.RegisterDefaultBiomes();
+        biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         return new GridMapGenerator(
             tileRegistry, tileRegistry, biomeRegistry, CompiledTransitionPairs.Load());
     }

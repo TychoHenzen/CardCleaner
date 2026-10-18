@@ -1,4 +1,8 @@
+using System.IO;
+using System.Linq;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 
@@ -13,7 +17,7 @@ public class BiomeDataLoaderTest
     [TestCategory("Unit")]
     public static void TestDefaultPathLoadsTheDataFileBiomes()
     {
-        var biomes = BiomeDataLoader.LoadBiomes();
+        var biomes = BiomeDataLoader.LoadBiomes(new GodotAssetPaths());
 
         AssertThat(biomes.Count).IsEqual(10);
     }
@@ -22,9 +26,51 @@ public class BiomeDataLoaderTest
     [TestCategory("Unit")]
     public static void TestMissingFileReturnsNoBiomes()
     {
-        var biomes = BiomeDataLoader.LoadBiomes("res://Data/Tiles/missing-biomes.json");
+        var biomes = BiomeDataLoader.LoadBiomes(new GodotAssetPaths(), "res://Data/Tiles/missing-biomes.json");
 
         AssertThat(biomes.Count).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TestFakeAssetPathsLoadsSameBiomesAsDefault()
+    {
+        var root = TempAssetPaths.CreateTempRoot();
+        try
+        {
+            var tilesDir = Path.Combine(root, "Data", "Tiles");
+            Directory.CreateDirectory(tilesDir);
+            File.Copy(new GodotAssetPaths().Globalize("res://Data/Tiles/tiles.json"),
+                Path.Combine(tilesDir, "tiles.json"));
+
+            var fromFake = BiomeDataLoader.LoadBiomes(new TempAssetPaths(root));
+            var fromGodot = BiomeDataLoader.LoadBiomes(new GodotAssetPaths());
+
+            AssertThat(fromFake.Count).IsEqual(10);
+            AssertThat(string.Join(",", fromFake.Keys.OrderBy(key => key)))
+                .IsEqual(string.Join(",", fromGodot.Keys.OrderBy(key => key)));
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TestFakeRootWithoutFileReturnsNoBiomes()
+    {
+        var root = TempAssetPaths.CreateTempRoot();
+        try
+        {
+            var biomes = BiomeDataLoader.LoadBiomes(new TempAssetPaths(root));
+
+            AssertThat(biomes.Count).IsEqual(0);
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
     }
 
     [TestCase]

@@ -26,7 +26,7 @@ public static class MeshMapGeneratorFixture
     public static BiomeRegistry DefaultBiomes()
     {
         var biomes = new BiomeRegistry();
-        biomes.RegisterDefaultBiomes();
+        biomes.RegisterDefaultBiomes(new GodotAssetPaths());
         return biomes;
     }
 

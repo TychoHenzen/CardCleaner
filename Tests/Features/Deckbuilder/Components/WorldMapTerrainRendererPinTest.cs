@@ -35,7 +35,7 @@ public class WorldMapTerrainRendererPinTest
     {
         var tileRegistry = new TileRegistry();
         var biomeRegistry = new BiomeRegistry();
-        biomeRegistry.RegisterDefaultBiomes();
+        biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var rng = RandomSources.Create(GridSeed);
         var gradient = new CardBasedGradient(MapCards(), rng);
         var biomeProvider = new BiomeMapGenerator(biomeRegistry, gradient.GetSignatureAt, GridSize);

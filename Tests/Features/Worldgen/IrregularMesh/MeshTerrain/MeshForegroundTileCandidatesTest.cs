@@ -21,7 +21,7 @@ public class MeshForegroundTileCandidatesTest
     public void Setup()
     {
         _biomes = new BiomeRegistry();
-        _biomes.RegisterDefaultBiomes();
+        _biomes.RegisterDefaultBiomes(new GodotAssetPaths());
     }
 
     private static TileRegistry MixedLayerRegistry()

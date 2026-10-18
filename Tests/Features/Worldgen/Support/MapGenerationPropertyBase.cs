@@ -1,6 +1,7 @@
 using System;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Tests.Core.PropertyTesting;
 using CardCleaner.Tests.Core.PropertyTesting.Generators;
@@ -25,7 +26,7 @@ public abstract class MapGenerationPropertyBase : PropertyTestBase
         base.SetupPropertyTest();
         CardSignatureArbitrary.Register();
         _registry = new BiomeRegistry();
-        _registry.RegisterDefaultBiomes();
+        _registry.RegisterDefaultBiomes(new GodotAssetPaths());
         _tileRegistry = MockTileRegistry.CreateWithTestTiles();
     }
 

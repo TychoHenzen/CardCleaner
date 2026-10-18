@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.Features.Worldgen.Support;
@@ -35,7 +36,7 @@ public class WfcPerformanceBenchmarkTest
     {
         _transitionPairs = new CompiledTransitionResolver().GetAllTransitionPairs().ToList();
         _biomeRegistry = new BiomeRegistry();
-        _biomeRegistry.RegisterDefaultBiomes();
+        _biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
     }
 
     [TestCase]
