@@ -7,19 +7,19 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 /// <summary>
 /// The map and random number generator produced by the current session's generation.
 /// </summary>
-internal sealed class SessionWorld
+internal sealed class SessionWorld : ISessionWorld
 {
-    internal IRandom Rng { get; set; } = RandomSources.Create();
+    public IRandom Rng { get; set; } = RandomSources.Create();
 
     /// <summary>Unified map interface.</summary>
-    internal IGeneratedMap? GeneratedMap { get; set; }
+    public IGeneratedMap? GeneratedMap { get; set; }
 
     /// <summary>Pathfinding adapter.</summary>
-    internal IMapData? MapData { get; set; }
+    public IMapData? MapData { get; set; }
 
-    internal int EnemyCount => GeneratedMap?.EnemyCount ?? 0;
+    public int EnemyCount => GeneratedMap?.EnemyCount ?? 0;
 
-    internal void ClearMap()
+    public void ClearMap()
     {
         GeneratedMap = null;
         MapData = null;

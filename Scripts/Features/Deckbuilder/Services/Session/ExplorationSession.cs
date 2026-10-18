@@ -9,29 +9,29 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 /// Runs autonomous exploration for a session and raises its events with cell ids and world positions, the same on
 /// both map kinds; each view converts them to its own coordinates.
 /// </summary>
-internal sealed class ExplorationSession
+internal sealed class ExplorationSession : IExplorationSession
 {
-    private readonly SessionWorld _world;
+    private readonly ISessionWorld _world;
     private ExplorationAI? _explorationAI;
     private Vector2? _playerWorldPosition;
     private int? _currentEnemyCellId;
     /// <summary>
     /// Moves the player has made since the session's map was cleared; the session paces exploration against it.
     /// </summary>
-    internal int MoveCount { get; private set; }
+    public int MoveCount { get; private set; }
 
     /// <summary>
     /// The line-of-sight checker the session's view handed over, or null for the registered or the simple checker.
     /// </summary>
-    internal IVisibilityChecker? VisibilityChecker { get; set; }
+    public IVisibilityChecker? VisibilityChecker { get; set; }
 
-    internal event Action<Vector2>? PlayerMovedWorld;
-    internal event Action<int>? EnemyDefeatedCell;
-    internal event Action<IReadOnlySet<int>>? VisitedCellsUpdated;
-    internal event Action<IReadOnlySet<int>, IReadOnlySet<int>>? VisibilityCellsUpdated;
-    internal event Action<IReadOnlyList<int>, int?>? PathCellsUpdated;
+    public event Action<Vector2>? PlayerMovedWorld;
+    public event Action<int>? EnemyDefeatedCell;
+    public event Action<IReadOnlySet<int>>? VisitedCellsUpdated;
+    public event Action<IReadOnlySet<int>, IReadOnlySet<int>>? VisibilityCellsUpdated;
+    public event Action<IReadOnlyList<int>, int?>? PathCellsUpdated;
 
-    internal ExplorationSession(SessionWorld world)
+    internal ExplorationSession(ISessionWorld world)
     {
         _world = world;
     }
@@ -39,7 +39,7 @@ internal sealed class ExplorationSession
     /// <summary>
     /// Starts exploring the current map. Returns false when there is no map to explore.
     /// </summary>
-    internal bool Start()
+    public bool Start()
     {
         ILog.Print($"Starting exploration... ({_world.EnemyCount} enemies on map)");
 
@@ -60,7 +60,7 @@ internal sealed class ExplorationSession
         return true;
     }
 
-    internal ExplorationStepOutcome Step()
+    public ExplorationStepOutcome Step()
     {
         if (_explorationAI == null || _explorationAI.StepExploration())
             return ExplorationStepOutcome.Continuing;
@@ -75,7 +75,7 @@ internal sealed class ExplorationSession
     /// <summary>
     /// Moves the player onto the defeated enemy's cell and removes the enemy from the map.
     /// </summary>
-    internal void ResolveDefeatedEnemy()
+    public void ResolveDefeatedEnemy()
     {
         if (!_currentEnemyCellId.HasValue) return;
 
@@ -94,7 +94,7 @@ internal sealed class ExplorationSession
         _currentEnemyCellId = null;
     }
 
-    internal void Clear()
+    public void Clear()
     {
         _explorationAI = null;
         _playerWorldPosition = null;
