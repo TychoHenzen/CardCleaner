@@ -218,17 +218,6 @@ public sealed record TileDefinition
     public bool IsAllowedInBiome(string biomeId) => AllowedBiomes == null || AllowedBiomes.Contains(biomeId);
 
     /// <summary>
-    /// Check if this decoration tile should appear based on its density probability.
-    /// </summary>
-    /// <param name="rng">Random number generator</param>
-    /// <returns>True if decoration should appear, false to skip</returns>
-    public bool ShouldPlaceDecoration(IRandom rng)
-    {
-        if (Layer != TileLayer.Decoration) return true;
-        return rng.Randf() <= DecorationDensity;
-    }
-
-    /// <summary>
     /// Get the atlas coordinates for a specific auto-tile bitmask.
     /// For Corner16 format: bitmask is 0-15 (4-bit corner mask).
     /// For Blob47 format: bitmask is the raw 8-bit value, converted to index internally.
