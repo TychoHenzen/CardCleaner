@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 using Godot;
 
@@ -14,7 +16,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 /// </summary>
 internal static class TerrainGeneratorFactory
 {
-    internal static MeshTerrainGenerator Create(
+    internal static IMeshTerrainGenerator Create(
         ITileRegistry tileRegistry,
         BiomeSet biomes,
         TransitionPairs transitionPairs)
@@ -38,7 +40,7 @@ internal static class TerrainGeneratorFactory
 
         // The generator used to seed its own stream with exactly this cast; keep it so large seeds stay the same.
         var rng = RandomSources.Create((ulong)seed);
-        return new CardBasedGradient(inputCards, rng).GetSignatureAt;
+        return Gradients.FromCards(inputCards, rng).GetSignatureAt;
     }
 
     /// <summary>

@@ -11,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 /// <summary>
 /// Generates irregular mesh terrain using two-pass WFC.
 /// </summary>
-public class MeshTerrainGenerator
+public class MeshTerrainGenerator : IMeshTerrainGenerator
 {
     private readonly MeshTerrainWfcRunner _terrainWfc;
     private readonly BiomeSet _biomes;
