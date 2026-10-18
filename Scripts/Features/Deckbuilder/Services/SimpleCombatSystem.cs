@@ -82,7 +82,6 @@ public class SimpleCombatSystem : ICombatSystem
             IsPlayer = false
         };
 
-        // Convert player abilities to combat commands
         _playerCommands = (playerAbilities ?? new List<CardSignature>())
             .Select(CombatCommand.FromCardSignature).ToList();
 
