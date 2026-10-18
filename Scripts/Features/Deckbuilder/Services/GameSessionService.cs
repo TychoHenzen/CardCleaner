@@ -93,7 +93,8 @@ public partial class GameSessionService : Node, IGameSessionService, IDependent
             return;
         }
 
-        if (mapSeeds == null || mapSeeds.Count == 0 || abilityCards == null || abilityCards.Count == 0)
+        if (mapSeeds == null || mapSeeds.Count == 0
+            || abilityCards == null || abilityCards.Count == 0)
         {
             ILog.Error("Cannot start session with null or empty inputs");
             return;
@@ -106,7 +107,9 @@ public partial class GameSessionService : Node, IGameSessionService, IDependent
         var generationId = _generationTracker.BeginPending();
         _flow.State = SessionState.GeneratingMap;
 
-        ILog.Print($"Started session with {_mapSeeds.Count} map seed(s) and {_abilityCards.Count} ability cards");
+        ILog.Print(
+            $"Started session with {_mapSeeds.Count} map seed(s) "
+            + $"and {_abilityCards.Count} ability cards");
 
         // Start the game loop
         CallDeferred(MethodName.AdvanceSessionForGeneration, generationId);
