@@ -17,14 +17,14 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 internal static class TerrainGeneratorFactory
 {
     internal static IMeshTerrainGenerator Create(
-        ITileRegistry tileRegistry,
+        TileCatalogData tiles,
         BiomeSet biomes,
         TransitionPairs transitionPairs)
     {
-        // The solver and the mesh code share the registry: it drives the background and foreground solves and
+        // The solver and the mesh code share the catalog: it drives the background and foreground solves and
         // decides passability in the terrain-type map.
-        var setup = MeshTerrainWfcSetup.ForRegistry(transitionPairs.Pairs, tileRegistry);
-        var tileToTerrainType = AssignTerrainTypes(setup.Solver.RuleTileIds, tileRegistry);
+        var setup = MeshTerrainWfcSetup.ForCatalog(transitionPairs.Pairs, tiles);
+        var tileToTerrainType = AssignTerrainTypes(setup.Solver.RuleTileIds, tiles);
         return new MeshTerrainGenerator(setup, tileToTerrainType, biomes);
     }
 
@@ -48,14 +48,14 @@ internal static class TerrainGeneratorFactory
     /// </summary>
     private static Dictionary<string, int> AssignTerrainTypes(
         IReadOnlyList<string> allTerrainIds,
-        ITileRegistry tileRegistry)
+        TileCatalogData tiles)
     {
         var tileToTerrainType = new Dictionary<string, int>();
         var nextTerrainType = 1;
 
         foreach (var terrainId in allTerrainIds)
         {
-            var tileDef = tileRegistry.GetTile(terrainId);
+            var tileDef = tiles.GetTile(terrainId);
             bool isPassable = tileDef?.IsPassable ?? InferPassability(terrainId);
 
             tileToTerrainType[terrainId] = isPassable ? nextTerrainType++ : 0;

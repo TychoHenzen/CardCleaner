@@ -32,20 +32,20 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
 
     private const int RelaxationIterations = 8;
 
-    private readonly ITileRegistry _tileRegistry;
+    private readonly TileCatalogData _tiles;
     private readonly BiomeSet _biomes;
     private readonly TransitionPairs _transitionPairs;
     private readonly int _rings;
 
     /// <param name="rings">Rings of hexes around the mesh centre; more rings make a larger map.</param>
     public MeshMapGenerator(
-        ITileRegistry tileRegistry,
+        TileCatalogData tiles,
         BiomeSet biomes,
         TransitionPairs transitionPairs,
         int rings = DefaultRings)
     {
         _transitionPairs = transitionPairs ?? throw new ArgumentNullException(nameof(transitionPairs));
-        _tileRegistry = tileRegistry ?? throw new ArgumentNullException(nameof(tileRegistry));
+        _tiles = tiles ?? throw new ArgumentNullException(nameof(tiles));
         _biomes = biomes ?? throw new ArgumentNullException(nameof(biomes));
         ArgumentOutOfRangeException.ThrowIfLessThan(rings, 1);
         _rings = rings;
@@ -81,7 +81,7 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
         // The terrain generator takes an int seed; the session's ulong seed is cut to its low 32 bits.
         var seed = unchecked((int)config.Seed);
 
-        var terrain = TerrainGeneratorFactory.Create(_tileRegistry, _biomes, _transitionPairs);
+        var terrain = TerrainGeneratorFactory.Create(_tiles, _biomes, _transitionPairs);
         var sampler = TerrainGeneratorFactory.CardSampler(config.MapSeeds, seed);
         var mesh = terrain.GenerateWithSampler(rings, sampler, seed, RelaxationIterations);
         progress?.Report(0.9f);

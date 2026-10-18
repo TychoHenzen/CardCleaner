@@ -11,16 +11,16 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 internal sealed class MeshTerrainWfcRunner
 {
     private readonly IWfcTerrainSolver _solver;
-    private readonly ITileRegistry? _tileRegistry;
+    private readonly TileCatalogData? _tiles;
     private readonly MeshTerrainProjection _projection;
     private readonly MeshForegroundWfc _foregroundWfc;
 
     public MeshTerrainWfcRunner(MeshTerrainWfcSetup setup, Dictionary<string, int>? tileToTerrainType)
     {
         _solver = setup.Solver;
-        _tileRegistry = setup.TileRegistry;
-        _projection = new MeshTerrainProjection(setup.TileRegistry, tileToTerrainType);
-        _foregroundWfc = new MeshForegroundWfc(setup.TileRegistry, SolveForeground);
+        _tiles = setup.Tiles;
+        _projection = new MeshTerrainProjection(setup.Tiles, tileToTerrainType);
+        _foregroundWfc = new MeshForegroundWfc(setup.Tiles, SolveForeground);
     }
 
     private WfcGraphSolution SolveForeground(
@@ -43,7 +43,7 @@ internal sealed class MeshTerrainWfcRunner
             getBiomeAt,
             effectiveSize,
             seed,
-            tileId => _tileRegistry?.GetTile(tileId)?.HasAutoTileVariants == false);
+            tileId => _tiles?.GetTile(tileId)?.HasAutoTileVariants == false);
 
         if (!backgroundResult.Success || backgroundResult.TileIds == null)
         {

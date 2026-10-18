@@ -2,6 +2,7 @@ using System;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Tests.Core.PropertyTesting;
 using CardCleaner.Tests.Core.PropertyTesting.Generators;
@@ -19,6 +20,8 @@ public abstract class MapGenerationPropertyBase : PropertyTestBase
 {
     private BiomeRegistry _registry = null!;
     private MockTileRegistry _tileRegistry = null!;
+
+    protected ITileRegistry TileRegistry => _tileRegistry;
 
     [BeforeTest]
     public new void SetupPropertyTest()
@@ -57,7 +60,8 @@ public abstract class MapGenerationPropertyBase : PropertyTestBase
     protected void MapInvariantsHoldFor(CardSignature signature, int iterations)
     {
         MapProperty(8, 15, iterations, request =>
-            MapInvariants.Validate(GenerateMap(request, signature), request.Width, request.Height));
+            MapInvariants.Validate(
+                GenerateMap(request, signature), _tileRegistry, request.Width, request.Height));
     }
 
     protected SimpleMapData GenerateMap(MapRequest request)
@@ -70,7 +74,7 @@ public abstract class MapGenerationPropertyBase : PropertyTestBase
         var rng = RandomSources.Create(request.RngSeed);
         var gradient = new ConstantSignatureGradient(signature);
         var biomeProvider = BiomeMaps.Create(_registry.ToBiomeSet(), gradient.GetSignatureAt, request.Size);
-        var generator = GridMapGenerator.CreatePipeline(rng, biomeProvider, _tileRegistry, _tileRegistry);
+        var generator = GridMapGenerator.CreatePipeline(rng, biomeProvider, _tileRegistry.ToCatalogData());
         return generator.GenerateMap(request.Size);
     }
 }

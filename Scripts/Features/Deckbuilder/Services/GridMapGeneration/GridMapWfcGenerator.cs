@@ -71,7 +71,7 @@ internal sealed class GridMapWfcGenerator
             size,
             _context.Rng.Randi(),
             strengths,
-            tileId => _context.TileRegistry.GetTile(tileId)?.HasAutoTileVariants == false,
+            tileId => _context.Tiles.GetTile(tileId)?.HasAutoTileVariants == false,
             cancellationToken: cancellationToken);
         RecordTimings(result.Timings);
 
@@ -137,7 +137,7 @@ internal sealed class GridMapWfcGenerator
         for (var x = 0; x < size.X; x++)
         {
             var tileId = source[y, x];
-            var tile = _context.TileRegistry.GetTile(tileId);
+            var tile = _context.Tiles.GetTile(tileId);
             if (tile?.HasAutoTileVariants == true)
             {
                 destination[y, x] = tileId;

@@ -19,14 +19,15 @@ public partial class MapBorderAndTransitionProperties : MapGenerationPropertyBas
     [TestCase]
     public void Map_DecorationOverlaysHaveValidBitmasks()
     {
-        MapProperty(8, 15, 50, request => MapInvariants.DecorationBitmasksValid(GenerateMap(request)));
+        MapProperty(8, 15, 50, request => MapInvariants.DecorationBitmasksValid(GenerateMap(request), TileRegistry));
     }
 
     [TestCase]
     public void Map_DecorationOverlaysAreWithinMapBounds()
     {
         MapProperty(8, 15, 50, request =>
-            MapInvariants.DecorationOverlaysWithinVisualGrid(GenerateMap(request), request.Width, request.Height));
+            MapInvariants.DecorationOverlaysWithinVisualGrid(
+                GenerateMap(request), TileRegistry, request.Width, request.Height));
     }
 
     [TestCase]

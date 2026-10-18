@@ -9,27 +9,27 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 
 internal sealed class MeshForegroundWfc
 {
-    private readonly ITileRegistry? _tileRegistry;
+    private readonly TileCatalogData? _tiles;
     private readonly Func<int[][], IReadOnlyCollection<string>, ulong, Func<string, bool>?, WfcGraphSolution> _solve;
 
     public MeshForegroundWfc(
-        ITileRegistry? tileRegistry,
+        TileCatalogData? tiles,
         Func<int[][], IReadOnlyCollection<string>, ulong, Func<string, bool>?, WfcGraphSolution> solve)
     {
-        _tileRegistry = tileRegistry;
+        _tiles = tiles;
         _solve = solve;
     }
 
     public bool Generate(IrregularMesh mesh, BiomeSet biomes, ulong seed)
     {
-        var tileRegistry = _tileRegistry;
-        if (tileRegistry == null)
+        var tiles = _tiles;
+        if (tiles == null)
         {
-            ILog.Error("[MeshTerrainGen] Cannot run direct mesh WFC without tile registry");
+            ILog.Error("[MeshTerrainGen] Cannot run direct mesh WFC without tile catalog");
             return false;
         }
 
-        var initialTiles = MeshForegroundTileCandidates.Collect(tileRegistry, biomes.Ids);
+        var initialTiles = MeshForegroundTileCandidates.Collect(tiles, biomes.Ids);
         if (initialTiles.Count == 0)
         {
             ILog.Error("[MeshTerrainGen] No valid tiles for mesh WFC");
@@ -44,7 +44,7 @@ internal sealed class MeshForegroundWfc
             IrregularMeshNeighbors.BuildNeighbors(mesh),
             initialTiles,
             seed,
-            tileId => tileRegistry.GetTile(tileId) is { } tile && MeshForegroundTileCandidates.IsCandidate(tile));
+            tileId => tiles.GetTile(tileId) is { } tile && MeshForegroundTileCandidates.IsCandidate(tile));
 
         if (!solution.Success)
         {
@@ -53,11 +53,11 @@ internal sealed class MeshForegroundWfc
         }
 
         ILog.Print($"[MeshTerrainGen] Direct mesh WFC succeeded in {solution.Iterations} iterations");
-        AssignTiles(mesh, solution.CollapsedTiles, tileRegistry);
+        AssignTiles(mesh, solution.CollapsedTiles, tiles);
         return true;
     }
 
-    private static void AssignTiles(IrregularMesh mesh, string?[] collapsedTiles, ITileRegistry tileRegistry)
+    private static void AssignTiles(IrregularMesh mesh, string?[] collapsedTiles, TileCatalogData tiles)
     {
         var autoTileCount = 0;
 
@@ -72,7 +72,7 @@ internal sealed class MeshForegroundWfc
                 continue;
             }
 
-            var tile = tileRegistry.GetTile(tileId);
+            var tile = tiles.GetTile(tileId);
             var visibleTileId = tile?.HasAutoTileVariants == true ? tileId : null;
             vertex.ForegroundTileId = visibleTileId;
             vertex.TileId = visibleTileId;

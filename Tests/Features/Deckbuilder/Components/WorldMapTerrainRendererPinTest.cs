@@ -45,7 +45,7 @@ public class WorldMapTerrainRendererPinTest
             new WfcAdjacencyRules(transitionPairs),
             TileCatalogData.From(tileRegistry));
         var generator = GridMapGenerator.CreatePipeline(
-            rng, biomeProvider, tileRegistry, tileRegistry, wfcGenerator, biomeRegistry.ToBiomeSet(), gradient);
+            rng, biomeProvider, TileCatalogData.From(tileRegistry), wfcGenerator, biomeRegistry.ToBiomeSet(), gradient);
         var map = generator.GenerateMap(GridSize);
 
         var terrain = new TileMapLayer();

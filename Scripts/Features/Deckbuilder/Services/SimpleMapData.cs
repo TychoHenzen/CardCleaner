@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -11,12 +10,6 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 public class SimpleMapData : IGridMap
 {
     private HashSet<Vector2I>? _passableTilesSet;
-
-    /// <summary>
-    /// Registry the generator hands over for tile passability and transparency lookups.
-    /// Without one, positions outside <see cref="PassableTiles"/> are neither passable nor transparent.
-    /// </summary>
-    public ITileRegistry? TileRegistry { get; init; }
 
     public string[,] TileIds { get; set; } = new string[0, 0];
 
@@ -66,13 +59,9 @@ public class SimpleMapData : IGridMap
         if (!IsInBounds(pos))
             return false;
 
-        // Use PassableTiles as primary source (set during map generation)
-        if (PassableTiles.Count > 0)
-            return PassableTilesSet.Contains(pos);
-
-        // Fallback to tile registry lookup
-        var tile = LookupTile(pos);
-        return tile?.IsPassable ?? false;
+        // ASSUMPTION (#288): PassableTiles is the only source now that the map holds no registry;
+        // a map with no passable tiles reports no passable position.
+        return PassableTiles.Count > 0 && PassableTilesSet.Contains(pos);
     }
 
     public bool IsTransparent(Vector2I pos)
@@ -80,13 +69,8 @@ public class SimpleMapData : IGridMap
         if (!IsInBounds(pos))
             return false;
 
-        // Use PassableTiles as primary source (set during map generation)
-        // Most passable tiles are also transparent
-        if (PassableTiles.Count > 0 && PassableTilesSet.Contains(pos))
-            return true;
-
-        var tile = LookupTile(pos);
-        return tile?.IsTransparent ?? false;
+        // ASSUMPTION (#288): PassableTiles is the only source; most passable tiles are also transparent.
+        return PassableTiles.Count > 0 && PassableTilesSet.Contains(pos);
     }
 
     private bool IsInBounds(Vector2I pos)
@@ -95,15 +79,6 @@ public class SimpleMapData : IGridMap
     }
 
     private HashSet<Vector2I> PassableTilesSet => _passableTilesSet ??= new HashSet<Vector2I>(PassableTiles);
-
-    /// <summary>
-    /// Looks up the registry tile for an in-bounds position.
-    /// Returns null when no registry was handed over, so callers default to false.
-    /// </summary>
-    private TileDefinition? LookupTile(Vector2I pos)
-    {
-        return TileRegistry?.GetTile(TileIds[pos.Y, pos.X]);
-    }
 
     /// <summary>
     /// Gets the tile ID at a position. Returns empty string for out-of-bounds positions.

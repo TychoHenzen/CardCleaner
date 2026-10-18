@@ -48,7 +48,7 @@ public class WfcGridFingerprintTest
             new WfcAdjacencyRules(transitionPairs),
             TileCatalogData.From(tileRegistry));
         var generator = GridMapGenerator.CreatePipeline(
-            rng, biomeProvider, tileRegistry, tileRegistry, wfcGenerator, biomeRegistry.ToBiomeSet(), gradient);
+            rng, biomeProvider, TileCatalogData.From(tileRegistry), wfcGenerator, biomeRegistry.ToBiomeSet(), gradient);
 
         // ASSUMPTION: the progress and cancellation profiler that GridMapGenerator.GenerateAsync installs
         // does not change the map, so the pin runs GenerateMap with the default profiler.

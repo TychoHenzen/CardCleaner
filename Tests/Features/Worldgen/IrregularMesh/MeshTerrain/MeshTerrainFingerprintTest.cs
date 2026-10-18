@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -26,7 +27,7 @@ public class MeshTerrainFingerprintTest
     public static void FactoryPathWithCardsMatchesMasterFingerprint()
     {
         var generator = TerrainGeneratorFactory.Create(
-            new TileRegistry(new GodotAssetPaths()),
+            TileCatalogData.From(new TileRegistry(new GodotAssetPaths())),
             MeshMapGeneratorFixture.DefaultBiomes(),
             CompiledTransitionPairs.Load());
         var cards = MeshMapGeneratorFixture.TerrainCards();

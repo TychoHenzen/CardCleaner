@@ -40,6 +40,7 @@ public partial class MapSignatureProperties : MapGenerationPropertyBase
                 Arb.From(SignedMapRequests(8, 15)),
                 args => MapInvariants.Validate(
                     GenerateMap(args.Request, args.Signature),
+                    TileRegistry,
                     args.Request.Width,
                     args.Request.Height))
             .Iterations(50));

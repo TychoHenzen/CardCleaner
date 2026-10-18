@@ -9,6 +9,7 @@ using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using Godot;
 
@@ -56,11 +57,11 @@ public class GridMapGoldenTest
     // Generates through the grid generator the cabinet hands the session, with the seed and size the session derives.
     private static async Task<string> GenerateAsync(List<CardSignature> cards)
     {
-        var tileRegistry = new TileRegistry(new GodotAssetPaths());
+        var tiles = TileCatalogData.From(new TileRegistry(new GodotAssetPaths()));
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var generator = new GridMapGenerator(
-            tileRegistry, tileRegistry, biomeRegistry.ToBiomeSet(), CompiledTransitionPairs.Load());
+            tiles, biomeRegistry.ToBiomeSet(), CompiledTransitionPairs.Load());
         var seeds = cards.ToArray();
 
         var generated = await generator.GenerateAsync(new MapGenerationConfig

@@ -9,14 +9,14 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 
 internal sealed class MeshTerrainProjection
 {
-    private readonly ITileRegistry? _tileRegistry;
+    private readonly TileCatalogData? _tiles;
     private readonly Dictionary<string, int>? _tileToTerrainType;
 
     public MeshTerrainProjection(
-        ITileRegistry? tileRegistry,
+        TileCatalogData? tiles,
         Dictionary<string, int>? tileToTerrainType)
     {
-        _tileRegistry = tileRegistry;
+        _tiles = tiles;
         _tileToTerrainType = tileToTerrainType;
     }
 
@@ -49,7 +49,7 @@ internal sealed class MeshTerrainProjection
 
     public void ApplyFallbackTerrain(IrregularMesh mesh)
     {
-        var fallbackTile = _tileRegistry?.GetAllTiles()
+        var fallbackTile = _tiles?.GetAllTiles()
             .FirstOrDefault(tile => tile.IsPassable && !tile.HasAutoTileVariants);
         var fallbackId = fallbackTile?.Id ?? "floor";
         var fallbackTerrainType = GetFallbackTerrainType(fallbackId);

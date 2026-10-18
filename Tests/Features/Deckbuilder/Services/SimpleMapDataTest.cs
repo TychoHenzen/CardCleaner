@@ -243,16 +243,13 @@ public class SimpleMapDataTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TestTileOutsidePassableTilesReadsHandedRegistry()
+    public void TestTileOutsidePassableTilesIsNeitherPassableNorTransparent()
     {
-        var registry = new MockTileRegistry();
-        registry.RegisterTile(MockTileRegistry.CreateGapTile(Floor));
-        var withRegistry = CreateMapDataWithUnlistedFloor(registry);
-        var withoutRegistry = CreateMapDataWithUnlistedFloor(null);
+        var mapData = CreateMapDataWithUnlistedFloor();
         var unlisted = new Vector2I(1, 1);
 
-        AssertBool(withRegistry.IsTransparent(unlisted)).IsTrue();
-        AssertBool(withoutRegistry.IsTransparent(unlisted)).IsFalse();
+        AssertBool(mapData.IsTransparent(unlisted)).IsFalse();
+        AssertBool(mapData.IsPassable(unlisted)).IsFalse();
     }
 
     [TestCase]
@@ -265,14 +262,12 @@ public class SimpleMapDataTest
         AssertBool(mapData.IsPassable(new Vector2I(1, 1))).IsFalse();
     }
 
-    private static SimpleMapData CreateMapDataWithUnlistedFloor(
-        ITileRegistry? registry)
+    private static SimpleMapData CreateMapDataWithUnlistedFloor()
     {
         var mapData = new SimpleMapData
         {
             TileIds = new string[3, 3],
-            Size = new Vector2I(3, 3),
-            TileRegistry = registry
+            Size = new Vector2I(3, 3)
         };
         FillWithWalls(mapData.TileIds);
         SetFloor(mapData, 0, 0);

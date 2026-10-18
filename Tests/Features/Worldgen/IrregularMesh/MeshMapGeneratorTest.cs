@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -49,12 +50,13 @@ public class MeshMapGeneratorTest
         var registry = new TileRegistry(new GodotAssetPaths());
         var biomes = MeshMapGeneratorFixture.DefaultBiomes();
         var cards = MeshMapGeneratorFixture.TerrainCards();
-        var expected = TerrainGeneratorFactory.Create(registry, biomes, CompiledTransitionPairs.Load())
+        var expected = TerrainGeneratorFactory
+            .Create(TileCatalogData.From(registry), biomes, CompiledTransitionPairs.Load())
             .GenerateWithSampler(
                 SmallRings, TerrainGeneratorFactory.CardSampler(cards, Seed), Seed, relaxationIterations: 8);
 
         var generator = new IrregularMeshNs.MeshMapGenerator(
-            registry, biomes, CompiledTransitionPairs.Load(), SmallRings);
+            TileCatalogData.From(registry), biomes, CompiledTransitionPairs.Load(), SmallRings);
         var generated = (IrregularMeshNs.IMeshGeneratedMap)await generator.GenerateAsync(Config());
 
         var expectedTerrain = MeshMapGeneratorFixture.TerrainOf(expected);

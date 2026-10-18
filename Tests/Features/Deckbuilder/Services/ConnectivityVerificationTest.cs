@@ -56,8 +56,7 @@ public class ConnectivityVerificationTest
         return GridMapGenerator.CreatePipeline(
             rng,
             biomeProvider,
-            _tileRegistry,
-            _tileRegistry,  // ITileMetadataProvider
+            _tileRegistry.ToCatalogData(),
             wfcGenerator,
             biomes: _registry.ToBiomeSet(),
             gradient: gradient);
