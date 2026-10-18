@@ -49,7 +49,7 @@ internal sealed class BiomePreviewHost
             return;
         }
 
-        var distribution = BiomeDistributionCalculator.Calculate(cards, _catalog);
+        var distribution = BiomeDistributionCalculator.Calculate(cards, BiomeSet.From(_catalog.GetAllBiomes()));
         _biomePreview.UpdateDistribution(distribution);
     }
 

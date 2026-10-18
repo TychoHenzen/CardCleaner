@@ -50,6 +50,8 @@ public class MeshTerrainGenerator
             return mesh;
         }
 
+        var biomes = biomeRegistry.ToBiomeSet();
+
         if (signatureAt == null)
         {
             ILog.Error("[MeshTerrainGen] No signature sampler, using fallback terrain");
@@ -66,7 +68,7 @@ public class MeshTerrainGenerator
 
         return _terrainWfc.Generate(
             mesh,
-            biomeRegistry,
+            biomes,
             getBiomeAt,
             effectiveSize,
             bounds,

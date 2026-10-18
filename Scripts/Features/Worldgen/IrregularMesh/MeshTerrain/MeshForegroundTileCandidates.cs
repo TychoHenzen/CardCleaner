@@ -14,9 +14,9 @@ internal static class MeshForegroundTileCandidates
 {
     internal static bool IsCandidate(TileDefinition tile) => tile.Layer == TileLayer.Terrain;
 
-    internal static HashSet<string> Collect(ITileRegistry tileRegistry, BiomeRegistry biomeRegistry)
+    internal static HashSet<string> Collect(ITileRegistry tileRegistry, BiomeSet biomes)
     {
-        var biomeIds = biomeRegistry.GetAllBiomeIds().ToList();
+        var biomeIds = biomes.Ids.ToList();
 
         return tileRegistry.GetAllTiles()
             .Where(IsCandidate)

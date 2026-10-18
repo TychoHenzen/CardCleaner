@@ -68,7 +68,8 @@ public class GridMapWfcTimingsTest
         var setup = new WfcSetup();
 
         var result = setup.WfcGenerator.GenerateMultiBiome(
-            setup.BiomeRegistry, setup.BiomeProvider.GetBiomeAt, Size, Seed, setup.Gradient.GetSignatureAt);
+            setup.BiomeRegistry.ToBiomeSet(), setup.BiomeProvider.GetBiomeAt, Size, Seed,
+            BiomeStrengthGrid.Sample(Size, setup.Gradient.GetSignatureAt, setup.BiomeRegistry.ToBiomeSet()));
 
         AssertBool(result.Success).IsTrue();
         var timings = result.Timings;

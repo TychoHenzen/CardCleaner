@@ -32,14 +32,14 @@ internal sealed class MeshTerrainWfcRunner
 
     public IrregularMesh Generate(
         IrregularMesh mesh,
-        BiomeRegistry biomeRegistry,
+        BiomeSet biomes,
         Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I effectiveSize,
         (Vector2 Min, Vector2 Max) bounds,
         ulong seed)
     {
         var backgroundResult = _solver.GenerateBackground(
-            biomeRegistry,
+            biomes,
             getBiomeAt,
             effectiveSize,
             seed,
@@ -55,7 +55,7 @@ internal sealed class MeshTerrainWfcRunner
         ILog.Print($"[MeshTerrainGen] Background WFC succeeded in {backgroundResult.Iterations} iterations");
         MeshTerrainProjection.MapBackgroundToQuads(mesh, backgroundResult.Size, backgroundResult.TileIds, bounds);
 
-        if (!_foregroundWfc.Generate(mesh, biomeRegistry, seed + 1))
+        if (!_foregroundWfc.Generate(mesh, biomes, seed + 1))
         {
             ILog.Error("[MeshTerrainGen] Direct mesh foreground WFC failed, clearing foreground");
             MeshTerrainProjection.ClearForeground(mesh);

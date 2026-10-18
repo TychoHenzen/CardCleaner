@@ -25,10 +25,10 @@ internal sealed class WfcTileSetBuilder
         return Collect((catalog, tileId) => catalog.IsAllowedInBiome(tileId, biome.Id));
     }
 
-    internal WfcTileSets ForAllBiomes(BiomeRegistry registry, Func<string, bool>? tileFilter = null)
+    internal WfcTileSets ForAllBiomes(BiomeSet biomes, Func<string, bool>? tileFilter = null)
     {
         // Get all biome IDs for checking tile compatibility
-        var biomeIds = registry.GetAllBiomeIds().ToList();
+        var biomeIds = biomes.Ids.ToList();
 
         return Collect((catalog, tileId) =>
         {

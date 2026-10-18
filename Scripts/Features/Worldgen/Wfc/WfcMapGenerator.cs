@@ -18,7 +18,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// High-level WFC map generator that produces terrain maps using Wave Function Collapse.
 /// Enforces hard constraints (valid adjacencies from the transition map) and soft constraints (weights from the
 /// constraints registered on the tile selector). Biome affinity comes from <see cref="GenerateMultiBiome"/> with a
-/// gradient.
+/// strength field.
 /// </summary>
 public class WfcMapGenerator
 {
@@ -121,7 +121,7 @@ public class WfcMapGenerator
     /// Generates one map for a single biome. The tiles are the adjacency-rule tiles that the tile catalog contains and
     /// allows in the biome (WfcTileSetBuilder.ForBiome). Each candidate gets a uniform base weight, so biome pool
     /// weights do not choose the tile; they still feed the weighted entropy that orders cell collapses. For biome
-    /// affinity, use GenerateMultiBiome with a signature sampler. With a catalog and EnableConnectivity, a
+    /// affinity, use GenerateMultiBiome with a strength field. With a catalog and EnableConnectivity, a
     /// disconnected passable result is retried with derived seeds, up to MaxConnectivityAttempts, and the call fails
     /// if every attempt is disconnected. A solver failure on any attempt ends the call; the solver has already retried
     /// that seed.
@@ -189,22 +189,22 @@ public class WfcMapGenerator
     }
 
     /// <summary>
-    /// Generates one map across all registered biomes; with a signature sampler, BiomeAffinityConstraint weights
+    /// Generates one map across all registered biomes; with a strength field, BiomeAffinityConstraint weights
     /// tiles toward the local biome. Unlike Generate, there is no post-solve connectivity check or retry: with a
     /// catalog and EnableConnectivity only the reactive ConnectivityConstraint runs, so a disconnected map can be
     /// returned.
     /// </summary>
     /// <exception cref="OperationCanceledException">Thrown when the token is cancelled during the solve.</exception>
     public WfcGenerationResult GenerateMultiBiome(
-        BiomeRegistry biomeRegistry,
+        BiomeSet biomes,
         Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I size,
         ulong seed,
-        Func<Vector2I, Vector2I, CardSignature>? signatureAt = null,
+        BiomeStrengthField? strengths = null,
         Func<string, bool>? tileFilter = null,
         CancellationToken cancellationToken = default)
     {
-        var tileSets = _tileSetBuilder.ForAllBiomes(biomeRegistry, tileFilter);
+        var tileSets = _tileSetBuilder.ForAllBiomes(biomes, tileFilter);
         var allTiles = tileSets.AllTiles;
         if (allTiles.Count == 0)
         {
@@ -213,18 +213,17 @@ public class WfcMapGenerator
 
         _spatialCoherence.Reset(size.X, size.Y);
 
-        if (signatureAt != null)
+        if (strengths != null)
         {
             ConfigureConstraints();
-            var biomeStrengthGrid = new BiomeStrengthGrid(size, signatureAt, biomeRegistry);
-            _selector.AddConstraint(new BiomeAffinityConstraint(biomeStrengthGrid, biomeRegistry, _tileCatalog));
+            _selector.AddConstraint(new BiomeAffinityConstraint(strengths, biomes, _tileCatalog));
         }
 
-        var solver = CreateSolver(skipBaseConstraints: signatureAt != null, size);
+        var solver = CreateSolver(skipBaseConstraints: strengths != null, size);
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, allTiles);
 
-        var defaultBiome = biomeRegistry.GetAllBiomes().FirstOrDefault();
+        var defaultBiome = biomes.Biomes.FirstOrDefault();
 
         var attempt = SolveTimed(solver, CreateGrid, defaultBiome, seed, cancellationToken);
         return ToGenerationResult(attempt, size, getBiomeAt);

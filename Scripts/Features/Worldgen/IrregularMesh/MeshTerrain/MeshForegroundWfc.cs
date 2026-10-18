@@ -20,7 +20,7 @@ internal sealed class MeshForegroundWfc
         _solve = solve;
     }
 
-    public bool Generate(IrregularMesh mesh, BiomeRegistry biomeRegistry, ulong seed)
+    public bool Generate(IrregularMesh mesh, BiomeSet biomes, ulong seed)
     {
         var tileRegistry = _tileRegistry;
         if (tileRegistry == null)
@@ -29,7 +29,7 @@ internal sealed class MeshForegroundWfc
             return false;
         }
 
-        var initialTiles = MeshForegroundTileCandidates.Collect(tileRegistry, biomeRegistry);
+        var initialTiles = MeshForegroundTileCandidates.Collect(tileRegistry, biomes);
         if (initialTiles.Count == 0)
         {
             ILog.Error("[MeshTerrainGen] No valid tiles for mesh WFC");
