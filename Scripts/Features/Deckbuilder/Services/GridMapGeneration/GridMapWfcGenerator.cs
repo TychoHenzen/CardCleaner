@@ -27,14 +27,14 @@ internal sealed class GridMapWfcGenerator
     public TwoPhaseWfcResult Generate(Vector2I size, CancellationToken cancellationToken = default)
     {
         var layers = new WfcLayerBuffers(size);
-        if (_context.WfcGenerator == null || _context.BiomeRegistry == null)
+        if (_context.WfcGenerator == null || _context.Biomes == null)
         {
             GenerateFallback(size, layers);
             return ToResult(layers);
         }
 
         _context.WfcGenerator.MaxRetries = _context.MaxWfcRetries;
-        var biomes = _context.BiomeRegistry.ToBiomeSet();
+        var biomes = _context.Biomes;
         var strengths = _context.SignatureAt == null
             ? null
             : BiomeStrengthGrid.Sample(size, _context.SignatureAt, biomes);

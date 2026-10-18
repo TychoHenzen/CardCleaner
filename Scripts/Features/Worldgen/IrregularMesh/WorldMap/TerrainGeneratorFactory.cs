@@ -16,14 +16,14 @@ internal static class TerrainGeneratorFactory
 {
     internal static MeshTerrainGenerator Create(
         ITileRegistry tileRegistry,
-        BiomeRegistry biomeRegistry,
+        BiomeSet biomes,
         TransitionPairs transitionPairs)
     {
         // The solver and the mesh code share the registry: it drives the background and foreground solves and
         // decides passability in the terrain-type map.
         var setup = MeshTerrainWfcSetup.ForRegistry(transitionPairs.Pairs, tileRegistry);
         var tileToTerrainType = AssignTerrainTypes(setup.Solver.RuleTileIds, tileRegistry);
-        return new MeshTerrainGenerator(setup, tileToTerrainType, biomeRegistry);
+        return new MeshTerrainGenerator(setup, tileToTerrainType, biomes);
     }
 
     /// <summary>

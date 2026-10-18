@@ -39,7 +39,7 @@ public class GridMapWfcTimingsTest
         var setup = new WfcSetup();
         var pipeline = GridMapGenerator.CreatePipeline(
             setup.Rng, setup.BiomeProvider, setup.TileRegistry, setup.TileRegistry,
-            setup.WfcGenerator, setup.BiomeRegistry, setup.Gradient);
+            setup.WfcGenerator, setup.BiomeRegistry.ToBiomeSet(), setup.Gradient);
         var profiler = new RecordingProfiler();
         pipeline.SetProfiler(profiler);
 
@@ -102,7 +102,7 @@ public class GridMapWfcTimingsTest
         {
             BiomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
             Gradient = new CardBasedGradient(MapCards(), Rng);
-            BiomeProvider = new BiomeMapGenerator(BiomeRegistry, Gradient.GetSignatureAt, Size);
+            BiomeProvider = new BiomeMapGenerator(BiomeRegistry.ToBiomeSet(), Gradient.GetSignatureAt, Size);
             var transitionPairs =
                 new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
             WfcGenerator = new WfcMapGenerator(

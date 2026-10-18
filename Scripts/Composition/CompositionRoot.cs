@@ -130,13 +130,14 @@ public partial class CompositionRoot : Node
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(assetPaths);
         container.RegisterSingleton<IBiomeCatalog>(biomeRegistry);
+        var biomes = biomeRegistry.ToBiomeSet();
         // ASSUMPTION: the issues ask for [Service], but AutoServiceProvider only discovers Nodes in the current scene;
         // the generators are plain classes, so the composition root registers them.
         var transitionPairs = new TransitionPairs(new CompiledTransitionResolver(assetPaths).GetAllTransitionPairs());
         container.RegisterSingleton<IGridMapGenerator>(
-            new GridMapGenerator(tileRegistry, tileRegistry, biomeRegistry, transitionPairs));
+            new GridMapGenerator(tileRegistry, tileRegistry, biomes, transitionPairs));
         container.RegisterSingleton<IMeshMapGenerator>(
-            new MeshMapGenerator(tileRegistry, biomeRegistry, transitionPairs));
+            new MeshMapGenerator(tileRegistry, biomes, transitionPairs));
 
         container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
         container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();

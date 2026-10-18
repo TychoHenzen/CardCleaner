@@ -47,7 +47,7 @@ public class ConnectivityVerificationTest
     private GridMapGenerationPipeline CreateGeneratorWithWfcConnectivity(Vector2I mapSize, IRandom rng)
     {
         var gradient = new CardBasedGradient([new CardSignature()], rng);
-        var biomeProvider = new BiomeMapGenerator(_registry, gradient.GetSignatureAt, mapSize);
+        var biomeProvider = new BiomeMapGenerator(_registry.ToBiomeSet(),gradient.GetSignatureAt, mapSize);
 
         // Create WfcMapGenerator with connectivity enabled
         var wfcGenerator = CreateWfcGenerator();
@@ -59,7 +59,7 @@ public class ConnectivityVerificationTest
             _tileRegistry,
             _tileRegistry,  // ITileMetadataProvider
             wfcGenerator,
-            biomeRegistry: _registry,
+            biomes: _registry.ToBiomeSet(),
             gradient: gradient);
     }
 

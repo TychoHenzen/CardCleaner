@@ -24,18 +24,18 @@ public sealed class GridMapGenerator : IGridMapGenerator
 {
     private readonly ITileRegistry _tileRegistry;
     private readonly ITileMetadataProvider _metadataProvider;
-    private readonly BiomeRegistry _biomeRegistry;
+    private readonly BiomeSet _biomes;
     private readonly TransitionPairs _transitionPairs;
 
     public GridMapGenerator(
         ITileRegistry tileRegistry,
         ITileMetadataProvider metadataProvider,
-        BiomeRegistry biomeRegistry,
+        BiomeSet biomes,
         TransitionPairs transitionPairs)
     {
         _tileRegistry = tileRegistry ?? throw new ArgumentNullException(nameof(tileRegistry));
         _metadataProvider = metadataProvider ?? throw new ArgumentNullException(nameof(metadataProvider));
-        _biomeRegistry = biomeRegistry ?? throw new ArgumentNullException(nameof(biomeRegistry));
+        _biomes = biomes ?? throw new ArgumentNullException(nameof(biomes));
         _transitionPairs = transitionPairs ?? throw new ArgumentNullException(nameof(transitionPairs));
     }
 
@@ -54,7 +54,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
         var rng = RandomSources.Create(config.Seed);
         var gradient = new CardBasedGradient(config.MapSeeds, rng);
         var biomeProvider = new BiomeMapGenerator(
-            _biomeRegistry,
+            _biomes,
             gradient.GetSignatureAt,
             config.Size,
             _metadataProvider.GetDefaultPassableTileId(),
@@ -63,7 +63,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
             new WfcAdjacencyRules(_transitionPairs.Pairs),
             new TileRegistryWfcCatalog(_tileRegistry));
         var pipeline = CreatePipeline(
-            rng, biomeProvider, _tileRegistry, _metadataProvider, wfcGenerator, _biomeRegistry, gradient);
+            rng, biomeProvider, _tileRegistry, _metadataProvider, wfcGenerator, _biomes, gradient);
         pipeline.SetProfiler(new CancellableProgressProfiler(
             progress, GridMapGenerationPipeline.ProgressWeights, cancellationToken));
 
@@ -92,7 +92,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
         ITileRegistry tileRegistry,
         ITileMetadataProvider metadataProvider,
         WfcMapGenerator? wfcGenerator = null,
-        BiomeRegistry? biomeRegistry = null,
+        BiomeSet? biomes = null,
         BaselineGradient? gradient = null)
     {
         ArgumentNullException.ThrowIfNull(rng);
@@ -111,7 +111,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
             TileRegistry = tileRegistry,
             MetadataProvider = metadataProvider,
             WfcGenerator = wfcGenerator,
-            BiomeRegistry = biomeRegistry,
+            Biomes = biomes,
             SignatureAt = signatureAt,
             DefaultPassableTileId = metadataProvider.GetDefaultPassableTileId() ?? "floor",
             DefaultSolidTileId = metadataProvider.GetDefaultSolidTileId() ?? "wall"
