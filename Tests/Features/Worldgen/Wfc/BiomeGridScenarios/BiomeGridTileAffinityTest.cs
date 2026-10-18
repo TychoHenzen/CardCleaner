@@ -1,5 +1,6 @@
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
@@ -24,11 +25,11 @@ public partial class BiomeGridTileAffinityTest : BiomeGridIntegrationTestBase
 
         // Act: Generate map with fire-matching gradient at fire biome positions
         var result = generator.GenerateMultiBiome(
-            _registry,
+            _registry.ToBiomeSet(),
             pos => _registry.GetBiome("fire")!,
             new Vector2I(8, 8),
             42,
-            fireMatchingGradient.GetSignatureAt);
+            BiomeStrengthGrid.Sample(new Vector2I(8, 8), fireMatchingGradient.GetSignatureAt, _registry.ToBiomeSet()));
 
         // Assert: Map should generate successfully
         AssertBool(result.Success).IsTrue();
@@ -73,11 +74,11 @@ public partial class BiomeGridTileAffinityTest : BiomeGridIntegrationTestBase
 
         // Act
         var result = generator.GenerateMultiBiome(
-            _registry,
+            _registry.ToBiomeSet(),
             pos => _registry.GetBiome("fire")!,
             new Vector2I(8, 8),
             12345,
-            gradient.GetSignatureAt);
+            BiomeStrengthGrid.Sample(new Vector2I(8, 8), gradient.GetSignatureAt, _registry.ToBiomeSet()));
 
         // Assert: Should succeed - neutral_tile gets modifier 1.0 (not penalized)
         AssertBool(result.Success).IsTrue();

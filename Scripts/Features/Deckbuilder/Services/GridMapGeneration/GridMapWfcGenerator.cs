@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
@@ -33,8 +34,12 @@ internal sealed class GridMapWfcGenerator
         }
 
         _context.WfcGenerator.MaxRetries = _context.MaxWfcRetries;
-        GenerateBackground(size, layers, cancellationToken);
-        GenerateForeground(size, layers, cancellationToken);
+        var biomes = _context.BiomeRegistry.ToBiomeSet();
+        var strengths = _context.SignatureAt == null
+            ? null
+            : BiomeStrengthGrid.Sample(size, _context.SignatureAt, biomes);
+        GenerateBackground(size, layers, biomes, strengths, cancellationToken);
+        GenerateForeground(size, layers, biomes, strengths, cancellationToken);
         MergeLayers(size, layers);
         return ToResult(layers);
     }
@@ -53,14 +58,19 @@ internal sealed class GridMapWfcGenerator
         }
     }
 
-    private void GenerateBackground(Vector2I size, WfcLayerBuffers layers, CancellationToken cancellationToken)
+    private void GenerateBackground(
+        Vector2I size,
+        WfcLayerBuffers layers,
+        BiomeSet biomes,
+        BiomeStrengthField? strengths,
+        CancellationToken cancellationToken)
     {
         var result = _context.WfcGenerator!.GenerateMultiBiome(
-            _context.BiomeRegistry!,
+            biomes,
             position => _context.BiomeProvider.GetBiomeAt(position),
             size,
             _context.Rng.Randi(),
-            _context.SignatureAt,
+            strengths,
             tileId => _context.TileRegistry.GetTile(tileId)?.HasAutoTileVariants == false,
             cancellationToken: cancellationToken);
         RecordTimings(result.Timings);
@@ -78,14 +88,19 @@ internal sealed class GridMapWfcGenerator
         FillLayer(layers.BackgroundLayer, size, _context.DefaultPassableTileId);
     }
 
-    private void GenerateForeground(Vector2I size, WfcLayerBuffers layers, CancellationToken cancellationToken)
+    private void GenerateForeground(
+        Vector2I size,
+        WfcLayerBuffers layers,
+        BiomeSet biomes,
+        BiomeStrengthField? strengths,
+        CancellationToken cancellationToken)
     {
         var result = _context.WfcGenerator!.GenerateMultiBiome(
-            _context.BiomeRegistry!,
+            biomes,
             position => _context.BiomeProvider.GetBiomeAt(position),
             size,
             _context.Rng.Randi(),
-            _context.SignatureAt,
+            strengths,
             cancellationToken: cancellationToken);
         RecordTimings(result.Timings);
 

@@ -67,7 +67,7 @@ public class MeshTerrainFailurePathTest
 
         // With no biome registered, no terrain tile is allowed in any biome, so the candidate set is empty.
         var foreground = new MeshForegroundWfc(registry, solver.SolveGraphWithCatalog);
-        var generated = foreground.Generate(mesh, new BiomeRegistry(), 4243UL);
+        var generated = foreground.Generate(mesh, BiomeSet.Empty, 4243UL);
 
         AssertBool(generated).IsFalse();
         AssertThat(solver.CatalogSolveCalls).IsEqual(0);
@@ -123,7 +123,7 @@ public class MeshTerrainFailurePathTest
         public IReadOnlyList<string> RuleTileIds => _inner.RuleTileIds;
 
         public WfcGenerationResult GenerateBackground(
-            BiomeRegistry biomes,
+            BiomeSet biomes,
             Func<Vector2I, BiomeDefinition> getBiomeAt,
             Vector2I size,
             ulong seed,

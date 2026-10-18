@@ -30,19 +30,19 @@ public partial class BiomeGridInfluenceTest : BiomeGridIntegrationTestBase
 
         // Act: Generate with fire gradient
         var fireResult = generator.GenerateMultiBiome(
-            _registry,
+            _registry.ToBiomeSet(),
             pos => _registry.GetBiome("fire")!,
             new Vector2I(10, 10),
             42,
-            fireGradient.GetSignatureAt);
+            BiomeStrengthGrid.Sample(new Vector2I(10, 10), fireGradient.GetSignatureAt, _registry.ToBiomeSet()));
 
         // Generate with water gradient
         var waterResult = generator.GenerateMultiBiome(
-            _registry,
+            _registry.ToBiomeSet(),
             pos => _registry.GetBiome("water")!,
             new Vector2I(10, 10),
             42,
-            waterGradient.GetSignatureAt);
+            BiomeStrengthGrid.Sample(new Vector2I(10, 10), waterGradient.GetSignatureAt, _registry.ToBiomeSet()));
 
         // Assert
         if (!fireResult.Success || !waterResult.Success)
@@ -76,9 +76,10 @@ public partial class BiomeGridInfluenceTest : BiomeGridIntegrationTestBase
 
         // Arrange
         var gradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
-        var strengthGrid = new BiomeStrengthGrid(new Vector2I(10, 10), gradient.GetSignatureAt, _registry);
+        var strengthGrid = BiomeStrengthGrid.Sample(
+            new Vector2I(10, 10), gradient.GetSignatureAt, _registry.ToBiomeSet());
         var constraint = new Scripts.Features.Worldgen.Wfc.Constraints.BiomeAffinityConstraint(
-            strengthGrid, _registry, new TileRegistryWfcCatalog(_tileRegistry));
+            strengthGrid, _registry.ToBiomeSet(), new TileRegistryWfcCatalog(_tileRegistry));
 
         // Act: Check constraint behavior for different tile types
         var grid = new WfcGrid(10, 10, new[] { "fire_tile", "water_tile", "neutral_tile" });

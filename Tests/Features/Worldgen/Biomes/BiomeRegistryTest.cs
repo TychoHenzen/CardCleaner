@@ -157,6 +157,20 @@ public class BiomeRegistryTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
+    public void ToBiomeSet_IsASnapshot()
+    {
+        _registry.Register(CreateTestBiome("forest"));
+        var snapshot = _registry.ToBiomeSet();
+
+        _registry.Register(CreateTestBiome("desert"));
+
+        AssertThat(snapshot.Count).IsEqual(1);
+        AssertThat(snapshot.Get("desert")).IsNull();
+        AssertThat(_registry.ToBiomeSet().Count).IsEqual(2);
+    }
+
+    [TestCase]
     public void TestGetAllBiomesReturnsRegisteredBiomes()
     {
         _registry.Register(CreateTestBiome("forest"));

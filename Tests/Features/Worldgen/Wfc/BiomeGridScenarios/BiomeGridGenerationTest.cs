@@ -1,5 +1,6 @@
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
@@ -21,11 +22,11 @@ public partial class BiomeGridGenerationTest : BiomeGridIntegrationTestBase
 
         // Act
         var result = generator.GenerateMultiBiome(
-            _registry,
+            _registry.ToBiomeSet(),
             pos => _registry.GetBiome("fire")!,
             new Vector2I(5, 5),
             12345,
-            gradient.GetSignatureAt);
+            BiomeStrengthGrid.Sample(new Vector2I(5, 5), gradient.GetSignatureAt, _registry.ToBiomeSet()));
 
         // Assert
         // Should succeed (BiomeGrid is created and BiomeAffinityConstraint is registered)
@@ -42,7 +43,7 @@ public partial class BiomeGridGenerationTest : BiomeGridIntegrationTestBase
 
         // Act: Pass null gradient (backwards compatible)
         var result = generator.GenerateMultiBiome(
-            _registry,
+            _registry.ToBiomeSet(),
             pos => _registry.GetBiome("fire")!,
             new Vector2I(5, 5),
             12345,
