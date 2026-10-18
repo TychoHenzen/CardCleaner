@@ -94,15 +94,15 @@ public class GridMapWfcTimingsTest
         public TileRegistry TileRegistry { get; } = new(new GodotAssetPaths());
         public BiomeRegistry BiomeRegistry { get; } = new();
         public IRandom Rng { get; } = RandomSources.Create(Seed);
-        public CardBasedGradient Gradient { get; }
-        public BiomeMapGenerator BiomeProvider { get; }
+        public BaselineGradient Gradient { get; }
+        public IBiomeProvider BiomeProvider { get; }
         public WfcMapGenerator WfcGenerator { get; }
 
         public WfcSetup()
         {
             BiomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
-            Gradient = new CardBasedGradient(MapCards(), Rng);
-            BiomeProvider = new BiomeMapGenerator(BiomeRegistry.ToBiomeSet(), Gradient.GetSignatureAt, Size);
+            Gradient = Gradients.FromCards(MapCards(), Rng);
+            BiomeProvider = BiomeMaps.Create(BiomeRegistry.ToBiomeSet(), Gradient.GetSignatureAt, Size);
             var transitionPairs =
                 new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
             WfcGenerator = new WfcMapGenerator(

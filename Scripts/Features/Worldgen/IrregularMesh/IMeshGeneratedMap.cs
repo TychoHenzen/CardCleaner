@@ -13,5 +13,8 @@ public interface IMeshGeneratedMap : IGeneratedMap
     /// <summary>
     /// The map data over the mesh: cells, passability, start and enemies, in the generator's world scale.
     /// </summary>
-    IrregularMeshMapData MeshMapData { get; }
+    IMapData MeshMapData { get; }
+
+    /// <summary>World units per mesh unit of the map data.</summary>
+    float WorldScale { get; }
 }

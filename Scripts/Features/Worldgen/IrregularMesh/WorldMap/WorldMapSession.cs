@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
@@ -20,7 +21,7 @@ internal sealed class WorldMapSession
         _renderLayer = new WorldMapRenderLayer(settings, map.RawMesh, MapData);
     }
 
-    internal IrregularMeshMapData MapData { get; }
+    internal IMapData MapData { get; }
 
     internal IrregularMeshFogOfWar? FogOfWar { get; private set; }
 

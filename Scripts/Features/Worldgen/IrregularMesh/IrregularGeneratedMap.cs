@@ -1,3 +1,4 @@
+using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
@@ -9,12 +10,16 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 public class IrregularGeneratedMap : IMeshGeneratedMap
 {
     private readonly IIrregularMesh _mesh;
-    private readonly IrregularMeshMapData _mapData;
+    private readonly IMapData _mapData;
+    private readonly float _worldScale;
+    private readonly Func<int, bool> _removeEnemy;
 
-    public IrregularGeneratedMap(IIrregularMesh mesh, IrregularMeshMapData mapData)
+    public IrregularGeneratedMap(IIrregularMesh mesh, IMapData mapData, float worldScale, Func<int, bool> removeEnemy)
     {
         _mesh = mesh;
         _mapData = mapData;
+        _worldScale = worldScale;
+        _removeEnemy = removeEnemy;
     }
 
     /// <summary>
@@ -25,7 +30,10 @@ public class IrregularGeneratedMap : IMeshGeneratedMap
     /// <summary>
     /// Gets the map data adapter.
     /// </summary>
-    public IrregularMeshMapData MeshMapData => _mapData;
+    public IMapData MeshMapData => _mapData;
+
+    /// <inheritdoc />
+    public float WorldScale => _worldScale;
 
     /// <inheritdoc />
     public IMapData GetMapData() => _mapData;
@@ -36,7 +44,7 @@ public class IrregularGeneratedMap : IMeshGeneratedMap
     /// <inheritdoc />
     public bool RemoveEnemyAt(int cellId)
     {
-        return _mapData.RemoveEnemySpawn(cellId);
+        return _removeEnemy(cellId);
     }
 
     /// <inheritdoc />

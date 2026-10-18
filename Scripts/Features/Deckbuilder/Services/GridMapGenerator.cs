@@ -52,8 +52,8 @@ public sealed class GridMapGenerator : IGridMapGenerator
         // GenerateMap fixes (variants, the gradient while the biome map is built, terrain, the start, the enemies),
         // so the same seed and cards always give the same map.
         var rng = RandomSources.Create(config.Seed);
-        var gradient = new CardBasedGradient(config.MapSeeds, rng);
-        var biomeProvider = new BiomeMapGenerator(
+        var gradient = Gradients.FromCards(config.MapSeeds, rng);
+        var biomeProvider = BiomeMaps.Create(
             _biomes,
             gradient.GetSignatureAt,
             config.Size,
