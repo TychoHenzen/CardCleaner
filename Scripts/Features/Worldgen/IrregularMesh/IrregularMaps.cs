@@ -5,13 +5,16 @@ using CardCleaner.Scripts.Core.Services;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
+/// <summary>The map data of an irregular mesh, its placement and the callback that removes a defeated enemy.</summary>
+internal readonly record struct PopulatedMap(IMapData Map, MapPlacement Placement, Func<int, bool> RemoveEnemy);
+
 /// <summary>
 /// Front door for the map data of an irregular mesh: wraps the mesh, places the player start and the enemies, and
 /// returns the remove-enemy callback the map uses when an enemy is defeated.
 /// </summary>
 internal static class IrregularMaps
 {
-    internal static (IMapData Map, MapPlacement Placement, Func<int, bool> RemoveEnemy) Populated(
+    internal static PopulatedMap Populated(
         IIrregularMesh mesh,
         float worldScale,
         IRandom rng)
@@ -21,6 +24,6 @@ internal static class IrregularMaps
         data.SetPlayerStart(placement.PlayerStartCell);
         foreach (var enemyCell in placement.EnemyCells)
             data.AddEnemySpawn(enemyCell);
-        return (data, placement, data.RemoveEnemySpawn);
+        return new PopulatedMap(data, placement, data.RemoveEnemySpawn);
     }
 }
