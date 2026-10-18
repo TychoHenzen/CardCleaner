@@ -21,10 +21,11 @@ public class IrregularMeshCollisionShapeGeneratorTest
     [TestCategory("Unit")]
     public static void TestNoShapesWhenNoQuadIsOpaque()
     {
-        var mapData = new IrregularMeshNs.IrregularMeshMapData(CreateTwoByTwoMesh());
+        var mesh = CreateTwoByTwoMesh();
+        var mapData = new IrregularMeshNs.IrregularMeshMapData(mesh);
         var staticBody = new StaticBody2D();
 
-        IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(mapData, staticBody);
+        IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(mesh, mapData, 1f, Vector2.Zero, staticBody);
 
         AssertThat(staticBody.GetShapeOwners().Length).IsEqual(0);
         staticBody.Free();
@@ -34,12 +35,13 @@ public class IrregularMeshCollisionShapeGeneratorTest
     [TestCategory("Unit")]
     public static void TestOneShapePerOpaqueQuad()
     {
-        var mapData = new IrregularMeshNs.IrregularMeshMapData(CreateTwoByTwoMesh());
+        var mesh = CreateTwoByTwoMesh();
+        var mapData = new IrregularMeshNs.IrregularMeshMapData(mesh);
         mapData.PlaceStructure(0);
         mapData.PlaceStructure(3);
         var staticBody = new StaticBody2D();
 
-        IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(mapData, staticBody);
+        IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(mesh, mapData, 1f, Vector2.Zero, staticBody);
 
         AssertThat(staticBody.GetShapeOwners().Length).IsEqual(2);
         staticBody.Free();
@@ -51,7 +53,7 @@ public class IrregularMeshCollisionShapeGeneratorTest
     {
         var staticBody = new StaticBody2D();
 
-        IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(CreateMapWithOneOpaqueQuad(), staticBody);
+        GenerateOneOpaqueQuad(staticBody);
 
         AssertThat(staticBody.CollisionLayer).IsEqual(RaycastVisibilityChecker.OpaqueTerrainCollisionLayer);
         AssertThat(staticBody.CollisionMask).IsEqual(0u);
@@ -64,7 +66,7 @@ public class IrregularMeshCollisionShapeGeneratorTest
     {
         var area = new Area2D();
 
-        IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(CreateMapWithOneOpaqueQuad(), area);
+        GenerateOneOpaqueQuad(area);
 
         AssertThat(area.CollisionLayer).IsEqual(RaycastVisibilityChecker.OpaqueTerrainCollisionLayer);
         AssertThat(area.CollisionMask).IsEqual(0u);
@@ -77,7 +79,7 @@ public class IrregularMeshCollisionShapeGeneratorTest
     {
         var staticBody = new StaticBody2D();
 
-        IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(CreateMapWithOneOpaqueQuad(), staticBody);
+        GenerateOneOpaqueQuad(staticBody);
 
         // Quad 0 spans (0,0)-(16,16) in mesh space. Scaled by 2 and offset by (10,20) it spans (10,20)-(42,52).
         var ownerId = (uint)(int)staticBody.GetShapeOwners()[0];
@@ -95,15 +97,12 @@ public class IrregularMeshCollisionShapeGeneratorTest
         staticBody.Free();
     }
 
-    private static IrregularMeshNs.IrregularMeshMapData CreateMapWithOneOpaqueQuad()
+    private static void GenerateOneOpaqueQuad(CollisionObject2D target)
     {
-        var mapData = new IrregularMeshNs.IrregularMeshMapData(CreateTwoByTwoMesh())
-        {
-            WorldScale = WorldScale,
-            WorldOffset = WorldOffset,
-        };
+        var mesh = CreateTwoByTwoMesh();
+        var mapData = new IrregularMeshNs.IrregularMeshMapData(mesh);
         mapData.PlaceStructure(0);
-        return mapData;
+        IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(mesh, mapData, WorldScale, WorldOffset, target);
     }
 
     private static IrregularMeshNs.IrregularMesh CreateTwoByTwoMesh()

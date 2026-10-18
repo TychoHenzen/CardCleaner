@@ -46,7 +46,7 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView, IDependent
     private readonly IrregularMapPresenter _presenter;
 
     public IIrregularMesh? Mesh => _presenter.Mesh;
-    public IrregularMeshMapData? MapData => _presenter.MapData;
+    public IMapData? MapData => _presenter.MapData;
     public IrregularMeshFogOfWar? FogOfWar => _presenter.FogOfWar;
     public bool IsInitialized => _presenter.HasView;
 
@@ -187,7 +187,7 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView, IDependent
         if (generated is not IMeshGeneratedMap meshMap)
             throw new InvalidOperationException("The session's generator returned no irregular mesh map");
 
-        _presenter.ShowMap(meshMap, CreateSettings(meshMap.MeshMapData.WorldScale));
+        _presenter.ShowMap(meshMap, CreateSettings(meshMap.WorldScale));
         MapGenerated?.Invoke();
     }
 

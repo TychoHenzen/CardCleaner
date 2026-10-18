@@ -58,14 +58,14 @@ public class GridMapGeneratorBiomeTest : GridMapGeneratorTestBase
         // Hot signature should produce desert tiles
         _rng.Seed = 42;
         var hotGradient = new ConstantBiomeGradient(new CardSignature(new[] { 0.3f, 0.8f, 0.3f, 0f, 0f, 0f, 0f, 0f }));
-        var hotProvider = new BiomeMapGenerator(_registry.ToBiomeSet(),hotGradient.GetSignatureAt, size);
+        var hotProvider = BiomeMaps.Create(_registry.ToBiomeSet(), hotGradient.GetSignatureAt, size);
         var hotGenerator = GridMapGenerator.CreatePipeline(_rng, hotProvider, _tileRegistry, _tileRegistry);
         var hotMap = hotGenerator.GenerateMap(size);
 
         // Cold signature should produce tundra tiles
         _rng.Seed = 42;
         var coldGradient = new ConstantBiomeGradient(new CardSignature(new[] { 0f, -0.8f, 0.4f, 0f, 0f, 0f, 0f, 0f }));
-        var coldProvider = new BiomeMapGenerator(_registry.ToBiomeSet(),coldGradient.GetSignatureAt, size);
+        var coldProvider = BiomeMaps.Create(_registry.ToBiomeSet(), coldGradient.GetSignatureAt, size);
         var coldGenerator = GridMapGenerator.CreatePipeline(_rng, coldProvider, _tileRegistry, _tileRegistry);
         var coldMap = coldGenerator.GenerateMap(size);
 
@@ -113,8 +113,8 @@ public class GridMapGeneratorBiomeTest : GridMapGeneratorTestBase
 
         // Use desert signature to get clear biome assignment
         var desertSignature = new CardSignature(new[] { 0.3f, 0.7f, 0.3f, 0.4f, 0f, -0.2f, -0.2f, 0.3f });
-        var gradient = new CardBasedGradient(new[] { desertSignature }, _rng);
-        var biomeProvider = new BiomeMapGenerator(_registry.ToBiomeSet(),gradient.GetSignatureAt, size);
+        var gradient = Gradients.FromCards(new[] { desertSignature }, _rng);
+        var biomeProvider = BiomeMaps.Create(_registry.ToBiomeSet(), gradient.GetSignatureAt, size);
         var generator = GridMapGenerator.CreatePipeline(_rng, biomeProvider, _tileRegistry, _tileRegistry);
 
         var mapData = generator.GenerateMap(size);

@@ -38,8 +38,8 @@ public class WorldMapTerrainRendererPinTest
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var rng = RandomSources.Create(GridSeed);
-        var gradient = new CardBasedGradient(MapCards(), rng);
-        var biomeProvider = new BiomeMapGenerator(biomeRegistry.ToBiomeSet(),gradient.GetSignatureAt, GridSize);
+        var gradient = Gradients.FromCards(MapCards(), rng);
+        var biomeProvider = BiomeMaps.Create(biomeRegistry.ToBiomeSet(), gradient.GetSignatureAt, GridSize);
         var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),

@@ -31,8 +31,8 @@ public abstract class GridMapGeneratorTestBase
         _registry = new BiomeRegistry();
         RegisterMockBiomes();
 
-        var gradient = new CardBasedGradient(new[] { new CardSignature() }, _rng);
-        var biomeProvider = new BiomeMapGenerator(_registry.ToBiomeSet(),gradient.GetSignatureAt, new Vector2I(10, 10));
+        var gradient = Gradients.FromCards(new[] { new CardSignature() }, _rng);
+        var biomeProvider = BiomeMaps.Create(_registry.ToBiomeSet(), gradient.GetSignatureAt, new Vector2I(10, 10));
         _generator = GridMapGenerator.CreatePipeline(_rng, biomeProvider, _tileRegistry, _tileRegistry);
     }
 
@@ -54,8 +54,8 @@ public abstract class GridMapGeneratorTestBase
     private protected GridMapGenerationPipeline CreateGenerator(Vector2I mapSize, CardSignature? signature = null)
     {
         var seed = signature ?? new CardSignature();
-        var gradient = new CardBasedGradient(new[] { seed }, _rng);
-        var biomeProvider = new BiomeMapGenerator(_registry.ToBiomeSet(),gradient.GetSignatureAt, mapSize);
+        var gradient = Gradients.FromCards(new[] { seed }, _rng);
+        var biomeProvider = BiomeMaps.Create(_registry.ToBiomeSet(), gradient.GetSignatureAt, mapSize);
         return GridMapGenerator.CreatePipeline(_rng, biomeProvider, _tileRegistry, _tileRegistry);
     }
 }

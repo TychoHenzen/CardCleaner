@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using Godot;
 
@@ -11,11 +12,11 @@ internal sealed class WorldMapRenderLayer
 {
     private readonly WorldMapSettings _settings;
     private readonly IIrregularMesh _mesh;
-    private readonly IrregularMeshMapData _mapData;
+    private readonly IMapData _mapData;
 
     private readonly List<Node> _ownedNodes = new();
 
-    internal WorldMapRenderLayer(WorldMapSettings settings, IIrregularMesh mesh, IrregularMeshMapData mapData)
+    internal WorldMapRenderLayer(WorldMapSettings settings, IIrregularMesh mesh, IMapData mapData)
     {
         _settings = settings;
         _mesh = mesh;
@@ -80,7 +81,8 @@ internal sealed class WorldMapRenderLayer
         var collisionBody = new StaticBody2D { Name = "TerrainCollisionBody" };
         _ownedNodes.Add(collisionBody);
         viewport.AddChild(collisionBody);
-        IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(_mapData, collisionBody);
+        IrregularMeshCollisionShapeGenerator.GenerateForIrregularMesh(
+            _mesh, _mapData, _settings.WorldScale, Vector2.Zero, collisionBody);
     }
 
     private void ConfigureViewportAndCamera(SubViewport viewport)

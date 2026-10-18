@@ -30,8 +30,8 @@ public class MeshMapGeneratorTest
 
         var meshMap = generated as IrregularMeshNs.IMeshGeneratedMap;
         AssertThat(meshMap).IsNotNull();
-        var map = meshMap!.MeshMapData;
-        AssertThat(map.WorldScale).IsEqual(IrregularMeshNs.MeshMapGenerator.WorldScale);
+        AssertThat(meshMap!.WorldScale).IsEqual(IrregularMeshNs.MeshMapGenerator.WorldScale);
+        var map = meshMap.MeshMapData;
         AssertThat(map.PlayerStartCell).IsNotNull();
         AssertBool(map.IsPassable(map.PlayerStartCell!.Value)).IsTrue();
         AssertThat(generated.EnemyCount).IsBetween(MapPopulation.MinEnemies, MapPopulation.MaxEnemies);

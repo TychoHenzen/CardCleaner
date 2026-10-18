@@ -64,7 +64,7 @@ public static class BiomeDistributionCalculator
         // Create gradient with fresh random seed
         var rng = RandomSources.Create();
         rng.Randomize();
-        var gradient = new CardBasedGradient(cards, rng);
+        var gradient = Gradients.FromCards(cards, rng);
         var mapSize = new Vector2I(SampleGridSize, SampleGridSize);
 
         // Sample the grid and count biome occurrences

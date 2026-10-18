@@ -14,7 +14,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 /// <summary>
 /// Generates the irregular map on the path the game runs: the mesh terrain from the seed cards
-/// (<see cref="TerrainGeneratorFactory"/> and <see cref="MeshTerrainGenerator.GenerateWithSampler"/>) over the
+/// (<see cref="TerrainGeneratorFactory"/> and <see cref="IMeshTerrainGenerator.GenerateWithSampler"/>) over the
 /// registered tile and biome registries, then the player start and the enemies from <see cref="MapPopulation"/>.
 /// Runs off the main thread and returns an <see cref="IMeshGeneratedMap"/>.
 /// </summary>
@@ -87,16 +87,13 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
         progress?.Report(0.9f);
         cancellationToken.ThrowIfCancellationRequested();
 
-        var mapData = new IrregularMeshMapData(mesh) { WorldScale = WorldScale };
-        var placement = MapPopulation.Place(mapData, RandomSources.Create(config.Seed));
-        mapData.SetPlayerStart(placement.PlayerStartCell);
-        foreach (var enemyCell in placement.EnemyCells)
-            mapData.AddEnemySpawn(enemyCell);
+        var (mapData, placement, removeEnemy) =
+            IrregularMaps.Populated(mesh, WorldScale, RandomSources.Create(config.Seed));
 
         ILog.Print(
             $"Irregular map generated: {rings} rings, {mapData.CellCount} cells, start cell " +
             $"{placement.PlayerStartCell}, {placement.EnemyCells.Count} enemies");
         progress?.Report(1f);
-        return new IrregularGeneratedMap(mesh, mapData);
+        return new IrregularGeneratedMap(mesh, mapData, WorldScale, removeEnemy);
     }
 }

@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using Godot;
 
@@ -12,18 +13,20 @@ public static class IrregularMeshCollisionShapeGenerator
     /// <summary>
     /// Generate collision shapes for all opaque cells in an irregular mesh.
     /// </summary>
+    /// <param name="mesh">The mesh whose quads become the shapes.</param>
     /// <param name="mapData">The map data providing cell transparency info.</param>
+    /// <param name="worldScale">World units per mesh unit.</param>
+    /// <param name="worldOffset">World position of the mesh origin.</param>
     /// <param name="parent">The collision object to add shapes to.</param>
     /// <param name="collisionLayer">The collision layer for the shapes.</param>
     public static void GenerateForIrregularMesh(
-        IrregularMeshMapData mapData,
+        IIrregularMesh mesh,
+        IMapData mapData,
+        float worldScale,
+        Vector2 worldOffset,
         CollisionObject2D parent,
         uint collisionLayer = RaycastVisibilityChecker.OpaqueTerrainCollisionLayer)
     {
-        var mesh = mapData.GetMesh();
-        var worldScale = mapData.WorldScale;
-        var worldOffset = mapData.WorldOffset;
-
         foreach (var quad in mesh.Quads)
         {
             // Skip transparent cells

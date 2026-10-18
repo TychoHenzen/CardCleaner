@@ -7,4 +7,5 @@ public interface IBiomeProvider
 {
     BiomeDefinition GetBiomeAt(Vector2I position);
     CardSignature GetSignatureAt(Vector2I position);
+    void LogBiomeStats();
 }
