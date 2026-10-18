@@ -71,7 +71,7 @@ public sealed class WorkshopSceneRig
         // The test scene is not the current scene, so hand the services the cabinet needs over directly.
         TestServices.Reset();
         TestServices.Container.RegisterSingleton<ICardSpawningService>(new TestCardSpawner());
-        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry());
+        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry(new GodotAssetPaths()));
         TestServices.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Create(SmallMeshRings));
         TestServices.Container.RegisterSingleton<IGameSessionService>(
             rig.Workshop.GetNode<GameSessionService>("GameSessionService"));

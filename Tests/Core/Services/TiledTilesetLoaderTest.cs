@@ -26,7 +26,7 @@ public class TiledTilesetLoaderTest
     public void Setup()
     {
         // Load tiles from TMX - should load all referenced tilesets
-        _result = TileDataLoader.LoadFromTmx(TestTmxPath);
+        _result = TileDataLoader.LoadFromTmx(new GodotAssetPaths(), TestTmxPath);
         _tiles = _result.Tiles;
     }
 

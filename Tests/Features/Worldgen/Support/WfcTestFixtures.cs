@@ -79,7 +79,7 @@ public static class WfcTestFixtures
         string biomeId,
         params (string Id, TilePassability Passability)[] tiles)
     {
-        var registry = new TileRegistry();
+        var registry = new TileRegistry(new GodotAssetPaths());
         registry.Clear(); // Clear production tiles loaded by constructor
         foreach (var (tileId, passability) in tiles)
         {
@@ -101,7 +101,7 @@ public static class WfcTestFixtures
     ///     A catalog over the production TileRegistry, the pairing WfcGridFingerprintTest pins with the
     ///     production transition pairs.
     /// </summary>
-    public static TileRegistryWfcCatalog ProductionCatalog() => new(new TileRegistry());
+    public static TileRegistryWfcCatalog ProductionCatalog() => new(new TileRegistry(new GodotAssetPaths()));
 
     /// <summary>
     ///     Asserts that a generation succeeded, quoting the generator's error message when it did not.

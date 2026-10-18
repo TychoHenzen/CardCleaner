@@ -27,7 +27,7 @@ public class MeshTerrainFailurePathTest
     public static void FailedForegroundSolveClearsForegroundAndKeepsBackgrounds()
     {
         // ASSUMPTION: seed 4242 with these cards reaches the foreground step, as MeshTerrainFingerprintTest pins.
-        var registry = new TileRegistry();
+        var registry = new TileRegistry(new GodotAssetPaths());
         var solver = new FailingSolver(
             new WfcTerrainSolver(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
             AutoTileId(registry));
@@ -54,7 +54,7 @@ public class MeshTerrainFailurePathTest
     [TestCategory("Unit")]
     public static void NoForegroundCandidatesNeverCallsTheSolver()
     {
-        var registry = new TileRegistry();
+        var registry = new TileRegistry(new GodotAssetPaths());
         var solver = new FailingSolver(
             new WfcTerrainSolver(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
             AutoTileId(registry));
@@ -78,7 +78,7 @@ public class MeshTerrainFailurePathTest
     [TestCategory("Unit")]
     public static void NullSamplerUsesFallbackTerrainAndNeverCallsTheSolver()
     {
-        var registry = new TileRegistry();
+        var registry = new TileRegistry(new GodotAssetPaths());
         var solver = new FailingSolver(
             new WfcTerrainSolver(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
             AutoTileId(registry));

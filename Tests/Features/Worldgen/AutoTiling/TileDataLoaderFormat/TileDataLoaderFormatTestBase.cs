@@ -52,6 +52,6 @@ public abstract class TileDataLoaderFormatTestBase
 
         // TileDataLoader expects res:// paths, but we can use absolute path
         // by converting the path format
-        return TileDataLoader.LoadTileRegistry(filePath);
+        return TileDataLoader.LoadTileRegistry(new GodotAssetPaths(), filePath);
     }
 }

@@ -123,7 +123,7 @@ public partial class CompositionRoot : Node
         var assetPaths = new GodotAssetPaths();
         container.RegisterSingleton<IAssetPaths>(assetPaths);
 
-        var tileRegistry = new TileRegistry();
+        var tileRegistry = new TileRegistry(assetPaths);
         container.RegisterSingleton<ITileRegistry>(tileRegistry);
         container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
 

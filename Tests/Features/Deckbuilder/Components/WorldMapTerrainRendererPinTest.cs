@@ -33,7 +33,7 @@ public class WorldMapTerrainRendererPinTest
     [TestCategory("Unit")]
     public static void SeededMapRendersTheSameCellsIntoAllFourLayers()
     {
-        var tileRegistry = new TileRegistry();
+        var tileRegistry = new TileRegistry(new GodotAssetPaths());
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var rng = RandomSources.Create(GridSeed);

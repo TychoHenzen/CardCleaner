@@ -40,9 +40,11 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     private AtlasMapping.AtlasMappingData? _atlasMapping;
 
     private readonly TileCatalogQueries _queries;
+    private readonly IAssetPaths _paths;
 
-    public TileRegistry()
+    public TileRegistry(IAssetPaths paths)
     {
+        _paths = paths;
         _queries = new TileCatalogQueries(_tiles);
         LoadFromData();
     }
@@ -122,7 +124,7 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     // a mapping the UI would not reuse.
     internal void LoadFromData(string? path, string? atlasMappingPath)
     {
-        var result = TileDataLoader.LoadTileRegistry(path);
+        var result = TileDataLoader.LoadTileRegistry(_paths, path);
 
         if (!TryUseCompiledAtlas(result, atlasMappingPath))
             UseOriginalTileset(result);
