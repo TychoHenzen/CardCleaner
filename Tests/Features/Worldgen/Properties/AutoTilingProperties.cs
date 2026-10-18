@@ -273,10 +273,11 @@ public partial class AutoTilingProperties : PropertyTestBase
         return !hasCorner || (firstEdge && secondEdge);
     }
 
-    private static System.Func<Vector2I, bool> CreatePredicateFromBitmask(int bitmask, Vector2I[] directions)
+    private static System.Func<Vector2I, bool> CreatePredicateFromBitmask(
+        int bitmask, IReadOnlyList<Vector2I> directions)
     {
         var matchingPositions = new HashSet<Vector2I>();
-        for (var i = 0; i < directions.Length; i++)
+        for (var i = 0; i < directions.Count; i++)
         {
             if ((bitmask & (1 << i)) != 0)
             {

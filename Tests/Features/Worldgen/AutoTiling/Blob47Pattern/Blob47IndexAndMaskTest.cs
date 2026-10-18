@@ -53,6 +53,17 @@ public class Blob47IndexAndMaskTest
         AssertThat(index).IsEqual(46); // 255 (all bits) is the last valid mask
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ValidMasksAreStable()
+    {
+        var first = NeighborBitmask8.GetValid47Masks();
+        var second = NeighborBitmask8.GetValid47Masks();
+
+        AssertThat(first.Count).IsEqual(47);
+        AssertBool(ReferenceEquals(first, second)).IsTrue();
+    }
+
     // ==================== Edge-Only Masks ====================
 
     [TestCase]

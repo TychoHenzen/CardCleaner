@@ -17,7 +17,7 @@ public static class NeighborBitmask8
     ///     Direction offsets for all 8 directions, matching bitmask bit order.
     ///     Alternates: edge, corner, edge, corner, etc.
     /// </summary>
-    public static readonly Vector2I[] Directions =
+    public static readonly IReadOnlyList<Vector2I> Directions = new Vector2I[]
     {
         new(0, -1),  // N  (bit 0)
         new(1, -1),  // NE (bit 1)
@@ -32,12 +32,15 @@ public static class NeighborBitmask8
     /// <summary>
     ///     Human-readable names for direction bits.
     /// </summary>
-    public static readonly string[] DirectionNames =
+    public static readonly IReadOnlyList<string> DirectionNames = new string[]
     {
         "N", "NE", "E", "SE", "S", "SW", "W", "NW"
     };
 
-    private static List<int>? _valid47Cache;
+    /// <summary>
+    ///     The 47 valid blob masks in ascending order, built once and never mutated.
+    /// </summary>
+    private static readonly int[] Valid47 = BuildValid47();
 
     /// <summary>
     ///     Compute the raw 8-bit neighbor bitmask for a position.
@@ -124,18 +127,20 @@ public static class NeighborBitmask8
     /// </summary>
     public static IReadOnlyList<int> GetValid47Masks()
     {
-        if (_valid47Cache != null)
-            return _valid47Cache;
+        return Valid47;
+    }
 
-        _valid47Cache = new List<int>(47);
+    private static int[] BuildValid47()
+    {
+        var masks = new List<int>(47);
 
         for (var i = 0; i < 256; i++)
         {
             if (IsValidBlobMask(i))
-                _valid47Cache.Add(i);
+                masks.Add(i);
         }
 
-        return _valid47Cache;
+        return masks.ToArray();
     }
 
     /// <summary>

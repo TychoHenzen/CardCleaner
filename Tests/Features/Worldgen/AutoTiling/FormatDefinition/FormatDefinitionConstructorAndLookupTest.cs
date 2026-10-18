@@ -122,4 +122,32 @@ public class FormatDefinitionConstructorAndLookupTest : AutoTileFormatDefinition
         AssertThat(format.GetVariant(0)).IsNotNull();
         AssertThat(format.GetVariant(15)).IsNotNull();
     }
+
+    // ==================== Ownership ====================
+
+    /// <summary>
+    /// Mutating the collections passed to the constructor must not change the format.
+    /// </summary>
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CallerMutationAfterConstructionDoesNotChangeTheFormat()
+    {
+        var allowedBitmasks = new HashSet<int> { 1, 2 };
+        var variantMappings = new Dictionary<int, VariantDefinition>
+        {
+            [1] = AutoTileFormatDefinition.SimpleVariant(0, 0)
+        };
+
+        var format = new AutoTileFormatDefinition(
+            "owned",
+            BitmaskType.Edge4,
+            allowedBitmasks,
+            variantMappings);
+
+        allowedBitmasks.Add(3);
+        variantMappings[3] = AutoTileFormatDefinition.SimpleVariant(0, 0);
+
+        AssertBool(format.IsBitmaskAllowed(3)).IsFalse();
+        AssertBool(format.VariantMappings.ContainsKey(3)).IsFalse();
+    }
 }
