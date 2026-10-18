@@ -40,7 +40,7 @@ public abstract class GameSessionServiceTestBase
         // SimpleMapData looks the tile registry up in the container
         TestServices.Container.RegisterSingleton<ITileRegistry>(_tileRegistry);
 
-        _service = new GameSessionService();
+        _service = TestServices.CreateGameSession();
         _generator = new FastMapGenerator();
         Assertions.AddNode(_service);
         await ISceneRunner.SyncProcessFrame;

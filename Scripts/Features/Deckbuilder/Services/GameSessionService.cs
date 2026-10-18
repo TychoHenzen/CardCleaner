@@ -12,28 +12,39 @@ using Timer = Godot.Timer;
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 
 [Service(typeof(IGameSessionService))]
-public partial class GameSessionService : Node, IGameSessionService
+public partial class GameSessionService : Node, IGameSessionService, IDependent
 {
-    private readonly SessionWorld _world = new();
     private readonly GenerationTracker _generationTracker = new();
-    private readonly MapGenerationCoordinator _generation;
-    private readonly ExplorationSession _exploration;
-    private readonly SessionFlow _flow;
+    private ISessionWorld _world = null!;
+    private MapGenerationCoordinator _generation = null!;
+    private IExplorationSession _exploration = null!;
+    private SessionFlow _flow = null!;
+    private bool _composed;
 
     private List<CardSignature> _mapSeeds = new();
     private List<CardSignature> _abilityCards = new();
     private IMapGenerator? _mapGenerator;
 
-    public GameSessionService()
+    /// <summary>
+    /// Builds the session's parts from the factories the container registers. The root injects before
+    /// <c>_Ready</c>; a later injection (reparent) keeps the live session.
+    /// </summary>
+    public void Inject(IServiceResolver services)
     {
+        if (_composed)
+            return;
+
+        var sessions = services.Get<ISessionFactory>();
+        _world = sessions.CreateWorld();
+        _exploration = sessions.CreateExploration(_world);
         _generation = new MapGenerationCoordinator(this, _world, _generationTracker);
-        _exploration = new ExplorationSession(_world);
-        _flow = new SessionFlow(this, _world, _exploration);
+        _flow = new SessionFlow(this, _world, _exploration, services.Get<ICombatSystemFactory>());
         ForwardGenerationEvents();
         ForwardExplorationEvents();
+        _composed = true;
     }
 
-    public SessionState CurrentState => _flow.State;
+    public SessionState CurrentState => _composed ? _flow.State : SessionState.WaitingForCards;
 
     public event Action<SessionState>? StateChanged;
     public event Action<IGeneratedMap>? GeneratedMapReady;
@@ -55,12 +66,12 @@ public partial class GameSessionService : Node, IGameSessionService
     /// Gets the current generated map (available after map generation completes).
     /// Works with both regular grid and irregular mesh maps.
     /// </summary>
-    public IGeneratedMap? CurrentGeneratedMap => _world.GeneratedMap;
+    public IGeneratedMap? CurrentGeneratedMap => _composed ? _world.GeneratedMap : null;
 
     /// <summary>
     /// Gets the current map data adapter for pathfinding and exploration.
     /// </summary>
-    public IMapData? CurrentMapData => _world.MapData;
+    public IMapData? CurrentMapData => _composed ? _world.MapData : null;
 
     public void StartSession(
         List<CardSignature>? mapSeeds,
@@ -70,13 +81,20 @@ public partial class GameSessionService : Node, IGameSessionService
     {
         ArgumentNullException.ThrowIfNull(mapGenerator);
 
+        if (!_composed)
+        {
+            ILog.Error($"{Name} was not injected, so it cannot start a session");
+            return;
+        }
+
         if (CurrentState != SessionState.WaitingForCards)
         {
             ILog.Error("Cannot start session - session already in progress");
             return;
         }
 
-        if (mapSeeds == null || mapSeeds.Count == 0 || abilityCards == null || abilityCards.Count == 0)
+        if (mapSeeds == null || mapSeeds.Count == 0
+            || abilityCards == null || abilityCards.Count == 0)
         {
             ILog.Error("Cannot start session with null or empty inputs");
             return;
@@ -89,7 +107,9 @@ public partial class GameSessionService : Node, IGameSessionService
         var generationId = _generationTracker.BeginPending();
         _flow.State = SessionState.GeneratingMap;
 
-        ILog.Print($"Started session with {_mapSeeds.Count} map seed(s) and {_abilityCards.Count} ability cards");
+        ILog.Print(
+            $"Started session with {_mapSeeds.Count} map seed(s) "
+            + $"and {_abilityCards.Count} ability cards");
 
         // Start the game loop
         CallDeferred(MethodName.AdvanceSessionForGeneration, generationId);
@@ -122,6 +142,9 @@ public partial class GameSessionService : Node, IGameSessionService
 
     public void ResetSession()
     {
+        if (!_composed)
+            return;
+
         _generationTracker.Reset();
         _mapSeeds.Clear();
         _abilityCards.Clear();
@@ -132,12 +155,22 @@ public partial class GameSessionService : Node, IGameSessionService
         ILog.Print("Session reset");
     }
 
-    public void ReportStepShown() => _flow.ReportStepShown();
+    public void ReportStepShown()
+    {
+        if (_composed)
+            _flow.ReportStepShown();
+    }
 
     public override void _Ready()
     {
         // Note: the world's RNG is seeded deterministically from the map seed cards during generation.
         // Do not call Randomize() here as it would make map generation non-reproducible
+
+        if (!_composed)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
 
         // Create timer for game progression
         var gameTimer = new Timer();

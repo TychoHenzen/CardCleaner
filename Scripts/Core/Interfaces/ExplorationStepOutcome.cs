@@ -1,9 +1,9 @@
-namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
+namespace CardCleaner.Scripts.Core.Interfaces;
 
 /// <summary>
 /// What the session should do after one exploration step.
 /// </summary>
-internal enum ExplorationStepOutcome
+public enum ExplorationStepOutcome
 {
     Continuing,
     EnemyFound,

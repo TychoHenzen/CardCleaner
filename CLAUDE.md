@@ -193,6 +193,10 @@ The project uses a custom DI container with no static service state: an instance
   parameter of its constructor is registered, so callbacks waiting for it stay pending until then; it is built once,
   on its first resolve, and shared by all its types. An explicit registration of the same type replaces it. `[Service]`
   nodes are never built by the container; `AutoServiceProvider` registers the live node.
+- **Session factories**: `GameSessionService` is an `IDependent` that builds its per-session parts from two stateless
+  registered factories, `ISessionFactory` (world and exploration session) and `ICombatSystemFactory` (one fight), found
+  by the `[Service]` scan. UI code names the contracts `ISessionWorld`, `IExplorationSession` and `ICombatSystem`, never
+  the concrete classes. The gate counts a static factory class as a concrete crossing, so none is used.
 - **IServiceProvider**: Nodes implementing this interface and added to the `service_providers` group will have their services registered at startup
 - **Tree injection**: a node implementing `IDependent` (`Scripts/Core/Interfaces`) gets `Inject(IServiceResolver)`
   from the autoload on `SceneTree.NodeAdded`: after the node's `_EnterTree`, before its `_Ready`, and again whenever it

@@ -11,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 /// <summary>
 /// Simple turn-based combat system
 /// </summary>
-public class SimpleCombatSystem
+public class SimpleCombatSystem : ICombatSystem
 {
     /// <summary>
     /// Combat participant that implements ICombatant for command pattern integration.
@@ -82,7 +82,6 @@ public class SimpleCombatSystem
             IsPlayer = false
         };
 
-        // Convert player abilities to combat commands
         _playerCommands = (playerAbilities ?? new List<CardSignature>())
             .Select(CombatCommand.FromCardSignature).ToList();
 

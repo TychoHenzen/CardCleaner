@@ -41,7 +41,7 @@ public class SimpleWorldMapScreenInitializeTest
         TestServices.Reset();
         _states.Clear();
         _generator = new RecordingGenerator();
-        _session = new GameSessionService();
+        _session = TestServices.CreateGameSession();
         _session.StateChanged += _states.Add;
         AddNode(_session);
         TestServices.Container.RegisterSingleton<IGameSessionService>(_session);

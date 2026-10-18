@@ -70,6 +70,9 @@ public sealed class WorkshopSceneRig
 
         // The test scene is not the current scene, so hand the services the cabinet needs over directly.
         TestServices.Reset();
+        // The scene's GameSessionService composes from the factories when it enters the tree, so the game's
+        // [Service] classes go in first; explicit registrations below replace any scanned type they share.
+        TestServices.RegisterGameServiceClasses(TestServices.Container);
         TestServices.Container.RegisterSingleton<ICardSpawningService>(new TestCardSpawner());
         TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry(new GodotAssetPaths()));
         TestServices.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Create(SmallMeshRings));

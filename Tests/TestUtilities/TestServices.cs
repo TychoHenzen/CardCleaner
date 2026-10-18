@@ -1,6 +1,7 @@
 using CardCleaner.Scripts.Composition;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
 
 namespace CardCleaner.Tests.TestUtilities;
@@ -57,5 +58,16 @@ public static class TestServices
     {
         node.Inject(Resolver);
         return node;
+    }
+
+    /// <summary>
+    ///     Builds a <see cref="GameSessionService"/> outside the tree, after registering the game's [Service] classes
+    ///     into the container, so its session factories resolve even after <see cref="Reset"/> emptied the container.
+    ///     The session is injected here; a later tree injection leaves it as it is.
+    /// </summary>
+    public static GameSessionService CreateGameSession()
+    {
+        RegisterGameServiceClasses(Container);
+        return Inject(new GameSessionService());
     }
 }
