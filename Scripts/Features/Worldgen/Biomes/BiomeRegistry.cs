@@ -41,6 +41,9 @@ public class BiomeRegistry : IBiomeCatalog
 
     public void Clear() => _biomes.Clear();
 
+    /// <summary>Snapshot of the biomes registered now; later Register calls do not change it.</summary>
+    public BiomeSet ToBiomeSet() => BiomeSet.From(_biomes.Values);
+
     /// <summary>
     /// Load biomes from tiles.json data file
     /// </summary>

@@ -17,8 +17,8 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// </remarks>
 public class BiomeAffinityConstraint : IWfcConstraint
 {
-    private readonly BiomeStrengthGrid _grid;
-    private readonly BiomeRegistry _registry;
+    private readonly BiomeStrengthField _field;
+    private readonly BiomeSet _biomes;
     private readonly IWfcTileCatalog? _tileCatalog;
     private readonly Dictionary<string, List<string>> _tileToBiomes;
 
@@ -30,10 +30,10 @@ public class BiomeAffinityConstraint : IWfcConstraint
     /// </summary>
     public float MinModifier { get; set; } = 0.1f;
 
-    public BiomeAffinityConstraint(BiomeStrengthGrid grid, BiomeRegistry registry, IWfcTileCatalog? tileCatalog = null)
+    public BiomeAffinityConstraint(BiomeStrengthField field, BiomeSet biomes, IWfcTileCatalog? tileCatalog = null)
     {
-        _grid = grid;
-        _registry = registry;
+        _field = field;
+        _biomes = biomes;
         _tileCatalog = tileCatalog;
         _tileToBiomes = BuildTileToBiomesMap();
     }
@@ -44,7 +44,7 @@ public class BiomeAffinityConstraint : IWfcConstraint
         if (!_tileToBiomes.TryGetValue(context.TileId, out var biomeIds) || biomeIds.Count == 0)
             return 1.0f;
 
-        // BiomeStrengthGrid uses Vector2I positions - only works for grid topologies
+        // The strength field uses Vector2I positions - only works for grid topologies
         // For non-grid topologies, return neutral (biome affinity not supported)
         if (context.Topology is not WfcGrid grid)
             return 1.0f;
@@ -57,7 +57,7 @@ public class BiomeAffinityConstraint : IWfcConstraint
 
         foreach (var biomeId in biomeIds)
         {
-            var strength = _grid.GetStrength(position, biomeId);
+            var strength = _field.GetStrength(position, biomeId);
             if (strength > maxStrength)
                 maxStrength = strength;
         }
@@ -81,7 +81,7 @@ public class BiomeAffinityConstraint : IWfcConstraint
     private Dictionary<string, List<string>> BuildTileToBiomesMap()
     {
         var map = new Dictionary<string, List<string>>();
-        var allBiomeIds = _registry.GetAllBiomeIds().ToList();
+        var allBiomeIds = _biomes.Ids.ToList();
 
         if (_tileCatalog == null)
             return map;

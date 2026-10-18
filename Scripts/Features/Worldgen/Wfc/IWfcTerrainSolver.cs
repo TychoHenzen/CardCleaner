@@ -20,7 +20,7 @@ public interface IWfcTerrainSolver
     /// Generates the background grid over the biomes. Only tiles passing the filter take part.
     /// </summary>
     WfcGenerationResult GenerateBackground(
-        BiomeRegistry biomes,
+        BiomeSet biomes,
         Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I size,
         ulong seed,

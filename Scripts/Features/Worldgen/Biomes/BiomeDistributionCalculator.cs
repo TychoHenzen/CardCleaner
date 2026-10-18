@@ -16,17 +16,17 @@ public static class BiomeDistributionCalculator
     private const int SimulationCount = 10;
 
     /// <summary>Estimates each biome's share of the map for the card signatures, averaged over runs.</summary>
-    public static Dictionary<string, float> Calculate(CardSignature[] cards, IBiomeCatalog catalog)
+    public static Dictionary<string, float> Calculate(CardSignature[] cards, BiomeSet biomes)
     {
         var accumulatedCounts = new Dictionary<string, float>();
 
         // Initialize counts for all biome IDs
-        foreach (var biome in catalog.GetAllBiomes())
+        foreach (var biome in biomes.Biomes)
         {
             accumulatedCounts[biome.Id] = 0f;
         }
 
-        if (cards.Length == 0 || catalog.Count == 0)
+        if (cards.Length == 0 || biomes.Count == 0)
         {
             // No cards or no biomes - return uniform distribution
             return ToUniformDistribution(accumulatedCounts);
@@ -35,7 +35,7 @@ public static class BiomeDistributionCalculator
         // Run multiple simulations and accumulate results
         for (var sim = 0; sim < SimulationCount; sim++)
         {
-            var simCounts = RunSingleSimulation(cards, catalog);
+            var simCounts = RunSingleSimulation(cards, biomes);
 
             foreach (var (biomeId, count) in simCounts)
             {
@@ -51,12 +51,12 @@ public static class BiomeDistributionCalculator
     /// <summary>
     /// Runs a single simulation with a fresh random seed.
     /// </summary>
-    private static Dictionary<string, int> RunSingleSimulation(CardSignature[] cards, IBiomeCatalog catalog)
+    private static Dictionary<string, int> RunSingleSimulation(CardSignature[] cards, BiomeSet biomes)
     {
         var counts = new Dictionary<string, int>();
 
         // Initialize counts for all biome IDs
-        foreach (var biome in catalog.GetAllBiomes())
+        foreach (var biome in biomes.Biomes)
         {
             counts[biome.Id] = 0;
         }
@@ -74,7 +74,7 @@ public static class BiomeDistributionCalculator
             {
                 var position = new Vector2I(x, y);
                 var signature = gradient.GetSignatureAt(position, mapSize);
-                var biome = catalog.FindClosestBySignature(signature);
+                var biome = biomes.FindClosestBySignature(signature);
 
                 if (biome != null)
                 {

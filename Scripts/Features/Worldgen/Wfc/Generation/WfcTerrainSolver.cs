@@ -29,7 +29,7 @@ internal sealed class WfcTerrainSolver : IWfcTerrainSolver
     public IReadOnlyList<string> RuleTileIds { get; }
 
     public WfcGenerationResult GenerateBackground(
-        BiomeRegistry biomes,
+        BiomeSet biomes,
         Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I size,
         ulong seed,
