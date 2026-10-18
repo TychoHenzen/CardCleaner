@@ -197,6 +197,12 @@ The project uses a custom DI container with no static service state: an instance
   registered factories, `ISessionFactory` (world and exploration session) and `ICombatSystemFactory` (one fight), found
   by the `[Service]` scan. UI code names the contracts `ISessionWorld`, `IExplorationSession` and `ICombatSystem`, never
   the concrete classes. The gate counts a static factory class as a concrete crossing, so none is used.
+- **Tile catalog**: the map generators take a `TileCatalogData` (`Scripts/Features/Deckbuilder/Tiles`), an immutable
+  snapshot of the tiles in registry insertion order and their variation groups that also implements `IWfcTileCatalog`.
+  `CompositionRoot` builds it once from the loaded `TileRegistry` and hands it to `GridMapGenerator` and
+  `MeshMapGenerator`; it is not registered in the container. The compiled atlas is loaded by the stateless
+  `TileVisualLoader`, which returns a `TileVisualCatalog` that `TileRegistry` exposes as `Visuals` (UI users read the
+  tileset path, atlas flag and `TilesetConfig` there).
 - **IServiceProvider**: Nodes implementing this interface and added to the `service_providers` group will have their services registered at startup
 - **Tree injection**: a node implementing `IDependent` (`Scripts/Core/Interfaces`) gets `Inject(IServiceResolver)`
   from the autoload on `SceneTree.NodeAdded`: after the node's `_EnterTree`, before its `_Ready`, and again whenever it
