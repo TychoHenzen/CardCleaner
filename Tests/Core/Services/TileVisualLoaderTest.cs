@@ -25,6 +25,7 @@ public class TileVisualLoaderTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
     public static void CompiledAtlasAvailableUsesTheAtlasTileSizeAndKeepsEveryTileInOrder()
     {
         var result = TileDataLoader.LoadTileRegistry(new GodotAssetPaths());
