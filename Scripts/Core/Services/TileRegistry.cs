@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Features.Deckbuilder.Tiles;
@@ -6,7 +5,6 @@ using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services.TilesetLoading;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using Godot;
 
 namespace CardCleaner.Scripts.Core.Services;
 
@@ -19,25 +17,10 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     private readonly VariationGroupCollection _variationGroups = new();
 
     /// <summary>
-    /// Path to the tileset resource. When using compiled atlas, this returns
-    /// a special marker that indicates runtime tileset creation is needed.
+    /// The visual side of the catalog (tileset path, compiled atlas mode, tileset config), set by LoadFromData.
     /// </summary>
-    public string TilesetPath { get; private set; } = DefaultTilesetPath;
-
-    /// <summary>
-    /// Whether the registry is using a compiled atlas instead of source textures.
-    /// </summary>
-    public bool UsingCompiledAtlas { get; private set; }
-
-    /// <summary>
-    /// Configuration for tileset-level spatial properties (tile size, grid offset).
-    /// </summary>
-    public TilesetConfig TilesetConfig { get; private set; } = TilesetConfig.Default;
-
-    /// <summary>
-    /// Atlas coordinate mapping for translating original coords to compiled coords.
-    /// </summary>
-    private AtlasMapping.AtlasMappingData? _atlasMapping;
+    public TileVisualCatalog Visuals { get; private set; } =
+        new(DefaultTilesetPath, false, TilesetConfig.Default, []);
 
     private readonly TileCatalogQueries _queries;
     private readonly IAssetPaths _paths;
@@ -126,79 +109,11 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     {
         var result = TileDataLoader.LoadTileRegistry(_paths, path);
 
-        if (!TryUseCompiledAtlas(result, atlasMappingPath))
-            UseOriginalTileset(result);
-
-        VariationGroupBuilder.Rebuild(_tiles.Values, _variationGroups);
-    }
-
-    private bool TryUseCompiledAtlas(TileRegistryResult result, string? atlasMappingPath)
-    {
-        // Check if compiled atlas is available
-        var isAvailable = CompiledAtlasLoader.IsCompiledAtlasAvailable(atlasMappingPath);
-        ILog.Print($"[TileRegistry] Compiled atlas available: {isAvailable}");
-
-        if (!isAvailable)
-            return false;
-
-        _atlasMapping = CompiledAtlasLoader.LoadMapping(atlasMappingPath);
-        ILog.Print($"[TileRegistry] Atlas mapping loaded: {(_atlasMapping != null ? "YES" : "NULL")}");
-
-        if (_atlasMapping == null)
-        {
-            ILog.Print("[TileRegistry] FAILED: mapping is null, falling back");
-            return false;
-        }
-
-        // The loader owns the tile-set resource and caches it; the registry only asks whether it loads, so that
-        // an atlas whose image cannot be loaded falls back to the original tileset, as before it moved out.
-        if (!CompiledAtlasLoader.CanBuildAtlas(atlasMappingPath))
-        {
-            ILog.Print("[TileRegistry] FAILED: compiled atlas resource does not load, falling back");
-            return false;
-        }
-
-        UseCompiledAtlas(result, _atlasMapping);
-        return true;
-    }
-
-    // Use compiled atlas mode - transition_map.json has all auto-tile transitions
-    // Even if some base tiles can't be translated, auto-tiles will work
-    private void UseCompiledAtlas(TileRegistryResult result, AtlasMapping.AtlasMappingData atlasMapping)
-    {
-        UsingCompiledAtlas = true;
-        TilesetPath = atlasMapping.Atlas?.Path ?? result.TilesetPath;
-
-        // CRITICAL: Use compiled atlas tile size, NOT the TSX source tile size
-        // TSX may have smaller source tiles (e.g., 8x8) that get composited to larger tiles (e.g., 16x16)
-        var atlasTileSize = atlasMapping.Atlas?.TileSize ?? 16;
-        TilesetConfig = new TilesetConfig
-        {
-            BaseTileSize = new Vector2I(atlasTileSize, atlasTileSize)
-        };
-
-        // Register tiles WITH translation - tiles not in atlas_mapping keep original coords
-        // but auto-tiles use transition_map.json which IS complete
-        var translator = new CompiledAtlasTileTranslator(atlasMapping);
-        foreach (var tile in result.Tiles)
-            RegisterTile(translator.Translate(tile));
-
-        ILog.Print(
-            $"[TileRegistry] SUCCESS: Registered {_tiles.Count} tiles, " +
-            "using compiled atlas for auto-tiles");
-    }
-
-    // Fallback to original tileset
-    private void UseOriginalTileset(TileRegistryResult result)
-    {
-        UsingCompiledAtlas = false;
-        TilesetPath = result.TilesetPath;
-        TilesetConfig = result.TilesetConfig;
-
-        foreach (var tile in result.Tiles)
+        Visuals = TileVisualLoader.Load(result, atlasMappingPath);
+        foreach (var tile in Visuals.Tiles)
             RegisterTile(tile);
 
-        ILog.Print($"[TileRegistry] FALLBACK: Registered {_tiles.Count} tiles using tileset {TilesetPath}");
+        VariationGroupBuilder.Rebuild(_tiles.Values, _variationGroups);
     }
 
     /// <summary>

@@ -43,9 +43,9 @@ public class WorldMapTerrainRendererPinTest
         var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),
-            new TileRegistryWfcCatalog(tileRegistry));
+            TileCatalogData.From(tileRegistry));
         var generator = GridMapGenerator.CreatePipeline(
-            rng, biomeProvider, tileRegistry, tileRegistry, wfcGenerator, biomeRegistry.ToBiomeSet(), gradient);
+            rng, biomeProvider, TileCatalogData.From(tileRegistry), wfcGenerator, biomeRegistry.ToBiomeSet(), gradient);
         var map = generator.GenerateMap(GridSize);
 
         var terrain = new TileMapLayer();

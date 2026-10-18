@@ -1,0 +1,90 @@
+using System.Collections.Generic;
+using System.Linq;
+using CardCleaner.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using Godot;
+
+namespace CardCleaner.Scripts.Core.Services;
+
+/// <summary>
+/// Builds the visual side of the tile catalog: the compiled atlas when it is available and its tile set builds,
+/// otherwise the original tileset.
+/// </summary>
+internal static class TileVisualLoader
+{
+    internal static TileVisualCatalog Load(TileRegistryResult result, string? atlasMappingPath)
+    {
+        return TryUseCompiledAtlas(result, atlasMappingPath) ?? UseOriginalTileset(result);
+    }
+
+    private static TileVisualCatalog? TryUseCompiledAtlas(TileRegistryResult result, string? atlasMappingPath)
+    {
+        // Check if compiled atlas is available
+        var isAvailable = CompiledAtlasLoader.IsCompiledAtlasAvailable(atlasMappingPath);
+        ILog.Print($"[TileRegistry] Compiled atlas available: {isAvailable}");
+
+        if (!isAvailable)
+            return null;
+
+        var atlasMapping = CompiledAtlasLoader.LoadMapping(atlasMappingPath);
+        ILog.Print($"[TileRegistry] Atlas mapping loaded: {(atlasMapping != null ? "YES" : "NULL")}");
+
+        if (atlasMapping == null)
+        {
+            ILog.Print("[TileRegistry] FAILED: mapping is null, falling back");
+            return null;
+        }
+
+        // The loader owns the tile-set resource and caches it; the registry only asks whether it loads, so that
+        // an atlas whose image cannot be loaded falls back to the original tileset, as before it moved out.
+        if (!CompiledAtlasLoader.CanBuildAtlas(atlasMappingPath))
+        {
+            ILog.Print("[TileRegistry] FAILED: compiled atlas resource does not load, falling back");
+            return null;
+        }
+
+        return UseCompiledAtlas(result, atlasMapping);
+    }
+
+    // Use compiled atlas mode - transition_map.json has all auto-tile transitions
+    // Even if some base tiles can't be translated, auto-tiles will work
+    private static TileVisualCatalog UseCompiledAtlas(
+        TileRegistryResult result,
+        AtlasMapping.AtlasMappingData atlasMapping)
+    {
+        var tilesetPath = atlasMapping.Atlas?.Path ?? result.TilesetPath;
+
+        // CRITICAL: Use compiled atlas tile size, NOT the TSX source tile size
+        // TSX may have smaller source tiles (e.g., 8x8) that get composited to larger tiles (e.g., 16x16)
+        var atlasTileSize = atlasMapping.Atlas?.TileSize ?? 16;
+        var tilesetConfig = new TilesetConfig
+        {
+            BaseTileSize = new Vector2I(atlasTileSize, atlasTileSize)
+        };
+
+        // Translate WITH mapping - tiles not in atlas_mapping keep original coords
+        // but auto-tiles use transition_map.json which IS complete
+        var translator = new CompiledAtlasTileTranslator(atlasMapping);
+        var tiles = result.Tiles.Select(tile => translator.Translate(tile)).ToList();
+
+        ILog.Print(
+            $"[TileRegistry] SUCCESS: Registered {CountDistinctIds(tiles)} tiles, " +
+            "using compiled atlas for auto-tiles");
+        return new TileVisualCatalog(tilesetPath, true, tilesetConfig, tiles);
+    }
+
+    // Fallback to original tileset
+    private static TileVisualCatalog UseOriginalTileset(TileRegistryResult result)
+    {
+        ILog.Print(
+            $"[TileRegistry] FALLBACK: Registered {CountDistinctIds(result.Tiles)} tiles " +
+            $"using tileset {result.TilesetPath}");
+        return new TileVisualCatalog(result.TilesetPath, false, result.TilesetConfig, result.Tiles);
+    }
+
+    // The registry keys tiles by Id, so the count it logs is the number of distinct Ids.
+    private static int CountDistinctIds(IEnumerable<TileDefinition> tiles)
+        => tiles.Select(t => t.Id).Distinct().Count();
+}

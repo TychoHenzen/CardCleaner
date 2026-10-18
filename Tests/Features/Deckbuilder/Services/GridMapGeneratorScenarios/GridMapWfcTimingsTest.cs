@@ -38,7 +38,7 @@ public class GridMapWfcTimingsTest
     {
         var setup = new WfcSetup();
         var pipeline = GridMapGenerator.CreatePipeline(
-            setup.Rng, setup.BiomeProvider, setup.TileRegistry, setup.TileRegistry,
+            setup.Rng, setup.BiomeProvider, TileCatalogData.From(setup.TileRegistry),
             setup.WfcGenerator, setup.BiomeRegistry.ToBiomeSet(), setup.Gradient);
         var profiler = new RecordingProfiler();
         pipeline.SetProfiler(profiler);
@@ -107,7 +107,7 @@ public class GridMapWfcTimingsTest
                 new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
             WfcGenerator = new WfcMapGenerator(
                 new WfcAdjacencyRules(transitionPairs),
-                new TileRegistryWfcCatalog(TileRegistry));
+                TileCatalogData.From(TileRegistry));
         }
 
         private static CardSignature[] MapCards() => new[]

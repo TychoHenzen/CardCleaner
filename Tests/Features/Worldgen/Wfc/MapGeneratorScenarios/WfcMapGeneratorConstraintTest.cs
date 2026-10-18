@@ -29,7 +29,7 @@ public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
 
         // Create tile registry with test tiles
         var tileRegistry = WfcTestFixtures.CreateTestTileRegistry("plains", "A", "B", "C");
-        var generator = new WfcMapGenerator(customRules, new TileRegistryWfcCatalog(tileRegistry));
+        var generator = new WfcMapGenerator(customRules, TileCatalogData.From(tileRegistry));
 
         // Create simple biome with A, B, C tiles
         var passable = new TilePool.Builder();
@@ -65,7 +65,7 @@ public class WfcMapGeneratorConstraintTest : WfcMapGeneratorIntegrationTestBase
         });
 
         var tileRegistry = WfcTestFixtures.CreateTestTileRegistry("plains", "A", "B", "C");
-        var generator = new WfcMapGenerator(rules, new TileRegistryWfcCatalog(tileRegistry));
+        var generator = new WfcMapGenerator(rules, TileCatalogData.From(tileRegistry));
         generator.MaxRetries = 5;
 
         var passable = new TilePool.Builder();

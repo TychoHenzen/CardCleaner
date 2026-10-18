@@ -13,8 +13,7 @@ internal sealed class GridMapGenerationContext
 {
     public required IRandom Rng { get; init; }
     public required IBiomeProvider BiomeProvider { get; init; }
-    public required ITileRegistry TileRegistry { get; init; }
-    public required ITileMetadataProvider MetadataProvider { get; init; }
+    public required TileCatalogData Tiles { get; init; }
     public WfcMapGenerator? WfcGenerator { get; init; }
     public BiomeSet? Biomes { get; init; }
     public Func<Vector2I, Vector2I, CardSignature>? SignatureAt { get; init; }

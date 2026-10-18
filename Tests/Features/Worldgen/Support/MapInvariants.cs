@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRendererSupport;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Support;
@@ -13,15 +14,16 @@ public static class MapInvariants
 {
     private const int MaxCornerBitmask = 15;
 
-    public static bool Validate(SimpleMapData map, int expectedWidth, int expectedHeight)
+    public static bool Validate(
+        SimpleMapData map, ITileRegistry registry, int expectedWidth, int expectedHeight)
     {
         return HasDimensions(map, expectedWidth, expectedHeight)
                && map.PassableTiles.Count > 0
                && PlayerAndEnemiesArePlaced(map)
                && AllTileIdsNonNull(map, expectedWidth, expectedHeight)
                && PassableTilesWithinBounds(map, expectedWidth, expectedHeight)
-               && DecorationOverlaysWithinVisualGrid(map, expectedWidth, expectedHeight)
-               && DecorationBitmasksValid(map)
+               && DecorationOverlaysWithinVisualGrid(map, registry, expectedWidth, expectedHeight)
+               && DecorationBitmasksValid(map, registry)
                && AllPassableTilesConnected(map);
     }
 
@@ -57,18 +59,19 @@ public static class MapInvariants
     /// <summary>
     ///     Decoration overlays live on the visual grid, which is size+1 in each dimension.
     /// </summary>
-    public static bool DecorationOverlaysWithinVisualGrid(SimpleMapData map, int width, int height)
+    public static bool DecorationOverlaysWithinVisualGrid(
+        SimpleMapData map, ITileRegistry registry, int width, int height)
     {
-        return DualGridOverlays(map).Keys.All(position =>
+        return DualGridOverlays(map, registry).Keys.All(position =>
             position.X >= 0 && position.X < width + 1 && position.Y >= 0 && position.Y < height + 1);
     }
 
     /// <summary>
     ///     All decoration overlays must carry valid 4-bit bitmasks (0-15).
     /// </summary>
-    public static bool DecorationBitmasksValid(SimpleMapData map)
+    public static bool DecorationBitmasksValid(SimpleMapData map, ITileRegistry registry)
     {
-        return DualGridOverlays(map).Values.All(overlay =>
+        return DualGridOverlays(map, registry).Values.All(overlay =>
             overlay.Bitmask >= 0 && overlay.Bitmask <= MaxCornerBitmask);
     }
 
@@ -76,9 +79,8 @@ public static class MapInvariants
     ///     The dual-grid overlays the renderer derives from the map's two WFC layers.
     /// </summary>
     private static Dictionary<Vector2I, (string BaseTileId, string TopTileId, int Bitmask)> DualGridOverlays(
-        SimpleMapData map)
+        SimpleMapData map, ITileRegistry registry)
     {
-        var registry = map.TileRegistry!;
         var builder = new DualGridOverlayBuilder(
             registry,
             DualGridOverlayBuilder.ResolveDefaultPassableTileId(registry));

@@ -20,7 +20,7 @@ public partial class BiomeGridTileAffinityTest : BiomeGridIntegrationTestBase
         // when the gradient matches the biome's signature.
 
         // Arrange: Gradient matches fire biome signature
-        var generator = new WfcMapGenerator(_rules, new TileRegistryWfcCatalog(_tileRegistry));
+        var generator = new WfcMapGenerator(_rules, TileCatalogData.From(_tileRegistry));
         var fireMatchingGradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
 
         // Act: Generate map with fire-matching gradient at fire biome positions
@@ -69,7 +69,7 @@ public partial class BiomeGridTileAffinityTest : BiomeGridIntegrationTestBase
         });
 
         // The fixture's tile and biome registries already hold fire/water/neutral tiles and the matching biomes
-        var generator = new WfcMapGenerator(rulesWithNeutral, new TileRegistryWfcCatalog(_tileRegistry));
+        var generator = new WfcMapGenerator(rulesWithNeutral, TileCatalogData.From(_tileRegistry));
         var gradient = new FixedGradient(new CardSignature()); // Neutral signature
 
         // Act

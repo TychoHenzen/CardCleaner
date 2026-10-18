@@ -167,7 +167,7 @@ public class WfcPerformanceBenchmarkTest
         var tileRegistry = WfcTestFixtures.CreateTestTileRegistry(WfcTestFixtures.TestBiomeId, "A", "B", "C", "D");
         var generator = new WfcMapGenerator(
             WfcTestFixtures.FullAdjacencyRules(),
-            new TileRegistryWfcCatalog(tileRegistry));
+            TileCatalogData.From(tileRegistry));
         generator.MaxRetries = 1; // Quick fail on contradiction
 
         var biome = WfcTestFixtures.CreateAbcdBiome();

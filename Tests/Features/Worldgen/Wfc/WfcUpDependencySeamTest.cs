@@ -40,6 +40,8 @@ public class WfcUpDependencySeamTest
         "ITileRegistry", "ITileMetadataProvider", "TileRegistry", "TileDefinition", "TileDefinitionOptions",
         "VariationGroup", "VariantWeight", "VariationMode", "AutoTileFormatDefinition", "AutoTileFormatRegistry",
         "VariantDefinition", "TilesetConfig",
+        // Deleted in #288 (replaced by TileCatalogData); naming it again means the snapshot was reverted.
+        "TileRegistryWfcCatalog",
     };
 
     // The catalog namespaces, by tail, so the CardCleaner.Scripts and CardCleaner spellings both match, and so does a
@@ -139,6 +141,7 @@ public class WfcUpDependencySeamTest
         {
             "Sample.cs:4 Core.Services",
             "Sample.cs:5 ITileRegistry",
+            "Sample.cs:6 TileRegistryWfcCatalog",
             "Sample.cs:8 Deckbuilder.Tiles",
             "Sample.cs:8 TileDefinition",
         });

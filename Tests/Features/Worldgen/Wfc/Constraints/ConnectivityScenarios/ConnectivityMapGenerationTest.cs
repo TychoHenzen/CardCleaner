@@ -132,10 +132,10 @@ public class ConnectivityMapGenerationTest : ConnectivityConstraintTestBase
     /// <summary>
     ///     A catalog over a fresh registry holding only the given tiles, each allowed in the given biome.
     /// </summary>
-    private static TileRegistryWfcCatalog CreateCatalog(
+    private static TileCatalogData CreateCatalog(
         string biomeId,
         params (string Id, TilePassability Passability)[] tiles) =>
-        new(WfcTestFixtures.CreateTestTileRegistry(biomeId, tiles));
+        TileCatalogData.From(WfcTestFixtures.CreateTestTileRegistry(biomeId, tiles));
 
     /// <summary>
     ///     The passable pool of the sweep biome. Wall is not in it.

@@ -101,7 +101,8 @@ public static class WfcTestFixtures
     ///     A catalog over the production TileRegistry, the pairing WfcGridFingerprintTest pins with the
     ///     production transition pairs.
     /// </summary>
-    public static TileRegistryWfcCatalog ProductionCatalog() => new(new TileRegistry(new GodotAssetPaths()));
+    public static TileCatalogData ProductionCatalog() =>
+        TileCatalogData.From(new TileRegistry(new GodotAssetPaths()));
 
     /// <summary>
     ///     Asserts that a generation succeeded, quoting the generator's error message when it did not.

@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -19,7 +20,7 @@ public static class MeshMapGeneratorFixture
 {
     public static IrregularMeshNs.MeshMapGenerator Create(int rings = IrregularMeshNs.MeshMapGenerator.DefaultRings) =>
         new(
-            new TileRegistry(new GodotAssetPaths()),
+            TileCatalogData.From(new TileRegistry(new GodotAssetPaths())),
             DefaultBiomes(),
             TestUtilities.CompiledTransitionPairs.Load(),
             rings);

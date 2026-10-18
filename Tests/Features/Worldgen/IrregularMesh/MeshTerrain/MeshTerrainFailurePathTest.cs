@@ -29,10 +29,10 @@ public class MeshTerrainFailurePathTest
         // ASSUMPTION: seed 4242 with these cards reaches the foreground step, as MeshTerrainFingerprintTest pins.
         var registry = new TileRegistry(new GodotAssetPaths());
         var solver = new FailingSolver(
-            new WfcTerrainSolver(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
+            new WfcTerrainSolver(TransitionPairs(), TileCatalogData.From(registry)),
             AutoTileId(registry));
         var generator = new IrregularMeshNs.MeshTerrainGenerator(
-            new MeshTerrainWfcSetup(solver, registry),
+            new MeshTerrainWfcSetup(solver, TileCatalogData.From(registry)),
             new Dictionary<string, int>(),
             MeshMapGeneratorFixture.DefaultBiomes());
 
@@ -56,7 +56,7 @@ public class MeshTerrainFailurePathTest
     {
         var registry = new TileRegistry(new GodotAssetPaths());
         var solver = new FailingSolver(
-            new WfcTerrainSolver(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
+            new WfcTerrainSolver(TransitionPairs(), TileCatalogData.From(registry)),
             AutoTileId(registry));
         var mesh = IrregularMeshNs.MeshGenerator.Generate(new IrregularMeshNs.MeshGenerator.GenerationConfig
         {
@@ -66,7 +66,7 @@ public class MeshTerrainFailurePathTest
         });
 
         // With no biome registered, no terrain tile is allowed in any biome, so the candidate set is empty.
-        var foreground = new MeshForegroundWfc(registry, solver.SolveGraphWithCatalog);
+        var foreground = new MeshForegroundWfc(TileCatalogData.From(registry), solver.SolveGraphWithCatalog);
         var generated = foreground.Generate(mesh, BiomeSet.Empty, 4243UL);
 
         AssertBool(generated).IsFalse();
@@ -80,10 +80,10 @@ public class MeshTerrainFailurePathTest
     {
         var registry = new TileRegistry(new GodotAssetPaths());
         var solver = new FailingSolver(
-            new WfcTerrainSolver(TransitionPairs(), new TileRegistryWfcCatalog(registry)),
+            new WfcTerrainSolver(TransitionPairs(), TileCatalogData.From(registry)),
             AutoTileId(registry));
         var generator = new IrregularMeshNs.MeshTerrainGenerator(
-            new MeshTerrainWfcSetup(solver, registry),
+            new MeshTerrainWfcSetup(solver, TileCatalogData.From(registry)),
             new Dictionary<string, int>(),
             MeshMapGeneratorFixture.DefaultBiomes());
 

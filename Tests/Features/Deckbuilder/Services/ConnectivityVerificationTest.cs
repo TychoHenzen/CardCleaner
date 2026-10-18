@@ -56,8 +56,7 @@ public class ConnectivityVerificationTest
         return GridMapGenerator.CreatePipeline(
             rng,
             biomeProvider,
-            _tileRegistry,
-            _tileRegistry,  // ITileMetadataProvider
+            _tileRegistry.ToCatalogData(),
             wfcGenerator,
             biomes: _registry.ToBiomeSet(),
             gradient: gradient);
@@ -92,7 +91,7 @@ public class ConnectivityVerificationTest
 
         var rules = new WfcAdjacencyRules(pairs.ToArray());
         // Pass the tile catalog so WfcMapGenerator reads passability from it, as the source of truth
-        return new WfcMapGenerator(rules, new TileRegistryWfcCatalog(_tileRegistry));
+        return new WfcMapGenerator(rules, TileCatalogData.From(_tileRegistry));
     }
 
     /// <summary>

@@ -126,6 +126,8 @@ public partial class CompositionRoot : Node
         var tileRegistry = new TileRegistry(assetPaths);
         container.RegisterSingleton<ITileRegistry>(tileRegistry);
         container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
+        // One snapshot of the registry, taken after its constructor has filled it. The generators read this catalog.
+        var tiles = TileCatalogData.From(tileRegistry);
 
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(assetPaths);
@@ -135,9 +137,9 @@ public partial class CompositionRoot : Node
         // the generators are plain classes, so the composition root registers them.
         var transitionPairs = new TransitionPairs(new CompiledTransitionResolver(assetPaths).GetAllTransitionPairs());
         container.RegisterSingleton<IGridMapGenerator>(
-            new GridMapGenerator(tileRegistry, tileRegistry, biomes, transitionPairs));
+            new GridMapGenerator(tiles, biomes, transitionPairs));
         container.RegisterSingleton<IMeshMapGenerator>(
-            new MeshMapGenerator(tileRegistry, biomes, transitionPairs));
+            new MeshMapGenerator(tiles, biomes, transitionPairs));
 
         container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
         container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();

@@ -30,11 +30,11 @@ public class WfcTerrainSolverRuleTileIdsTest
         var expected = new WfcAdjacencyRules(transitionPairs);
         // Precondition: gap configuration adds the probe to fresh rules, so a snapshot taken after it would contain it.
         var withGaps = new WfcAdjacencyRules(transitionPairs);
-        GapTileAdjacencyConfigurator.Configure(withGaps, new TileRegistryWfcCatalog(registry));
+        GapTileAdjacencyConfigurator.Configure(withGaps, TileCatalogData.From(registry));
         AssertBool(withGaps.AllTileIds.Contains(ProbeGapTileId)).IsTrue();
         AssertBool(expected.AllTileIds.Contains(ProbeGapTileId)).IsFalse();
 
-        var solver = new WfcTerrainSolver(transitionPairs, new TileRegistryWfcCatalog(registry));
+        var solver = new WfcTerrainSolver(transitionPairs, TileCatalogData.From(registry));
 
         AssertString(string.Join("|", solver.RuleTileIds)).IsEqual(string.Join("|", expected.AllTileIds));
     }

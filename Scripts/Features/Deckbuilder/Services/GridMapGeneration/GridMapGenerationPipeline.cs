@@ -70,8 +70,7 @@ internal sealed class GridMapGenerationPipeline
             PassableTiles = passableTiles,
             PerGenerationVariants = variants.PerGenerationVariants,
             PerGenerationGroupVariants = variants.PerGenerationGroupVariants,
-            ContextualVariants = contextualVariants,
-            TileRegistry = _context.TileRegistry
+            ContextualVariants = contextualVariants
         };
 
         // The start and the enemies come from the rule both map kinds share, drawn after the terrain from the same
@@ -150,7 +149,7 @@ internal sealed class GridMapGenerationPipeline
 
     private bool IsPassableTile(string tileId)
     {
-        var tile = _context.TileRegistry.GetTile(tileId);
+        var tile = _context.Tiles.GetTile(tileId);
         return tile?.IsPassable ?? false;
     }
 
@@ -158,7 +157,7 @@ internal sealed class GridMapGenerationPipeline
     {
         var variants = new Dictionary<string, int>();
 
-        foreach (var tile in _context.TileRegistry.GetAllTiles())
+        foreach (var tile in _context.Tiles.GetAllTiles())
         {
             if (tile.VariationMode == VariationMode.PerGeneration && tile.HasVariations)
             {
@@ -177,12 +176,12 @@ internal sealed class GridMapGenerationPipeline
     {
         var selected = new Dictionary<string, string>();
 
-        foreach (var group in _context.TileRegistry.GetAllVariationGroups())
+        foreach (var group in _context.Tiles.GetAllVariationGroups())
         {
             if (group.Mode != VariationMode.PerGeneration)
                 continue;
 
-            var selectedTileId = _context.TileRegistry.SelectPerMapVariant(
+            var selectedTileId = _context.Tiles.SelectPerMapVariant(
                 group.BaseName,
                 _context.Rng);
             if (selectedTileId != null)

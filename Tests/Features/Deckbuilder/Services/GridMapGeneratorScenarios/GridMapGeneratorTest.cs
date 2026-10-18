@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
@@ -57,13 +58,44 @@ public class GridMapGeneratorTest
         AssertBool(caught is MapGenerationCancelledException).IsTrue();
     }
 
-    private static GridMapGenerator CreateGenerator()
+    [TestCase]
+    [TestCategory("Unit")]
+    public static async Task TwoGeneratorsOnOneCatalogAndSeedMakeEqualMaps()
     {
-        var tileRegistry = new TileRegistry(new GodotAssetPaths());
+        var tiles = TileCatalogData.From(new TileRegistry(new GodotAssetPaths()));
+
+        var first = await CreateGenerator(tiles).GenerateAsync(Config());
+        var second = await CreateGenerator(tiles).GenerateAsync(Config());
+
+        AssertThat(TileIdsOf(first)).IsEqual(TileIdsOf(second));
+    }
+
+    private static GridMapGenerator CreateGenerator() =>
+        CreateGenerator(TileCatalogData.From(new TileRegistry(new GodotAssetPaths())));
+
+    private static GridMapGenerator CreateGenerator(TileCatalogData tiles)
+    {
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         return new GridMapGenerator(
-            tileRegistry, tileRegistry, biomeRegistry.ToBiomeSet(), CompiledTransitionPairs.Load());
+            tiles, biomeRegistry.ToBiomeSet(), CompiledTransitionPairs.Load());
+    }
+
+    /// <summary>Flattens a generated grid map to its size, start cell and every tile id, row by row.</summary>
+    private static string TileIdsOf(IGeneratedMap generated)
+    {
+        var map = (SimpleMapData)((SimpleGeneratedMap)generated).RawMapData;
+        var text = new System.Text.StringBuilder();
+        text.Append(map.Size.X).Append('x').Append(map.Size.Y).Append(" start ")
+            .Append(map.PlayerStart.X).Append(',').Append(map.PlayerStart.Y).Append('\n');
+        for (var y = 0; y < map.Size.Y; y++)
+        {
+            for (var x = 0; x < map.Size.X; x++)
+                text.Append(map.TileIds[y, x] ?? "-").Append(',');
+            text.Append('\n');
+        }
+
+        return text.ToString();
     }
 
     private static MapGenerationConfig Config() => new()
