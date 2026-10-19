@@ -20,7 +20,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// constraints registered on the tile selector). Biome affinity comes from <see cref="GenerateMultiBiome"/> with a
 /// strength field.
 /// </summary>
-public class WfcMapGenerator
+public class WfcMapGenerator : IWfcMapGenerator
 {
     private readonly WfcAdjacencyRules _adjacencyRules;
     private readonly WfcTileSelector _selector;
