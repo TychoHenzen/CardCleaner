@@ -56,9 +56,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
             config.Size,
             _tiles.GetDefaultPassableTileId(),
             _tiles.GetDefaultSolidTileId());
-        var wfcGenerator = new WfcMapGenerator(
-            new WfcAdjacencyRules(_transitionPairs.Pairs),
-            _tiles);
+        var wfcGenerator = Wfc.CreateMapGenerator(_transitionPairs.Pairs, _tiles);
         var pipeline = CreatePipeline(
             rng, biomeProvider, _tiles, wfcGenerator, _biomes, gradient);
         pipeline.SetProfiler(new CancellableProgressProfiler(
@@ -87,7 +85,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
         IRandom rng,
         IBiomeProvider biomeProvider,
         TileCatalogData tiles,
-        WfcMapGenerator? wfcGenerator = null,
+        IWfcMapGenerator? wfcGenerator = null,
         BiomeSet? biomes = null,
         BaselineGradient? gradient = null)
     {
