@@ -31,9 +31,12 @@ public sealed class GridMapGenerator : IGridMapGenerator
         BiomeSet biomes,
         TransitionPairs transitionPairs)
     {
-        _tiles = tiles ?? throw new ArgumentNullException(nameof(tiles));
-        _biomes = biomes ?? throw new ArgumentNullException(nameof(biomes));
-        _transitionPairs = transitionPairs ?? throw new ArgumentNullException(nameof(transitionPairs));
+        ArgumentNullException.ThrowIfNull(tiles);
+        ArgumentNullException.ThrowIfNull(biomes);
+        ArgumentNullException.ThrowIfNull(transitionPairs);
+        _tiles = tiles;
+        _biomes = biomes;
+        _transitionPairs = transitionPairs;
     }
 
     /// <inheritdoc />
