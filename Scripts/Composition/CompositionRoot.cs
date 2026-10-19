@@ -123,7 +123,7 @@ public partial class CompositionRoot : Node
         var assetPaths = new GodotAssetPaths();
         container.RegisterSingleton<IAssetPaths>(assetPaths);
 
-        var tileRegistry = new TileRegistry(assetPaths);
+        var tileRegistry = TileCatalogLoad.Load(assetPaths);
         container.RegisterSingleton<ITileRegistry>(tileRegistry);
         container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
         // One snapshot of the registry, taken after its constructor has filled it. The generators read this catalog.
@@ -142,7 +142,7 @@ public partial class CompositionRoot : Node
             new MeshMapGenerator(tiles, biomes, transitionPairs));
 
         container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
-        container.RegisterSingleton<ISafePositionTracker, SafePositionTracker>();
+        container.RegisterSingleton(SafePositionTrackers.Create());
 
         var playerResetService = new PlayerResetService();
         AddOwnedChild(playerResetService);

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Composition;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Core.DependencyInjection;
@@ -179,6 +180,26 @@ public class CompositionRootTest
         {
             // Assert - the cabinet resolves the real generator for the irregular kind, not a test double
             Assertions.AssertThat(TestServices.Resolver.Get<IMeshMapGenerator>()).IsInstanceOf<MeshMapGenerator>();
+        }
+        finally
+        {
+            QueueFreeAll(created);
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void RootResolvesTheCatalogAndTheTrackerFromTheFactories()
+    {
+        // Arrange and act - the autoload composes the catalog via TileCatalogLoad and the tracker via its factory
+        TestServices.Reinitialize();
+        var created = ReinitializedNodes();
+        try
+        {
+            // Assert - the registry is one instance behind both catalog contracts, and the tracker is registered
+            var registry = TestServices.Resolver.Get<ITileRegistry>();
+            Assertions.AssertThat(TestServices.Resolver.Get<ITileMetadataProvider>()).IsSame(registry);
+            Assertions.AssertBool(TestServices.Resolver.Get<ISafePositionTracker>() is not null).IsTrue();
         }
         finally
         {

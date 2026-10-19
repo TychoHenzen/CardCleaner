@@ -165,7 +165,7 @@ public partial class IrregularMeshPreview : Node2D
         // Initialize tile registry for proper terrain lookups
         try
         {
-            _tileRegistry = new TileRegistry(new GodotAssetPaths());
+            _tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths());
             GD.Print(
                 $"[IrregularMeshPreview] Loaded TileRegistry with " +
                 $"{((TileRegistry)_tileRegistry).GetAllTiles().GetEnumerator().MoveNext()} tiles");
