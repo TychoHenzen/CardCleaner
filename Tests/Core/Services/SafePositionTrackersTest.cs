@@ -12,7 +12,7 @@ public class SafePositionTrackersTest
 {
     [TestCase]
     [TestCategory("Unit")]
-    public void CreateReturnsAnEmptyTracker()
+    public static void CreateReturnsAnEmptyTracker()
     {
         ISafePositionTracker tracker = SafePositionTrackers.Create();
 
@@ -22,7 +22,7 @@ public class SafePositionTrackersTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void CreatedTrackerRecordsAValidPositionAndRejectsAnInvalidOne()
+    public static void CreatedTrackerRecordsAValidPositionAndRejectsAnInvalidOne()
     {
         ISafePositionTracker tracker = SafePositionTrackers.Create();
 
@@ -35,7 +35,7 @@ public class SafePositionTrackersTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void CreateBuildsANewTrackerOnEveryCall()
+    public static void CreateBuildsANewTrackerOnEveryCall()
     {
         ISafePositionTracker first = SafePositionTrackers.Create();
         ISafePositionTracker second = SafePositionTrackers.Create();

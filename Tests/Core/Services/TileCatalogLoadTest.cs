@@ -12,7 +12,7 @@ public class TileCatalogLoadTest
 {
     [TestCase]
     [TestCategory("Unit")]
-    public void LoadReturnsARegistryWithTheSameTilesAsTheConstructor()
+    public static void LoadReturnsARegistryWithTheSameTilesAsTheConstructor()
     {
         var loaded = TileCatalogLoad.Load(new GodotAssetPaths());
         var direct = new TileRegistry(new GodotAssetPaths());
@@ -26,7 +26,7 @@ public class TileCatalogLoadTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void LoadBuildsANewRegistryOnEveryCall()
+    public static void LoadBuildsANewRegistryOnEveryCall()
     {
         var first = TileCatalogLoad.Load(new GodotAssetPaths());
         var second = TileCatalogLoad.Load(new GodotAssetPaths());
