@@ -329,6 +329,7 @@ The map generator uses a **two-phase Wave Function Collapse** approach with dual
 
 **Key Files** (all in `Scripts/Features/Worldgen/Wfc/`):
 - `WfcMapGenerator.cs`: High-level generator that configures and runs WFC
+- `Wfc.cs`: the front door; code outside this folder creates generators and solvers through it and holds `IWfcMapGenerator` or `IWfcTerrainSolver`, never `WfcMapGenerator`, `WfcAdjacencyRules` or `WfcTerrainSolver`
 - `WfcSolver.cs`: Core WFC algorithm (cell selection, collapse, propagation)
 - `WfcPropagator.cs`: Constraint propagation using adjacency rules
 - `WfcTileSelector.cs`: Weighted tile selection with soft constraints

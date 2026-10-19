@@ -31,9 +31,12 @@ public sealed class GridMapGenerator : IGridMapGenerator
         BiomeSet biomes,
         TransitionPairs transitionPairs)
     {
-        _tiles = tiles ?? throw new ArgumentNullException(nameof(tiles));
-        _biomes = biomes ?? throw new ArgumentNullException(nameof(biomes));
-        _transitionPairs = transitionPairs ?? throw new ArgumentNullException(nameof(transitionPairs));
+        ArgumentNullException.ThrowIfNull(tiles);
+        ArgumentNullException.ThrowIfNull(biomes);
+        ArgumentNullException.ThrowIfNull(transitionPairs);
+        _tiles = tiles;
+        _biomes = biomes;
+        _transitionPairs = transitionPairs;
     }
 
     /// <inheritdoc />
@@ -56,9 +59,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
             config.Size,
             _tiles.GetDefaultPassableTileId(),
             _tiles.GetDefaultSolidTileId());
-        var wfcGenerator = new WfcMapGenerator(
-            new WfcAdjacencyRules(_transitionPairs.Pairs),
-            _tiles);
+        var wfcGenerator = Wfc.CreateMapGenerator(_transitionPairs.Pairs, _tiles);
         var pipeline = CreatePipeline(
             rng, biomeProvider, _tiles, wfcGenerator, _biomes, gradient);
         pipeline.SetProfiler(new CancellableProgressProfiler(
@@ -87,7 +88,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
         IRandom rng,
         IBiomeProvider biomeProvider,
         TileCatalogData tiles,
-        WfcMapGenerator? wfcGenerator = null,
+        IWfcMapGenerator? wfcGenerator = null,
         BiomeSet? biomes = null,
         BaselineGradient? gradient = null)
     {

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using WfcDoor = CardCleaner.Scripts.Features.Worldgen.Wfc.Wfc;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 
@@ -19,7 +20,7 @@ internal sealed record MeshTerrainWfcSetup(
         IReadOnlyList<(string tileA, string tileB)> transitionPairs,
         TileCatalogData? tiles)
     {
-        var solver = new WfcTerrainSolver(transitionPairs, tiles);
+        var solver = WfcDoor.CreateTerrainSolver(transitionPairs, tiles);
         return new MeshTerrainWfcSetup(solver, tiles);
     }
 }
