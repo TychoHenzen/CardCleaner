@@ -393,6 +393,22 @@ function Read-ReportTotals {
     return $totals
 }
 
+# Every attempt log of this run (godot.stdout.log, godot.resume<n>.stdout.log), in attempt order. Other godot*.log files
+# in the folder are ignored: they are leftovers from direct runs with stale numbers.
+function Get-GateLines {
+    param([string[]]$StdoutPaths)
+
+    $lines = New-Object System.Collections.Generic.List[string]
+    foreach ($path in $StdoutPaths) {
+        foreach ($line in ($AnsiEscape.Replace((Read-SharedText -Path $path), '') -split "`r?`n")) {
+            if ($line.Contains('dependency gate: ') -and -not $lines.Contains($line.Trim())) {
+                $lines.Add($line.Trim())
+            }
+        }
+    }
+    return @($lines.ToArray())
+}
+
 function Invoke-Build {
     param([string]$RepositoryRoot, [string]$ReportRoot)
 
@@ -500,10 +516,12 @@ $finalExitCode = $null
 # A full run starts from the Tests folder, -Fast names its suite files, and a resume names its compact targets.
 $targets = if ($Fast) { $expected } else { @('res://Tests') }
 $suiteResults = New-Object System.Collections.Generic.List[object]
+$attemptLogs = New-Object System.Collections.Generic.List[string]
 
 for ($attempt = 0; ; $attempt++) {
     $suffix = if ($attempt -eq 0) { '' } else { ".resume$attempt" }
     $stdoutPath = Join-Path $reportRoot "godot$suffix.stdout.log"
+    $attemptLogs.Add($stdoutPath)
     $stderrPath = Join-Path $reportRoot "godot$suffix.stderr.log"
     $suiteArguments = @($targets | ForEach-Object { '-a', $_ })
 
@@ -576,6 +594,15 @@ for ($attempt = 0; ; $attempt++) {
     $targets = Get-ResumeTargets -Pending $pending -AllSuites $allSuites
     Write-Host "Resuming with $($pending.Count) unfinished suite(s): $($targets -join ' ')"
 }
+
+foreach ($gateLine in (Get-GateLines -StdoutPaths $attemptLogs.ToArray())) {
+    Write-Host $gateLine
+}
+$summaryCases = ($suiteResults | Measure-Object -Property Cases -Sum).Sum
+$summaryErrors = ($suiteResults | Measure-Object -Property Errors -Sum).Sum
+$summaryFailures = ($suiteResults | Measure-Object -Property Failures -Sum).Sum
+Write-Host ("Run summary: suites=$($suiteResults.Count) cases=$([int]$summaryCases) " +
+    "errors=$([int]$summaryErrors) failures=$([int]$summaryFailures) attempts=$($attemptLogs.Count)")
 
 # Every report written since the run began counts, and at least one is required: a run whose last attempt was
 # interrupted after its final suite printed Statistics still has to leave a report before it can pass.

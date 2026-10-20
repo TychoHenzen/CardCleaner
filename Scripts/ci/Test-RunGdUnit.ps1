@@ -1100,6 +1100,30 @@ function Test-ReportAggregation {
     Assert-Line $result.Stdout "Suite result: $SuiteAlpha cases=1 errors=1 failures=0" 'a suite finished before a stall is still reported'
 }
 
+function Test-GateAndSummary {
+    param($Context)
+
+    # The gate line is printed by the stalled attempt and again by the resume; it is printed once. The summary spans
+    # both attempts: the stalled suite counts only when the resume finishes it.
+    Set-FakePlan -Context $Context -Index 0 -Lines @(
+        (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats -Cases 2),
+        'print dependency gate: gated: up_edges=7',
+        (Get-SuiteStart $SuiteAlphaTwo),
+        'stall')
+    Set-FakePlan -Context $Context -Index 1 -Lines @(
+        (Get-SuiteStart $SuiteAlphaTwo), (Get-SuiteStats -Cases 3),
+        (Get-SuiteStart $SuiteBeta), (Get-SuiteStats -Cases 4),
+        'print dependency gate: gated: up_edges=7',
+        'report r1 0 0',
+        'exit 0')
+    $result = Invoke-Runner -Context $Context
+    Assert-ExitCode -Result $result -Expected 0 -Message 'a resumed run that finishes green passes'
+    Assert-Line $result.Stdout 'dependency gate: gated: up_edges=7' 'the gate line is printed'
+    Assert-Equal 1 @($result.Stdout -split "`r?`n" | Where-Object { $_.Trim() -eq 'dependency gate: gated: up_edges=7' }).Count 'one gate line'
+    Assert-Line $result.Stdout 'Run summary: suites=3 cases=9 errors=0 failures=0 attempts=2' ('the summary spans the ' +
+        'stalled and the resumed attempt')
+}
+
 # The runner's suite-detection patterns must match the ones in TestSuiteNamingTest.cs, the C# side that gdUnit's own
 # self-check uses. The runner is parsed, not run, so this compares the shipped text.
 function Test-PatternLockstep {
@@ -1143,7 +1167,8 @@ function Test-PatternLockstep {
 $AllChecks = @(
     'CleanRun', 'BuildLeavesWorkerRunning', 'BuildFails', 'Fast', 'StallResumes', 'RepeatedStallFails',
     'CrashNoReport', 'CrashAfterEarlierReportResumes', 'RepeatedCrashFails', 'StallThenCrashFails',
-    'CrashResumeNoProgressFails', 'InterruptionBudget', 'GdUnitExitCodes', 'ReportAggregation', 'PatternLockstep')
+    'CrashResumeNoProgressFails', 'InterruptionBudget', 'GdUnitExitCodes', 'ReportAggregation', 'GateAndSummary',
+    'PatternLockstep')
 if ([string]::IsNullOrWhiteSpace($Only)) {
     $checks = $AllChecks
 }
