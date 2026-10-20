@@ -16,7 +16,15 @@ param(
     # handful means the run is not converging, so the bound stops a broken run from looping for hours.
     [Parameter()]
     [ValidateRange(0, 10)]
-    [int]$MaxResumes = 3
+    [int]$MaxResumes = 3,
+
+    # Run only these suite files (res:// paths of [TestSuite] files) instead of the Unit or full set.
+    [Parameter()]
+    [string[]]$Suite = @(),
+
+    # Report and log folder, relative to the repository root and inside reports/. CI uses the default.
+    [Parameter()]
+    [string]$ReportDirectory = 'reports\ci'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -475,7 +483,16 @@ if (-not (Test-Path -LiteralPath $GodotBinary -PathType Leaf)) {
 
 $godotPath = Resolve-GodotConsole -Binary $GodotBinary
 $repositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
-$reportRoot = Join-Path $repositoryRoot 'reports\ci'
+$reportRelative = ($ReportDirectory -replace '/', '\').Trim('\')
+$reportSegments = @($reportRelative -split '\\')
+if ([IO.Path]::IsPathRooted($ReportDirectory) -or $reportSegments -contains '..' -or $reportSegments -contains '.' -or
+    $reportSegments.Count -lt 2 -or $reportSegments[0] -ne 'reports') {
+    throw "-ReportDirectory must be a relative folder below reports/ without '..': $ReportDirectory"
+}
+if ($Fast -and $Suite.Count -gt 0) {
+    throw '-Suite and -Fast cannot be combined; -Suite already names the suites to run.'
+}
+$reportRoot = Join-Path $repositoryRoot $reportRelative
 New-Item -ItemType Directory -Path $reportRoot -Force | Out-Null
 # One line per interruption. CI uploads reports/ci whenever this file exists, so a run that resumes to green still
 # keeps the logs of the attempt that crashed or stalled.
@@ -489,7 +506,16 @@ Remove-StaleAttemptLogs -ReportRoot $reportRoot
 Write-Host "Using Godot executable: $godotPath"
 
 $allSuites = Get-ExpectedSuites -RepositoryRoot $repositoryRoot
-$expected = if ($Fast) { Get-ExpectedSuites -RepositoryRoot $repositoryRoot -UnitOnly } else { $allSuites }
+# A blank -Suite value must fail here, not fall through to the full set below.
+if (@($Suite | Where-Object { $_.Trim().Length -eq 0 }).Count -gt 0) {
+    throw 'Empty -Suite value; a suite is a res:// path of a [TestSuite] file, for example res://Tests/Architecture/DependencyGateTest.cs'
+}
+$requested = @($Suite | ForEach-Object { $_.Trim() } | Where-Object { $_.Length -gt 0 })
+$unknown = @($requested | Where-Object { $allSuites -notcontains $_ })
+if ($unknown.Count -gt 0) {
+    throw "Unknown -Suite value(s): $($unknown -join ', '); a suite is a res:// path of a [TestSuite] file, for example res://Tests/Architecture/DependencyGateTest.cs"
+}
+$expected = if ($requested.Count -gt 0) { @($requested | Sort-Object -Unique) } elseif ($Fast) { Get-ExpectedSuites -RepositoryRoot $repositoryRoot -UnitOnly } else { $allSuites }
 if ($expected.Count -eq 0) {
     throw 'GdUnit found no [TestSuite] files to run.'
 }
@@ -500,7 +526,7 @@ Invoke-Import -GodotPath $godotPath -RepositoryRoot $repositoryRoot -ReportRoot 
 # -rc 100000 stops gdUnit's report cleanup from trying (and failing) to delete old report_N folders (#198).
 $baseArguments = @(
     '--headless', '--path', '.', '-s', 'res://addons/gdUnit4/bin/GdUnitCmdTool.gd', '-c', '--ignoreHeadlessMode',
-    '-rd', 'reports/ci', '-rc', '100000'
+    '-rd', ($reportRelative -replace '\\', '/'), '-rc', '100000'
 )
 $finished = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
 $interruptions = New-Object System.Collections.Generic.List[object]
@@ -514,7 +540,7 @@ $failures = 0
 $runStartedAt = [DateTime]::UtcNow
 $finalExitCode = $null
 # A full run starts from the Tests folder, -Fast names its suite files, and a resume names its compact targets.
-$targets = if ($Fast) { $expected } else { @('res://Tests') }
+$targets = if ($Fast -or $requested.Count -gt 0) { $expected } else { @('res://Tests') }
 $suiteResults = New-Object System.Collections.Generic.List[object]
 $attemptLogs = New-Object System.Collections.Generic.List[string]
 

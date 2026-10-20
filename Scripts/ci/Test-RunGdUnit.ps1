@@ -158,7 +158,7 @@ internal static class FakeGodot
             else if (line.StartsWith("report ", StringComparison.Ordinal))
             {
                 string[] parts = line.Split(' ');
-                WriteReport(parts[1], int.Parse(parts[2]), int.Parse(parts[3]));
+                WriteReport(ReportRootFor(args), parts[1], int.Parse(parts[2]), int.Parse(parts[3]));
             }
             else if (line == "stall")
             {
@@ -219,9 +219,17 @@ internal static class FakeGodot
         Console.Out.Flush();
     }
 
-    private static void WriteReport(string dir, int failures, int errors)
+    // The folder the real runner passes after -rd (relative to the current directory); reports/ci when it is absent.
+    private static string ReportRootFor(string[] args)
     {
-        string folder = Path.Combine(Directory.GetCurrentDirectory(), "reports", "ci", dir);
+        int index = Array.IndexOf(args, "-rd");
+        string root = index >= 0 && index + 1 < args.Length ? args[index + 1] : Path.Combine("reports", "ci");
+        return Path.Combine(Directory.GetCurrentDirectory(), root);
+    }
+
+    private static void WriteReport(string root, string dir, int failures, int errors)
+    {
+        string folder = Path.Combine(root, dir);
         Directory.CreateDirectory(folder);
         var xml = new StringBuilder();
         xml.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -257,7 +265,9 @@ param(
     [Parameter(Mandatory = $true)][string]$GodotBinary,
     [Parameter(Mandatory = $true)][int]$StallSeconds,
     [Parameter(Mandatory = $true)][int]$MaxResumes,
-    [switch]$Fast
+    [switch]$Fast,
+    [string[]]$Suite = @(),
+    [string]$ReportDirectory = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -265,6 +275,14 @@ try {
     $splat = @{ GodotBinary = $GodotBinary; StallSeconds = $StallSeconds; MaxResumes = $MaxResumes }
     if ($Fast) {
         $splat['Fast'] = $true
+    }
+    # The suite list travels as one comma-joined string, because the wrapper is a child process.
+    # Empty entries are kept, so the runner is the one that rejects them.
+    if ($PSBoundParameters.ContainsKey('Suite')) {
+        $splat['Suite'] = @($Suite | ForEach-Object { $_ -split ',' })
+    }
+    if ($ReportDirectory) {
+        $splat['ReportDirectory'] = $ReportDirectory
     }
     & $RunnerPath @splat
     exit 0
@@ -545,7 +563,7 @@ function Get-FlatRunnerOutput {
 }
 
 function Invoke-Runner {
-    param($Context, [switch]$Fast, [int]$MaxResumes = 3)
+    param($Context, [switch]$Fast, [int]$MaxResumes = 3, [string[]]$Suite = @(), [string]$ReportDirectory = '')
 
     $runnerArguments = @(
         '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $Context.Wrapper,
@@ -554,6 +572,12 @@ function Invoke-Runner {
     )
     if ($Fast) {
         $runnerArguments += '-Fast'
+    }
+    if ($Suite.Count -gt 0) {
+        $runnerArguments += '-Suite', ($Suite -join ',')
+    }
+    if ($ReportDirectory) {
+        $runnerArguments += '-ReportDirectory', $ReportDirectory
     }
     $argumentLine = (@($runnerArguments) | ForEach-Object { ConvertTo-ProcessArgument -Value ([string]$_) }) -join ' '
     $stdoutPath = Join-Path $Context.Root 'runner.stdout.txt'
@@ -752,6 +776,47 @@ function Test-CleanRun {
     Assert-Equal 1 $tests.Count 'one test invocation'
     $fullRunArguments = '-rd reports/ci -rc 100000 -a res://Tests'
     Assert-That $tests[0].EndsWith($fullRunArguments) 'a full run passes -rc 100000 and starts from the Tests folder'
+}
+
+function Test-SingleSuite {
+    param($Context)
+
+    Set-FakePlan -Context $Context -Index 0 -Lines @(
+        (Get-SuiteStart $SuiteBeta), (Get-SuiteStats -Cases 2), 'report r1 0 0', 'exit 0')
+    $result = Invoke-Runner -Context $Context -Suite @($SuiteBeta) -ReportDirectory 'reports\single'
+    Assert-ExitCode -Result $result -Expected 0 -Message 'a single-suite run exits 0'
+    Assert-Line $result.Stdout 'GdUnit passed: 1 of 1 suite files ran.' 'only the named suite is expected'
+    $tests = @(Get-RunnerTestCalls -Context $Context)
+    Assert-Equal 1 $tests.Count 'one test invocation'
+    Assert-That $tests[0].EndsWith("-rd reports/single -rc 100000 -a $SuiteBeta") 'the call names the suite and the folder'
+    Assert-That (Test-Path -LiteralPath (Join-Path $Context.Repo 'reports\single\godot.stdout.log') -PathType Leaf) 'logs go to the chosen folder'
+}
+
+function Test-InvalidSuiteParameters {
+    param($Context)
+
+    foreach ($case in @(
+            @{ Suite = @('res://Tests/Nope/NopeTest.cs'); Dir = ''; Expect = 'Unknown -Suite value(s): res://Tests/Nope/NopeTest.cs' },
+            @{ Suite = @(''); Dir = ''; Expect = 'Empty -Suite value' },
+            @{ Suite = @(' '); Dir = ''; Expect = 'Empty -Suite value' },
+            @{ Suite = @(); Dir = 'reports\..\escape'; Expect = '-ReportDirectory must be a relative folder below reports/' },
+            @{ Suite = @(); Dir = 'elsewhere\ci'; Expect = '-ReportDirectory must be a relative folder below reports/' })) {
+        $result = Invoke-Runner -Context $Context -Suite $case.Suite -ReportDirectory $case.Dir
+        Assert-ExitCode -Result $result -Expected 1 -Message 'an invalid parameter fails the run'
+        Assert-Contains $result.Stderr $case.Expect 'the error names the problem'
+    }
+    Assert-Equal 0 @(Get-FakeCalls -Context $Context).Count 'neither the build nor Godot started'
+}
+
+function Test-SingleSuiteStall {
+    param($Context)
+
+    Set-FakePlan -Context $Context -Index 0 -Lines @((Get-SuiteStart $SuiteBeta), 'stall')
+    Set-FakePlan -Context $Context -Index 1 -Lines @((Get-SuiteStart $SuiteBeta), 'stall')
+    $result = Invoke-Runner -Context $Context -Suite @($SuiteBeta)
+    Assert-ExitCode -Result $result -Expected 1 -Message 'a single suite that hangs fails the run'
+    Assert-Contains $result.Stderr ('RUNNER-ERROR: GdUnit stalled twice in ' + $SuiteBeta) 'the hung suite is named'
+    Assert-ProcessesGone -Context $Context
 }
 
 function Test-BuildLeavesWorkerRunning {
@@ -1168,7 +1233,7 @@ $AllChecks = @(
     'CleanRun', 'BuildLeavesWorkerRunning', 'BuildFails', 'Fast', 'StallResumes', 'RepeatedStallFails',
     'CrashNoReport', 'CrashAfterEarlierReportResumes', 'RepeatedCrashFails', 'StallThenCrashFails',
     'CrashResumeNoProgressFails', 'InterruptionBudget', 'GdUnitExitCodes', 'ReportAggregation', 'GateAndSummary',
-    'PatternLockstep')
+    'PatternLockstep', 'SingleSuite', 'InvalidSuiteParameters', 'SingleSuiteStall')
 if ([string]::IsNullOrWhiteSpace($Only)) {
     $checks = $AllChecks
 }
