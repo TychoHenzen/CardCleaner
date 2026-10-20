@@ -34,7 +34,7 @@ $ReadRetries = 10
 $GdUnitExitCodes = @(0, 100, 101, 103, 104)
 $AnsiEscape = [regex]::new([string][char]27 + '\[[0-9;]*m')
 $SuiteStartPattern = [regex]::new('^\s*Run Test Suite: (?<suite>res://\S+)')
-$StatisticsPattern = [regex]::new('^\s*Statistics: \d+ test cases \| (?<errors>\d+) errors \| (?<failures>\d+) failures')
+$StatisticsPattern = [regex]::new('^\s*Statistics: (?<cases>\d+) test cases \| (?<errors>\d+) errors \| (?<failures>\d+) failures')
 # Only GdUnit's own result shapes: a test's PASSED/FAILED line and a suite's Statistics line. Tests print their
 # own lines too (for example "Atlas Mapping Statistics:"), which must not be reported as results.
 $ResultLinePattern = [regex]::new('^\s*res://\S+ > .+ (PASSED|FAILED)\b|^\s*Statistics: \d+ test cases')
@@ -110,6 +110,7 @@ function Read-SuiteProgress {
     $progress = [pscustomobject]@{
         Started = New-Object System.Collections.Generic.List[string]
         Finished = New-Object System.Collections.Generic.List[string]
+        Results = New-Object System.Collections.Generic.List[object]
         Errors = 0
         Failures = 0
         LastResultLine = '<none>'
@@ -128,6 +129,12 @@ function Read-SuiteProgress {
         $statistics = $StatisticsPattern.Match($line)
         if ($statistics.Success -and $null -ne $current) {
             $progress.Finished.Add($current)
+            $progress.Results.Add([pscustomobject]@{
+                Suite = $current
+                Cases = [int]$statistics.Groups['cases'].Value
+                Errors = [int]$statistics.Groups['errors'].Value
+                Failures = [int]$statistics.Groups['failures'].Value
+            })
             $progress.Errors += [int]$statistics.Groups['errors'].Value
             $progress.Failures += [int]$statistics.Groups['failures'].Value
             $current = $null
@@ -492,6 +499,7 @@ $runStartedAt = [DateTime]::UtcNow
 $finalExitCode = $null
 # A full run starts from the Tests folder, -Fast names its suite files, and a resume names its compact targets.
 $targets = if ($Fast) { $expected } else { @('res://Tests') }
+$suiteResults = New-Object System.Collections.Generic.List[object]
 
 for ($attempt = 0; ; $attempt++) {
     $suffix = if ($attempt -eq 0) { '' } else { ".resume$attempt" }
@@ -504,6 +512,10 @@ for ($attempt = 0; ; $attempt++) {
     $progress = Read-SuiteProgress -LogText (Read-SharedText -Path $stdoutPath)
     foreach ($suite in $progress.Finished) {
         [void]$finished.Add($suite)
+    }
+    foreach ($result in $progress.Results) {
+        Write-Host "Suite result: $($result.Suite) cases=$($result.Cases) errors=$($result.Errors) failures=$($result.Failures)"
+        $suiteResults.Add($result)
     }
 
     $interruption = Get-Interruption -Run $run -ReportRoot $reportRoot -AttemptStartedAt $attemptStartedAt

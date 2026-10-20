@@ -713,9 +713,9 @@ function Test-CleanRun {
     Write-FileText -Path $unrelatedLog -Text 'keep this direct file'
     Write-FileText -Path $nestedLog -Text 'keep this nested file'
     Set-FakePlan -Context $Context -Index 0 -Lines @(
-        (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
-        (Get-SuiteStart $SuiteAlphaTwo), (Get-SuiteStats),
-        (Get-SuiteStart $SuiteBeta), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats -Cases 3),
+        (Get-SuiteStart $SuiteAlphaTwo), (Get-SuiteStats -Cases 4),
+        (Get-SuiteStart $SuiteBeta), (Get-SuiteStats -Cases 5),
         'report r1 0 0',
         'exit 0')
     # A marker left by an earlier run in the same checkout must not make a clean run look interrupted.
@@ -741,6 +741,9 @@ function Test-CleanRun {
     $consoleLine = 'Using Godot executable: ' + $Context.Console
     Assert-Line $result.Stdout $consoleLine 'the runner picks the _console variant next to the fake'
     Assert-Line $result.Stdout 'GdUnit passed: 3 of 3 suite files ran.' 'every suite ran once'
+    Assert-Line $result.Stdout "Suite result: $SuiteAlpha cases=3 errors=0 failures=0" 'the Alpha suite gets its result line'
+    Assert-Line $result.Stdout "Suite result: $SuiteAlphaTwo cases=4 errors=0 failures=0" 'the AlphaTwo suite gets its result line'
+    Assert-Line $result.Stdout "Suite result: $SuiteBeta cases=5 errors=0 failures=0" 'the Beta suite gets its result line'
     Assert-That (-not (Get-RunnerOutput $result).Contains('WARNING:')) 'a clean run prints no WARNING'
     $calls = @(Get-FakeCalls -Context $Context)
     Assert-Equal 1 @($calls | Where-Object { $_ -like 'dotnet build *' }).Count 'one solution build'
@@ -1094,6 +1097,7 @@ function Test-ReportAggregation {
         'and the stale report is not')
     Assert-Line $result.Stdout 'FAILED fake > fake: fake failure' 'a failing case is named with its message'
     Assert-Line $result.Stdout 'FAILED fake > fake: fake error' 'an erroring case is named with its message'
+    Assert-Line $result.Stdout "Suite result: $SuiteAlpha cases=1 errors=1 failures=0" 'a suite finished before a stall is still reported'
 }
 
 # The runner's suite-detection patterns must match the ones in TestSuiteNamingTest.cs, the C# side that gdUnit's own
