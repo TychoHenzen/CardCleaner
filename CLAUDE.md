@@ -27,6 +27,9 @@ powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godo
 # Only the [TestCategory("Unit")] suites, as CI runs on pull requests and pushes to master
 powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot exe> -Fast
 
+# One suite through the same runner (watchdog and resume included), reports and logs into reports/<name>
+powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot exe> -Suite res://Tests/Architecture/DependencyGateTest.cs -ReportDirectory reports\single
+
 # Runner fixture: runs Run-GdUnit.ps1 against a fake Godot, so no Godot is needed (CI runs it too)
 powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1
 ```
@@ -62,6 +65,8 @@ logs. `Test-RunGdUnit.ps1` runs the real runner against a fake Godot and covers 
 worker running), build failure, watchdog, resume, repeated-stall, crash, repeated-crash, exit-code, interruption-marker
 and report-aggregation paths. It also checks that the suite-detection patterns in `Run-GdUnit.ps1` match the ones in
 `TestSuiteNamingTest.cs`.
+
+The runner prints its results to the job log, so no artifact download is needed for them: one `Suite result: <suite> cases=<n> errors=<e> failures=<f>` line per finished suite (also for suites finished in an attempt that later stalled or crashed), a `FAILED <suite> > <case>: <message>` line for each failing case before it throws, every `dependency gate:` line from all attempt logs, and a `Run summary:` line. `-Suite` takes res:// paths of `[TestSuite]` files and cannot be combined with `-Fast`. `-ReportDirectory` is relative and must lie below `reports/` (default `reports\ci`, which CI uses). A suite that stalls twice fails the run and is named.
 
 ## Code Style
 
@@ -112,7 +117,7 @@ public override void _Ready()
 Godot 4.4+ gives every script and shader a `.uid` sidecar, and scenes reference them by that UID. Sidecars under
 `Scripts/`, `Tests/` and `Shaders/` are committed (`.gitignore` negates `*.uid` for those roots), so a fresh clone keeps
 the same UIDs; `addons/` sidecars stay ignored. Move or rename a source together with its `.uid` (both in one `git mv`,
-or through the editor's FileSystem dock). A new folder of scripts or shaders outside those roots needs its own negation
+or through the editor's FileSystem dock). A headless gdUnit run does not create a new script's `.uid`; run `<godot console exe> --headless --path . --import`, which writes only the sidecar, and commit it with the script. A new folder of scripts or shaders outside those roots needs its own negation
 in `.gitignore`. A `.uid` whose source is gone is removed, not ignored: this is an exception to the rule of adding an
 ignore entry for a generated file, because no workflow needs a sidecar without its source. `ExtResourceUidTest` fails
 when a scene's `ext_resource` UID does not match its target.
