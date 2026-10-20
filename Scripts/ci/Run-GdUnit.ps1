@@ -16,7 +16,15 @@ param(
     # handful means the run is not converging, so the bound stops a broken run from looping for hours.
     [Parameter()]
     [ValidateRange(0, 10)]
-    [int]$MaxResumes = 3
+    [int]$MaxResumes = 3,
+
+    # Run only these suite files (res:// paths of [TestSuite] files) instead of the Unit or full set.
+    [Parameter()]
+    [string[]]$Suite = @(),
+
+    # Report and log folder, relative to the repository root and inside reports/. CI uses the default.
+    [Parameter()]
+    [string]$ReportDirectory = 'reports\ci'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -34,7 +42,7 @@ $ReadRetries = 10
 $GdUnitExitCodes = @(0, 100, 101, 103, 104)
 $AnsiEscape = [regex]::new([string][char]27 + '\[[0-9;]*m')
 $SuiteStartPattern = [regex]::new('^\s*Run Test Suite: (?<suite>res://\S+)')
-$StatisticsPattern = [regex]::new('^\s*Statistics: \d+ test cases \| (?<errors>\d+) errors \| (?<failures>\d+) failures')
+$StatisticsPattern = [regex]::new('^\s*Statistics: (?<cases>\d+) test cases \| (?<errors>\d+) errors \| (?<failures>\d+) failures')
 # Only GdUnit's own result shapes: a test's PASSED/FAILED line and a suite's Statistics line. Tests print their
 # own lines too (for example "Atlas Mapping Statistics:"), which must not be reported as results.
 $ResultLinePattern = [regex]::new('^\s*res://\S+ > .+ (PASSED|FAILED)\b|^\s*Statistics: \d+ test cases')
@@ -110,6 +118,7 @@ function Read-SuiteProgress {
     $progress = [pscustomobject]@{
         Started = New-Object System.Collections.Generic.List[string]
         Finished = New-Object System.Collections.Generic.List[string]
+        Results = New-Object System.Collections.Generic.List[object]
         Errors = 0
         Failures = 0
         LastResultLine = '<none>'
@@ -128,6 +137,12 @@ function Read-SuiteProgress {
         $statistics = $StatisticsPattern.Match($line)
         if ($statistics.Success -and $null -ne $current) {
             $progress.Finished.Add($current)
+            $progress.Results.Add([pscustomobject]@{
+                Suite = $current
+                Cases = [int]$statistics.Groups['cases'].Value
+                Errors = [int]$statistics.Groups['errors'].Value
+                Failures = [int]$statistics.Groups['failures'].Value
+            })
             $progress.Errors += [int]$statistics.Groups['errors'].Value
             $progress.Failures += [int]$statistics.Groups['failures'].Value
             $current = $null
@@ -357,7 +372,7 @@ function Read-ReportTotals {
     param([string]$ReportRoot, [datetime]$Since)
 
     $reports = @(Get-ReportsSince -ReportRoot $ReportRoot -Since $Since)
-    $totals = [pscustomobject]@{ Files = $reports.Count; Errors = 0; Failures = 0 }
+    $totals = [pscustomobject]@{ Files = $reports.Count; Errors = 0; Failures = 0; FailedCases = New-Object System.Collections.Generic.List[object] }
     foreach ($report in $reports) {
         try {
             [xml]$xml = Get-Content -LiteralPath $report.FullName -Raw
@@ -370,8 +385,36 @@ function Read-ReportTotals {
         }
         $totals.Failures += @($xml.SelectNodes('//failure')).Count
         $totals.Errors += @($xml.SelectNodes('//error')).Count
+        foreach ($case in @($xml.SelectNodes('//testcase[failure or error]'))) {
+            $suiteName = $case.GetAttribute('classname')
+            if ([string]::IsNullOrWhiteSpace($suiteName)) { $suiteName = $case.ParentNode.GetAttribute('name') }
+            foreach ($problem in @($case.SelectNodes('failure | error'))) {
+                $message = $problem.GetAttribute('message')
+                if ([string]::IsNullOrWhiteSpace($message)) { $message = $problem.InnerText }
+                $firstLine = (($message -split "`r?`n") | Where-Object { $_.Trim().Length -gt 0 } | Select-Object -First 1)
+                if ($null -eq $firstLine) { $firstLine = '<no message>' }
+                if ($firstLine.Length -gt 300) { $firstLine = $firstLine.Substring(0, 300) + '...' }
+                $totals.FailedCases.Add([pscustomobject]@{ Suite = $suiteName; Case = $case.GetAttribute('name'); Message = $firstLine.Trim() })
+            }
+        }
     }
     return $totals
+}
+
+# Every attempt log of this run (godot.stdout.log, godot.resume<n>.stdout.log), in attempt order. Other godot*.log files
+# in the folder are ignored: they are leftovers from direct runs with stale numbers.
+function Get-GateLines {
+    param([string[]]$StdoutPaths)
+
+    $lines = New-Object System.Collections.Generic.List[string]
+    foreach ($path in $StdoutPaths) {
+        foreach ($line in ($AnsiEscape.Replace((Read-SharedText -Path $path), '') -split "`r?`n")) {
+            if ($line.Contains('dependency gate: ') -and -not $lines.Contains($line.Trim())) {
+                $lines.Add($line.Trim())
+            }
+        }
+    }
+    return @($lines.ToArray())
 }
 
 function Invoke-Build {
@@ -440,7 +483,16 @@ if (-not (Test-Path -LiteralPath $GodotBinary -PathType Leaf)) {
 
 $godotPath = Resolve-GodotConsole -Binary $GodotBinary
 $repositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
-$reportRoot = Join-Path $repositoryRoot 'reports\ci'
+$reportRelative = ($ReportDirectory -replace '/', '\').Trim('\')
+$reportSegments = @($reportRelative -split '\\')
+if ([IO.Path]::IsPathRooted($ReportDirectory) -or $reportSegments -contains '..' -or $reportSegments -contains '.' -or
+    $reportSegments.Count -lt 2 -or $reportSegments[0] -ne 'reports') {
+    throw "-ReportDirectory must be a relative folder below reports/ without '..': $ReportDirectory"
+}
+if ($Fast -and $Suite.Count -gt 0) {
+    throw '-Suite and -Fast cannot be combined; -Suite already names the suites to run.'
+}
+$reportRoot = Join-Path $repositoryRoot $reportRelative
 New-Item -ItemType Directory -Path $reportRoot -Force | Out-Null
 # One line per interruption. CI uploads reports/ci whenever this file exists, so a run that resumes to green still
 # keeps the logs of the attempt that crashed or stalled.
@@ -454,7 +506,16 @@ Remove-StaleAttemptLogs -ReportRoot $reportRoot
 Write-Host "Using Godot executable: $godotPath"
 
 $allSuites = Get-ExpectedSuites -RepositoryRoot $repositoryRoot
-$expected = if ($Fast) { Get-ExpectedSuites -RepositoryRoot $repositoryRoot -UnitOnly } else { $allSuites }
+# A blank -Suite value must fail here, not fall through to the full set below.
+if (@($Suite | Where-Object { $_.Trim().Length -eq 0 }).Count -gt 0) {
+    throw 'Empty -Suite value; a suite is a res:// path of a [TestSuite] file, for example res://Tests/Architecture/DependencyGateTest.cs'
+}
+$requested = @($Suite | ForEach-Object { $_.Trim() } | Where-Object { $_.Length -gt 0 })
+$unknown = @($requested | Where-Object { $allSuites -notcontains $_ })
+if ($unknown.Count -gt 0) {
+    throw "Unknown -Suite value(s): $($unknown -join ', '); a suite is a res:// path of a [TestSuite] file, for example res://Tests/Architecture/DependencyGateTest.cs"
+}
+$expected = if ($requested.Count -gt 0) { @($requested | Sort-Object -Unique) } elseif ($Fast) { Get-ExpectedSuites -RepositoryRoot $repositoryRoot -UnitOnly } else { $allSuites }
 if ($expected.Count -eq 0) {
     throw 'GdUnit found no [TestSuite] files to run.'
 }
@@ -465,7 +526,7 @@ Invoke-Import -GodotPath $godotPath -RepositoryRoot $repositoryRoot -ReportRoot 
 # -rc 100000 stops gdUnit's report cleanup from trying (and failing) to delete old report_N folders (#198).
 $baseArguments = @(
     '--headless', '--path', '.', '-s', 'res://addons/gdUnit4/bin/GdUnitCmdTool.gd', '-c', '--ignoreHeadlessMode',
-    '-rd', 'reports/ci', '-rc', '100000'
+    '-rd', ($reportRelative -replace '\\', '/'), '-rc', '100000'
 )
 $finished = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
 $interruptions = New-Object System.Collections.Generic.List[object]
@@ -479,11 +540,14 @@ $failures = 0
 $runStartedAt = [DateTime]::UtcNow
 $finalExitCode = $null
 # A full run starts from the Tests folder, -Fast names its suite files, and a resume names its compact targets.
-$targets = if ($Fast) { $expected } else { @('res://Tests') }
+$targets = if ($Fast -or $requested.Count -gt 0) { $expected } else { @('res://Tests') }
+$suiteResults = New-Object System.Collections.Generic.List[object]
+$attemptLogs = New-Object System.Collections.Generic.List[string]
 
 for ($attempt = 0; ; $attempt++) {
     $suffix = if ($attempt -eq 0) { '' } else { ".resume$attempt" }
     $stdoutPath = Join-Path $reportRoot "godot$suffix.stdout.log"
+    $attemptLogs.Add($stdoutPath)
     $stderrPath = Join-Path $reportRoot "godot$suffix.stderr.log"
     $suiteArguments = @($targets | ForEach-Object { '-a', $_ })
 
@@ -492,6 +556,10 @@ for ($attempt = 0; ; $attempt++) {
     $progress = Read-SuiteProgress -LogText (Read-SharedText -Path $stdoutPath)
     foreach ($suite in $progress.Finished) {
         [void]$finished.Add($suite)
+    }
+    foreach ($result in $progress.Results) {
+        Write-Host "Suite result: $($result.Suite) cases=$($result.Cases) errors=$($result.Errors) failures=$($result.Failures)"
+        $suiteResults.Add($result)
     }
 
     $interruption = Get-Interruption -Run $run -ReportRoot $reportRoot -AttemptStartedAt $attemptStartedAt
@@ -553,6 +621,15 @@ for ($attempt = 0; ; $attempt++) {
     Write-Host "Resuming with $($pending.Count) unfinished suite(s): $($targets -join ' ')"
 }
 
+foreach ($gateLine in (Get-GateLines -StdoutPaths $attemptLogs.ToArray())) {
+    Write-Host $gateLine
+}
+$summaryCases = ($suiteResults | Measure-Object -Property Cases -Sum).Sum
+$summaryErrors = ($suiteResults | Measure-Object -Property Errors -Sum).Sum
+$summaryFailures = ($suiteResults | Measure-Object -Property Failures -Sum).Sum
+Write-Host ("Run summary: suites=$($suiteResults.Count) cases=$([int]$summaryCases) " +
+    "errors=$([int]$summaryErrors) failures=$([int]$summaryFailures) attempts=$($attemptLogs.Count)")
+
 # Every report written since the run began counts, and at least one is required: a run whose last attempt was
 # interrupted after its final suite printed Statistics still has to leave a report before it can pass.
 $totals = Read-ReportTotals -ReportRoot $reportRoot -Since $runStartedAt
@@ -565,6 +642,9 @@ $errors += $totals.Errors
 $failures += $totals.Failures
 
 if ($failures -gt 0 -or $errors -gt 0) {
+    foreach ($case in $totals.FailedCases) {
+        Write-Host "FAILED $($case.Suite) > $($case.Case): $($case.Message)"
+    }
     throw "GdUnit run is not green: failures=$failures, errors=$errors, reports under $reportRoot"
 }
 
