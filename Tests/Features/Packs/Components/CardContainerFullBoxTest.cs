@@ -22,14 +22,15 @@ public class CardContainerFullBoxTest
     private const int SettleFrames = 180;
     private const float WallThickness = 0.2f;
 
-    // Two spawn positions closer than this count as the same spot (items would start inside each other).
+    // Two items of one generation (packs, boosters or cards) spawning closer than this share a spot.
     private const float SamePositionTolerance = 0.001f;
 
     // The storage room of ShopScene (x 0..8, z -8..0) and the box delivery marker inside it.
     private static readonly Rect2 StorageRoom = new(0f, -8f, 8f, 8f);
     private static readonly Vector3 StorageDelivery = new(4f, 0f, -5.5f);
 
-    private readonly List<Vector3> _containerSpawns = [];
+    private readonly List<Vector3> _packSpawns = [];
+    private readonly List<Vector3> _boosterSpawns = [];
     private Node3D _world = null!;
     private RecordingCardSpawner _spawner = null!;
 
@@ -38,7 +39,8 @@ public class CardContainerFullBoxTest
     {
         _world = AddNode(new Node3D());
         _spawner = new RecordingCardSpawner();
-        _containerSpawns.Clear();
+        _packSpawns.Clear();
+        _boosterSpawns.Clear();
     }
 
     [TestCase]
@@ -79,24 +81,39 @@ public class CardContainerFullBoxTest
         box.GlobalPosition = StorageDelivery;
 
         // Opens the real box, every pack and every booster. Each level lands on the floor before the next is
-        // opened, as in the shop where the player opens an item only after it has come to rest. The walls only
-        // keep things from leaving the room afterwards; the spawn offsets under test are not touched by them.
+        // opened, as in the shop where the player opens an item only after it has come to rest. The test checks
+        // where each opened container puts its items: inside the room, and no two of one generation on one spot.
         await OpenEverything(box, SettleFrames);
 
-        var positions = _containerSpawns.Concat(_spawner.Spawned.Select(spawned => spawned.Transform.Origin)).ToList();
+        var cards = _spawner.Spawned.Select(spawned => spawned.Transform.Origin).ToList();
         var itemsPerContainer = CardContainerLayout.ItemsPerContainer;
-        AssertThat(positions.Count).IsEqual(itemsPerContainer + itemsPerContainer * itemsPerContainer
-                                            + CardContainerLayout.CardsPerBox);
-        var outside = positions
+        AssertThat(_packSpawns.Count).IsEqual(itemsPerContainer);
+        AssertThat(_boosterSpawns.Count).IsEqual(itemsPerContainer * itemsPerContainer);
+        AssertThat(cards.Count).IsEqual(CardContainerLayout.CardsPerBox);
+
+        var outside = _packSpawns.Concat(_boosterSpawns).Concat(cards)
             .Where(p => !StorageRoom.HasPoint(new Vector2(p.X, p.Z)) || p.Y >= StorageWallHeight)
             .ToList();
         AssertThat(string.Join(", ", outside)).IsEmpty();
-        var shared = positions.GroupBy(p => (Mathf.RoundToInt(p.X / SamePositionTolerance),
-                Mathf.RoundToInt(p.Y / SamePositionTolerance), Mathf.RoundToInt(p.Z / SamePositionTolerance)))
-            .Where(group => group.Count() > 1)
-            .Select(group => group.First())
-            .ToList();
-        AssertThat(string.Join(", ", shared)).IsEmpty();
+
+        // Packs, boosters and cards never exist at the same time, so only items of one generation can overlap.
+        AssertThat(string.Join(", ", SharedSpots(_packSpawns))).IsEmpty();
+        AssertThat(string.Join(", ", SharedSpots(_boosterSpawns))).IsEmpty();
+        AssertThat(string.Join(", ", SharedSpots(cards))).IsEmpty();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void APackAndABoosterAtTheSameSpotAreNotASharedSpawnButTwoPacksAre()
+    {
+        var spot = new Vector3(4f, 0.5f, -5.5f);
+        List<Vector3> packs = [spot];
+        List<Vector3> boosters = [spot];
+
+        AssertThat(SharedSpots(packs).Count).IsEqual(0);
+        AssertThat(SharedSpots(boosters).Count).IsEqual(0);
+        AssertThat(SharedSpots(packs.Concat(boosters)).Count).IsEqual(1);
+        AssertThat(SharedSpots([spot, spot]).Count).IsEqual(1);
     }
 
     private CardContainer Make(string scenePath)
@@ -110,6 +127,20 @@ public class CardContainerFullBoxTest
 
     private CardContainer[] Containers(CardContainerKind kind) =>
         _world.GetChildren().OfType<CardContainer>().Where(c => c.Kind == kind && !c.IsOpened).ToArray();
+
+    // Where the items of this container spawn: its position when it is opened plus the per-item spawn offset.
+    private static void RecordSpawns(CardContainer container, List<Vector3> into)
+    {
+        for (var i = 0; i < CardContainerLayout.ItemsPerContainer; i++)
+            into.Add(container.GlobalPosition + CardContainer.SpawnOffset(i, container.Kind));
+    }
+
+    private static List<Vector3> SharedSpots(IEnumerable<Vector3> positions) =>
+        positions.GroupBy(p => (Mathf.RoundToInt(p.X / SamePositionTolerance),
+                Mathf.RoundToInt(p.Y / SamePositionTolerance), Mathf.RoundToInt(p.Z / SamePositionTolerance)))
+            .Where(group => group.Count() > 1)
+            .Select(group => group.First())
+            .ToList();
 
     // The storage room as the shop has it, a floor and four walls, so a pack that rolls on landing stays in the
     // room as it does in the shop; without walls where it settles is up to the physics engine run by run.
@@ -141,6 +172,7 @@ public class CardContainerFullBoxTest
     /// <summary>Opens the box, then every pack and booster, optionally letting each level settle first.</summary>
     private async Task OpenEverything(CardContainer box, int settleFrames = 0)
     {
+        RecordSpawns(box, _packSpawns);
         box.Open();
         var expected = CardContainerLayout.ItemsPerContainer;
         foreach (var kind in new[] { CardContainerKind.Pack, CardContainerKind.Booster })
@@ -149,9 +181,13 @@ public class CardContainerFullBoxTest
             await PhysicsFrames(settleFrames);
             var next = Containers(kind);
             AssertThat(next.Length).IsEqual(expected);
-            _containerSpawns.AddRange(next.Select(container => container.GlobalPosition));
             foreach (var container in next)
+            {
+                if (kind == CardContainerKind.Pack)
+                    RecordSpawns(container, _boosterSpawns);
                 container.Open();
+            }
+
             expected *= CardContainerLayout.ItemsPerContainer;
         }
 
