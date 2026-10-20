@@ -357,7 +357,7 @@ function Read-ReportTotals {
     param([string]$ReportRoot, [datetime]$Since)
 
     $reports = @(Get-ReportsSince -ReportRoot $ReportRoot -Since $Since)
-    $totals = [pscustomobject]@{ Files = $reports.Count; Errors = 0; Failures = 0 }
+    $totals = [pscustomobject]@{ Files = $reports.Count; Errors = 0; Failures = 0; FailedCases = New-Object System.Collections.Generic.List[object] }
     foreach ($report in $reports) {
         try {
             [xml]$xml = Get-Content -LiteralPath $report.FullName -Raw
@@ -370,6 +370,18 @@ function Read-ReportTotals {
         }
         $totals.Failures += @($xml.SelectNodes('//failure')).Count
         $totals.Errors += @($xml.SelectNodes('//error')).Count
+        foreach ($case in @($xml.SelectNodes('//testcase[failure or error]'))) {
+            $suiteName = $case.GetAttribute('classname')
+            if ([string]::IsNullOrWhiteSpace($suiteName)) { $suiteName = $case.ParentNode.GetAttribute('name') }
+            foreach ($problem in @($case.SelectNodes('failure | error'))) {
+                $message = $problem.GetAttribute('message')
+                if ([string]::IsNullOrWhiteSpace($message)) { $message = $problem.InnerText }
+                $firstLine = (($message -split "`r?`n") | Where-Object { $_.Trim().Length -gt 0 } | Select-Object -First 1)
+                if ($null -eq $firstLine) { $firstLine = '<no message>' }
+                if ($firstLine.Length -gt 300) { $firstLine = $firstLine.Substring(0, 300) + '...' }
+                $totals.FailedCases.Add([pscustomobject]@{ Suite = $suiteName; Case = $case.GetAttribute('name'); Message = $firstLine.Trim() })
+            }
+        }
     }
     return $totals
 }
@@ -565,6 +577,9 @@ $errors += $totals.Errors
 $failures += $totals.Failures
 
 if ($failures -gt 0 -or $errors -gt 0) {
+    foreach ($case in $totals.FailedCases) {
+        Write-Host "FAILED $($case.Suite) > $($case.Case): $($case.Message)"
+    }
     throw "GdUnit run is not green: failures=$failures, errors=$errors, reports under $reportRoot"
 }
 

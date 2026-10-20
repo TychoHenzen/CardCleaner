@@ -1092,6 +1092,8 @@ function Test-ReportAggregation {
     $notGreen = 'RUNNER-ERROR: GdUnit run is not green: failures=2, errors=2, reports under'
     Assert-Contains $result.Stderr $notGreen ('the stalled attempt errors and both reports are counted, ' +
         'and the stale report is not')
+    Assert-Line $result.Stdout 'FAILED fake > fake: fake failure' 'a failing case is named with its message'
+    Assert-Line $result.Stdout 'FAILED fake > fake: fake error' 'an erroring case is named with its message'
 }
 
 # The runner's suite-detection patterns must match the ones in TestSuiteNamingTest.cs, the C# side that gdUnit's own
