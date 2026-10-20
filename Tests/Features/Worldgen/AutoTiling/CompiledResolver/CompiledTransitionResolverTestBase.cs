@@ -20,7 +20,7 @@ public abstract class CompiledTransitionResolverTestBase
     {
         _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
         // Load from Tiled source to match transition_map.json source
-        _registry = new TileRegistry(new GodotAssetPaths());
+        _registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
         _registry.Clear();
         _registry.LoadFromData("res://Data/Tiled/tileset.tmx");
 

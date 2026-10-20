@@ -26,7 +26,7 @@ public class DualGridOverlayBuilderTest
     [TestCategory("Unit")]
     public static void SingleAutoTileCellProducesTheExpectedBitmask()
     {
-        var registry = new TileRegistry(new GodotAssetPaths());
+        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
         var autoTileId = registry.GetAllTiles().First(tile => tile.HasAutoTileVariants).Id;
         var baseTileId = DualGridOverlayBuilder.ResolveDefaultPassableTileId(registry);
         var background = Filled(3, 3, baseTileId);
@@ -48,7 +48,7 @@ public class DualGridOverlayBuilderTest
     [TestCategory("Unit")]
     public static void AllBitmasksStayInCorner16Range()
     {
-        var tileRegistry = new TileRegistry(new GodotAssetPaths());
+        var tileRegistry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var rng = RandomSources.Create(4242);

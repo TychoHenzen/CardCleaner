@@ -16,7 +16,7 @@ public class TerrainGeneratorFactoryTest
     public static void CreateReturnsTheContract()
     {
         IMeshTerrainGenerator generator = TerrainGeneratorFactory.Create(
-            TileCatalogData.From(new TileRegistry(new GodotAssetPaths())),
+            TileCatalogData.From(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource())),
             MeshMapGeneratorFixture.DefaultBiomes(),
             CompiledTransitionPairs.Load());
 

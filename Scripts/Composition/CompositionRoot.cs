@@ -123,7 +123,7 @@ public partial class CompositionRoot : Node
         var assetPaths = new GodotAssetPaths();
         container.RegisterSingleton<IAssetPaths>(assetPaths);
 
-        var tileRegistry = TileCatalogLoad.Load(assetPaths);
+        var tileRegistry = TileCatalogLoad.Load(assetPaths, new CompiledAtlasSource());
         container.RegisterSingleton<ITileRegistry>(tileRegistry);
         container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
         // One snapshot of the registry, taken after its constructor has filled it. The generators read this catalog.

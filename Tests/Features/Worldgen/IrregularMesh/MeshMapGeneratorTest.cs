@@ -47,7 +47,7 @@ public class MeshMapGeneratorTest
     [TestCategory("Unit")]
     public static async Task TerrainIsTheTerrainOfTheFactoryPath()
     {
-        var registry = new TileRegistry(new GodotAssetPaths());
+        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
         var biomes = MeshMapGeneratorFixture.DefaultBiomes();
         var cards = MeshMapGeneratorFixture.TerrainCards();
         var expected = TerrainGeneratorFactory

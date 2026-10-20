@@ -55,7 +55,7 @@ public class IrregularWorldMapScreenTest
     public async Task Setup()
     {
         TestServices.Reset();
-        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry(new GodotAssetPaths()));
+        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource()));
         _session = TestServices.CreateGameSession();
         TestServices.Container.RegisterSingleton<IGameSessionService>(_session);
         AddNode(_session);

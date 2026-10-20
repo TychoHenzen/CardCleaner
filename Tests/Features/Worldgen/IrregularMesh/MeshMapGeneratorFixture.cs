@@ -20,7 +20,7 @@ public static class MeshMapGeneratorFixture
 {
     public static IrregularMeshNs.MeshMapGenerator Create(int rings = IrregularMeshNs.MeshMapGenerator.DefaultRings) =>
         new(
-            TileCatalogData.From(new TileRegistry(new GodotAssetPaths())),
+            TileCatalogData.From(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource())),
             DefaultBiomes(),
             TestUtilities.CompiledTransitionPairs.Load(),
             rings);
