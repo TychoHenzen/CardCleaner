@@ -22,7 +22,7 @@ public abstract class RandomAutoTileReproductionTestBase
     [BeforeTest]
     public void Setup()
     {
-        _registry = new TileRegistry(new GodotAssetPaths());
+        _registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
         _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
 
         var transitionPath = ProjectSettings.GlobalizePath(TransitionMapPath);

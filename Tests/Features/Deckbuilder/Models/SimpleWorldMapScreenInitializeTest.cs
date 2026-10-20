@@ -129,7 +129,7 @@ public class SimpleWorldMapScreenInitializeTest
     {
         var errors = new List<string>();
         var previousSink = ILog.Sink;
-        var registry = new TileRegistry(new GodotAssetPaths());
+        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
         var layer = new TileMapLayer();
         var screen = new SimpleWorldMapScreen { TerrainLayer = layer };
         try
@@ -157,7 +157,7 @@ public class SimpleWorldMapScreenInitializeTest
     {
         var mappingPath = $"user://world-map-atlas-{Guid.NewGuid():N}.json";
         var absolutePath = ProjectSettings.GlobalizePath(mappingPath);
-        var registry = new TileRegistry(new GodotAssetPaths());
+        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
         var layer = new TileMapLayer();
         var screen = new SimpleWorldMapScreen { TerrainLayer = layer };
         try

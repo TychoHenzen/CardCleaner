@@ -79,7 +79,7 @@ public static class WfcTestFixtures
         string biomeId,
         params (string Id, TilePassability Passability)[] tiles)
     {
-        var registry = new TileRegistry(new GodotAssetPaths());
+        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
         registry.Clear(); // Clear production tiles loaded by constructor
         foreach (var (tileId, passability) in tiles)
         {
@@ -102,7 +102,7 @@ public static class WfcTestFixtures
     ///     production transition pairs.
     /// </summary>
     public static TileCatalogData ProductionCatalog() =>
-        TileCatalogData.From(new TileRegistry(new GodotAssetPaths()));
+        TileCatalogData.From(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource()));
 
     /// <summary>
     ///     Asserts that a generation succeeded, quoting the generator's error message when it did not.

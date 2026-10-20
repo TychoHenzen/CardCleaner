@@ -3,6 +3,7 @@ using System.Linq;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Services.TilesetLoading;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
@@ -25,9 +26,12 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     private readonly TileCatalogQueries _queries;
     private readonly IAssetPaths _paths;
 
-    public TileRegistry(IAssetPaths paths)
+    private readonly ICompiledAtlasSource _atlas;
+
+    public TileRegistry(IAssetPaths paths, ICompiledAtlasSource atlas)
     {
         _paths = paths;
+        _atlas = atlas;
         _queries = new TileCatalogQueries(_tiles);
         LoadFromData();
     }
@@ -109,7 +113,7 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     {
         var result = TileDataLoader.LoadTileRegistry(_paths, path);
 
-        Visuals = TileVisualLoader.Load(result, atlasMappingPath);
+        Visuals = TileVisualLoader.Load(result, atlasMappingPath, _atlas);
         foreach (var tile in Visuals.Tiles)
             RegisterTile(tile);
 

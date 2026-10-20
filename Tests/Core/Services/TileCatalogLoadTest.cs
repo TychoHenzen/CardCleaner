@@ -14,8 +14,8 @@ public class TileCatalogLoadTest
     [TestCategory("Unit")]
     public static void LoadReturnsARegistryWithTheSameTilesAsTheConstructor()
     {
-        var loaded = TileCatalogLoad.Load(new GodotAssetPaths());
-        var direct = new TileRegistry(new GodotAssetPaths());
+        var loaded = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
+        var direct = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
 
         var loadedIds = loaded.GetAllTiles().Select(tile => tile.Id).ToList();
         var directIds = direct.GetAllTiles().Select(tile => tile.Id).ToList();
@@ -28,8 +28,8 @@ public class TileCatalogLoadTest
     [TestCategory("Unit")]
     public static void LoadBuildsANewRegistryOnEveryCall()
     {
-        var first = TileCatalogLoad.Load(new GodotAssetPaths());
-        var second = TileCatalogLoad.Load(new GodotAssetPaths());
+        var first = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
+        var second = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
 
         AssertBool(ReferenceEquals(first, second)).IsFalse();
     }

@@ -14,21 +14,27 @@ namespace CardCleaner.Scripts.Core.Services;
 /// </summary>
 internal static class TileVisualLoader
 {
-    internal static TileVisualCatalog Load(TileRegistryResult result, string? atlasMappingPath)
+    internal static TileVisualCatalog Load(
+        TileRegistryResult result,
+        string? atlasMappingPath,
+        ICompiledAtlasSource atlas)
     {
-        return TryUseCompiledAtlas(result, atlasMappingPath) ?? UseOriginalTileset(result);
+        return TryUseCompiledAtlas(result, atlasMappingPath, atlas) ?? UseOriginalTileset(result);
     }
 
-    private static TileVisualCatalog? TryUseCompiledAtlas(TileRegistryResult result, string? atlasMappingPath)
+    private static TileVisualCatalog? TryUseCompiledAtlas(
+        TileRegistryResult result,
+        string? atlasMappingPath,
+        ICompiledAtlasSource atlas)
     {
         // Check if compiled atlas is available
-        var isAvailable = CompiledAtlasLoader.IsCompiledAtlasAvailable(atlasMappingPath);
+        var isAvailable = atlas.IsAvailable(atlasMappingPath);
         ILog.Print($"[TileRegistry] Compiled atlas available: {isAvailable}");
 
         if (!isAvailable)
             return null;
 
-        var atlasMapping = CompiledAtlasLoader.LoadMapping(atlasMappingPath);
+        var atlasMapping = atlas.LoadMapping(atlasMappingPath);
         ILog.Print($"[TileRegistry] Atlas mapping loaded: {(atlasMapping != null ? "YES" : "NULL")}");
 
         if (atlasMapping == null)
@@ -39,7 +45,7 @@ internal static class TileVisualLoader
 
         // The loader owns the tile-set resource and caches it; the registry only asks whether it loads, so that
         // an atlas whose image cannot be loaded falls back to the original tileset, as before it moved out.
-        if (!CompiledAtlasLoader.CanBuildAtlas(atlasMappingPath))
+        if (!atlas.CanBuild(atlasMappingPath))
         {
             ILog.Print("[TileRegistry] FAILED: compiled atlas resource does not load, falling back");
             return null;

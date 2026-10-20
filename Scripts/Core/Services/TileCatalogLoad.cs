@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 
 namespace CardCleaner.Scripts.Core.Services;
 
@@ -7,5 +8,5 @@ namespace CardCleaner.Scripts.Core.Services;
 /// </summary>
 public static class TileCatalogLoad
 {
-    public static TileRegistry Load(IAssetPaths paths) => new(paths);
+    public static TileRegistry Load(IAssetPaths paths, ICompiledAtlasSource atlas) => new(paths, atlas);
 }

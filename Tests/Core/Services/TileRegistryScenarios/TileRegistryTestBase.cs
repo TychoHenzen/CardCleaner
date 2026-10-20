@@ -10,5 +10,5 @@ public abstract class TileRegistryTestBase
     protected TileRegistry _registry = null!;
 
     [BeforeTest]
-    public void Setup() => _registry = new TileRegistry(new GodotAssetPaths());
+    public void Setup() => _registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
 }

@@ -37,7 +37,7 @@ public class WfcGridFingerprintTest
     [TestCategory("Unit")]
     public static void DefaultSessionGridPathMatchesMasterFingerprint()
     {
-        var tileRegistry = new TileRegistry(new GodotAssetPaths());
+        var tileRegistry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var rng = RandomSources.Create(GridSeed);
