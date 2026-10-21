@@ -108,16 +108,18 @@ public class LouvainClusteringTest
     [TestCategory("Unit")]
     public static void AddingAClassThatSortsFirstKeepsTheCliquesOfTheOthers()
     {
+        // Clique members are named "<digit><letter>", so the ordinal order interleaves the three cliques
+        // (1A, 1M, 1Z, 2A, ...) and a class named "0New" sorts before every one of them, shifting all indexes.
         var names = new List<string>();
-        foreach (var prefix in new[] { "A", "M", "Z" }) names.AddRange(Enumerable.Range(0, 5).Select(i => prefix + i));
+        foreach (var letter in new[] { "A", "M", "Z" }) names.AddRange(Enumerable.Range(1, 5).Select(i => i + letter));
         var before = ClusterNamed(names, CliqueEdges(names));
 
-        var added = new List<string>(names) { "AAA" };
+        var added = new List<string>(names) { "0New" };
         var edges = CliqueEdges(names);
-        foreach (var member in new[] { "A0", "A1", "A2" })
+        foreach (var member in new[] { "1A", "2A", "3A" })
         {
-            edges.Add(("AAA", member, 3.0));
-            edges.Add((member, "AAA", 3.0));
+            edges.Add(("0New", member, 3.0));
+            edges.Add((member, "0New", 3.0));
         }
 
         var after = ClusterNamed(added, edges);
@@ -127,7 +129,61 @@ public class LouvainClusteringTest
         AssertThat(SameModulePairs(after, names)).IsEqual(SameModulePairs(before, names));
     }
 
-    /// <summary>Three cliques of five classes each (weight 3.0), joined by light bridges A4-M0 and M4-Z0 (weight 1.0).</summary>
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void AnIsolatedClassThatSortsFirstDoesNotChangeAnySeedsPartition()
+    {
+        // A fixed pseudo-random sparse graph of 40 classes, whose partition depends on the visit order. The extra
+        // class has no edge, so it cannot change the graph; it only shifts every node index by one and adds one to
+        // the node count. A visit order keyed on the class name must give every seed the same partition of the
+        // others (an order keyed on index or count does not, so this fails on the shuffle order).
+        var keys = Enumerable.Range(0, 40).Select(i => "n" + i.ToString("D2")).ToList();
+        var shifted = new List<string> { "0New" };
+        shifted.AddRange(keys);
+
+        var edges = new List<(int A, int B, double W)>();
+        var shiftedEdges = new List<(int A, int B, double W)>();
+        var state = 12345u;
+        for (var n = 0; n < 90; n++)
+        {
+            state = unchecked(state * 1664525u + 1013904223u);
+            var a = (int)(state >> 8) % 40;
+            state = unchecked(state * 1664525u + 1013904223u);
+            var b = (int)(state >> 8) % 40;
+            if (a == b) continue;
+            edges.Add((a, b, 1.0));
+            shiftedEdges.Add((a + 1, b + 1, 1.0));
+        }
+
+        var differing = new List<int>();
+        for (var seed = 0; seed < 50; seed++)
+        {
+            var plain = PartitionOf(LouvainClustering.Communities(keys, edges, 1.0, seed), keys);
+            var withNew = PartitionOf(LouvainClustering.Communities(shifted, shiftedEdges, 1.0, seed), shifted);
+            withNew.Remove("0New");
+            if (!plain.OrderBy(p => p.Key).SequenceEqual(withNew.OrderBy(p => p.Key))) differing.Add(seed);
+        }
+
+        AssertThat(string.Join(",", differing)).IsEqual(string.Empty);
+    }
+
+    /// <summary>Each class mapped to the sorted names of its community, so equal partitions compare equal.</summary>
+    private static Dictionary<string, string> PartitionOf(List<List<int>> communities, IReadOnlyList<string> keys)
+    {
+        var result = new Dictionary<string, string>();
+        foreach (var community in communities)
+        {
+            var members = string.Join("+", community.Select(i => keys[i]).Where(k => k != "0New").OrderBy(k => k));
+            foreach (var i in community) result[keys[i]] = members;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Three cliques of five classes each (weight 3.0), joined by light bridges between the last member of one clique
+    /// and the first of the next (weight 1.0). Clique c is names[5c] to names[5c+4].
+    /// </summary>
     private static List<(string From, string To, double Cw)> CliqueEdges(IReadOnlyList<string> names)
     {
         var edges = new List<(string From, string To, double Cw)>();
