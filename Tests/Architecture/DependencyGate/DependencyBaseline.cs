@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace CardCleaner.Tests.Architecture.DependencyGate;
@@ -26,7 +27,11 @@ internal static class DependencyBaseline
 
     private const string NoListsNote = "baseline records no lists; run the update command to record them";
 
-    private static readonly JsonSerializerOptions Indented = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions Indented = new()
+    {
+        WriteIndented = true,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
 
     public static BaselineReadResult Read(string path)
     {
