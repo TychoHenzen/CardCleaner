@@ -7,14 +7,25 @@ internal sealed record NumberDiff(string Name, int Baseline, int Measured)
 {
     public bool IsHigher => Measured > Baseline;
 
-    public string Message => IsHigher
-        ? $"{Name} is {Measured}, above the baseline {Baseline}"
-        : $"{Name} is {Measured}, below the baseline {Baseline}: lower the baseline with " +
-          DependencyBaseline.UpdateCommand;
+    /// <summary>
+    /// The failure text for this number. The optional detail is the joined and left classes of the list that explains
+    /// it; it goes before the lowering instruction of a fall, so the instruction stays the last thing printed.
+    /// </summary>
+    public string Message(string? detail = null)
+    {
+        var suffix = detail is null ? string.Empty : "; " + detail;
+        return IsHigher
+            ? $"{Name} is {Measured}, above the baseline {Baseline}{suffix}"
+            : $"{Name} is {Measured}, below the baseline {Baseline}{suffix}: lower the baseline with " +
+              DependencyBaseline.UpdateCommand;
+    }
 
     /// <summary>
     /// The message for a rise the decision accepts because a higher-priority number went down (#299).
     /// </summary>
-    public string AcceptedRiseMessage(string decidingName) =>
-        $"{Name} is {Measured}, above the baseline {Baseline}: accepted because {decidingName} went down";
+    public string AcceptedRiseMessage(string decidingName, string? detail = null)
+    {
+        var suffix = detail is null ? string.Empty : "; " + detail;
+        return $"{Name} is {Measured}, above the baseline {Baseline}: accepted because {decidingName} went down{suffix}";
+    }
 }

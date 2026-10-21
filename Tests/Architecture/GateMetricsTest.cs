@@ -34,6 +34,18 @@ public class GateMetricsTest
         AssertThat(upIntoUi).IsTrue();
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ListsNameTheClassesBehindTheGatedNumbers()
+    {
+        var lists = GateMetrics.Measure(LayeredGraph()).Lists;
+
+        AssertThat(string.Join(",", lists.UiRefPairs)).IsEqual("Rules -> Button");
+        AssertThat(lists.UpEdgePairs.Count > 0).IsTrue();
+        // Panel -> Rules and Rules -> Button close a loop between the UI module and the loose Rules module.
+        AssertThat(string.Join(",", lists.BiggestLoopClasses)).IsEqual("Button,Panel,Rules");
+    }
+
     /// <summary>
     /// Pins that the gated seam number is leaky plus missing, so the label of one seam can flip with Louvain membership
     /// (#278) without moving the gated number, while a second defective seam still raises it by one.
