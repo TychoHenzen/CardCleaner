@@ -200,7 +200,9 @@ internal static class LouvainClustering
         return result;
     }
 
-    /// <summary>FNV-1a 64 over the UTF-8 text of "seed|level|key", a fixed function with the same result every run.</summary>
+    /// <summary>
+    /// FNV-1a 64 over the UTF-8 text of "seed|level|key", a fixed function with the same result every run.
+    /// </summary>
     private static ulong StableHash(int seed, int level, string key)
     {
         const ulong offset = 14695981039346656037UL;

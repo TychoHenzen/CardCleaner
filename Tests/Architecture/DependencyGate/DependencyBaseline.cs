@@ -153,7 +153,9 @@ internal static class DependencyBaseline
         return new BaselineResult(failures, rises, notes);
     }
 
-    /// <summary>The joined and left classes of the list that explains this number; null when that list is unchanged.</summary>
+    /// <summary>
+    /// The joined and left classes of the list that explains this number; null when that list is unchanged.
+    /// </summary>
     private static string? ListDetail(NumberDiff diff, NamedLists? baselineLists, NamedLists measuredLists)
     {
         if (baselineLists is null) return null;
@@ -163,7 +165,9 @@ internal static class DependencyBaseline
         return Differs(before, after) ? NamedLists.JoinedLeft(row.Name, before, after) : null;
     }
 
-    /// <summary>One note line per list that differs; one line saying the baseline has no lists when it has none.</summary>
+    /// <summary>
+    /// One note line per list that differs; one line saying the baseline has no lists when it has none.
+    /// </summary>
     private static IReadOnlyList<string> ListNotes(NamedLists? baselineLists, NamedLists measuredLists)
     {
         if (baselineLists is null) return [NoListsNote];

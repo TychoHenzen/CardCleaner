@@ -27,7 +27,8 @@ public class DependencyGateTest
         AssertThat(string.Join("\n", GateReport.Lines(second))).IsEqual(firstReport);
 
         var update = OS.GetEnvironment(DependencyBaseline.SwitchVariable) == "1";
-        var result = DependencyBaseline.Apply(ProjectSettings.GlobalizePath(BaselinePath), first.Gated, first.Lists, update);
+        var baselinePath = ProjectSettings.GlobalizePath(BaselinePath);
+        var result = DependencyBaseline.Apply(baselinePath, first.Gated, first.Lists, update);
         foreach (var rise in result.AcceptedRises) GD.Print("dependency gate: " + rise);
         foreach (var note in result.ListNotes) GD.Print("dependency gate: " + note);
         GD.Print($"dependency gate: done in {clock.ElapsedMilliseconds} ms" + (update ? " (baseline update)" : ""));
