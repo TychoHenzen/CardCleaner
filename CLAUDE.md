@@ -276,6 +276,8 @@ The baseline also records four class-name lists behind the gated numbers: `up_ed
 a number is refused or lowered, the failure text names the classes joined and left in its list. When no number differs
 but a list changed, the gate passes and prints a `dependency gate:` note with the joined and left classes. The switch
 records the lists when no number differs and they are missing or changed; it still never writes after a refused rise.
+The Louvain visit order is sorted by a hash of the seed, level and class name, so adding a class no longer reshuffles
+every seed; the total weight and the termination threshold stay global, so stability under every change is not promised.
 
 ### Quality Gate
 

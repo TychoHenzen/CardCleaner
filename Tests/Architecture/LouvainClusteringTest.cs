@@ -14,7 +14,7 @@ public class LouvainClusteringTest
     [TestCategory("Unit")]
     public static void TwoCliquesJoinedByOneEdgeGiveTwoCommunities()
     {
-        var communities = LouvainClustering.Communities(10, TwoCliques(), 1.0, 0);
+        var communities = LouvainClustering.Communities(Keys(10), TwoCliques(),1.0, 0);
 
         AssertThat(Describe(communities)).IsEqual("0,1,2,3,4|5,6,7,8,9");
     }
@@ -25,8 +25,8 @@ public class LouvainClusteringTest
     {
         for (var seed = 0; seed < 10; seed++)
         {
-            var first = LouvainClustering.Communities(10, TwoCliques(), 0.7, seed);
-            var second = LouvainClustering.Communities(10, TwoCliques(), 0.7, seed);
+            var first = LouvainClustering.Communities(Keys(10), TwoCliques(),0.7, seed);
+            var second = LouvainClustering.Communities(Keys(10), TwoCliques(),0.7, seed);
             AssertThat(Describe(second)).IsEqual(Describe(first));
         }
     }
@@ -104,6 +104,72 @@ public class LouvainClusteringTest
         AssertThat(result.Module.Values.Distinct().Count()).IsEqual(2);
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void AddingAClassThatSortsFirstKeepsTheCliquesOfTheOthers()
+    {
+        var names = new List<string>();
+        foreach (var prefix in new[] { "A", "M", "Z" }) names.AddRange(Enumerable.Range(0, 5).Select(i => prefix + i));
+        var before = ClusterNamed(names, CliqueEdges(names));
+
+        var added = new List<string>(names) { "AAA" };
+        var edges = CliqueEdges(names);
+        foreach (var member in new[] { "A0", "A1", "A2" })
+        {
+            edges.Add(("AAA", member, 3.0));
+            edges.Add((member, "AAA", 3.0));
+        }
+
+        var after = ClusterNamed(added, edges);
+
+        AssertThat(before.Loose.Count).IsEqual(0);
+        AssertThat(after.Loose.Any(names.Contains)).IsFalse();
+        AssertThat(SameModulePairs(after, names)).IsEqual(SameModulePairs(before, names));
+    }
+
+    /// <summary>Three cliques of five classes each (weight 3.0), joined by light bridges A4-M0 and M4-Z0 (weight 1.0).</summary>
+    private static List<(string From, string To, double Cw)> CliqueEdges(IReadOnlyList<string> names)
+    {
+        var edges = new List<(string From, string To, double Cw)>();
+        for (var clique = 0; clique < 3; clique++)
+        {
+            for (var a = 0; a < 5; a++)
+            {
+                for (var b = 0; b < 5; b++)
+                {
+                    if (a != b) edges.Add((names[clique * 5 + a], names[clique * 5 + b], 3.0));
+                }
+            }
+        }
+
+        edges.AddRange([(names[4], names[5], 1.0), (names[5], names[4], 1.0)]);
+        edges.AddRange([(names[9], names[10], 1.0), (names[10], names[9], 1.0)]);
+        return edges;
+    }
+
+    /// <summary>Clusters the named classes, each in a home of its own, as the Cluster helper does.</summary>
+    private static ConsensusResult ClusterNamed(IReadOnlyList<string> names,
+        List<(string From, string To, double Cw)> edges)
+    {
+        var nodes = names.OrderBy(n => n, System.StringComparer.Ordinal).ToList();
+        return ModuleConsensus.Cluster(nodes, nodes.ToDictionary(n => n, n => "Features/" + n), edges);
+    }
+
+    /// <summary>One character per pair of the given classes: 1 when both are in the same module, else 0.</summary>
+    private static string SameModulePairs(ConsensusResult result, IReadOnlyList<string> names)
+    {
+        var bits = new System.Text.StringBuilder();
+        for (var x = 0; x < names.Count; x++)
+        {
+            for (var y = x + 1; y < names.Count; y++)
+            {
+                bits.Append(result.Module[names[x]] == result.Module[names[y]] ? '1' : '0');
+            }
+        }
+
+        return bits.ToString();
+    }
+
     /// <summary>The two cliques as classes A0..A4 and B0..B4, referenced both ways.</summary>
     private static List<(string From, string To, double Cw)> NamedCliques()
     {
@@ -136,6 +202,9 @@ public class LouvainClusteringTest
         edges.Add((4, 5, 1.0));
         return edges;
     }
+
+    /// <summary>Zero padded names N00..N(n-1), so ordinal order equals index order.</summary>
+    private static List<string> Keys(int n) => Enumerable.Range(0, n).Select(i => $"N{i:D2}").ToList();
 
     private static string Describe(List<List<int>> communities) =>
         string.Join("|", communities.Select(c => string.Join(",", c)).OrderBy(s => s, System.StringComparer.Ordinal));

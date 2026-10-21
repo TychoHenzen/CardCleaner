@@ -6,26 +6,32 @@ namespace CardCleaner.Tests.Architecture.DependencyGate;
 
 /// <summary>
 /// Louvain community detection (Blondel local moving and aggregation), a port of networkx 3.6
-/// louvain_communities with threshold 1e-7. The node order of each level is shuffled by one System.Random(seed),
-/// and every other collection is iterated in ascending index order, so a seed always gives the same partition.
+/// louvain_communities with threshold 1e-7. Node i is the class keys[i]; keys are in ascending ordinal order, so
+/// the node index is the ordinal rank of the key. The visit order of each level is sorted by an FNV-1a 64 hash of
+/// (seed, level, smallest member class name), so it does not depend on node index or node count. Ties in gain go
+/// to the first community in ascending index order. Total weight m and the termination threshold stay global, so
+/// partitions can still change under a large change; the order only removes the reshuffling that a single added
+/// class used to cause.
 /// </summary>
 internal static class LouvainClustering
 {
     private const double Threshold = 1e-7;
 
-    /// <summary>Communities of nodes 0..nodeCount-1, each sorted ascending, in community-id order.</summary>
-    public static List<List<int>> Communities(int nodeCount, IReadOnlyList<(int A, int B, double W)> edges,
-        double resolution, int seed)
+    /// <summary>Communities of nodes 0..keys.Count-1, each sorted ascending, in community-id order.</summary>
+    public static List<List<int>> Communities(IReadOnlyList<string> keys,
+        IReadOnlyList<(int A, int B, double W)> edges, double resolution, int seed)
     {
+        var nodeCount = keys.Count;
         var adjacency = Adjacency(nodeCount, edges);
         var m = edges.Sum(e => e.W);
         if (m <= 0) return Enumerable.Range(0, nodeCount).Select(i => new List<int> { i }).ToList();
 
-        var random = new Random(seed);
         var members = Enumerable.Range(0, nodeCount).Select(i => new List<int> { i }).ToList();
         var singletons = Enumerable.Range(0, nodeCount).Select(i => new List<int> { i }).ToList();
         var modularity = Modularity(adjacency, singletons, m, resolution);
-        var level = OneLevel(adjacency, m, members, resolution, random);
+        var levelIndex = 0;
+        var level = OneLevel(adjacency, m, members, resolution, keys, seed, levelIndex);
+        levelIndex++;
         while (true)
         {
             var last = level.Members;
@@ -33,7 +39,8 @@ internal static class LouvainClustering
             if (newModularity - modularity <= Threshold || !level.Improved) return Sorted(last);
             modularity = newModularity;
             adjacency = Aggregate(adjacency, level.Inner);
-            level = OneLevel(adjacency, m, last, resolution, random);
+            level = OneLevel(adjacency, m, last, resolution, keys, seed, levelIndex);
+            levelIndex++;
             if (!level.Improved) return Sorted(last);
         }
     }
@@ -41,7 +48,7 @@ internal static class LouvainClustering
     private sealed record Level(List<List<int>> Members, List<List<int>> Inner, bool Improved);
 
     private static Level OneLevel(SortedDictionary<int, double>[] adjacency, double m, List<List<int>> members,
-        double resolution, Random random)
+        double resolution, IReadOnlyList<string> keys, int seed, int level)
     {
         var count = adjacency.Length;
         var nodeToCommunity = Enumerable.Range(0, count).ToArray();
@@ -49,12 +56,11 @@ internal static class LouvainClustering
         var communityMembers = members.Select(c => new List<int>(c)).ToList();
         var degrees = Enumerable.Range(0, count).Select(i => Degree(adjacency, i)).ToArray();
         var totals = (double[])degrees.Clone();
-        var order = Enumerable.Range(0, count).ToArray();
-        for (var i = count - 1; i > 0; i--)
-        {
-            var j = random.Next(i + 1);
-            (order[i], order[j]) = (order[j], order[i]);
-        }
+        var nodeKeys = Enumerable.Range(0, count).Select(i => keys[members[i].Min()]).ToArray();
+        var order = Enumerable.Range(0, count)
+            .OrderBy(i => StableHash(seed, level, nodeKeys[i]))
+            .ThenBy(i => nodeKeys[i], StringComparer.Ordinal)
+            .ToArray();
 
         var improved = false;
         var moves = 1;
@@ -192,6 +198,24 @@ internal static class LouvainClustering
         }
 
         return result;
+    }
+
+    /// <summary>FNV-1a 64 over the UTF-8 text of "seed|level|key", a fixed function with the same result every run.</summary>
+    private static ulong StableHash(int seed, int level, string key)
+    {
+        const ulong offset = 14695981039346656037UL;
+        const ulong prime = 1099511628211UL;
+        var hash = offset;
+        unchecked
+        {
+            foreach (var b in System.Text.Encoding.UTF8.GetBytes($"{seed}|{level}|{key}"))
+            {
+                hash ^= b;
+                hash *= prime;
+            }
+        }
+
+        return hash;
     }
 
     private static List<List<int>> Sorted(List<List<int>> communities) =>
