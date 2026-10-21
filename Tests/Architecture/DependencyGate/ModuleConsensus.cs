@@ -76,7 +76,7 @@ internal static class ModuleConsensus
         var together = new SortedDictionary<(int A, int B), int>();
         for (var seed = 0; seed < Runs; seed++)
         {
-            foreach (var community in LouvainClustering.Communities(clustered.Count, graphEdges, RunResolution, seed))
+            foreach (var community in LouvainClustering.Communities(clustered, graphEdges, RunResolution, seed))
             {
                 for (var x = 0; x < community.Count; x++)
                 {
@@ -91,7 +91,7 @@ internal static class ModuleConsensus
 
         var consensusEdges = together.Where(p => p.Value * 2 >= Runs)
             .Select(p => (p.Key.A, p.Key.B, (double)p.Value / Runs)).ToList();
-        var consensus = LouvainClustering.Communities(clustered.Count, consensusEdges, 1.0, 0)
+        var consensus = LouvainClustering.Communities(clustered, consensusEdges, 1.0, 0)
             .OrderByDescending(c => c.Count).ThenBy(c => c[0]).ToList();
         var module = new SortedDictionary<string, int>(StringComparer.Ordinal);
         for (var id = 0; id < consensus.Count; id++)

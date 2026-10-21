@@ -270,6 +270,18 @@ the baseline re-recorded to what the step achieved. The fixture suites beside it
 (`LayerAnchorsTest`, `LouvainClusteringTest`, `ModuleOrderTest`, `SeamRaterTest`, `GateMetricsTest`,
 `ClassGraphExtractorTest`, `SceneLinkReaderTest`, `DependencyBaselineTest`) pin each rule on small graphs.
 
+The baseline also records four class-name lists behind the gated numbers: `up_edge_pairs` (for `up_edges`),
+`biggest_loop_classes` (for `biggest_loop`), `seam_classes` (for `seams_leaky_or_missing`) and `ui_ref_pairs` (for
+`refs_from_non_ui_to_ui`), each sorted and written as "A -> B" pairs or class names. The lists never fail the gate. When
+a number is refused or lowered, the failure text names the classes joined and left in its list. When no number differs
+but a list changed, the gate passes and prints a `dependency gate:` note with the joined and left classes. The switch
+records the lists when no number differs and they are missing or changed; it still never writes after a refused rise.
+Recovery when a step moves a gated number: run the gate on the base as a control, and try at most three placements of
+the new class before recording a seam. Leaky and missing are already one gated sum (`GateMeasurement.Gated`), so a
+missing-to-leaky relabel is not a rise.
+The Louvain visit order is sorted by a hash of the seed, level and class name, so adding a class no longer reshuffles
+every seed; the total weight and the termination threshold stay global, so stability under every change is not promised.
+
 ### Quality Gate
 
 The `quality-guard` pull-request check (`.github/workflows/ci.yml`, dod-guard pinned by SHA) scans the `Scripts` files a
