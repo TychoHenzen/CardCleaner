@@ -26,7 +26,7 @@ namespace CardCleaner.Scripts.Composition;
 /// </summary>
 public partial class CompositionRoot : Node
 {
-    // Tests compile into the same assembly; only game classes are scanned for [Service].
+    // Tests share this assembly; only game classes are scanned for [Service].
     private const string GameNamespace = "CardCleaner.Scripts";
 
     // Node services the last Compose added as children; the next Compose frees them before it builds new ones.
