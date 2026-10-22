@@ -23,4 +23,17 @@ public static class Wfc
         IReadOnlyList<(string tileA, string tileB)> transitionPairs,
         IWfcTileCatalog? tileCatalog) =>
         new WfcTerrainSolver(transitionPairs, tileCatalog);
+
+    /// <summary>
+    /// The production map generator factory. It delegates to <see cref="CreateMapGenerator"/>, so the adjacency rules
+    /// are still built in one place, and it lives in the front door so the factory and the rules stay in one module.
+    /// </summary>
+    public sealed class MapGeneratorFactory : IWfcMapGeneratorFactory
+    {
+        /// <inheritdoc />
+        public IWfcMapGenerator Create(
+            IReadOnlyList<(string tileA, string tileB)> transitionPairs,
+            IWfcTileCatalog? tileCatalog) =>
+            CreateMapGenerator(transitionPairs, tileCatalog);
+    }
 }

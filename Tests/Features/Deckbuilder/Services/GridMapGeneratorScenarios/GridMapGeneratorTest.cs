@@ -80,7 +80,7 @@ public class GridMapGeneratorTest
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         return new GridMapGenerator(
-            tiles, biomeRegistry.ToBiomeSet(), CompiledTransitionPairs.Load(), new WfcMapGeneratorFactory());
+            tiles, biomeRegistry.ToBiomeSet(), CompiledTransitionPairs.Load(), new Wfc.MapGeneratorFactory());
     }
 
     /// <summary>Flattens a generated grid map to its size, start cell and every tile id, row by row.</summary>

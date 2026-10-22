@@ -127,7 +127,8 @@ public partial class CompositionRoot : Node
         var tileRegistry = TileCatalogLoad.Load(assetPaths, new CompiledAtlasSource());
         container.RegisterSingleton<ITileRegistry>(tileRegistry);
         container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
-        // One snapshot of the registry, taken after TileCatalogLoad.Load has filled it. The generators read this catalog.
+        // One snapshot of the registry, taken after TileCatalogLoad.Load has filled it.
+        // The generators read this catalog.
         var tiles = TileCatalogData.From(tileRegistry);
 
         var biomeRegistry = new BiomeRegistry();
@@ -138,7 +139,7 @@ public partial class CompositionRoot : Node
         // the generators are plain classes, so the composition root registers them.
         var transitionPairs = new TransitionPairs(new CompiledTransitionResolver(assetPaths).GetAllTransitionPairs());
         container.RegisterSingleton<IGridMapGenerator>(
-            new GridMapGenerator(tiles, biomes, transitionPairs, new WfcMapGeneratorFactory()));
+            new GridMapGenerator(tiles, biomes, transitionPairs, new Wfc.MapGeneratorFactory()));
         container.RegisterSingleton<IMeshMapGenerator>(
             new MeshMapGenerator(tiles, biomes, transitionPairs));
 

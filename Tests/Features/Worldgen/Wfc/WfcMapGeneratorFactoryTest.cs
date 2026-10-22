@@ -8,12 +8,13 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.TestUtilities;
+using WfcFront = CardCleaner.Scripts.Features.Worldgen.Wfc.Wfc;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 
 /// <summary>
-/// Pins WfcMapGeneratorFactory: each Create call returns a fresh generator with the default retry count, and
+/// Pins Wfc.MapGeneratorFactory: each Create call returns a fresh generator with the default retry count, and
 /// GridMapGenerator refuses a null factory.
 /// </summary>
 [TestSuite]
@@ -25,7 +26,7 @@ public class WfcMapGeneratorFactoryTest
     public static void CreateReturnsANewGeneratorEachCall()
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
-        var factory = new WfcMapGeneratorFactory();
+        var factory = new WfcFront.MapGeneratorFactory();
 
         AssertBool(ReferenceEquals(factory.Create(pairs, null), factory.Create(pairs, null))).IsFalse();
     }
@@ -36,7 +37,7 @@ public class WfcMapGeneratorFactoryTest
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
 
-        AssertInt(new WfcMapGeneratorFactory().Create(pairs, null).MaxRetries).IsEqual(3);
+        AssertInt(new WfcFront.MapGeneratorFactory().Create(pairs, null).MaxRetries).IsEqual(3);
     }
 
     [TestCase]
