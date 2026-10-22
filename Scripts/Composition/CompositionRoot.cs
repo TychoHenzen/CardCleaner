@@ -19,7 +19,6 @@ namespace CardCleaner.Scripts.Composition;
 /// <summary>
 ///     Composes the service container as the "Services" autoload and injects every IDependent node that enters
 ///     the tree. Any other instance logs an error and composes nothing. Owns one <see cref="ServiceHost" />.
-///     Compose order: plain [Service] classes (lazy), core services, "service_providers" nodes, pending callbacks.
 /// </summary>
 public partial class CompositionRoot : Node
 {
