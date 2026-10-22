@@ -1,4 +1,5 @@
 using CardCleaner.Features.Worldgen.AutoTiling;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.TileDataLoaderFormat;

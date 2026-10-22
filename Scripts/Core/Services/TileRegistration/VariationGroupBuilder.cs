@@ -50,7 +50,7 @@ internal static class VariationGroupBuilder
 
         foreach (var tile in tiles)
         {
-            var info = TiledTilesetLoader.DetectVariationPattern(tile.Id);
+            var info = VariationPatternDetector.DetectVariationPattern(tile.Id);
             if (info == null)
                 continue;
 

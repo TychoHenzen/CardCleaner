@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Linq;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Core.Services;
@@ -26,7 +27,7 @@ public class DualGridOverlayBuilderTest
     [TestCategory("Unit")]
     public static void SingleAutoTileCellProducesTheExpectedBitmask()
     {
-        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         var autoTileId = registry.GetAllTiles().First(tile => tile.HasAutoTileVariants).Id;
         var baseTileId = DualGridOverlayBuilder.ResolveDefaultPassableTileId(registry);
         var background = Filled(3, 3, baseTileId);
@@ -48,7 +49,7 @@ public class DualGridOverlayBuilderTest
     [TestCategory("Unit")]
     public static void AllBitmasksStayInCorner16Range()
     {
-        var tileRegistry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        var tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var rng = RandomSources.Create(4242);

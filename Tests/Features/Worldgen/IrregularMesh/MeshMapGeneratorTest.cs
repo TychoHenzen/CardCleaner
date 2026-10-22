@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Tests.TestUtilities;
 using System;
 using System.Threading;
@@ -47,7 +48,7 @@ public class MeshMapGeneratorTest
     [TestCategory("Unit")]
     public static async Task TerrainIsTheTerrainOfTheFactoryPath()
     {
-        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         var biomes = MeshMapGeneratorFixture.DefaultBiomes();
         var cards = MeshMapGeneratorFixture.TerrainCards();
         var expected = TerrainGeneratorFactory

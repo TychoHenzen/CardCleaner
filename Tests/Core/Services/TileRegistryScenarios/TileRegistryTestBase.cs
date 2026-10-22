@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Services;
 
 namespace CardCleaner.Tests.Core.Services.TileRegistryScenarios;
@@ -10,5 +11,5 @@ public abstract class TileRegistryTestBase
     protected TileRegistry _registry = null!;
 
     [BeforeTest]
-    public void Setup() => _registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+    public void Setup() => _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
 }

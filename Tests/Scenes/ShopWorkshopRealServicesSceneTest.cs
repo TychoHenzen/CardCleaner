@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -45,7 +46,10 @@ public class ShopWorkshopRealServicesSceneTest
         // The composition root's own scan registers the card generator, first, as Compose does (#273).
         TestServices.RegisterGameServiceClasses(TestServices.Container);
         TestServices.Container.RegisterSingleton(new RandomNumberGenerator());
-        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource()));
+        TestServices.Container.RegisterSingleton<ITileRegistry>(TileCatalogLoad.Load(
+            new GodotAssetPaths(),
+            new CompiledAtlasSource()
+        ));
         TestServices.Container.RegisterSingleton<IMeshMapGenerator>(
             MeshMapGeneratorFixture.Create(WorkshopSceneRig.SmallMeshRings));
 

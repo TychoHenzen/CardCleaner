@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,7 +37,10 @@ public class IrregularWorldMapScreenEnemyFogTest
     public async Task Setup()
     {
         TestServices.Reset();
-        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource()));
+        TestServices.Container.RegisterSingleton<ITileRegistry>(TileCatalogLoad.Load(
+            new GodotAssetPaths(),
+            new CompiledAtlasSource()
+        ));
         var session = TestServices.CreateGameSession();
         TestServices.Container.RegisterSingleton<IGameSessionService>(session);
         AddNode(session);

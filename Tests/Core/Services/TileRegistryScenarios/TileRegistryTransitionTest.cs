@@ -1,6 +1,9 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
+using CardCleaner.Scripts.Core.Services;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
 namespace CardCleaner.Tests.Core.Services.TileRegistryScenarios;
@@ -77,7 +80,7 @@ public class TileRegistryTransitionTest : TileRegistryTestBase
         AssertThat(allTiles.Count).IsEqual(0);
 
         // Reload to restore state for other tests
-        _registry.LoadFromData();
+        TileCatalogLoad.LoadInto(_registry, new GodotAssetPaths(), new CompiledAtlasSource());
     }
 
     [TestCase]
@@ -107,7 +110,7 @@ public class TileRegistryTransitionTest : TileRegistryTestBase
         AssertThat(retrieved.Passability).IsEqual(TilePassability.Solid);
 
         // Reload to restore state
-        _registry.LoadFromData();
+        TileCatalogLoad.LoadInto(_registry, new GodotAssetPaths(), new CompiledAtlasSource());
     }
 
     // ==================== Dominance Tests ====================
@@ -155,7 +158,7 @@ public class TileRegistryTransitionTest : TileRegistryTestBase
                 AutoTileFormatName = "corner16"
             });
 
-        AssertThat(tile.ExpectedVariantCount).IsEqual(16);
+        AssertThat(tile.GetExpectedVariantCount()).IsEqual(16);
     }
 
     [TestCase]
@@ -171,7 +174,7 @@ public class TileRegistryTransitionTest : TileRegistryTestBase
                 AutoTileFormatName = "edge16"
             });
 
-        AssertThat(tile.ExpectedVariantCount).IsEqual(16);
+        AssertThat(tile.GetExpectedVariantCount()).IsEqual(16);
     }
 
     [TestCase]
@@ -187,6 +190,6 @@ public class TileRegistryTransitionTest : TileRegistryTestBase
                 AutoTileFormatName = "blob47"
             });
 
-        AssertThat(tile.ExpectedVariantCount).IsEqual(47);
+        AssertThat(tile.GetExpectedVariantCount()).IsEqual(47);
     }
 }

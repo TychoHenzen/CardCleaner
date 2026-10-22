@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Services;
@@ -23,7 +24,7 @@ public class WfcTerrainSolverRuleTileIdsTest
     public static void RuleTileIdsAreTheTransitionIdsBeforeGapTilesAreAdded()
     {
         var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
-        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         // A passable tile without auto-tile variants is a gap tile. Its id is unique, so no transition names it.
         registry.RegisterTile(new TileDefinition(ProbeGapTileId, "Probe", TilePassability.Passable, Vector2I.Zero));
 

@@ -54,7 +54,7 @@ public class TileRegistryLookupTest : TileRegistryTestBase
             File.WriteAllText(absolutePath, JsonSerializer.Serialize(mapping));
             var original = TileDataLoader.LoadTileRegistry(new GodotAssetPaths());
 
-            _registry.Reload(null, mappingPath);
+            TileCatalogLoad.Reload(_registry, new GodotAssetPaths(), new CompiledAtlasSource(), null, mappingPath);
 
             AssertBool(_registry.Visuals.UsingCompiledAtlas).IsFalse();
             AssertString(_registry.Visuals.TilesetPath).IsEqual(original.TilesetPath);
@@ -211,7 +211,7 @@ public class TileRegistryLookupTest : TileRegistryTestBase
         AssertThat(desertTiles.Count).IsEqual(3); // universal1, universal2, desert1
 
         // Restore registry for other tests
-        _registry.LoadFromData();
+        TileCatalogLoad.LoadInto(_registry, new GodotAssetPaths(), new CompiledAtlasSource());
     }
 
     // ==================== Missing Tile Lookup ====================

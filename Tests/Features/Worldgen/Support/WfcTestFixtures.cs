@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,8 +80,8 @@ public static class WfcTestFixtures
         string biomeId,
         params (string Id, TilePassability Passability)[] tiles)
     {
-        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
-        registry.Clear(); // Clear production tiles loaded by constructor
+        var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
+        registry.Clear(); // Clear production tiles loaded by TileCatalogLoad.Load
         foreach (var (tileId, passability) in tiles)
         {
             registry.RegisterTile(new TileDefinition(
@@ -102,7 +103,7 @@ public static class WfcTestFixtures
     ///     production transition pairs.
     /// </summary>
     public static TileCatalogData ProductionCatalog() =>
-        TileCatalogData.From(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource()));
+        TileCatalogData.From(TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource()));
 
     /// <summary>
     ///     Asserts that a generation succeeded, quoting the generator's error message when it did not.

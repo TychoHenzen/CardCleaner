@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Tests.TestUtilities;
 using System;
 using System.Collections.Generic;
@@ -62,7 +63,7 @@ public class GridMapGeneratorTest
     [TestCategory("Unit")]
     public static async Task TwoGeneratorsOnOneCatalogAndSeedMakeEqualMaps()
     {
-        var tiles = TileCatalogData.From(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource()));
+        var tiles = TileCatalogData.From(TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource()));
 
         var first = await CreateGenerator(tiles).GenerateAsync(Config());
         var second = await CreateGenerator(tiles).GenerateAsync(Config());
@@ -71,7 +72,7 @@ public class GridMapGeneratorTest
     }
 
     private static GridMapGenerator CreateGenerator() =>
-        CreateGenerator(TileCatalogData.From(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource())));
+        CreateGenerator(TileCatalogData.From(TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource())));
 
     private static GridMapGenerator CreateGenerator(TileCatalogData tiles)
     {

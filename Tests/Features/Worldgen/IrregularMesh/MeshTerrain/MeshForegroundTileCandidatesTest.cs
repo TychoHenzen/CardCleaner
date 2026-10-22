@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Services;
@@ -26,7 +27,7 @@ public class MeshForegroundTileCandidatesTest
 
     private static TileRegistry MixedLayerRegistry()
     {
-        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         registry.Clear();
         registry.RegisterTile(Tile("grass", TileLayer.Terrain));
         registry.RegisterTile(Tile("dirt", TileLayer.Terrain));
@@ -51,7 +52,7 @@ public class MeshForegroundTileCandidatesTest
     [TestCase]
     public void TheShippedRegistryYieldsTerrainTilesOnly()
     {
-        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
 
         var candidates = MeshForegroundTileCandidates.Collect(TileCatalogData.From(registry), _biomes.ToBiomeSet().Ids);
 

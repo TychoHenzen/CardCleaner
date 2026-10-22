@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -19,7 +20,7 @@ public class TilePassabilityDiagnosticTest
         var registry = new BiomeRegistry();
         registry.RegisterDefaultBiomes(new GodotAssetPaths());
 
-        var tileRegistry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        var tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
 
         var missingTiles = new List<string>();
         var passabilityMismatches = new List<string>();

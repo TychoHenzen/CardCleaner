@@ -162,16 +162,6 @@ public static class TiledTilesetLoader
     private static TileRegistryResult EmptyResult() => new("", [], TilesetConfig.Default);
 
     /// <summary>
-    /// Detects variation group info from a tile ID based on naming patterns.
-    /// Numbered suffixes (grass1, grass2, grass3) = PerGeneration (one picked per map).
-    /// Lettered suffixes (flower_a, flower_b) = PerInstance (randomly picked per placement).
-    /// </summary>
-    /// <param name="tileId">The tile ID to analyze.</param>
-    /// <returns>Variation info or null if no pattern detected.</returns>
-    public static VariationGroupInfo? DetectVariationPattern(string tileId)
-        => VariationPatternDetector.DetectVariationPattern(tileId);
-
-    /// <summary>
     /// Loads a TMX map file with full tile resolution support.
     /// </summary>
     internal static TmxMapData? LoadTmxMap(IAssetPaths paths, string tmxPath)

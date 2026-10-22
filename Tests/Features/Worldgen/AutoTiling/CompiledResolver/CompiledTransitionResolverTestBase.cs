@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
@@ -20,9 +21,14 @@ public abstract class CompiledTransitionResolverTestBase
     {
         _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
         // Load from Tiled source to match transition_map.json source
-        _registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         _registry.Clear();
-        _registry.LoadFromData("res://Data/Tiled/tileset.tmx");
+        TileCatalogLoad.LoadInto(
+            _registry,
+            new GodotAssetPaths(),
+            new CompiledAtlasSource(),
+            "res://Data/Tiled/tileset.tmx"
+        );
 
         // Load transition map for direct inspection
         var json = System.IO.File.ReadAllText(

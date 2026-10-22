@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.IO;
 using System.Text.Json;
 using CardCleaner.Scripts.Core.Services;
@@ -24,9 +25,9 @@ public abstract class TilesJsonValidationTestBase
             _tilesDoc = JsonDocument.Parse(json);
         }
         // Load registry explicitly from JSON (not from default TMX) for JSON validation tests
-        _registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         _registry.Clear();
-        _registry.LoadFromData(TilesJsonPath);
+        TileCatalogLoad.LoadInto(_registry, new GodotAssetPaths(), new CompiledAtlasSource(), TilesJsonPath);
     }
 
     [AfterTest]

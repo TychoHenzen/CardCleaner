@@ -31,7 +31,7 @@ public class TileVisualLoaderTest
         var result = TileDataLoader.LoadTileRegistry(new GodotAssetPaths());
         var atlasTileSize = CompiledAtlasLoader.LoadMapping()?.Atlas?.TileSize ?? 16;
 
-        var catalog = TileVisualLoader.Load(result, null, new CompiledAtlasSource());
+        var catalog = TileVisualLoader.Load(Original(result), null, new CompiledAtlasSource());
 
         AssertBool(catalog.UsingCompiledAtlas).IsTrue();
         AssertInt(catalog.TilesetConfig.BaseTileSize.X).IsEqual(atlasTileSize);
@@ -47,7 +47,7 @@ public class TileVisualLoaderTest
         var result = TileDataLoader.LoadTileRegistry(new GodotAssetPaths());
         var mappingPath = $"user://tile-visual-missing-{Guid.NewGuid():N}.json";
 
-        var catalog = TileVisualLoader.Load(result, mappingPath, new CompiledAtlasSource());
+        var catalog = TileVisualLoader.Load(Original(result), mappingPath, new CompiledAtlasSource());
 
         AssertOriginalTileset(catalog, result);
     }
@@ -72,7 +72,7 @@ public class TileVisualLoaderTest
             File.WriteAllText(absolutePath, JsonSerializer.Serialize(mapping));
             var result = TileDataLoader.LoadTileRegistry(new GodotAssetPaths());
 
-            var catalog = TileVisualLoader.Load(result, mappingPath, new CompiledAtlasSource());
+            var catalog = TileVisualLoader.Load(Original(result), mappingPath, new CompiledAtlasSource());
 
             AssertOriginalTileset(catalog, result);
         }
@@ -82,6 +82,9 @@ public class TileVisualLoaderTest
                 File.Delete(absolutePath);
         }
     }
+
+    private static TileVisualLoader.OriginalTileset Original(TileRegistryResult result)
+        => new(result.TilesetPath, result.Tiles, result.TilesetConfig);
 
     private static void AssertOriginalTileset(TileVisualCatalog catalog, TileRegistryResult result)
     {
