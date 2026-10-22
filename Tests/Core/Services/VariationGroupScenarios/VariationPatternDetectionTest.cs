@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.TilesetLoading;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
@@ -16,7 +17,7 @@ public class VariationPatternDetectionTest
     [TestCase]
     public void TestDetectNumberedSuffix_ReturnsPerGenerationMode()
     {
-        var result = TiledTilesetLoader.DetectVariationPattern("grass1");
+        var result = VariationPatternDetector.DetectVariationPattern("grass1");
 
         AssertThat(result).IsNotNull();
         AssertThat(result!.BaseName).IsEqual("grass");
@@ -27,7 +28,7 @@ public class VariationPatternDetectionTest
     [TestCase]
     public void TestDetectNumberedSuffix_MultiDigit()
     {
-        var result = TiledTilesetLoader.DetectVariationPattern("terrain12");
+        var result = VariationPatternDetector.DetectVariationPattern("terrain12");
 
         AssertThat(result).IsNotNull();
         AssertThat(result!.BaseName).IsEqual("terrain");
@@ -38,7 +39,7 @@ public class VariationPatternDetectionTest
     [TestCase]
     public void TestDetectLetteredSuffix_ReturnsPerInstanceMode()
     {
-        var result = TiledTilesetLoader.DetectVariationPattern("flower_a");
+        var result = VariationPatternDetector.DetectVariationPattern("flower_a");
 
         AssertThat(result).IsNotNull();
         AssertThat(result!.BaseName).IsEqual("flower");
@@ -49,7 +50,7 @@ public class VariationPatternDetectionTest
     [TestCase]
     public void TestDetectLetteredSuffix_LetterC()
     {
-        var result = TiledTilesetLoader.DetectVariationPattern("rose_c");
+        var result = VariationPatternDetector.DetectVariationPattern("rose_c");
 
         AssertThat(result).IsNotNull();
         AssertThat(result!.BaseName).IsEqual("rose");
@@ -60,7 +61,7 @@ public class VariationPatternDetectionTest
     [TestCase]
     public void TestDetectLetteredSuffix_CaseInsensitive()
     {
-        var result = TiledTilesetLoader.DetectVariationPattern("poppy_B");
+        var result = VariationPatternDetector.DetectVariationPattern("poppy_B");
 
         AssertThat(result).IsNotNull();
         AssertThat(result!.BaseName).IsEqual("poppy");
@@ -71,7 +72,7 @@ public class VariationPatternDetectionTest
     [TestCase]
     public void TestDetectNoPattern_ReturnsNull()
     {
-        var result = TiledTilesetLoader.DetectVariationPattern("dirt");
+        var result = VariationPatternDetector.DetectVariationPattern("dirt");
 
         AssertThat(result).IsNull();
     }
@@ -80,7 +81,7 @@ public class VariationPatternDetectionTest
     public void TestDetectNoPattern_ShortBaseName_ReturnsNull()
     {
         // Base name too short (less than 2 chars)
-        var result = TiledTilesetLoader.DetectVariationPattern("a1");
+        var result = VariationPatternDetector.DetectVariationPattern("a1");
 
         AssertThat(result).IsNull();
     }
@@ -89,7 +90,7 @@ public class VariationPatternDetectionTest
     public void TestDetectNoPattern_SnakeCaseWithoutLetter_ReturnsNull()
     {
         // Has underscore but not followed by single letter
-        var result = TiledTilesetLoader.DetectVariationPattern("tall_grass");
+        var result = VariationPatternDetector.DetectVariationPattern("tall_grass");
 
         AssertThat(result).IsNull();
     }

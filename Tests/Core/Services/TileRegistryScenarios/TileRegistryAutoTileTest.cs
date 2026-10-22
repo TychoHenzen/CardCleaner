@@ -1,6 +1,7 @@
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
 namespace CardCleaner.Tests.Core.Services.TileRegistryScenarios;
@@ -46,7 +47,7 @@ public class TileRegistryAutoTileTest : TileRegistryTestBase
 
         foreach (var tile in tilesWithVariants)
         {
-            var expected = tile.ExpectedVariantCount;
+            var expected = tile.GetExpectedVariantCount();
             var actual = tile.AutoTileVariants!.Count;
 
             if (actual != expected)

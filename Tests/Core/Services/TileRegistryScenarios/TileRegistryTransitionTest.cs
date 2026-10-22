@@ -1,6 +1,7 @@
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
 namespace CardCleaner.Tests.Core.Services.TileRegistryScenarios;
@@ -155,7 +156,7 @@ public class TileRegistryTransitionTest : TileRegistryTestBase
                 AutoTileFormatName = "corner16"
             });
 
-        AssertThat(tile.ExpectedVariantCount).IsEqual(16);
+        AssertThat(tile.GetExpectedVariantCount()).IsEqual(16);
     }
 
     [TestCase]
@@ -171,7 +172,7 @@ public class TileRegistryTransitionTest : TileRegistryTestBase
                 AutoTileFormatName = "edge16"
             });
 
-        AssertThat(tile.ExpectedVariantCount).IsEqual(16);
+        AssertThat(tile.GetExpectedVariantCount()).IsEqual(16);
     }
 
     [TestCase]
@@ -187,6 +188,6 @@ public class TileRegistryTransitionTest : TileRegistryTestBase
                 AutoTileFormatName = "blob47"
             });
 
-        AssertThat(tile.ExpectedVariantCount).IsEqual(47);
+        AssertThat(tile.GetExpectedVariantCount()).IsEqual(47);
     }
 }

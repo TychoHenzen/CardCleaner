@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Enumeration;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
@@ -83,7 +81,7 @@ public sealed record TileDefinition
 
     /// <summary>
     /// The name of the auto-tile format used by this tile (e.g., "corner16", "edge16", "blob47").
-    /// Resolved via <see cref="AutoTileFormatRegistry"/> at runtime.
+    /// The format definition is resolved from the name by the auto-tiling code.
     /// </summary>
     public string AutoTileFormatName { get; }
 
@@ -98,27 +96,6 @@ public sealed record TileDefinition
     /// null when the format is not known.
     /// </summary>
     public (Vector2I Size, Vector2I Offset)? MultiCellBounds { get; }
-
-    /// <summary>
-    /// Gets the auto-tile format definition from the registry.
-    /// Returns null if the format is not registered.
-    /// </summary>
-    public AutoTileFormatDefinition? GetAutoTileFormat()
-    {
-        return AutoTileFormatRegistry.TryGet(AutoTileFormatName, out var format) ? format : null;
-    }
-
-    /// <summary>
-    /// Gets the variant definition for a specific bitmask value.
-    /// Returns null if the format is not found or the bitmask is not allowed.
-    /// </summary>
-    /// <param name="bitmask">The bitmask value (0-15 for 4-bit formats, 0-255 for 8-bit).</param>
-    /// <returns>The variant definition, or null if not found.</returns>
-    public VariantDefinition? GetVariantDefinition(int bitmask)
-    {
-        var format = GetAutoTileFormat();
-        return format?.GetVariant(bitmask);
-    }
 
     /// <summary>
     /// Visual variations for this tile; null means the base AtlasCoords is always used.
@@ -173,12 +150,6 @@ public sealed record TileDefinition
     /// Whether this tile has animation frames.
     /// </summary>
     public bool HasAnimation => Animation != null && Animation.Frames.Length > 1;
-
-    /// <summary>
-    /// Expected number of auto-tile variants based on format.
-    /// Delegates to the format definition from the registry.
-    /// </summary>
-    public int ExpectedVariantCount => GetAutoTileFormat()?.GetExpectedVariantCount() ?? 16;
 
     /// <summary>
     /// Whether this tile is a gap tile - used to fill gaps between auto-tiles.
