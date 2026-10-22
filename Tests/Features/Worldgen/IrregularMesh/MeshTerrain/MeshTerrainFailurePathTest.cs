@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ public class MeshTerrainFailurePathTest
     public static void FailedForegroundSolveClearsForegroundAndKeepsBackgrounds()
     {
         // ASSUMPTION: seed 4242 with these cards reaches the foreground step, as MeshTerrainFingerprintTest pins.
-        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         var solver = new FailingSolver(
             new WfcTerrainSolver(TransitionPairs(), TileCatalogData.From(registry)),
             AutoTileId(registry));
@@ -54,7 +55,7 @@ public class MeshTerrainFailurePathTest
     [TestCategory("Unit")]
     public static void NoForegroundCandidatesNeverCallsTheSolver()
     {
-        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         var solver = new FailingSolver(
             new WfcTerrainSolver(TransitionPairs(), TileCatalogData.From(registry)),
             AutoTileId(registry));
@@ -78,7 +79,7 @@ public class MeshTerrainFailurePathTest
     [TestCategory("Unit")]
     public static void NullSamplerUsesFallbackTerrainAndNeverCallsTheSolver()
     {
-        var registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         var solver = new FailingSolver(
             new WfcTerrainSolver(TransitionPairs(), TileCatalogData.From(registry)),
             AutoTileId(registry));

@@ -27,7 +27,7 @@ public abstract class BlackTileReproductionTestBase
     [BeforeTest]
     public void Setup()
     {
-        _registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
         _atlasMapping = CompiledAtlasLoader.LoadMapping();
 

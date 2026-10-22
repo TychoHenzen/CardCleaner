@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Linq;
 using CardCleaner.Scripts.Core.Services;
 using GdUnit4;
@@ -12,10 +13,10 @@ public class TileCatalogLoadTest
 {
     [TestCase]
     [TestCategory("Unit")]
-    public static void LoadReturnsARegistryWithTheSameTilesAsTheConstructor()
+    public static void LoadReturnsTheSameTilesOnEveryCall()
     {
         var loaded = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
-        var direct = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        var direct = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
 
         var loadedIds = loaded.GetAllTiles().Select(tile => tile.Id).ToList();
         var directIds = direct.GetAllTiles().Select(tile => tile.Id).ToList();

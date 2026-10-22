@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
@@ -17,7 +18,7 @@ public abstract class PipelineIntegrationTestBase
     [BeforeTest]
     public void Setup()
     {
-        _registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
     }
 

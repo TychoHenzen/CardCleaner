@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -16,7 +17,7 @@ public class TerrainGeneratorFactoryTest
     public static void CreateReturnsTheContract()
     {
         IMeshTerrainGenerator generator = TerrainGeneratorFactory.Create(
-            TileCatalogData.From(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource())),
+            TileCatalogData.From(TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource())),
             MeshMapGeneratorFixture.DefaultBiomes(),
             CompiledTransitionPairs.Load());
 

@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Tests.TestUtilities;
 using System.Collections.Generic;
 using System.IO;
@@ -57,7 +58,7 @@ public class GridMapGoldenTest
     // Generates through the grid generator the cabinet hands the session, with the seed and size the session derives.
     private static async Task<string> GenerateAsync(List<CardSignature> cards)
     {
-        var tiles = TileCatalogData.From(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource()));
+        var tiles = TileCatalogData.From(TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource()));
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var generator = new GridMapGenerator(

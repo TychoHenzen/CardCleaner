@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.IO;
 using System.Text.Json;
 using CardCleaner.Scripts.Core.Services;
@@ -22,7 +23,7 @@ public abstract class RandomAutoTileReproductionTestBase
     [BeforeTest]
     public void Setup()
     {
-        _registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
 
         var transitionPath = ProjectSettings.GlobalizePath(TransitionMapPath);

@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -55,7 +56,10 @@ public class IrregularWorldMapScreenTest
     public async Task Setup()
     {
         TestServices.Reset();
-        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource()));
+        TestServices.Container.RegisterSingleton<ITileRegistry>(TileCatalogLoad.Load(
+            new GodotAssetPaths(),
+            new CompiledAtlasSource()
+        ));
         _session = TestServices.CreateGameSession();
         TestServices.Container.RegisterSingleton<IGameSessionService>(_session);
         AddNode(_session);

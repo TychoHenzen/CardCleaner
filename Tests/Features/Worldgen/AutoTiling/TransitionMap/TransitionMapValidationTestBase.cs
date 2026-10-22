@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.IO;
 using System.Text.Json;
 using CardCleaner.Scripts.Core.Services;
@@ -33,9 +34,14 @@ public abstract class TransitionMapValidationTestBase
             });
         }
         // Load from Tiled source to match transition_map.json source
-        _registry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         _registry.Clear();
-        _registry.LoadFromData("res://Data/Tiled/tileset.tmx");
+        TileCatalogLoad.LoadInto(
+            _registry,
+            new GodotAssetPaths(),
+            new CompiledAtlasSource(),
+            "res://Data/Tiled/tileset.tmx"
+        );
     }
 
     [AfterTest]

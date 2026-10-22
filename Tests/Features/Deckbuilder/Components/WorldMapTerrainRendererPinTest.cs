@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
@@ -34,7 +35,7 @@ public class WorldMapTerrainRendererPinTest
     [TestCategory("Unit")]
     public static void SeededMapRendersTheSameCellsIntoAllFourLayers()
     {
-        var tileRegistry = new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource());
+        var tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var rng = RandomSources.Create(GridSeed);

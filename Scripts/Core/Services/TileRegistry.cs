@@ -3,7 +3,6 @@ using System.Linq;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Services.TilesetLoading;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
@@ -18,22 +17,16 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     private readonly VariationGroupCollection _variationGroups = new();
 
     /// <summary>
-    /// The visual side of the catalog (tileset path, compiled atlas mode, tileset config), set by LoadFromData.
+    /// The visual side of the catalog (tileset path, compiled atlas mode, tileset config), set by Install.
     /// </summary>
     public TileVisualCatalog Visuals { get; private set; } =
         new(DefaultTilesetPath, false, TilesetConfig.Default, []);
 
     private readonly TileCatalogQueries _queries;
-    private readonly IAssetPaths _paths;
 
-    private readonly ICompiledAtlasSource _atlas;
-
-    public TileRegistry(IAssetPaths paths, ICompiledAtlasSource atlas)
+    internal TileRegistry()
     {
-        _paths = paths;
-        _atlas = atlas;
         _queries = new TileCatalogQueries(_tiles);
-        LoadFromData();
     }
 
     public void RegisterTile(TileDefinition tile) => _tiles[tile.Id] = tile;
@@ -104,34 +97,17 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     /// Loads tiles from Data/Tiles/tiles.json.
     /// Automatically uses compiled atlas if available for optimized runtime loading.
     /// </summary>
-    public void LoadFromData(string? path = null) => LoadFromData(path, null);
-
-    // Test seam: production always uses the default atlas mapping, because the UI-layer loader that
-    // WorldMapComponents calls only ever loads that one. Keep this internal so no production caller can choose
-    // a mapping the UI would not reuse.
-    internal void LoadFromData(string? path, string? atlasMappingPath)
+    /// <summary>
+    /// Registers the tiles of a loaded visual catalog on top of the tiles already registered and rebuilds the
+    /// variation groups. <c>TileCatalogLoad</c> builds the catalog from the tile data files.
+    /// </summary>
+    internal void Install(TileVisualCatalog visuals)
     {
-        var result = TileDataLoader.LoadTileRegistry(_paths, path);
-
-        Visuals = TileVisualLoader.Load(
-            new TileVisualLoader.OriginalTileset(result.TilesetPath, result.Tiles, result.TilesetConfig),
-            atlasMappingPath,
-            _atlas);
+        Visuals = visuals;
         foreach (var tile in Visuals.Tiles)
             RegisterTile(tile);
 
         VariationGroupBuilder.Rebuild(_tiles.Values, _variationGroups);
-    }
-
-    /// <summary>
-    /// Reloads all tiles from the data file, clearing existing tiles first
-    /// </summary>
-    public void Reload(string? path = null) => Reload(path, null);
-
-    internal void Reload(string? path, string? atlasMappingPath)
-    {
-        Clear();
-        LoadFromData(path, atlasMappingPath);
     }
 
     #region ITileMetadataProvider Implementation

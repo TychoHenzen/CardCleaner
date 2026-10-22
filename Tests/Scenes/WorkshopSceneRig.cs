@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
@@ -74,7 +75,10 @@ public sealed class WorkshopSceneRig
         // [Service] classes go in first; explicit registrations below replace any scanned type they share.
         TestServices.RegisterGameServiceClasses(TestServices.Container);
         TestServices.Container.RegisterSingleton<ICardSpawningService>(new TestCardSpawner());
-        TestServices.Container.RegisterSingleton<ITileRegistry>(new TileRegistry(new GodotAssetPaths(), new CompiledAtlasSource()));
+        TestServices.Container.RegisterSingleton<ITileRegistry>(TileCatalogLoad.Load(
+            new GodotAssetPaths(),
+            new CompiledAtlasSource()
+        ));
         TestServices.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Create(SmallMeshRings));
         TestServices.Container.RegisterSingleton<IGameSessionService>(
             rig.Workshop.GetNode<GameSessionService>("GameSessionService"));
