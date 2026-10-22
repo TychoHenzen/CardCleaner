@@ -955,7 +955,8 @@ and `WfcGenerationResult` from Wfc, and no Wfc sub-namespace. In a namespace bel
 the namespace, so callers alias the class, as `MeshTerrainWfcSetup` does.
 `IrregularMeshWfcSeamTest` fails when a file under `Scripts/Features/Worldgen/IrregularMesh/` names any other type
 declared under Wfc or references a Wfc sub-namespace. The grid map generator reaches WFC the same way:
-`GridMapGenerator` calls `Wfc.CreateMapGenerator` and holds an `IWfcMapGenerator`.
+`GridMapGenerator` takes an `IWfcMapGeneratorFactory` (production: `Wfc.MapGeneratorFactory`, which calls
+`Wfc.CreateMapGenerator`) and holds an `IWfcMapGenerator`.
 
 ### Weighted Random Selection Algorithm
 

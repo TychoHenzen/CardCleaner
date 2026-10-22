@@ -8,7 +8,7 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.TestUtilities;
-using WfcFront = CardCleaner.Scripts.Features.Worldgen.Wfc.Wfc;
+using WfcDoor = CardCleaner.Scripts.Features.Worldgen.Wfc.Wfc;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
@@ -26,7 +26,7 @@ public class WfcMapGeneratorFactoryTest
     public static void CreateReturnsANewGeneratorEachCall()
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
-        var factory = new WfcFront.MapGeneratorFactory();
+        var factory = new WfcDoor.MapGeneratorFactory();
 
         AssertBool(ReferenceEquals(factory.Create(pairs, null), factory.Create(pairs, null))).IsFalse();
     }
@@ -37,7 +37,7 @@ public class WfcMapGeneratorFactoryTest
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
 
-        AssertInt(new WfcFront.MapGeneratorFactory().Create(pairs, null).MaxRetries).IsEqual(3);
+        AssertInt(new WfcDoor.MapGeneratorFactory().Create(pairs, null).MaxRetries).IsEqual(3);
     }
 
     [TestCase]
