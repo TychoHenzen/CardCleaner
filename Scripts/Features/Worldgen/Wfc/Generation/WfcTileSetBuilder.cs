@@ -7,16 +7,17 @@ using CardCleaner.Scripts.Features.Worldgen.Wfc.Contracts;
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 
 /// <summary>
-/// Chooses which adjacency-rule tiles take part in a generation.
+/// Chooses which rule tiles take part in a generation. It takes the live set of rule tile ids, so tiles that
+/// the generator adds to the rules later (gap tiles) are seen.
 /// </summary>
 internal sealed class WfcTileSetBuilder
 {
-    private readonly WfcAdjacencyRules _adjacencyRules;
+    private readonly IReadOnlySet<string> _ruleTileIds;
     private readonly IWfcTileCatalog? _tileCatalog;
 
-    internal WfcTileSetBuilder(WfcAdjacencyRules adjacencyRules, IWfcTileCatalog? tileCatalog)
+    internal WfcTileSetBuilder(IReadOnlySet<string> ruleTileIds, IWfcTileCatalog? tileCatalog)
     {
-        _adjacencyRules = adjacencyRules;
+        _ruleTileIds = ruleTileIds;
         _tileCatalog = tileCatalog;
     }
 
@@ -45,7 +46,7 @@ internal sealed class WfcTileSetBuilder
     {
         var allTiles = new HashSet<string>();
 
-        foreach (var tileId in _adjacencyRules.AllTileIds)
+        foreach (var tileId in _ruleTileIds)
         {
             if (_tileCatalog == null || !_tileCatalog.Contains(tileId) || !isIncluded(_tileCatalog, tileId))
                 continue;

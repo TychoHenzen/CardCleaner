@@ -9,6 +9,7 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Scripts.Features.Worldgen;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
@@ -16,16 +17,12 @@ using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 namespace CardCleaner.Scripts.Composition;
 
 /// <summary>
-///     Composes the service container. Registered as the "Services" autoload, it registers the core services, then
-///     every node in the "service_providers" group, then runs the pending callbacks. Before that it registers the
-///     plain [Service] classes of the game lazily. From its _Ready on, it injects every IDependent node that enters
-///     the tree. Only that autoload composes and injects; any other instance logs an error and composes nothing.
-///     Each instance owns one <see cref="ServiceHost" /> (the container, the pending callbacks and the resolver it
-///     injects), which exists from construction.
+///     Composes the service container as the "Services" autoload and injects every IDependent node that enters
+///     the tree. Any other instance logs an error and composes nothing. Owns one <see cref="ServiceHost" />.
 /// </summary>
 public partial class CompositionRoot : Node
 {
-    // Tests compile into the same assembly; only game classes are scanned for [Service].
+    // Tests share this assembly; only game classes are scanned for [Service].
     private const string GameNamespace = "CardCleaner.Scripts";
 
     // Node services the last Compose added as children; the next Compose frees them before it builds new ones.
@@ -126,7 +123,8 @@ public partial class CompositionRoot : Node
         var tileRegistry = TileCatalogLoad.Load(assetPaths, new CompiledAtlasSource());
         container.RegisterSingleton<ITileRegistry>(tileRegistry);
         container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
-        // One snapshot of the registry, taken after TileCatalogLoad.Load has filled it. The generators read this catalog.
+        // One snapshot of the registry, taken after TileCatalogLoad.Load has filled it.
+        // The generators read this catalog.
         var tiles = TileCatalogData.From(tileRegistry);
 
         var biomeRegistry = new BiomeRegistry();
@@ -137,7 +135,7 @@ public partial class CompositionRoot : Node
         // the generators are plain classes, so the composition root registers them.
         var transitionPairs = new TransitionPairs(new CompiledTransitionResolver(assetPaths).GetAllTransitionPairs());
         container.RegisterSingleton<IGridMapGenerator>(
-            new GridMapGenerator(tiles, biomes, transitionPairs));
+            new GridMapGenerator(tiles, biomes, transitionPairs, new Wfc.MapGeneratorFactory()));
         container.RegisterSingleton<IMeshMapGenerator>(
             new MeshMapGenerator(tiles, biomes, transitionPairs));
 

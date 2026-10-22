@@ -25,18 +25,22 @@ public sealed class GridMapGenerator : IGridMapGenerator
     private readonly TileCatalogData _tiles;
     private readonly BiomeSet _biomes;
     private readonly TransitionPairs _transitionPairs;
+    private readonly IWfcMapGeneratorFactory _wfcFactory;
 
     public GridMapGenerator(
         TileCatalogData tiles,
         BiomeSet biomes,
-        TransitionPairs transitionPairs)
+        TransitionPairs transitionPairs,
+        IWfcMapGeneratorFactory wfcFactory)
     {
         ArgumentNullException.ThrowIfNull(tiles);
         ArgumentNullException.ThrowIfNull(biomes);
         ArgumentNullException.ThrowIfNull(transitionPairs);
+        ArgumentNullException.ThrowIfNull(wfcFactory);
         _tiles = tiles;
         _biomes = biomes;
         _transitionPairs = transitionPairs;
+        _wfcFactory = wfcFactory;
     }
 
     /// <inheritdoc />
@@ -59,7 +63,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
             config.Size,
             _tiles.GetDefaultPassableTileId(),
             _tiles.GetDefaultSolidTileId());
-        var wfcGenerator = Wfc.CreateMapGenerator(_transitionPairs.Pairs, _tiles);
+        var wfcGenerator = _wfcFactory.Create(_transitionPairs.Pairs, _tiles);
         var pipeline = CreatePipeline(
             rng, biomeProvider, _tiles, wfcGenerator, _biomes, gradient);
         pipeline.SetProfiler(new CancellableProgressProfiler(

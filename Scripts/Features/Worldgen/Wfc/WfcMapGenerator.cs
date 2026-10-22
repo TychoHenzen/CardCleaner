@@ -108,7 +108,7 @@ public class WfcMapGenerator : IWfcMapGenerator
         _spatialCoherence = new SpatialCoherenceConstraint(_tileCatalog);
         _constraintSet = new WfcConstraintSet(_diminishingReturns, _spatialCoherence, _compactness, _tileCatalog);
         _selector = new WfcTileSelector();
-        _tileSetBuilder = new WfcTileSetBuilder(adjacencyRules, tileCatalog);
+        _tileSetBuilder = new WfcTileSetBuilder(adjacencyRules.AllTileIds, tileCatalog);
 
         // Allow all non-auto-tiles to be adjacent to each other (for background layer WFC)
         if (tileCatalog != null)

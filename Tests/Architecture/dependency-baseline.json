@@ -1,5 +1,5 @@
 {
-  "up_edges": 4,
+  "up_edges": 3,
   "biggest_loop": 3,
   "seams_leaky_or_missing": 9,
   "refs_from_non_ui_to_ui": 0,
@@ -7,11 +7,12 @@
     "GridMapGenerationContext -> TileCatalogData",
     "GridMapGenerationPipeline -> TileCatalogData",
     "GridMapGenerator -> TileCatalogData",
-    "GridMapGenerator -> Wfc",
     "GridMapWfcGenerator -> TileCatalogData",
-    "MeshTerrainWfcSetup -> Wfc",
     "TileDefinitionSpec -> TileShapeFacts",
-    "WfcTileSetBuilder -> WfcAdjacencyRules"
+    "Wfc -> IWfcTerrainSolver",
+    "Wfc -> WfcAdjacencyRules",
+    "Wfc -> WfcMapGenerator",
+    "Wfc -> WfcTerrainSolver"
   ],
   "biggest_loop_classes": [
     "AdjacencyConstraint",
@@ -51,6 +52,7 @@
     "IProfiler",
     "IWfcConstraint",
     "IWfcMapGenerator",
+    "IWfcMapGeneratorFactory",
     "IWfcTerrainSolver",
     "IWfcTopology",
     "IrregularMesh",
@@ -138,6 +140,8 @@
     "TileCatalogData",
     "TileRegistry",
     "WfcAdjacencyRules",
+    "WfcMapGenerator",
+    "WfcTerrainSolver",
     "WfcTileSetBuilder"
   ],
   "ui_ref_pairs": []
