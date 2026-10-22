@@ -13,7 +13,7 @@ public static class TileAutoTileFormats
     public static AutoTileFormatDefinition? GetAutoTileFormat(this TileDefinition tile)
         => AutoTileFormatRegistry.TryGet(tile.AutoTileFormatName, out var format) ? format : null;
 
-    /// <summary>The variant of the tile's format for a bitmask, or null when the format or variant is unknown.</summary>
+    /// <summary>The variant of the tile format for a bitmask, or null when the format or variant is unknown.</summary>
     public static VariantDefinition? GetVariantDefinition(this TileDefinition tile, int bitmask)
         => tile.GetAutoTileFormat()?.GetVariant(bitmask);
 
