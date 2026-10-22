@@ -81,7 +81,7 @@ public static class WfcTestFixtures
         params (string Id, TilePassability Passability)[] tiles)
     {
         var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
-        registry.Clear(); // Clear production tiles loaded by constructor
+        registry.Clear(); // Clear production tiles loaded by TileCatalogLoad.Load
         foreach (var (tileId, passability) in tiles)
         {
             registry.RegisterTile(new TileDefinition(

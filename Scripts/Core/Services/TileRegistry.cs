@@ -94,10 +94,6 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     }
 
     /// <summary>
-    /// Loads tiles from Data/Tiles/tiles.json.
-    /// Automatically uses compiled atlas if available for optimized runtime loading.
-    /// </summary>
-    /// <summary>
     /// Registers the tiles of a loaded visual catalog on top of the tiles already registered and rebuilds the
     /// variation groups. <c>TileCatalogLoad</c> builds the catalog from the tile data files.
     /// </summary>

@@ -52,7 +52,7 @@ public static class AutoTileHelper
             return null;
 
         var bitmask = ComputeBitmask(position, tileDef, getTileId);
-        return tileDef.GetVariantDefinition(bitmask);
+        return TileAutoTileFormats.GetVariantDefinition(tileDef, bitmask);
     }
 
     /// <summary>

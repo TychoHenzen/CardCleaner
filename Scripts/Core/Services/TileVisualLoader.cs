@@ -49,8 +49,7 @@ internal static class TileVisualLoader
             return null;
         }
 
-        // The loader owns the tile-set resource and caches it; the registry only asks whether it loads, so that
-        // an atlas whose image cannot be loaded falls back to the original tileset, as before it moved out.
+        // An atlas whose image cannot be loaded falls back to the original tileset.
         if (!atlas.CanBuild(atlasMappingPath))
         {
             ILog.Print("[TileRegistry] FAILED: compiled atlas resource does not load, falling back");
