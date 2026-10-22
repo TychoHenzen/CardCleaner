@@ -12,6 +12,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenarios;
@@ -62,7 +63,7 @@ public class GridMapGoldenTest
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         var generator = new GridMapGenerator(
-            tiles, biomeRegistry.ToBiomeSet(), CompiledTransitionPairs.Load());
+            tiles, biomeRegistry.ToBiomeSet(), CompiledTransitionPairs.Load(), new WfcMapGeneratorFactory());
         var seeds = cards.ToArray();
 
         var generated = await generator.GenerateAsync(new MapGenerationConfig

@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
@@ -79,7 +80,7 @@ public class GridMapGeneratorTest
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
         return new GridMapGenerator(
-            tiles, biomeRegistry.ToBiomeSet(), CompiledTransitionPairs.Load());
+            tiles, biomeRegistry.ToBiomeSet(), CompiledTransitionPairs.Load(), new WfcMapGeneratorFactory());
     }
 
     /// <summary>Flattens a generated grid map to its size, start cell and every tile id, row by row.</summary>

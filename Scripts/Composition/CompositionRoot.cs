@@ -9,6 +9,7 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Scripts.Features.Worldgen;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
@@ -137,7 +138,7 @@ public partial class CompositionRoot : Node
         // the generators are plain classes, so the composition root registers them.
         var transitionPairs = new TransitionPairs(new CompiledTransitionResolver(assetPaths).GetAllTransitionPairs());
         container.RegisterSingleton<IGridMapGenerator>(
-            new GridMapGenerator(tiles, biomes, transitionPairs));
+            new GridMapGenerator(tiles, biomes, transitionPairs, new WfcMapGeneratorFactory()));
         container.RegisterSingleton<IMeshMapGenerator>(
             new MeshMapGenerator(tiles, biomes, transitionPairs));
 
