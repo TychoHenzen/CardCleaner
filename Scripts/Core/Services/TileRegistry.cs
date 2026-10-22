@@ -113,7 +113,10 @@ public class TileRegistry : ITileRegistry, ITileMetadataProvider
     {
         var result = TileDataLoader.LoadTileRegistry(_paths, path);
 
-        Visuals = TileVisualLoader.Load(result, atlasMappingPath, _atlas);
+        Visuals = TileVisualLoader.Load(
+            new TileVisualLoader.OriginalTileset(result.TilesetPath, result.Tiles, result.TilesetConfig),
+            atlasMappingPath,
+            _atlas);
         foreach (var tile in Visuals.Tiles)
             RegisterTile(tile);
 
