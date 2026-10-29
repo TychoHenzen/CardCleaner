@@ -55,12 +55,12 @@ public class AssemblyUnloadCleanupTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ClearingProjectCachesDropsTheCachedMapping()
+    public void ClearingProjectCachesLeavesTheMappingReadFromDisk()
     {
         File.WriteAllText(_mappingPath, MappingJson("one"));
         AssertString(CompiledAtlasLoader.LoadMapping(_mappingPath)!.Version).IsEqual("one");
         File.WriteAllText(_mappingPath, MappingJson("two"));
-        AssertString(CompiledAtlasLoader.LoadMapping(_mappingPath)!.Version).IsEqual("one");
+        AssertString(CompiledAtlasLoader.LoadMapping(_mappingPath)!.Version).IsEqual("two");
 
         AssemblyUnloadCleanup.ClearProjectCaches();
 
