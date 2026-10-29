@@ -8,10 +8,14 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRen
 internal sealed class TerrainTransitionResolver : ITerrainTransitionResolver
 {
     private readonly ITransitionResolver? _transitionResolver;
+    private readonly AtlasMapping.AtlasMappingData? _atlasMapping;
 
-    internal TerrainTransitionResolver(ITransitionResolver? transitionResolver)
+    internal TerrainTransitionResolver(
+        ITransitionResolver? transitionResolver,
+        AtlasMapping.AtlasMappingData? atlasMapping)
     {
         _transitionResolver = transitionResolver;
+        _atlasMapping = atlasMapping;
     }
 
     public bool UsingCompiledAtlas => _transitionResolver != null;
@@ -63,7 +67,8 @@ internal sealed class TerrainTransitionResolver : ITerrainTransitionResolver
 
         var translated = AtlasMapping.Translate(
             baseTile.SourceId,
-            baseTile.AtlasCoords);
+            baseTile.AtlasCoords,
+            _atlasMapping);
         return new TileRenderCoordinates(translated.SourceId, translated.AtlasCoords);
     }
 

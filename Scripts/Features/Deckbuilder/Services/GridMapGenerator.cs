@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -20,6 +21,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 /// at the pipeline's phase boundaries (reaching 1.0 when done). Once the token is cancelled it stops at the next
 /// boundary, and a running WFC solve stops within one collapsed cell.
 /// </summary>
+[Service(typeof(IGridMapGenerator))]
 public sealed class GridMapGenerator : IGridMapGenerator
 {
     private readonly ITileCatalog _tiles;

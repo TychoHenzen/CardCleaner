@@ -7,9 +7,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Player.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
-using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Scripts.Features.Worldgen;
-using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
@@ -123,24 +121,20 @@ public partial class CompositionRoot : Node
         var tileRegistry = TileCatalogLoad.Load(assetPaths, new CompiledAtlasSource());
         container.RegisterSingleton<ITileRegistry>(tileRegistry);
         container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
-        // One snapshot of the registry, taken after TileCatalogLoad.Load has filled it.
-        // The generators read this catalog.
-        var tiles = TileCatalogData.From(tileRegistry);
+        // The [Service] scan builds TileCatalogData once from the registry above; the root only resolves it.
+        _ = container.Resolve<ITileCatalog>();
 
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(assetPaths);
         container.RegisterSingleton<IBiomeCatalog>(biomeRegistry);
+        // The data the map generators take as constructor parameters;
+        // the [Service] scan builds the generators from them.
         var biomes = biomeRegistry.ToBiomeSet();
-        // ASSUMPTION: the issues ask for [Service], but AutoServiceProvider only discovers Nodes in the current scene;
-        // the generators are plain classes, so the composition root registers them.
-        var transitionPairs = new TransitionPairs(new CompiledTransitionResolver(assetPaths).GetAllTransitionPairs());
-        // The WFC factories are [Service] classes found by RegisterGameServiceClasses above, so they resolve here.
-        var mapFactory = container.Resolve<IWfcMapGeneratorFactory>();
-        var solverFactory = container.Resolve<IWfcTerrainSolver.IFactory>();
-        container.RegisterSingleton<IGridMapGenerator>(
-            new GridMapGenerator(tiles, biomes, transitionPairs, mapFactory));
-        container.RegisterSingleton<IMeshMapGenerator>(
-            new MeshMapGenerator(tiles, biomes, transitionPairs, solverFactory));
+        container.RegisterSingleton(biomes);
+        var transitionResolver = TransitionResolvers.Create(assetPaths);
+        container.RegisterSingleton(transitionResolver);
+        var transitionPairs = new TransitionPairs(transitionResolver.GetAllTransitionPairs());
+        container.RegisterSingleton(transitionPairs);
 
         container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
         container.RegisterSingleton(SafePositionTrackers.Create());

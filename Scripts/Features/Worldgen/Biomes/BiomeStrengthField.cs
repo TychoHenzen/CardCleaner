@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -13,7 +14,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 /// - 0: Position signature is at mid-distance from biome
 /// - -1: Position signature is maximally distant from biome
 /// </remarks>
-public sealed class BiomeStrengthField
+public sealed class BiomeStrengthField : IBiomeStrengthField
 {
     private readonly float[,,] _strengths; // [y, x, biomeIndex]
     private readonly IReadOnlyDictionary<string, int> _biomeToIndex;

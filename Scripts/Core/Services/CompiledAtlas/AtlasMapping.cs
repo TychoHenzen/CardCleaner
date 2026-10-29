@@ -9,32 +9,18 @@ using Godot;
 namespace CardCleaner.Scripts.Core.Services.CompiledAtlas;
 
 /// <summary>
-/// The compiled atlas mapping: JSON data read from an absolute file path, its cache and the translation
+/// The compiled atlas mapping: JSON data read from an absolute file path and the translation
 /// of original tile coordinates to atlas coordinates. It resolves no <c>res://</c> path and loads no
 /// engine resource; <see cref="CompiledAtlasLoader"/> resolves the path and owns the TileSet.
 /// </summary>
 public static class AtlasMapping
 {
-    private static AtlasMappingData? _cachedMapping;
-    private static string? _cachedPath;
-
-    static AtlasMapping()
-    {
-        AssemblyUnloadCleanup.Register(ClearCache);
-    }
-
     /// <summary>
-    /// Loads the mapping from an absolute file path (cached by that path).
-    /// Returns null, without caching the failure, if the file is missing or invalid.
+    /// Loads the mapping from an absolute file path. Every call reads the file again.
+    /// Returns null if the file is missing or invalid.
     /// </summary>
     public static AtlasMappingData? Load(string absolutePath)
     {
-        if (_cachedMapping != null && _cachedPath == absolutePath)
-        {
-            ILog.Print("[AtlasMapping] Returning cached mapping");
-            return _cachedMapping;
-        }
-
         if (!File.Exists(absolutePath))
         {
             ILog.Print($"[AtlasMapping] Mapping file not found: {absolutePath}");
@@ -45,24 +31,19 @@ public static class AtlasMapping
         if (loaded == null)
             return null;
 
-        _cachedMapping = loaded;
-        _cachedPath = absolutePath;
         ILog.Print($"[AtlasMapping] Loaded mapping: version={loaded.Version}, sources={loaded.Sources?.Count ?? 0}");
         return loaded;
     }
 
     /// <summary>
-    /// Translates original tile coordinates to compiled atlas coordinates.
-    /// Without a mapping argument the cached mapping is used; the original coordinates
-    /// come back when there is no mapping or no entry for them.
+    /// Translates original tile coordinates to compiled atlas coordinates using the given mapping.
+    /// The original coordinates come back when there is no mapping or no entry for them.
     /// </summary>
     internal static AtlasCoordinateTranslation Translate(
         int originalSourceId,
         Vector2I originalAtlasCoords,
-        AtlasMappingData? mapping = null)
+        AtlasMappingData? mapping)
     {
-        mapping ??= _cachedMapping;
-
         var original = new AtlasCoordinateTranslation(originalSourceId, originalAtlasCoords);
         if (mapping?.Sources == null)
             return original;
@@ -77,13 +58,6 @@ public static class AtlasMapping
 
         ILog.Print($"[AtlasMapping] No mapping for source {originalSourceId} coord {originalAtlasCoords}");
         return original;
-    }
-
-    /// <summary>Clears the cached mapping. Call this if the compiled atlas has been regenerated.</summary>
-    public static void ClearCache()
-    {
-        _cachedMapping = null;
-        _cachedPath = null;
     }
 
     private static AtlasMappingData? ReadMapping(string absolutePath)

@@ -62,6 +62,16 @@ internal static class StringAttributeContainer
     private const string AttributeText = "[GlobalClass]";
 }
 public class StringAttributeOnly {}
+[Service]
+public class ServiceRegistered {}
+[Service(typeof(IServiceThing))]
+public class ServiceWithTypes {}
+[ServiceAttribute]
+public class ServiceAttributeRegistered {}
+[Godot.Service]
+public class QualifiedService {}
+[ServiceX]
+public class ServiceLookalike {}
 `;
 const godotFile = fileAt("Scripts/GodotRegistrations.cs", godotSource);
 const godotViolations = reachabilityFor([godotFile]);
@@ -69,6 +79,7 @@ const godotNames = godotViolations.map((violation) => violation.message.split(" 
 assert.deepEqual(godotNames.sort(), [
   "CommentAttributeOnly",
   "OrdinaryUnused",
+  "ServiceLookalike",
   "StringAttributeOnly",
 ].sort());
 for (const violation of godotViolations)

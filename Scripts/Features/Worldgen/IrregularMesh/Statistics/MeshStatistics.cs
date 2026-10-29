@@ -6,18 +6,18 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 /// <summary>
-/// Statistics about the mesh for debugging and validation.
+/// Statistics about the mesh for debugging and validation. Immutable: every value is set once, by <see cref="Of"/>.
 /// </summary>
-internal struct MeshStatistics
+internal readonly struct MeshStatistics
 {
-    internal int VertexCount;
-    internal int QuadCount;
-    internal int BoundaryVertexCount;
-    internal float MinArea;
-    internal float MaxArea;
-    internal double AvgArea;
-    internal float AreaStdDev;
-    internal (Vector2 Min, Vector2 Max) Bounds;
+    internal int VertexCount { get; init; }
+    internal int QuadCount { get; init; }
+    internal int BoundaryVertexCount { get; init; }
+    internal float MinArea { get; init; }
+    internal float MaxArea { get; init; }
+    internal double AvgArea { get; init; }
+    internal float AreaStdDev { get; init; }
+    internal (Vector2 Min, Vector2 Max) Bounds { get; init; }
 
     /// <summary>
     /// Measures a mesh from its vertices, its quad areas (one per quad) and its bounds.

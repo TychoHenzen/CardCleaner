@@ -1,29 +1,31 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.Services.TilesetLoading.TmxMapping;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Services.TilesetLoading;
 
 /// <summary>
-/// Loaded TMX map data with chunk-based tile storage.
+/// Loaded TMX map data with chunk-based tile storage. The constructor copies its collection arguments, so the record
+/// does not change when the caller later mutates the list or dictionary it passed in.
 /// </summary>
-internal sealed class TmxMapData
+internal sealed record TmxMapData
 {
     internal Vector2I MapSize { get; }
-    internal List<TmxTilesetReference> Tilesets { get; }
+    internal IReadOnlyList<TmxTilesetReference> Tilesets { get; }
     internal int ChunkSize { get; }
-    private readonly Dictionary<Vector2I, TmxChunk> _chunks;
+    private readonly IReadOnlyDictionary<Vector2I, TmxChunk> _chunks;
 
     internal TmxMapData(
         Vector2I mapSize,
-        List<TmxTilesetReference> tilesets,
-        Dictionary<Vector2I, TmxChunk> chunks,
+        IEnumerable<TmxTilesetReference> tilesets,
+        IEnumerable<KeyValuePair<Vector2I, TmxChunk>> chunks,
         int chunkSize = 16)
     {
         MapSize = mapSize;
-        Tilesets = tilesets;
-        _chunks = chunks;
+        Tilesets = tilesets.ToList();
+        _chunks = chunks.ToDictionary(pair => pair.Key, pair => pair.Value);
         ChunkSize = chunkSize;
     }
 

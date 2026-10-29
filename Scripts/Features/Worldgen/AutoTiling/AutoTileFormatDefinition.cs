@@ -9,7 +9,7 @@ namespace CardCleaner.Features.Worldgen.AutoTiling;
 /// Complete definition of an auto-tile format, specifying the bitmask algorithm,
 /// which bitmask values are allowed, and the atlas coordinates for each variant.
 /// </summary>
-public sealed class AutoTileFormatDefinition
+public sealed record AutoTileFormatDefinition
 {
     private readonly Dictionary<int, VariantDefinition> _variantMappings;
     private readonly HashSet<int> _allowedBitmasks;
@@ -157,4 +157,36 @@ public sealed class AutoTileFormatDefinition
             _ => Enumerable.Range(0, 16).ToHashSet()
         };
     }
+
+    /// <summary>
+    /// Value equality over name, bitmask type, built-in flag, allowed bitmasks and variant mappings.
+    /// Written by hand because the synthesized record equality compares the private collection fields by reference.
+    /// </summary>
+    public bool Equals(AutoTileFormatDefinition? other)
+    {
+        if (other is null)
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
+        if (Name != other.Name || BitmaskType != other.BitmaskType || IsBuiltIn != other.IsBuiltIn)
+            return false;
+        if (!_allowedBitmasks.SetEquals(other._allowedBitmasks))
+            return false;
+        if (_variantMappings.Count != other._variantMappings.Count)
+            return false;
+
+        foreach (var (key, variant) in _variantMappings)
+        {
+            if (!other._variantMappings.TryGetValue(key, out var otherVariant) || !variant.Equals(otherVariant))
+                return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Hash over the same fields as <see cref="Equals(AutoTileFormatDefinition?)"/>, so equal definitions hash equally.
+    /// </summary>
+    public override int GetHashCode() =>
+        System.HashCode.Combine(Name, BitmaskType, IsBuiltIn, _allowedBitmasks.Count, _variantMappings.Count);
 }

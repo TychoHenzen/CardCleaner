@@ -213,7 +213,7 @@ internal sealed class WfcMapGenerator : IWfcMapGenerator, IWfcTerrainSolver
         Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I size,
         ulong seed,
-        BiomeStrengthField? strengths = null,
+        IBiomeStrengthField? strengths = null,
         Func<string, bool>? tileFilter = null,
         CancellationToken cancellationToken = default)
     {

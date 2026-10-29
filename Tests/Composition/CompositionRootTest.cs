@@ -229,6 +229,28 @@ public class CompositionRootTest
         }
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ResolvesTileRegistryContract()
+    {
+        // Arrange and act - the root names only the loader and the contracts it returns; the scan builds the catalog
+        TestServices.Reinitialize();
+        var created = ReinitializedNodes();
+        try
+        {
+            // Assert - both contracts resolve, and the catalog holds every tile of the registry it was built from
+            var registry = TestServices.Resolver.Get<ITileRegistry>();
+            var catalog = TestServices.Resolver.Get<ITileCatalog>();
+            Assertions.AssertBool(registry is not null).IsTrue();
+            Assertions.AssertBool(catalog is not null).IsTrue();
+            Assertions.AssertInt(catalog.GetAllTiles().Count).IsEqual(registry.GetAllTiles().Count());
+        }
+        finally
+        {
+            QueueFreeAll(created);
+        }
+    }
+
     // Reinitialize adds an input service and a player reset service to the autoload; the tests free them.
     private static Node[] ReinitializedNodes() =>
         new[]

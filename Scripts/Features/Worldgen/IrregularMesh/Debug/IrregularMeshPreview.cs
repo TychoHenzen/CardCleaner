@@ -22,7 +22,7 @@ public partial class IrregularMeshPreview : Node2D
     private const int DefaultNumIslands = 5;
     private const float DefaultVisualScale = 50f;
 
-    private IrregularMesh? _mesh;
+    private IIrregularMesh? _mesh;
     private IrregularTerrainRenderer? _renderer;
     private ITileRegistry? _tileRegistry;
     private bool _needsRebuild = true;
@@ -168,7 +168,7 @@ public partial class IrregularMeshPreview : Node2D
             _tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
             GD.Print(
                 $"[IrregularMeshPreview] Loaded TileRegistry with " +
-                $"{((TileRegistry)_tileRegistry).GetAllTiles().GetEnumerator().MoveNext()} tiles");
+                $"{_tileRegistry.GetAllTiles().GetEnumerator().MoveNext()} tiles");
         }
         catch (Exception ex)
         {

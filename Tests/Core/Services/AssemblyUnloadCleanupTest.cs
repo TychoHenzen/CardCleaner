@@ -6,7 +6,7 @@ namespace CardCleaner.Tests.Core.Services;
 
 /// <summary>
 /// Each cache owner registers its clear with AssemblyUnloadCleanup; unloading runs every registered clear,
-/// a clear that throws does not stop the others, and the loader's cached mapping is dropped by it.
+/// a clear that throws does not stop the others, and the loader still returns the mapping on disk afterwards.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -55,12 +55,12 @@ public class AssemblyUnloadCleanupTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ClearingProjectCachesDropsTheCachedMapping()
+    public void ClearingProjectCachesLeavesTheMappingReadFromDisk()
     {
         File.WriteAllText(_mappingPath, MappingJson("one"));
         AssertString(CompiledAtlasLoader.LoadMapping(_mappingPath)!.Version).IsEqual("one");
         File.WriteAllText(_mappingPath, MappingJson("two"));
-        AssertString(CompiledAtlasLoader.LoadMapping(_mappingPath)!.Version).IsEqual("one");
+        AssertString(CompiledAtlasLoader.LoadMapping(_mappingPath)!.Version).IsEqual("two");
 
         AssemblyUnloadCleanup.ClearProjectCaches();
 

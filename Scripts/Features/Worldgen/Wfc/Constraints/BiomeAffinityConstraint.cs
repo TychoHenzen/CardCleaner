@@ -17,7 +17,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
 /// </remarks>
 public class BiomeAffinityConstraint : IWfcConstraint
 {
-    private readonly BiomeStrengthField _field;
+    private readonly IBiomeStrengthField _field;
     private readonly BiomeSet _biomes;
     private readonly IWfcTileCatalog? _tileCatalog;
     private readonly Dictionary<string, List<string>> _tileToBiomes;
@@ -30,7 +30,7 @@ public class BiomeAffinityConstraint : IWfcConstraint
     /// </summary>
     public float MinModifier { get; set; } = 0.1f;
 
-    public BiomeAffinityConstraint(BiomeStrengthField field, BiomeSet biomes, IWfcTileCatalog? tileCatalog = null)
+    public BiomeAffinityConstraint(IBiomeStrengthField field, BiomeSet biomes, IWfcTileCatalog? tileCatalog = null)
     {
         _field = field;
         _biomes = biomes;

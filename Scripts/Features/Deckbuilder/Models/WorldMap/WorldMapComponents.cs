@@ -36,8 +36,10 @@ internal sealed class WorldMapComponents
         var usingCompiledAtlas = tileSet != null;
         TileSize = registry.Visuals.TilesetConfig.BaseTileSize.X;
 
-        ILog.Print($"[SimpleWorldMapScreen] TileRegistry: UsingCompiledAtlas={registry.Visuals.UsingCompiledAtlas}, " +
-                   $"TileSize={TileSize}");
+        ILog.Print(
+            "[SimpleWorldMapScreen] TileRegistry: " +
+            $"UsingCompiledAtlas={registry.Visuals.UsingCompiledAtlas}, " +
+            $"TileSize={TileSize}");
 
         // Initialize components that need tile registry
         CreateComponents(registry, usingCompiledAtlas);
@@ -80,9 +82,11 @@ internal sealed class WorldMapComponents
 
         Fog = new WorldMapFogManager(viewport, TileSize);
         BiomeOverlay = new WorldMapBiomeOverlay(viewport, TileSize);
+        var transitionResolver = usingCompiledAtlas ? TransitionResolvers.Create(new GodotAssetPaths()) : null;
+        var atlasMapping = usingCompiledAtlas ? CompiledAtlasLoader.LoadMapping() : null;
         Terrain = new WorldMapTerrainRenderer(
             _screen.TerrainLayer, _screen.DecorationLayer, _screen.StructureLayer, _screen.EffectLayer,
             registry,
-            TerrainTransitions.Create(usingCompiledAtlas ? TransitionResolvers.Create(new GodotAssetPaths()) : null));
+            TerrainTransitions.Create(transitionResolver, atlasMapping));
     }
 }
