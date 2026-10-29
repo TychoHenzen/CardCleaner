@@ -240,7 +240,7 @@ public class TiledTilesetLoaderTest
     // ==================== Shape Supplier Tests ====================
 
     [TestCase]
-    public void TestLoaderTakesTileShapeOnlyFromTheSuppliedResolver()
+    public static void TestLoaderTakesTileShapeOnlyFromTheSuppliedResolver()
     {
         var shape = new TileShape(new HashSet<int> { 3 }, null);
         var result = TiledTilesetLoader.LoadFromTmx(new GodotAssetPaths(), TestTmxPath, name => shape);
@@ -256,7 +256,7 @@ public class TiledTilesetLoaderTest
     }
 
     [TestCase]
-    public void TestTileDataLoaderSuppliesTheRegistryShape()
+    public static void TestTileDataLoaderSuppliesTheRegistryShape()
     {
         var result = TileDataLoader.LoadFromTmx(new GodotAssetPaths(), TestTmxPath);
 

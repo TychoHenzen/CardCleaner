@@ -237,7 +237,7 @@ public class WfcMapGenerator : IWfcMapGenerator, IWfcTerrainSolver
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, allTiles);
 
-        var defaultBiome = biomes.Biomes.FirstOrDefault();
+        var defaultBiome = biomes.Biomes.Count > 0 ? biomes.Biomes[0] : null;
 
         var attempt = SolveTimed(solver, CreateGrid, defaultBiome, seed, cancellationToken);
         return ToGenerationResult(attempt, size, getBiomeAt);
