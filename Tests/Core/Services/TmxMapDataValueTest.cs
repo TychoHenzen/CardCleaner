@@ -1,6 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Core.Services.TilesetLoading;
+using CardCleaner.Scripts.Core.Services.TilesetLoading.TmxMapping;
+using CardCleaner.Features.Deckbuilder.Tiles;
+using Godot;
 using GdUnit4;
 using static GdUnit4.Assertions;
 
@@ -35,6 +40,42 @@ public class TmxMapDataValueTest
         foreach (var field in typeof(TmxMapData).GetFields(InstanceMembers))
             AssertBool(field.IsInitOnly).IsTrue();
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void MutatingTheSourceCollectionsDoesNotChangeTheRecord()
+    {
+        var tilesets = new List<TmxTilesetReference> { EmptyTileset() };
+        var chunks = new Dictionary<Vector2I, TmxChunk>
+        {
+            [Vector2I.Zero] = new TmxChunk(Vector2I.Zero, 1, 1, [1]),
+        };
+        var map = new TmxMapData(new Vector2I(1, 1), tilesets, chunks);
+
+        tilesets.Clear();
+        chunks.Clear();
+
+        AssertThat(map.Tilesets.Count).IsEqual(1);
+        AssertBool(map.GetBounds() == new TmxBounds(Vector2I.Zero, new Vector2I(15, 15))).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ExposedCollectionsAreReadOnlyInterfaces()
+    {
+        var tilesetsType = typeof(TmxMapData).GetProperty(nameof(TmxMapData.Tilesets), InstanceMembers)?.PropertyType;
+        AssertBool(tilesetsType != null && tilesetsType.IsGenericType
+                   && tilesetsType.GetGenericTypeDefinition() == typeof(IReadOnlyList<>))
+            .IsTrue();
+
+        var chunksType = typeof(TmxMapData).GetField("_chunks", InstanceMembers)?.FieldType;
+        AssertBool(chunksType != null && chunksType.IsGenericType
+                   && chunksType.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>))
+            .IsTrue();
+    }
+
+    private static TmxTilesetReference EmptyTileset()
+        => new(1, 1, "tileset.tsx", new TileRegistryResult("", [], TilesetConfig.Default), 1);
 
     private static bool IsInitOnly(MethodInfo setter)
         => setter.ReturnParameter.GetRequiredCustomModifiers()
