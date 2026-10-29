@@ -15,7 +15,7 @@ internal static class TmxMapLoader
     /// <summary>
     /// Loads a TMX map file with full tile resolution support.
     /// </summary>
-    internal static TmxMapData? LoadTmxMap(IAssetPaths paths, string tmxPath)
+    internal static TmxMapData? LoadTmxMap(IAssetPaths paths, string tmxPath, Func<string, TileShape> shapeOf)
     {
         var absolutePath = paths.Globalize(tmxPath);
         if (!File.Exists(absolutePath))
@@ -26,7 +26,7 @@ internal static class TmxMapLoader
 
         try
         {
-            return ReadMap(paths, absolutePath);
+            return ReadMap(paths, absolutePath, shapeOf);
         }
         catch (Exception ex)
         {
@@ -35,7 +35,7 @@ internal static class TmxMapLoader
         }
     }
 
-    private static TmxMapData? ReadMap(IAssetPaths paths, string absolutePath)
+    private static TmxMapData? ReadMap(IAssetPaths paths, string absolutePath, Func<string, TileShape> shapeOf)
     {
         var map = XDocument.Load(absolutePath).Root;
         if (map == null || map.Name != "map")
@@ -48,7 +48,7 @@ internal static class TmxMapLoader
         var mapWidth = ParseHelpers.ParseInt(map.Attribute("width")?.Value, 0);
         var mapHeight = ParseHelpers.ParseInt(map.Attribute("height")?.Value, 0);
 
-        var tilesets = TmxTilesetReferenceReader.ReadReferences(paths, map, tmxDir);
+        var tilesets = TmxTilesetReferenceReader.ReadReferences(paths, map, tmxDir, shapeOf);
         var chunks = TmxChunkReader.ReadChunks(map);
 
         ILog.Print($"[TmxMapLoader] Loaded TMX map: {chunks.Count} chunks, {tilesets.Count} tilesets");

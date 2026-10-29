@@ -53,7 +53,7 @@ public partial class TmxPreviewPanel
         _currentTmxPath = path;
         _tmxPathEdit!.Text = Path.GetFileName(path);
         _reloadButton!.Disabled = false;
-        var mapData = TiledTilesetLoader.LoadTmxMap(new GodotAssetPaths(), path);
+        var mapData = TileDataLoader.LoadTmxMap(new GodotAssetPaths(), path);
         if (mapData == null)
         {
             _infoLabel!.Text = $"Failed to load TMX file: {path}";
