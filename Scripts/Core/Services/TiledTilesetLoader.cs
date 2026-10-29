@@ -134,7 +134,8 @@ public static class TiledTilesetLoader
         var tileProperties = TilePropertyParser.ParseAllTileProperties(tileset);
 
         // Build TileDefinitions
-        var tiles = TileDefinitionBuilder.BuildTileDefinitions(tileProperties, wangData, columns, sourceId);
+        var tiles = TileDefinitionBuilder.BuildTileDefinitions(
+            tileProperties, wangData, columns, sourceId, TileShapeFacts.Resolve);
 
         var config = new TilesetConfig
         {

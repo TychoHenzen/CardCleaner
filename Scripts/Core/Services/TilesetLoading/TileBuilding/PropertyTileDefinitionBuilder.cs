@@ -34,7 +34,7 @@ internal static class PropertyTileDefinitionBuilder
             autoTileVariants = WangSetTileLookup.BuildAutoTileVariants(wangSetName!, context);
         }
 
-        return new TileDefinitionSpec
+        var spec = new TileDefinitionSpec
         {
             Id = id,
             Name = ParseHelpers.GetString(props, "name", id),
@@ -51,7 +51,8 @@ internal static class PropertyTileDefinitionBuilder
             Animation = ReadAnimation(propData, context.Columns),
             IsGapTile = ParseHelpers.GetBool(props, "isgaptile", !hasWangSet),
             Probability = ParseHelpers.GetFloat(props, "probability", 1f)
-        }.ToDefinition();
+        };
+        return spec.ToDefinition(context.ShapeOf(spec.AutoTileFormat));
     }
 
     private static string FormatNameFor(BitmaskType bitmaskType, string fallback)

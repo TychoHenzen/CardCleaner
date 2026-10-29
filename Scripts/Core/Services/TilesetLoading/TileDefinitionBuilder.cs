@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Services.TilesetLoading.TileProperties;
 using CardCleaner.Scripts.Core.Services.TilesetLoading.TileBuilding;
@@ -19,9 +20,16 @@ internal static class TileDefinitionBuilder
         Dictionary<int, TilePropertyData> tileProperties,
         WangSetData wangData,
         int columns,
-        int sourceId)
+        int sourceId,
+        Func<string, TileShape> shapeOf)
     {
-        var context = new TileBuildContext { WangData = wangData, Columns = columns, SourceId = sourceId };
+        var context = new TileBuildContext
+        {
+            WangData = wangData,
+            Columns = columns,
+            SourceId = sourceId,
+            ShapeOf = shapeOf
+        };
         var tiles = new List<TileDefinition>();
         var processedWangSets = new HashSet<string>();
 
