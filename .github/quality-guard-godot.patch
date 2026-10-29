@@ -1,26 +1,21 @@
 diff --git a/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-reachability.mjs b/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-reachability.mjs
 --- a/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-reachability.mjs
 +++ b/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-reachability.mjs
-@@ -23,20 +23,40 @@
- function matchesFor(pattern, code) {
-   const matches = [];
-   pattern.lastIndex = 0;
-   let match = pattern.exec(code);
-   while (match !== null) {
-     matches.push(match);
-     match = pattern.exec(code);
+@@ -30,10 +30,32 @@ function matchesFor(pattern, code) {
    }
    return matches;
  }
-+const GODOT_GLOBAL_CLASS_ATTRIBUTE =
-+  /(?:^|[\s,])(?:Godot\.)?GlobalClass(?:Attribute)?(?=\s*(?:\(|,|$))/;
-+function hasGodotGlobalClassAttribute(code, classStart) {
++// Godot registers [GlobalClass] types by name, and [Service] classes are built by the
++// service container through reflection, so no static reference reaches either one.
++const EXEMPT_CLASS_ATTRIBUTE =
++  /(?:^|[\s,])(?:Godot\.)?(?:GlobalClass|Service)(?:Attribute)?(?=\s*(?:\(|,|$))/;
++function hasExemptClassAttribute(code, classStart) {
 +  let cursor = classStart;
 +  while (cursor > 0 && /\s/.test(code[cursor - 1])) cursor -= 1;
 +  while (cursor > 0 && code[cursor - 1] === "]") {
 +    const open = code.lastIndexOf("[", cursor - 1);
 +    if (open < 0) return false;
-+    if (GODOT_GLOBAL_CLASS_ATTRIBUTE.test(code.slice(open + 1, cursor - 1)))
++    if (EXEMPT_CLASS_ATTRIBUTE.test(code.slice(open + 1, cursor - 1)))
 +      return true;
 +    cursor = open;
 +    while (cursor > 0 && /\s/.test(code[cursor - 1])) cursor -= 1;
@@ -33,12 +28,9 @@ diff --git a/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-re
      for (const match of matchesFor(pattern, scan.code)) {
 +      if (
 +        file.lang === "cs" &&
-+        hasGodotGlobalClassAttribute(scan.code, match.index)
++        hasExemptClassAttribute(scan.code, match.index)
 +      )
 +        continue;
        const offset = match.index + match[0].lastIndexOf(match[1]);
        found.set(match[1], { line: lineAt(scan.starts, match.index), offset });
      }
-   }
-   return found;
- }
