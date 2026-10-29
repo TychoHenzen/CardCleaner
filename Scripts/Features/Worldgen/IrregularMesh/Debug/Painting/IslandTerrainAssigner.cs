@@ -11,7 +11,7 @@ internal static class IslandTerrainAssigner
     /// <summary>
     /// Resets all vertices to terrain 0, then fills the islands. Returns the number of filled vertices.
     /// </summary>
-    internal static int Assign(IrregularMesh mesh, int seed, int islandCount)
+    internal static int Assign(IIrregularMesh mesh, int seed, int islandCount)
     {
         foreach (var vertex in mesh.Vertices)
         {
@@ -35,7 +35,7 @@ internal static class IslandTerrainAssigner
         return CountFilled(mesh);
     }
 
-    private static void FillIsland(IrregularMesh mesh, Vector2 center, float radius)
+    private static void FillIsland(IIrregularMesh mesh, Vector2 center, float radius)
     {
         foreach (var vertex in mesh.Vertices)
         {
@@ -46,7 +46,7 @@ internal static class IslandTerrainAssigner
         }
     }
 
-    private static int CountFilled(IrregularMesh mesh)
+    private static int CountFilled(IIrregularMesh mesh)
     {
         int filledCount = 0;
         foreach (var vertex in mesh.Vertices)
