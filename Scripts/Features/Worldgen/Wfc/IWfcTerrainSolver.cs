@@ -42,6 +42,8 @@ public interface IWfcTerrainSolver
     /// </summary>
     public interface IFactory
     {
-        IWfcTerrainSolver Create(IReadOnlyList<(string tileA, string tileB)> transitionPairs, IWfcTileCatalog? tileCatalog);
+        IWfcTerrainSolver Create(
+            IReadOnlyList<(string tileA, string tileB)> transitionPairs,
+            IWfcTileCatalog? tileCatalog);
     }
 }
