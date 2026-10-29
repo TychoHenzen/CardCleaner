@@ -1,13 +1,15 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using Godot;
 
 namespace CardCleaner.Tests.Core.Services;
 
 /// <summary>
-/// The engine-free atlas mapping reads JSON from an absolute path, caches by that path, never caches a failure,
-/// and translates original tile coordinates to atlas coordinates.
+/// The engine-free atlas mapping reads JSON from an absolute path, returns null for a missing or invalid file,
+/// holds no static state, and translates original tile coordinates to atlas coordinates.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -22,14 +24,12 @@ public class AtlasMappingTest
     [BeforeTest]
     public void Setup()
     {
-        AtlasMapping.ClearCache();
         _path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".json");
     }
 
     [AfterTest]
     public void TearDown()
     {
-        AtlasMapping.ClearCache();
         if (File.Exists(_path))
             File.Delete(_path);
     }
@@ -49,7 +49,7 @@ public class AtlasMappingTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void AMissingFileGivesNullAndIsRetriedOnceTheFileAppears()
+    public void AMissingFileGivesNullAndALaterLoadFindsTheFile()
     {
         AssertThat(AtlasMapping.Load(_path)).IsNull();
 
@@ -60,7 +60,7 @@ public class AtlasMappingTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void MalformedJsonGivesNullWithoutCachingTheFailure()
+    public void MalformedJsonGivesNullAndALaterLoadReadsTheFixedFile()
     {
         File.WriteAllText(_path, "not-json");
         AssertThat(AtlasMapping.Load(_path)).IsNull();
@@ -72,7 +72,7 @@ public class AtlasMappingTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void JsonWithoutAnAtlasRootGivesNullWithoutCachingTheFailure()
+    public void JsonWithoutAnAtlasRootGivesNullAndALaterLoadReadsTheFixedFile()
     {
         File.WriteAllText(_path, "{\"version\":\"test\"}");
         AssertThat(AtlasMapping.Load(_path)).IsNull();
@@ -84,14 +84,12 @@ public class AtlasMappingTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ClearCacheForcesARereadOfTheFile()
+    public void EveryLoadRereadsTheFile()
     {
         File.WriteAllText(_path, ValidJson);
         AssertString(AtlasMapping.Load(_path)!.Version).IsEqual("v1");
-        File.WriteAllText(_path, ValidJson.Replace("v1", "v2"));
-        AssertString(AtlasMapping.Load(_path)!.Version).IsEqual("v1");
 
-        AtlasMapping.ClearCache();
+        File.WriteAllText(_path, ValidJson.Replace("v1", "v2"));
 
         AssertString(AtlasMapping.Load(_path)!.Version).IsEqual("v2");
     }
@@ -124,14 +122,26 @@ public class AtlasMappingTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void WithoutAMappingArgumentTheCachedMappingIsUsed()
+    public void ANullMappingReturnsTheOriginalCoordinates()
     {
         File.WriteAllText(_path, ValidJson);
         AtlasMapping.Load(_path);
 
-        var (sourceId, coords) = AtlasMapping.Translate(4, new Vector2I(1, 2));
+        var (sourceId, coords) = AtlasMapping.Translate(4, new Vector2I(1, 2), null);
 
-        AssertInt(sourceId).IsEqual(0);
-        AssertThat(coords).IsEqual(new Vector2I(3, 5));
+        AssertInt(sourceId).IsEqual(4);
+        AssertThat(coords).IsEqual(new Vector2I(1, 2));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void AtlasMappingHasNoWritableStaticState()
+    {
+        var writable = typeof(AtlasMapping)
+            .GetFields(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly)
+            .Where(field => !field.IsInitOnly && !field.IsLiteral)
+            .ToArray();
+
+        AssertInt(writable.Length).IsEqual(0);
     }
 }

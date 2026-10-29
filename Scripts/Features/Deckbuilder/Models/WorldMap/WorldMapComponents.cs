@@ -80,9 +80,11 @@ internal sealed class WorldMapComponents
 
         Fog = new WorldMapFogManager(viewport, TileSize);
         BiomeOverlay = new WorldMapBiomeOverlay(viewport, TileSize);
+        var transitionResolver = usingCompiledAtlas ? TransitionResolvers.Create(new GodotAssetPaths()) : null;
+        var atlasMapping = usingCompiledAtlas ? CompiledAtlasLoader.LoadMapping() : null;
         Terrain = new WorldMapTerrainRenderer(
             _screen.TerrainLayer, _screen.DecorationLayer, _screen.StructureLayer, _screen.EffectLayer,
             registry,
-            TerrainTransitions.Create(usingCompiledAtlas ? TransitionResolvers.Create(new GodotAssetPaths()) : null));
+            TerrainTransitions.Create(transitionResolver, atlasMapping));
     }
 }

@@ -180,12 +180,11 @@ public static class CompiledAtlasLoader
     }
 
     /// <summary>
-    /// Clears the cached mapping and tileset.
+    /// Clears the cached tileset.
     /// Call this if the compiled atlas has been regenerated.
     /// </summary>
     public static void ClearCache()
     {
-        AtlasMapping.ClearCache();
         _cachedTileSet = null;
         _cachedTileSetPath = null;
     }

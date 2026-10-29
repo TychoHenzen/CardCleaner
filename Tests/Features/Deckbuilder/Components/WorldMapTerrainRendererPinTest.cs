@@ -63,7 +63,9 @@ public class WorldMapTerrainRendererPinTest
 
             var renderer = new WorldMapTerrainRenderer(
                 terrain, decoration, structure, effect, tileRegistry,
-                TerrainTransitions.Create(TransitionResolvers.Create(new GodotAssetPaths())));
+                TerrainTransitions.Create(
+                    TransitionResolvers.Create(new GodotAssetPaths()),
+                    CompiledAtlasLoader.LoadMapping()));
             renderer.RenderTerrainTransitions(map);
             renderer.RenderNonTerrainTiles(map);
 
