@@ -17,7 +17,7 @@ internal sealed class TmxChunk
         ChunkPosition = chunkPosition;
         Width = width;
         Height = height;
-        _tiles = tiles;
+        _tiles = (int[])tiles.Clone();
     }
 
     internal int GetTileAt(int localX, int localY)

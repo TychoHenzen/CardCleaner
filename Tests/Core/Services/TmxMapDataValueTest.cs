@@ -74,6 +74,18 @@ public class TmxMapDataValueTest
             .IsTrue();
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void MutatingTheSourceTilesDoesNotChangeTheChunk()
+    {
+        var tiles = new[] { 7, 8, 9, 10 };
+        var chunk = new TmxChunk(Vector2I.Zero, 2, 2, tiles);
+
+        tiles[3] = 99;
+
+        AssertThat(chunk.GetTileAt(1, 1)).IsEqual(10);
+    }
+
     private static TmxTilesetReference EmptyTileset()
         => new(1, 1, "tileset.tsx", new TileRegistryResult("", [], TilesetConfig.Default), 1);
 
