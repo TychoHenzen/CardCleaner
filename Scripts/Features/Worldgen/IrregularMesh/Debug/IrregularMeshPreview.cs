@@ -168,7 +168,7 @@ public partial class IrregularMeshPreview : Node2D
             _tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
             GD.Print(
                 $"[IrregularMeshPreview] Loaded TileRegistry with " +
-                $"{((TileRegistry)_tileRegistry).GetAllTiles().GetEnumerator().MoveNext()} tiles");
+                $"{_tileRegistry.GetAllTiles().GetEnumerator().MoveNext()} tiles");
         }
         catch (Exception ex)
         {
