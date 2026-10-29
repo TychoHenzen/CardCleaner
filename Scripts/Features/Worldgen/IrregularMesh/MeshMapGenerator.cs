@@ -29,7 +29,7 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
     public const float WorldScale = MapPopulation.CellWorldSize;
 
     /// <summary>
-    /// The ring count of the generator the composition root registers: the map both game scenes play.
+    /// The ring count of the generator the lazy [Service] scan builds: the map both game scenes play.
     /// </summary>
     public const int DefaultRings = 20;
 

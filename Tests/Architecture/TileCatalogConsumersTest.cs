@@ -8,7 +8,8 @@ namespace CardCleaner.Tests.Architecture;
 
 /// <summary>
 /// The map generators read tiles through ITileCatalog, not the concrete TileCatalogData, so the Deckbuilder
-/// generators and the mesh terrain code name only the interface. Only the composition root builds a TileCatalogData.
+/// generators and the mesh terrain code name only the interface. Only the composition root builds a TileCatalogData
+/// and hands it to them as an ITileCatalog.
 /// The check blanks comments and literals, then matches the name as a whole word, so a doc comment that mentions the
 /// class does not count and each real hit is reported as file:line.
 /// </summary>
@@ -44,8 +45,8 @@ public class TileCatalogConsumersTest
             .SelectMany(file => Violations(SourceScan.RelativePath(file), SourceScan.Blanked(file)))
             .ToList();
         AssertThat(hits.Count == 0)
-            .OverrideFailureMessage("A map generator names TileCatalogData; take ITileCatalog instead, and build the "
-                + "catalog only in CompositionRoot:\n" + string.Join("\n", hits))
+            .OverrideFailureMessage("A map generator names TileCatalogData; take ITileCatalog instead; only "
+                + "CompositionRoot builds the catalog:\n" + string.Join("\n", hits))
             .IsTrue();
     }
 

@@ -6,7 +6,7 @@ namespace CardCleaner.Tests.Core.Services;
 
 /// <summary>
 /// Each cache owner registers its clear with AssemblyUnloadCleanup; unloading runs every registered clear,
-/// a clear that throws does not stop the others, and the loader's cached mapping is dropped by it.
+/// a clear that throws does not stop the others, and the loader still returns the mapping on disk afterwards.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]

@@ -37,7 +37,7 @@ internal sealed class WorldMapComponents
         TileSize = registry.Visuals.TilesetConfig.BaseTileSize.X;
 
         ILog.Print(
-            $"[SimpleWorldMapScreen] TileRegistry: " +
+            "[SimpleWorldMapScreen] TileRegistry: " +
             $"UsingCompiledAtlas={registry.Visuals.UsingCompiledAtlas}, " +
             $"TileSize={TileSize}");
 
