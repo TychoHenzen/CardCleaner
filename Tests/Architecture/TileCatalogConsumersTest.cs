@@ -35,7 +35,8 @@ public class TileCatalogConsumersTest
         foreach (var name in ScannedFiles)
         {
             AssertThat(files.Any(file => Path.GetFileName(file) == name))
-                .OverrideFailureMessage($"The tile catalog scan no longer sees {name}, so the guard could pass on nothing")
+                .OverrideFailureMessage(
+                    $"The tile catalog scan no longer sees {name}, so the guard could pass on nothing")
                 .IsTrue();
         }
 

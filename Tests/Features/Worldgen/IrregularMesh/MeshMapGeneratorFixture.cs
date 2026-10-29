@@ -25,7 +25,7 @@ public static class MeshMapGeneratorFixture
             TileCatalogData.From(TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource())),
             DefaultBiomes(),
             TestUtilities.CompiledTransitionPairs.Load(),
-            new WfcMapGenerator.TerrainSolverFactory(),
+            new WfcMapGenerator.Factory(),
             rings);
 
     /// <summary>A generator whose maps never arrive, for tests that need a generation still running.</summary>

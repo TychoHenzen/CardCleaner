@@ -26,7 +26,7 @@ public class WfcMapGeneratorFactoryTest
     public static void CreateReturnsANewGeneratorEachCall()
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
-        var factory = new WfcMapGenerator.Factory();
+        IWfcMapGeneratorFactory factory = new WfcMapGenerator.Factory();
 
         AssertBool(ReferenceEquals(factory.Create(pairs, null), factory.Create(pairs, null))).IsFalse();
     }
@@ -37,7 +37,7 @@ public class WfcMapGeneratorFactoryTest
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
 
-        AssertInt(new WfcMapGenerator.Factory().Create(pairs, null).MaxRetries).IsEqual(3);
+        AssertInt(WfcMapGenerator.Factory.Build(pairs, null).MaxRetries).IsEqual(3);
     }
 
     [TestCase]
@@ -46,7 +46,7 @@ public class WfcMapGeneratorFactoryTest
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
 
-        var generator = new WfcMapGenerator.Factory().Create(pairs, null);
+        var generator = WfcMapGenerator.Factory.Build(pairs, null);
         AssertInt(generator.MaxRetries).IsEqual(3);
 
         generator.MaxRetries = 5;

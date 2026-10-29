@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using CardCleaner.Scripts.Core.DependencyInjection;
@@ -198,8 +197,8 @@ internal sealed class WfcMapGenerator : IWfcMapGenerator, IWfcTerrainSolver
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, initialTiles);
 
-        var attempt = SolveTimed(solver, CreateGrid, biome, seed, cancellationToken);
-        return ToGenerationResult(attempt, size, _ => biome);
+        var attempt = WfcSolveRunner.SolveTimed(solver, CreateGrid, biome, seed, MaxRetries, cancellationToken);
+        return WfcSolveRunner.ToGenerationResult(attempt, size, _ => biome);
     }
 
     /// <summary>
@@ -239,8 +238,9 @@ internal sealed class WfcMapGenerator : IWfcMapGenerator, IWfcTerrainSolver
 
         var defaultBiome = biomes.Biomes.Count > 0 ? biomes.Biomes[0] : null;
 
-        var attempt = SolveTimed(solver, CreateGrid, defaultBiome, seed, cancellationToken);
-        return ToGenerationResult(attempt, size, getBiomeAt);
+        var attempt = WfcSolveRunner.SolveTimed(
+            solver, CreateGrid, defaultBiome, seed, MaxRetries, cancellationToken);
+        return WfcSolveRunner.ToGenerationResult(attempt, size, getBiomeAt);
     }
 
     /// <summary>
@@ -274,47 +274,6 @@ internal sealed class WfcMapGenerator : IWfcMapGenerator, IWfcTerrainSolver
             initialTiles,
             seed,
             gapTileFilter);
-    }
-
-    /// <summary>
-    /// Runs the retrying solve and adds the time of the whole call, every attempt included, to the result's Solve
-    /// timing.
-    /// </summary>
-    private WfcSolveAttempt SolveTimed(
-        WfcSolver solver,
-        Func<IWfcTopology> createGrid,
-        BiomeDefinition? biome,
-        ulong seed,
-        CancellationToken cancellationToken)
-    {
-        var start = Stopwatch.GetTimestamp();
-        var attempt = WfcRetrySolver.SolveWithRetry(solver, createGrid, biome, seed, MaxRetries, cancellationToken);
-        var timings = attempt.Result.Timings with { Solve = Stopwatch.GetElapsedTime(start) };
-        return attempt with { Result = attempt.Result.WithTimings(timings) };
-    }
-
-    /// <summary>
-    /// Turns a solve attempt into a generation result: a failed solve fails with zero timings, a solved grid is
-    /// converted to tile ids and a biome map, with the conversion time added to the solve's timings.
-    /// </summary>
-    private static WfcGenerationResult ToGenerationResult(
-        WfcSolveAttempt attempt,
-        Vector2I size,
-        Func<Vector2I, BiomeDefinition> getBiomeAt)
-    {
-        var solveResult = attempt.Result;
-        if (!solveResult.Success)
-        {
-            return WfcGenerationResult.Failed(solveResult.ErrorMessage ?? "Unknown error");
-        }
-
-        var grid = (WfcGrid)attempt.Topology;
-        var conversionStart = Stopwatch.GetTimestamp();
-        var biomeMap = BuildBiomeMap(size, getBiomeAt);
-        var tileIds = WfcGridTileIds.ToTileIds(grid);
-        var timings = solveResult.Timings with { MapDataConversion = Stopwatch.GetElapsedTime(conversionStart) };
-        return WfcGenerationResult.Succeeded(
-            new Vector2I(grid.Width, grid.Height), tileIds, biomeMap, solveResult.Iterations, timings);
     }
 
     private WfcSolver CreateSolver(bool skipBaseConstraints = false, Vector2I? size = null)
@@ -357,42 +316,27 @@ internal sealed class WfcMapGenerator : IWfcMapGenerator, IWfcTerrainSolver
             new WfcConstraintToggles(EnableDiminishingReturns, EnableSpatialCoherence, EnableCompactness));
     }
 
-    private static string[,] BuildBiomeMap(Vector2I size, Func<Vector2I, BiomeDefinition> getBiomeAt)
-    {
-        var biomeMap = new string[size.Y, size.X];
-        for (var y = 0; y < size.Y; y++)
-        {
-            for (var x = 0; x < size.X; x++)
-            {
-                biomeMap[y, x] = getBiomeAt(new Vector2I(x, y)).Id;
-            }
-        }
-        return biomeMap;
-    }
-
     /// <summary>
-    /// The container's IWfcMapGeneratorFactory. Each call builds fresh adjacency rules, because the generator
-    /// constructor adds gap tiles to them.
+    /// The container's <see cref="IWfcMapGeneratorFactory"/> and <see cref="IWfcTerrainSolver.IFactory"/>: one recipe
+    /// for both. Each call builds fresh adjacency rules, because the generator constructor adds gap tiles to them.
     /// </summary>
-    [Service(typeof(IWfcMapGeneratorFactory))]
-    internal sealed class Factory : IWfcMapGeneratorFactory
+    [Service(typeof(IWfcMapGeneratorFactory), typeof(IWfcTerrainSolver.IFactory))]
+    internal sealed class Factory : IWfcMapGeneratorFactory, IWfcTerrainSolver.IFactory
     {
-        /// <inheritdoc />
-        public IWfcMapGenerator Create(
+        /// <summary>Builds a generator over fresh rules for the transition pairs.</summary>
+        public static WfcMapGenerator Build(
             IReadOnlyList<(string tileA, string tileB)> transitionPairs,
             IWfcTileCatalog? tileCatalog) =>
-            new WfcMapGenerator(new WfcAdjacencyRules(transitionPairs), tileCatalog, transitionPairs);
-    }
+            new(new WfcAdjacencyRules(transitionPairs), tileCatalog, transitionPairs);
 
-    /// <summary>
-    /// The container's IWfcTerrainSolver.IFactory. Each Create call builds a generator over fresh rules.
-    /// </summary>
-    [Service(typeof(IWfcTerrainSolver.IFactory))]
-    internal sealed class TerrainSolverFactory : IWfcTerrainSolver.IFactory
-    {
-        public IWfcTerrainSolver Create(
+        IWfcMapGenerator IWfcMapGeneratorFactory.Create(
             IReadOnlyList<(string tileA, string tileB)> transitionPairs,
             IWfcTileCatalog? tileCatalog) =>
-            new WfcMapGenerator(new WfcAdjacencyRules(transitionPairs), tileCatalog, transitionPairs);
+            Build(transitionPairs, tileCatalog);
+
+        IWfcTerrainSolver IWfcTerrainSolver.IFactory.Create(
+            IReadOnlyList<(string tileA, string tileB)> transitionPairs,
+            IWfcTileCatalog? tileCatalog) =>
+            Build(transitionPairs, tileCatalog);
     }
 }

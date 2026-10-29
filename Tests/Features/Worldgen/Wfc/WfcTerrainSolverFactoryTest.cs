@@ -18,7 +18,7 @@ public class WfcTerrainSolverFactoryTest
     public static void CreateReturnsANewSolverEachCall()
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
-        var factory = new WfcMapGenerator.TerrainSolverFactory();
+        IWfcTerrainSolver.IFactory factory = new WfcMapGenerator.Factory();
 
         AssertBool(ReferenceEquals(factory.Create(pairs, null), factory.Create(pairs, null))).IsFalse();
     }
@@ -29,7 +29,7 @@ public class WfcTerrainSolverFactoryTest
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
 
-        var solver = new WfcMapGenerator.TerrainSolverFactory().Create(pairs, null);
+        var solver = WfcMapGenerator.Factory.Build(pairs, null);
         var expected = new WfcAdjacencyRules(pairs);
 
         AssertString(string.Join("|", solver.RuleTileIds)).IsEqual(string.Join("|", expected.AllTileIds));

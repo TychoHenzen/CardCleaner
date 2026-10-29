@@ -32,7 +32,7 @@ public class MeshTerrainFingerprintTest
             TileCatalogData.From(TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource())),
             MeshMapGeneratorFixture.DefaultBiomes(),
             CompiledTransitionPairs.Load(),
-            new WfcMapGenerator.TerrainSolverFactory());
+            new WfcMapGenerator.Factory());
         var cards = MeshMapGeneratorFixture.TerrainCards();
         var mesh = generator.GenerateWithSampler(
             3, TerrainGeneratorFactory.CardSampler(cards, 4242), 4242, relaxationIterations: 8);

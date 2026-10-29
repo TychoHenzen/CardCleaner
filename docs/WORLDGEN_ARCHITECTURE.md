@@ -951,9 +951,9 @@ public interface IProceduralStructure
 
 Irregular Map reaches WFC only through interfaces in `Scripts/Features/Worldgen/Wfc/`. It may name only
 `IWfcTerrainSolver`, its nested `IWfcTerrainSolver.IFactory`, `WfcGraphSolution` and `WfcGenerationResult` from Wfc,
-and no Wfc sub-namespace. The concrete classes stay internal to Wfc: the production factories are nested in the classes
-they build (`WfcMapGenerator.TerrainSolverFactory` and `WfcMapGenerator.Factory`), each marked `[Service]`, so the lazy `[Service]`
-scan registers them and `CompositionRoot` resolves only their interfaces.
+and no Wfc sub-namespace. The concrete classes stay internal to Wfc: the production factory is the internal
+`WfcMapGenerator.Factory`, marked `[Service]` for both factory interfaces, so the lazy `[Service]` scan registers it and
+`CompositionRoot` resolves only the interfaces.
 `IrregularMeshWfcSeamTest` fails when a file under `Scripts/Features/Worldgen/IrregularMesh/` names any other type
 declared under Wfc or references a Wfc sub-namespace. The grid map generator reaches WFC the same way:
 `GridMapGenerator` takes an `IWfcMapGeneratorFactory` (production: `WfcMapGenerator.Factory`, found by the scan) and
@@ -1038,8 +1038,8 @@ Scripts/Features/Worldgen/
 │   ├── VariantWeightPipeline.cs
 │   └── WeightedVariantSelector.cs
 └── Wfc/                             # ✅ IMPLEMENTED (Two-Phase WFC)
-    ├── WfcMapGenerator.cs           # High-level WFC orchestrator
-    ├── WfcMapGenerator.cs           # Also implements IWfcTerrainSolver; nested TerrainSolverFactory is the production IWfcTerrainSolver.IFactory
+    ├── WfcMapGenerator.cs           # High-level WFC orchestrator; also implements IWfcTerrainSolver
+    ├── WfcSolveRunner.cs            # Times the retrying solve and builds the WfcGenerationResult
     ├── IWfcMapGenerator.cs          # Contract the grid pipeline uses to run WFC
     ├── WfcSolver.cs                 # Core WFC collapse algorithm
     ├── WfcGrid.cs                   # Grid of superposition cells

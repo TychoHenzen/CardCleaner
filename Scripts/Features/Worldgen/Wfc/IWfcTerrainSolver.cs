@@ -36,9 +36,8 @@ public interface IWfcTerrainSolver
         Func<string, bool>? gapTileFilter);
 
     /// <summary>
-    /// Builds a solver over fresh rules. The container finds the production implementation, a nested [Service]
-    /// class of WfcMapGenerator (WfcMapGenerator.TerrainSolverFactory), so callers outside Wfc hold this interface
-    /// and never the solver class.
+    /// Builds a solver over fresh rules. The container finds the production implementation, the internal
+    /// WfcMapGenerator.Factory, so callers outside Wfc hold this interface and never the solver class.
     /// </summary>
     public interface IFactory
     {
