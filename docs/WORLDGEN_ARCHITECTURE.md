@@ -949,14 +949,15 @@ public interface IProceduralStructure
 }
 ```
 
-Irregular Map reaches WFC only through the front door in `Scripts/Features/Worldgen/Wfc/`. It may name only `Wfc`
-(the static door: `Wfc.CreateTerrainSolver` returns an `IWfcTerrainSolver`), `IWfcTerrainSolver`, `WfcGraphSolution`
-and `WfcGenerationResult` from Wfc, and no Wfc sub-namespace. In a namespace below `Worldgen` the simple name `Wfc` is
-the namespace, so callers alias the class, as `MeshTerrainWfcSetup` does.
+Irregular Map reaches WFC only through interfaces in `Scripts/Features/Worldgen/Wfc/`. It may name only
+`IWfcTerrainSolver`, its nested `IWfcTerrainSolver.IFactory`, `WfcGraphSolution` and `WfcGenerationResult` from Wfc,
+and no Wfc sub-namespace. The concrete classes stay internal to Wfc: the production factories are nested in the classes
+they build (`WfcTerrainSolver.Factory` and `WfcMapGenerator.Factory`), each marked `[Service]`, so the lazy `[Service]`
+scan registers them and `CompositionRoot` resolves only their interfaces.
 `IrregularMeshWfcSeamTest` fails when a file under `Scripts/Features/Worldgen/IrregularMesh/` names any other type
 declared under Wfc or references a Wfc sub-namespace. The grid map generator reaches WFC the same way:
-`GridMapGenerator` takes an `IWfcMapGeneratorFactory` (production: `Wfc.MapGeneratorFactory`, which calls
-`Wfc.CreateMapGenerator`) and holds an `IWfcMapGenerator`.
+`GridMapGenerator` takes an `IWfcMapGeneratorFactory` (production: `WfcMapGenerator.Factory`, found by the scan) and
+holds an `IWfcMapGenerator`.
 
 ### Weighted Random Selection Algorithm
 
@@ -1038,7 +1039,7 @@ Scripts/Features/Worldgen/
 │   └── WeightedVariantSelector.cs
 └── Wfc/                             # ✅ IMPLEMENTED (Two-Phase WFC)
     ├── WfcMapGenerator.cs           # High-level WFC orchestrator
-    ├── Wfc.cs                       # Front door: creates the map generator and the terrain solver
+    ├── WfcTerrainSolver.cs          # Terrain solver; nested Factory is the production IWfcTerrainSolver.IFactory
     ├── IWfcMapGenerator.cs          # Contract the grid pipeline uses to run WFC
     ├── WfcSolver.cs                 # Core WFC collapse algorithm
     ├── WfcGrid.cs                   # Grid of superposition cells

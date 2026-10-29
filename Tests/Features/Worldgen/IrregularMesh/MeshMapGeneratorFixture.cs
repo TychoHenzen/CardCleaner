@@ -8,6 +8,7 @@ using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
@@ -24,6 +25,7 @@ public static class MeshMapGeneratorFixture
             TileCatalogData.From(TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource())),
             DefaultBiomes(),
             TestUtilities.CompiledTransitionPairs.Load(),
+            new WfcTerrainSolver.Factory(),
             rings);
 
     /// <summary>A generator whose maps never arrive, for tests that need a generation still running.</summary>

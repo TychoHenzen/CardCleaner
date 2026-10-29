@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
@@ -19,11 +20,12 @@ internal static class TerrainGeneratorFactory
     internal static IMeshTerrainGenerator Create(
         TileCatalogData tiles,
         BiomeSet biomes,
-        TransitionPairs transitionPairs)
+        TransitionPairs transitionPairs,
+        IWfcTerrainSolver.IFactory solverFactory)
     {
         // The solver and the mesh code share the catalog: it drives the background and foreground solves and
         // decides passability in the terrain-type map.
-        var setup = MeshTerrainWfcSetup.ForCatalog(transitionPairs.Pairs, tiles);
+        var setup = MeshTerrainWfcSetup.ForCatalog(transitionPairs.Pairs, tiles, solverFactory);
         var tileToTerrainType = AssignTerrainTypes(setup.Solver.RuleTileIds, tiles);
         return new MeshTerrainGenerator(setup, tileToTerrainType, biomes);
     }

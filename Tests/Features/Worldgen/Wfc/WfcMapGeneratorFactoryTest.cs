@@ -8,14 +8,14 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.TestUtilities;
-using WfcDoor = CardCleaner.Scripts.Features.Worldgen.Wfc.Wfc;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 
 /// <summary>
-/// Pins Wfc.MapGeneratorFactory: each Create call returns a fresh generator with the default retry count, and
-/// GridMapGenerator refuses a null factory.
+/// Pins WfcMapGenerator.Factory: each Create call returns a fresh generator with the default retry count, the
+/// generator it creates keeps an assigned retry count and accepts null variants, and GridMapGenerator refuses a
+/// null factory.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -26,7 +26,7 @@ public class WfcMapGeneratorFactoryTest
     public static void CreateReturnsANewGeneratorEachCall()
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
-        var factory = new WfcDoor.MapGeneratorFactory();
+        var factory = new WfcMapGenerator.Factory();
 
         AssertBool(ReferenceEquals(factory.Create(pairs, null), factory.Create(pairs, null))).IsFalse();
     }
@@ -37,7 +37,21 @@ public class WfcMapGeneratorFactoryTest
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
 
-        AssertInt(new WfcDoor.MapGeneratorFactory().Create(pairs, null).MaxRetries).IsEqual(3);
+        AssertInt(new WfcMapGenerator.Factory().Create(pairs, null).MaxRetries).IsEqual(3);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void CreateAcceptsNullVariantsAndKeepsAnAssignedRetryCount()
+    {
+        var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+
+        var generator = new WfcMapGenerator.Factory().Create(pairs, null);
+        AssertInt(generator.MaxRetries).IsEqual(3);
+
+        generator.MaxRetries = 5;
+        generator.SetSelectedVariants(null);
+        AssertInt(generator.MaxRetries).IsEqual(5);
     }
 
     [TestCase]

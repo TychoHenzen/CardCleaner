@@ -7,6 +7,7 @@ using System.Text;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -30,7 +31,8 @@ public class MeshTerrainFingerprintTest
         var generator = TerrainGeneratorFactory.Create(
             TileCatalogData.From(TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource())),
             MeshMapGeneratorFixture.DefaultBiomes(),
-            CompiledTransitionPairs.Load());
+            CompiledTransitionPairs.Load(),
+            new WfcTerrainSolver.Factory());
         var cards = MeshMapGeneratorFixture.TerrainCards();
         var mesh = generator.GenerateWithSampler(
             3, TerrainGeneratorFactory.CardSampler(cards, 4242), 4242, relaxationIterations: 8);

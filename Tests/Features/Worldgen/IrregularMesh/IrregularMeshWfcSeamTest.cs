@@ -9,7 +9,7 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 
 /// <summary>
 /// Keeps Irregular Map on the WFC front door. Files under Scripts/Features/Worldgen/IrregularMesh may name only
-/// Wfc (the static door), IWfcTerrainSolver, WfcGraphSolution and WfcGenerationResult from
+/// IWfcTerrainSolver, its nested IFactory, WfcGraphSolution and WfcGenerationResult from
 /// Scripts/Features/Worldgen/Wfc. Every other type declared there is a solver internal, and no Wfc sub-namespace
 /// may be imported. The check blanks comments and literals, then matches names in the text. It is a name match,
 /// not a symbol match, so a same-named type declared elsewhere is reported as well. Ambiguous names fail closed.
@@ -26,7 +26,7 @@ public class IrregularMeshWfcSeamTest
 
     private static readonly string[] AllowedNames =
     {
-        "Wfc", "IWfcTerrainSolver", "WfcGraphSolution", "WfcGenerationResult",
+        "IWfcTerrainSolver", "IFactory", "WfcGraphSolution", "WfcGenerationResult",
     };
 
     // ASSUMPTION: every type declaration starts its own line after optional attributes and modifiers, as this repo's
@@ -46,11 +46,11 @@ public class IrregularMeshWfcSeamTest
         + @"delegate\s+(?:\([^()\r\n]*\)\s+|[^(;={}\r\n]*?\b)(?<name>[A-Za-z_]\w*)(?:<[^>()\r\n]*>)?\s*\(",
         RegexOptions.Multiline | RegexOptions.Compiled);
 
-    // A Wfc sub-namespace reached by a using directive, an alias or a qualified name. The root namespace, the
-    // allowed names and the Wfc door class do not match.
+    // A Wfc sub-namespace reached by a using directive, an alias or a qualified name. The root namespace and the
+    // allowed names do not match.
     private static readonly Regex SubNamespaceReference = new(
         @"\bCardCleaner\.Scripts\.Features\.Worldgen\.Wfc\."
-        + @"(?!(?:IWfcTerrainSolver|WfcGraphSolution|WfcGenerationResult)\b|Wfc(?![\w.]))[A-Za-z_][\w.]*",
+        + @"(?!(?:IWfcTerrainSolver|WfcGraphSolution|WfcGenerationResult)\b)[A-Za-z_][\w.]*",
         RegexOptions.Compiled);
 
     [TestCase]
@@ -105,14 +105,14 @@ public class IrregularMeshWfcSeamTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void SubNamespaceReferenceFlagsSubNamespacesAndSkipsTheDoorAlias()
+    public static void SubNamespaceReferenceFlagsSubNamespacesAndSkipsTheRootNamespace()
     {
         AssertBool(SubNamespaceReference.IsMatch(
                 "using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;")).IsTrue();
         AssertBool(SubNamespaceReference.IsMatch(
                 "using X = CardCleaner.Scripts.Features.Worldgen.Wfc.WfcSolver;")).IsTrue();
         AssertBool(SubNamespaceReference.IsMatch(
-                "using WfcDoor = CardCleaner.Scripts.Features.Worldgen.Wfc.Wfc;")).IsFalse();
+                "using Y = CardCleaner.Scripts.Features.Worldgen.Wfc.IWfcTerrainSolver;")).IsFalse();
         AssertBool(SubNamespaceReference.IsMatch(
                 "using CardCleaner.Scripts.Features.Worldgen.Wfc;")).IsFalse();
     }

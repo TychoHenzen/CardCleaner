@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
@@ -321,5 +322,19 @@ public class WfcMapGenerator : IWfcMapGenerator
             }
         }
         return biomeMap;
+    }
+
+    /// <summary>
+    /// The container's IWfcMapGeneratorFactory. Each call builds fresh adjacency rules, because the generator
+    /// constructor adds gap tiles to them.
+    /// </summary>
+    [Service(typeof(IWfcMapGeneratorFactory))]
+    internal sealed class Factory : IWfcMapGeneratorFactory
+    {
+        /// <inheritdoc />
+        public IWfcMapGenerator Create(
+            IReadOnlyList<(string tileA, string tileB)> transitionPairs,
+            IWfcTileCatalog? tileCatalog) =>
+            new WfcMapGenerator(new WfcAdjacencyRules(transitionPairs), tileCatalog);
     }
 }
