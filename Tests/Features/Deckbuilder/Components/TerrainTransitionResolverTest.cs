@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRendererSupport;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
@@ -90,6 +92,11 @@ public class TerrainTransitionResolverTest
         public Vector2I? ResolveAnyVariant(string terrainId, int bitmask)
         {
             return null;
+        }
+
+        public IEnumerable<(string innerTerrain, string outerTerrain)> GetAllTransitionPairs()
+        {
+            return Array.Empty<(string innerTerrain, string outerTerrain)>();
         }
     }
 }

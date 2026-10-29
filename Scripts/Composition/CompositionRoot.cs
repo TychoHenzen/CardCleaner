@@ -132,7 +132,9 @@ public partial class CompositionRoot : Node
         // The data the map generators take as constructor parameters; the [Service] scan builds the generators from them.
         var biomes = biomeRegistry.ToBiomeSet();
         container.RegisterSingleton(biomes);
-        var transitionPairs = new TransitionPairs(new CompiledTransitionResolver(assetPaths).GetAllTransitionPairs());
+        var transitionResolver = TransitionResolvers.Create(assetPaths);
+        container.RegisterSingleton(transitionResolver);
+        var transitionPairs = new TransitionPairs(transitionResolver.GetAllTransitionPairs());
         container.RegisterSingleton(transitionPairs);
 
         container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();

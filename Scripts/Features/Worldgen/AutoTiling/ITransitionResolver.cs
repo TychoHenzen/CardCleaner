@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.AutoTiling;
@@ -50,4 +51,9 @@ public interface ITransitionResolver
 
     /// <summary>Coordinates of a bitmask variant of any transition whose inner terrain matches, or null.</summary>
     Vector2I? ResolveAnyVariant(string terrainId, int bitmask);
+
+    /// <summary>
+    /// Enumerates all terrain transition pairs as (innerTerrain, outerTerrain) tuples, for WFC adjacency rule extraction.
+    /// </summary>
+    IEnumerable<(string innerTerrain, string outerTerrain)> GetAllTransitionPairs();
 }
