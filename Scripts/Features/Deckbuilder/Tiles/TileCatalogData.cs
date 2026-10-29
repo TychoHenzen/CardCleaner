@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
@@ -13,6 +14,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 /// queries as the registry it was taken from, and is the <see cref="IWfcTileCatalog"/> the WFC code reads.
 /// Tiles registered in the source after <see cref="From"/> are not visible.
 /// </summary>
+[Service(typeof(ITileCatalog), typeof(IWfcTileCatalog))]
 public sealed class TileCatalogData : ITileCatalog
 {
     private const int SolidFillBitmask = 15;
@@ -22,7 +24,15 @@ public sealed class TileCatalogData : ITileCatalog
     private readonly VariationGroupCollection _variationGroups = new();
     private readonly TileCatalogQueries _queries;
 
-    public TileCatalogData(IEnumerable<TileDefinition> tiles, IEnumerable<VariationGroup> groups)
+    /// <summary>
+    /// The [Service] scan builds the catalog once from the registered registry, after the registry is loaded.
+    /// </summary>
+    public TileCatalogData(ITileRegistry registry)
+        : this(registry.GetAllTiles(), registry.GetAllVariationGroups())
+    {
+    }
+
+    internal TileCatalogData(IEnumerable<TileDefinition> tiles, IEnumerable<VariationGroup> groups)
     {
         // ASSUMPTION: tile ids are unique within the input, as a registry guarantees; a repeated id keeps its
         // last definition in the index, as the registry's own dictionary does.
@@ -40,8 +50,7 @@ public sealed class TileCatalogData : ITileCatalog
     /// <summary>
     /// Takes a snapshot of the registry's tiles and variation groups, in the order the registry enumerates them.
     /// </summary>
-    public static TileCatalogData From(ITileRegistry registry) =>
-        new(registry.GetAllTiles(), registry.GetAllVariationGroups());
+    public static TileCatalogData From(ITileRegistry registry) => new(registry);
 
     public TileDefinition? GetTile(string id) => _index.GetValueOrDefault(id);
 

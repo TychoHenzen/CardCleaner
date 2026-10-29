@@ -123,9 +123,8 @@ public partial class CompositionRoot : Node
         var tileRegistry = TileCatalogLoad.Load(assetPaths, new CompiledAtlasSource());
         container.RegisterSingleton<ITileRegistry>(tileRegistry);
         container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
-        // One snapshot of the registry, taken after TileCatalogLoad.Load has filled it.
-        // The generators read this catalog.
-        var tiles = TileCatalogData.From(tileRegistry);
+        // The [Service] scan builds TileCatalogData once from the registry above; the root only resolves it.
+        var tiles = container.Resolve<ITileCatalog>();
 
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(assetPaths);
