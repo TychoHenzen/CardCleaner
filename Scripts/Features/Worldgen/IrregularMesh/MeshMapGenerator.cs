@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -19,6 +20,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 /// registered tile and biome registries, then the player start and the enemies from <see cref="MapPopulation"/>.
 /// Runs off the main thread and returns an <see cref="IMeshGeneratedMap"/>.
 /// </summary>
+[Service(typeof(IMeshMapGenerator))]
 public sealed class MeshMapGenerator : IMeshMapGenerator
 {
     /// <summary>
@@ -39,14 +41,27 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
     private readonly IWfcTerrainSolver.IFactory _solverFactory;
     private readonly int _rings;
 
+    /// <summary>
+    /// The scanned constructor: every parameter is a registered service, so the container picks it.
+    /// </summary>
     /// <param name="solverFactory">Builds the WFC terrain solver the mesh terrain solves with.</param>
-    /// <param name="rings">Rings of hexes around the mesh centre; more rings make a larger map.</param>
     public MeshMapGenerator(
         ITileCatalog tiles,
         BiomeSet biomes,
         TransitionPairs transitionPairs,
+        IWfcTerrainSolver.IFactory solverFactory)
+        : this(tiles, biomes, transitionPairs, solverFactory, DefaultRings)
+    {
+    }
+
+    /// <param name="solverFactory">Builds the WFC terrain solver the mesh terrain solves with.</param>
+    /// <param name="rings">Rings of hexes around the mesh centre; more rings make a larger map.</param>
+    internal MeshMapGenerator(
+        ITileCatalog tiles,
+        BiomeSet biomes,
+        TransitionPairs transitionPairs,
         IWfcTerrainSolver.IFactory solverFactory,
-        int rings = DefaultRings)
+        int rings)
     {
         _transitionPairs = transitionPairs ?? throw new ArgumentNullException(nameof(transitionPairs));
         _tiles = tiles ?? throw new ArgumentNullException(nameof(tiles));

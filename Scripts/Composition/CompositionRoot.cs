@@ -124,22 +124,16 @@ public partial class CompositionRoot : Node
         container.RegisterSingleton<ITileRegistry>(tileRegistry);
         container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
         // The [Service] scan builds TileCatalogData once from the registry above; the root only resolves it.
-        var tiles = container.Resolve<ITileCatalog>();
+        _ = container.Resolve<ITileCatalog>();
 
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(assetPaths);
         container.RegisterSingleton<IBiomeCatalog>(biomeRegistry);
+        // The data the map generators take as constructor parameters; the [Service] scan builds the generators from them.
         var biomes = biomeRegistry.ToBiomeSet();
-        // ASSUMPTION: the issues ask for [Service], but AutoServiceProvider only discovers Nodes in the current scene;
-        // the generators are plain classes, so the composition root registers them.
+        container.RegisterSingleton(biomes);
         var transitionPairs = new TransitionPairs(new CompiledTransitionResolver(assetPaths).GetAllTransitionPairs());
-        // The WFC factories are [Service] classes found by RegisterGameServiceClasses above, so they resolve here.
-        var mapFactory = container.Resolve<IWfcMapGeneratorFactory>();
-        var solverFactory = container.Resolve<IWfcTerrainSolver.IFactory>();
-        container.RegisterSingleton<IGridMapGenerator>(
-            new GridMapGenerator(tiles, biomes, transitionPairs, mapFactory));
-        container.RegisterSingleton<IMeshMapGenerator>(
-            new MeshMapGenerator(tiles, biomes, transitionPairs, solverFactory));
+        container.RegisterSingleton(transitionPairs);
 
         container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
         container.RegisterSingleton(SafePositionTrackers.Create());
