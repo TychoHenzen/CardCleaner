@@ -74,4 +74,26 @@ public class TileDataLoaderPathsTest
                 Directory.Delete(root, recursive: true);
         }
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TestMalformedTmxGivesNullMap()
+    {
+        var root = TempAssetPaths.CreateTempRoot();
+        try
+        {
+            var tmxPath = new TempAssetPaths(root).Globalize(TiledMapPath);
+            Directory.CreateDirectory(Path.GetDirectoryName(tmxPath)!);
+            File.WriteAllText(tmxPath, "this is not xml");
+
+            var map = TileDataLoader.LoadTmxMap(new TempAssetPaths(root), TiledMapPath);
+
+            AssertThat(map).IsNull();
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+                Directory.Delete(root, recursive: true);
+        }
+    }
 }

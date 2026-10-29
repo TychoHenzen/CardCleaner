@@ -8,7 +8,7 @@ namespace CardCleaner.Scripts.Core.Services.TilesetLoading;
 /// <summary>
 /// Loaded TMX map data with chunk-based tile storage.
 /// </summary>
-internal sealed class TmxMapData
+internal sealed record TmxMapData
 {
     internal Vector2I MapSize { get; }
     internal List<TmxTilesetReference> Tilesets { get; }
