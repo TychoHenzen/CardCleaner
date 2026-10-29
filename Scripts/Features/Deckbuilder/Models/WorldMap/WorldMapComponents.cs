@@ -36,8 +36,10 @@ internal sealed class WorldMapComponents
         var usingCompiledAtlas = tileSet != null;
         TileSize = registry.Visuals.TilesetConfig.BaseTileSize.X;
 
-        ILog.Print($"[SimpleWorldMapScreen] TileRegistry: UsingCompiledAtlas={registry.Visuals.UsingCompiledAtlas}, " +
-                   $"TileSize={TileSize}");
+        ILog.Print(
+            $"[SimpleWorldMapScreen] TileRegistry: " +
+            $"UsingCompiledAtlas={registry.Visuals.UsingCompiledAtlas}, " +
+            $"TileSize={TileSize}");
 
         // Initialize components that need tile registry
         CreateComponents(registry, usingCompiledAtlas);
