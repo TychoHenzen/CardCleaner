@@ -204,12 +204,17 @@ The project uses a custom DI container with no static service state: an instance
   the concrete classes. The gate counts a static factory class as a concrete crossing, so none is used.
 - **Tile catalog**: the map generators take an `ITileCatalog` (`Scripts/Features/Deckbuilder/Tiles`), which extends
   `IWfcTileCatalog`. The only concrete implementation is `TileCatalogData`, an immutable snapshot of the tiles in
-  registry insertion order and their variation groups. `CompositionRoot` is the only code that builds a
-  `TileCatalogData` (`TileCatalogData.From(registry)`); `TileCatalogConsumersTest` fails if a generator names it.
-  `CompositionRoot` builds it once from the loaded `TileRegistry` and hands it to `GridMapGenerator` and
-  `MeshMapGenerator`; it is not registered in the container. The compiled atlas is loaded by the stateless
+  registry insertion order and their variation groups. `GridMapGenerator` and `MeshMapGenerator` are `[Service]`
+  classes that the scan builds; `MeshMapGenerator`'s constructor that takes the ring count is internal.
+  `TileCatalogData` is also a `[Service]`, with a public `TileCatalogData(ITileRegistry)` constructor that the scan
+  builds once from the registered registry. `CompositionRoot` builds only the registry (`TileCatalogLoad.Load`) and
+  the data it registers by instance. `TileCatalogConsumersTest` fails if a file under
+  `Scripts/Features/Deckbuilder/Services` or `Scripts/Features/Worldgen/IrregularMesh` names `TileCatalogData`.
+  The compiled atlas is loaded by the stateless
   `TileVisualLoader`, which returns a `TileVisualCatalog` that `TileRegistry` exposes as `Visuals` (UI users read the
-  tileset path, atlas flag and `TilesetConfig` there).
+  tileset path, atlas flag and `TilesetConfig` there). `AtlasMapping` holds no static cache: `Load` reads its file on
+  every call, and `WorldMapComponents` passes the loaded mapping to `TerrainTransitions.Create`. `MeshStatistics` (a
+  readonly struct) and `AutoTileFormatDefinition` (a sealed record) are immutable: every property is set once.
 - **IServiceProvider**: Nodes implementing this interface and added to the `service_providers` group will have their services registered at startup
 - **Tree injection**: a node implementing `IDependent` (`Scripts/Core/Interfaces`) gets `Inject(IServiceResolver)`
   from the autoload on `SceneTree.NodeAdded`: after the node's `_EnterTree`, before its `_Ready`, and again whenever it
@@ -283,6 +288,10 @@ the new class before recording a seam. Leaky and missing are already one gated s
 missing-to-leaky relabel is not a rise.
 The Louvain visit order is sorted by a hash of the seed, level and class name, so adding a class no longer reshuffles
 every seed; the total weight and the termination threshold stay global, so stability under every change is not promised.
+
+The baseline records `seams_leaky_or_missing` 0 with an empty `seam_classes` list. The WFC constraint
+`BiomeAffinityConstraint` reads biome strengths through `IBiomeStrengthField` (`Scripts/Features/Worldgen/Wfc`), which
+`BiomeStrengthField` implements.
 
 ### Quality Gate
 
