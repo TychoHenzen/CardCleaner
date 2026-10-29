@@ -11,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 internal sealed class MeshTerrainWfcRunner
 {
     private readonly IWfcTerrainSolver _solver;
-    private readonly TileCatalogData? _tiles;
+    private readonly ITileCatalog? _tiles;
     private readonly MeshTerrainProjection _projection;
     private readonly MeshForegroundWfc _foregroundWfc;
 

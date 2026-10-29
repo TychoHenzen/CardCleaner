@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
@@ -20,7 +20,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 /// constraints registered on the tile selector). Biome affinity comes from <see cref="GenerateMultiBiome"/> with a
 /// strength field.
 /// </summary>
-public class WfcMapGenerator : IWfcMapGenerator
+internal sealed class WfcMapGenerator : IWfcMapGenerator, IWfcTerrainSolver
 {
     private readonly WfcAdjacencyRules _adjacencyRules;
     private readonly WfcTileSelector _selector;
@@ -32,6 +32,13 @@ public class WfcMapGenerator : IWfcMapGenerator
     private readonly SpatialCoherenceConstraint _spatialCoherence;
     private readonly WfcConstraintSet _constraintSet;
     private readonly IWfcTileCatalog? _tileCatalog;
+    private readonly IReadOnlyList<(string tileA, string tileB)>? _transitionPairs;
+
+    /// <summary>
+    /// Tile ids the rules knew when this generator was built, in enumeration order, before the constructor adds the
+    /// gap tiles to them. Serves <see cref="IWfcTerrainSolver.RuleTileIds"/>.
+    /// </summary>
+    public IReadOnlyList<string> RuleTileIds { get; }
 
     public int MaxRetries { get; set; } = 3;
 
@@ -97,8 +104,14 @@ public class WfcMapGenerator : IWfcMapGenerator
         _constraintSet.SetSelectedVariants(selectedVariants);
     }
 
-    public WfcMapGenerator(WfcAdjacencyRules adjacencyRules, IWfcTileCatalog? tileCatalog = null)
+    public WfcMapGenerator(
+        WfcAdjacencyRules adjacencyRules,
+        IWfcTileCatalog? tileCatalog = null,
+        IReadOnlyList<(string tileA, string tileB)>? transitionPairs = null)
     {
+        // Snapshot before the gap-tile configuration below adds to the rules, so the ids are the pre-gap ones.
+        RuleTileIds = adjacencyRules.AllTileIds.ToList();
+        _transitionPairs = transitionPairs;
         _adjacencyRules = adjacencyRules;
         _tileCatalog = tileCatalog;
         _blobTracker = new BlobSizeTracker();
@@ -184,8 +197,8 @@ public class WfcMapGenerator : IWfcMapGenerator
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, initialTiles);
 
-        var attempt = SolveTimed(solver, CreateGrid, biome, seed, cancellationToken);
-        return ToGenerationResult(attempt, size, _ => biome);
+        var attempt = WfcSolveRunner.SolveTimed(solver, CreateGrid, biome, seed, MaxRetries, cancellationToken);
+        return WfcSolveRunner.ToGenerationResult(attempt, size, _ => biome);
     }
 
     /// <summary>
@@ -223,51 +236,44 @@ public class WfcMapGenerator : IWfcMapGenerator
 
         WfcGrid CreateGrid() => new WfcGrid(size.X, size.Y, allTiles);
 
-        var defaultBiome = biomes.Biomes.FirstOrDefault();
+        var defaultBiome = biomes.Biomes.Count > 0 ? biomes.Biomes[0] : null;
 
-        var attempt = SolveTimed(solver, CreateGrid, defaultBiome, seed, cancellationToken);
-        return ToGenerationResult(attempt, size, getBiomeAt);
+        var attempt = WfcSolveRunner.SolveTimed(
+            solver, CreateGrid, defaultBiome, seed, MaxRetries, cancellationToken);
+        return WfcSolveRunner.ToGenerationResult(attempt, size, getBiomeAt);
     }
 
     /// <summary>
-    /// Runs the retrying solve and adds the time of the whole call, every attempt included, to the result's Solve
-    /// timing.
+    /// IWfcTerrainSolver.GenerateBackground: one multi-biome map with no strength field, only tiles passing the filter.
     /// </summary>
-    private WfcSolveAttempt SolveTimed(
-        WfcSolver solver,
-        Func<IWfcTopology> createGrid,
-        BiomeDefinition? biome,
-        ulong seed,
-        CancellationToken cancellationToken)
-    {
-        var start = Stopwatch.GetTimestamp();
-        var attempt = WfcRetrySolver.SolveWithRetry(solver, createGrid, biome, seed, MaxRetries, cancellationToken);
-        var timings = attempt.Result.Timings with { Solve = Stopwatch.GetElapsedTime(start) };
-        return attempt with { Result = attempt.Result.WithTimings(timings) };
-    }
-
-    /// <summary>
-    /// Turns a solve attempt into a generation result: a failed solve fails with zero timings, a solved grid is
-    /// converted to tile ids and a biome map, with the conversion time added to the solve's timings.
-    /// </summary>
-    private static WfcGenerationResult ToGenerationResult(
-        WfcSolveAttempt attempt,
+    public WfcGenerationResult GenerateBackground(
+        BiomeSet biomes,
+        Func<Vector2I, BiomeDefinition> getBiomeAt,
         Vector2I size,
-        Func<Vector2I, BiomeDefinition> getBiomeAt)
-    {
-        var solveResult = attempt.Result;
-        if (!solveResult.Success)
-        {
-            return WfcGenerationResult.Failed(solveResult.ErrorMessage ?? "Unknown error");
-        }
+        ulong seed,
+        Func<string, bool> tileFilter) =>
+        GenerateMultiBiome(biomes, getBiomeAt, size, seed, null, tileFilter);
 
-        var grid = (WfcGrid)attempt.Topology;
-        var conversionStart = Stopwatch.GetTimestamp();
-        var biomeMap = BuildBiomeMap(size, getBiomeAt);
-        var tileIds = WfcGridTileIds.ToTileIds(grid);
-        var timings = solveResult.Timings with { MapDataConversion = Stopwatch.GetElapsedTime(conversionStart) };
-        return WfcGenerationResult.Succeeded(
-            new Vector2I(grid.Width, grid.Height), tileIds, biomeMap, solveResult.Iterations, timings);
+    /// <summary>
+    /// IWfcTerrainSolver.SolveGraphWithCatalog: solves a cell graph with the catalog's tiles, using the transition
+    /// pairs this generator was built with. Needs both a tile catalog and transition pairs.
+    /// </summary>
+    public WfcGraphSolution SolveGraphWithCatalog(
+        int[][] neighbors,
+        IReadOnlyCollection<string> initialTiles,
+        ulong seed,
+        Func<string, bool>? gapTileFilter)
+    {
+        var catalog = _tileCatalog
+            ?? throw new InvalidOperationException("SolveGraphWithCatalog needs a tile catalog");
+
+        return WfcRetrySolver.SolveGraph(
+            neighbors,
+            _transitionPairs ?? throw new InvalidOperationException("SolveGraphWithCatalog needs transition pairs"),
+            catalog,
+            initialTiles,
+            seed,
+            gapTileFilter);
     }
 
     private WfcSolver CreateSolver(bool skipBaseConstraints = false, Vector2I? size = null)
@@ -310,16 +316,27 @@ public class WfcMapGenerator : IWfcMapGenerator
             new WfcConstraintToggles(EnableDiminishingReturns, EnableSpatialCoherence, EnableCompactness));
     }
 
-    private static string[,] BuildBiomeMap(Vector2I size, Func<Vector2I, BiomeDefinition> getBiomeAt)
+    /// <summary>
+    /// The container's <see cref="IWfcMapGeneratorFactory"/> and <see cref="IWfcTerrainSolver.IFactory"/>: one recipe
+    /// for both. Each call builds fresh adjacency rules, because the generator constructor adds gap tiles to them.
+    /// </summary>
+    [Service(typeof(IWfcMapGeneratorFactory), typeof(IWfcTerrainSolver.IFactory))]
+    internal sealed class Factory : IWfcMapGeneratorFactory, IWfcTerrainSolver.IFactory
     {
-        var biomeMap = new string[size.Y, size.X];
-        for (var y = 0; y < size.Y; y++)
-        {
-            for (var x = 0; x < size.X; x++)
-            {
-                biomeMap[y, x] = getBiomeAt(new Vector2I(x, y)).Id;
-            }
-        }
-        return biomeMap;
+        /// <summary>Builds a generator over fresh rules for the transition pairs.</summary>
+        public static WfcMapGenerator Build(
+            IReadOnlyList<(string tileA, string tileB)> transitionPairs,
+            IWfcTileCatalog? tileCatalog) =>
+            new(new WfcAdjacencyRules(transitionPairs), tileCatalog, transitionPairs);
+
+        IWfcMapGenerator IWfcMapGeneratorFactory.Create(
+            IReadOnlyList<(string tileA, string tileB)> transitionPairs,
+            IWfcTileCatalog? tileCatalog) =>
+            Build(transitionPairs, tileCatalog);
+
+        IWfcTerrainSolver IWfcTerrainSolver.IFactory.Create(
+            IReadOnlyList<(string tileA, string tileB)> transitionPairs,
+            IWfcTileCatalog? tileCatalog) =>
+            Build(transitionPairs, tileCatalog);
     }
 }

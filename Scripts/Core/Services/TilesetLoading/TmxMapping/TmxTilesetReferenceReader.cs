@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
@@ -10,12 +11,13 @@ namespace CardCleaner.Scripts.Core.Services.TilesetLoading.TmxMapping;
 /// </summary>
 internal static class TmxTilesetReferenceReader
 {
-    internal static List<TmxTilesetReference> ReadReferences(IAssetPaths paths, XElement map, string tmxDir)
+    internal static List<TmxTilesetReference> ReadReferences(
+        IAssetPaths paths, XElement map, string tmxDir, Func<string, TileShape> shapeOf)
     {
         var tilesets = new List<TmxTilesetReference>();
         foreach (var tilesetRef in map.Elements("tileset"))
         {
-            var reference = ReadReference(paths, tilesetRef, tmxDir);
+            var reference = ReadReference(paths, tilesetRef, tmxDir, shapeOf);
             if (reference != null)
                 tilesets.Add(reference);
         }
@@ -23,7 +25,8 @@ internal static class TmxTilesetReferenceReader
         return tilesets;
     }
 
-    private static TmxTilesetReference? ReadReference(IAssetPaths paths, XElement tilesetRef, string tmxDir)
+    private static TmxTilesetReference? ReadReference(
+        IAssetPaths paths, XElement tilesetRef, string tmxDir, Func<string, TileShape> shapeOf)
     {
         var firstGid = ParseHelpers.ParseInt(tilesetRef.Attribute("firstgid")?.Value, 1);
         var source = tilesetRef.Attribute("source")?.Value;
@@ -45,7 +48,7 @@ internal static class TmxTilesetReferenceReader
         var columns = ParseHelpers.ParseInt(tileset?.Attribute("columns")?.Value, 1);
         var lastGid = firstGid + tileCount - 1;
 
-        var tilesetData = TiledTilesetLoader.LoadFromTsx(paths, tsxAbsolutePath, 0);
+        var tilesetData = TiledTilesetLoader.LoadFromTsx(paths, tsxAbsolutePath, shapeOf, 0);
         return new TmxTilesetReference(firstGid, lastGid, tsxAbsolutePath, tilesetData, columns);
     }
 }

@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 
@@ -32,21 +33,25 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
 
     private const int RelaxationIterations = 8;
 
-    private readonly TileCatalogData _tiles;
+    private readonly ITileCatalog _tiles;
     private readonly BiomeSet _biomes;
     private readonly TransitionPairs _transitionPairs;
+    private readonly IWfcTerrainSolver.IFactory _solverFactory;
     private readonly int _rings;
 
+    /// <param name="solverFactory">Builds the WFC terrain solver the mesh terrain solves with.</param>
     /// <param name="rings">Rings of hexes around the mesh centre; more rings make a larger map.</param>
     public MeshMapGenerator(
-        TileCatalogData tiles,
+        ITileCatalog tiles,
         BiomeSet biomes,
         TransitionPairs transitionPairs,
+        IWfcTerrainSolver.IFactory solverFactory,
         int rings = DefaultRings)
     {
         _transitionPairs = transitionPairs ?? throw new ArgumentNullException(nameof(transitionPairs));
         _tiles = tiles ?? throw new ArgumentNullException(nameof(tiles));
         _biomes = biomes ?? throw new ArgumentNullException(nameof(biomes));
+        _solverFactory = solverFactory ?? throw new ArgumentNullException(nameof(solverFactory));
         ArgumentOutOfRangeException.ThrowIfLessThan(rings, 1);
         _rings = rings;
     }
@@ -81,7 +86,7 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
         // The terrain generator takes an int seed; the session's ulong seed is cut to its low 32 bits.
         var seed = unchecked((int)config.Seed);
 
-        var terrain = TerrainGeneratorFactory.Create(_tiles, _biomes, _transitionPairs);
+        var terrain = TerrainGeneratorFactory.Create(_tiles, _biomes, _transitionPairs, _solverFactory);
         var sampler = TerrainGeneratorFactory.CardSampler(config.MapSeeds, seed);
         var mesh = terrain.GenerateWithSampler(rings, sampler, seed, RelaxationIterations);
         progress?.Report(0.9f);

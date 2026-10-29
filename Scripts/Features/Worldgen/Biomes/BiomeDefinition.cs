@@ -1,5 +1,3 @@
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Numerics;
 using CardCleaner.Scripts.Features.Card.Models;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -10,7 +8,7 @@ public sealed record BiomeDefinition
     private const string DefaultId = "plains";
     private const float DefaultBlockedPercentage = 0.3f;
 
-    private float _blockedPercentage = DefaultBlockedPercentage;
+    private readonly float _blockedPercentage = DefaultBlockedPercentage;
 
     public BiomeDefinition() { }
 
@@ -62,10 +60,6 @@ public sealed record BiomeDefinition
     public float BlockedPercentage
     {
         get => _blockedPercentage;
-        init => _blockedPercentage = CoreMath.Clamp(value, 0f, 1f);
+        init => _blockedPercentage = System.Math.Clamp(value, 0f, 1f);
     }
-
-    public string? SelectPassableTile(IRandom rng) => PassableTiles.SelectRandom(rng);
-
-    public string? SelectBlockedTile(IRandom rng) => BlockedTiles.SelectRandom(rng);
 }

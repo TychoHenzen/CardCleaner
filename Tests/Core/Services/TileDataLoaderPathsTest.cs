@@ -64,7 +64,7 @@ public class TileDataLoaderPathsTest
         var root = TempAssetPaths.CreateTempRoot();
         try
         {
-            var map = TiledTilesetLoader.LoadTmxMap(new TempAssetPaths(root), TiledMapPath);
+            var map = TileDataLoader.LoadTmxMap(new TempAssetPaths(root), TiledMapPath);
 
             AssertThat(map).IsNull();
         }

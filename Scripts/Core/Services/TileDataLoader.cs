@@ -6,6 +6,7 @@ using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services.TilesetLoading;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
@@ -70,7 +71,7 @@ public static partial class TileDataLoader
     /// </summary>
     public static TileRegistryResult LoadFromTsx(IAssetPaths paths, string tsxPath, int sourceId = 0)
     {
-        return TiledTilesetLoader.LoadFromTsx(paths, tsxPath, sourceId);
+        return TiledTilesetLoader.LoadFromTsx(paths, tsxPath, TileShapeFacts.Resolve, sourceId);
     }
 
     /// <summary>
@@ -78,8 +79,14 @@ public static partial class TileDataLoader
     /// </summary>
     public static TileRegistryResult LoadFromTmx(IAssetPaths paths, string tmxPath)
     {
-        return TiledTilesetLoader.LoadFromTmx(paths, tmxPath);
+        return TiledTilesetLoader.LoadFromTmx(paths, tmxPath, TileShapeFacts.Resolve);
     }
+
+    /// <summary>
+    /// Loads a TMX map file with full tile resolution support.
+    /// </summary>
+    internal static TmxMapData? LoadTmxMap(IAssetPaths paths, string tmxPath)
+        => TiledTilesetLoader.LoadTmxMap(paths, tmxPath, TileShapeFacts.Resolve);
 
     /// <summary>
     /// Load tiles and tileset path from JSON (original format).

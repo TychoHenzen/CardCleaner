@@ -1,3 +1,4 @@
+using System;
 using CardCleaner.Scripts.Core.Services.TilesetLoading.WangSets;
 
 namespace CardCleaner.Scripts.Core.Services.TilesetLoading.TileBuilding;
@@ -10,4 +11,5 @@ internal sealed class TileBuildContext
     internal required WangSetData WangData { get; init; }
     internal required int Columns { get; init; }
     internal required int SourceId { get; init; }
+    internal required Func<string, TileShape> ShapeOf { get; init; }
 }

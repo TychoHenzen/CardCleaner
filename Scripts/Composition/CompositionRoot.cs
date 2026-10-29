@@ -134,10 +134,13 @@ public partial class CompositionRoot : Node
         // ASSUMPTION: the issues ask for [Service], but AutoServiceProvider only discovers Nodes in the current scene;
         // the generators are plain classes, so the composition root registers them.
         var transitionPairs = new TransitionPairs(new CompiledTransitionResolver(assetPaths).GetAllTransitionPairs());
+        // The WFC factories are [Service] classes found by RegisterGameServiceClasses above, so they resolve here.
+        var mapFactory = container.Resolve<IWfcMapGeneratorFactory>();
+        var solverFactory = container.Resolve<IWfcTerrainSolver.IFactory>();
         container.RegisterSingleton<IGridMapGenerator>(
-            new GridMapGenerator(tiles, biomes, transitionPairs, new Wfc.MapGeneratorFactory()));
+            new GridMapGenerator(tiles, biomes, transitionPairs, mapFactory));
         container.RegisterSingleton<IMeshMapGenerator>(
-            new MeshMapGenerator(tiles, biomes, transitionPairs));
+            new MeshMapGenerator(tiles, biomes, transitionPairs, solverFactory));
 
         container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
         container.RegisterSingleton(SafePositionTrackers.Create());

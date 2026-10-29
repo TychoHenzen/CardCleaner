@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
-using WfcDoor = CardCleaner.Scripts.Features.Worldgen.Wfc.Wfc;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 
@@ -14,13 +13,14 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 /// </summary>
 internal sealed record MeshTerrainWfcSetup(
     IWfcTerrainSolver Solver,
-    TileCatalogData? Tiles)
+    ITileCatalog? Tiles)
 {
     public static MeshTerrainWfcSetup ForCatalog(
         IReadOnlyList<(string tileA, string tileB)> transitionPairs,
-        TileCatalogData? tiles)
+        ITileCatalog? tiles,
+        IWfcTerrainSolver.IFactory solverFactory)
     {
-        var solver = WfcDoor.CreateTerrainSolver(transitionPairs, tiles);
+        var solver = solverFactory.Create(transitionPairs, tiles);
         return new MeshTerrainWfcSetup(solver, tiles);
     }
 }

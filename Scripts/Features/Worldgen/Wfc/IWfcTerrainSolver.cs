@@ -34,4 +34,15 @@ public interface IWfcTerrainSolver
         IReadOnlyCollection<string> initialTiles,
         ulong seed,
         Func<string, bool>? gapTileFilter);
+
+    /// <summary>
+    /// Builds a solver over fresh rules. The container finds the production implementation, the internal
+    /// WfcMapGenerator.Factory, so callers outside Wfc hold this interface and never the solver class.
+    /// </summary>
+    public interface IFactory
+    {
+        IWfcTerrainSolver Create(
+            IReadOnlyList<(string tileA, string tileB)> transitionPairs,
+            IWfcTileCatalog? tileCatalog);
+    }
 }

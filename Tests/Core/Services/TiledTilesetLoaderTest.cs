@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
@@ -234,5 +235,35 @@ public class TiledTilesetLoaderTest
 
         // At least A2_Autotiles should load
         AssertBool(hasGrass).IsTrue();
+    }
+
+    // ==================== Shape Supplier Tests ====================
+
+    [TestCase]
+    public static void TestLoaderTakesTileShapeOnlyFromTheSuppliedResolver()
+    {
+        var shape = new TileShape(new HashSet<int> { 3 }, null);
+        var result = TiledTilesetLoader.LoadFromTmx(new GodotAssetPaths(), TestTmxPath, name => shape);
+
+        var autoTiles = result.Tiles.Where(t => !string.IsNullOrEmpty(t.AutoTileFormatName)).ToList();
+        AssertThat(autoTiles.Count).IsGreater(0);
+
+        foreach (var tile in autoTiles)
+        {
+            AssertBool(tile.AllowedBitmasks != null && tile.AllowedBitmasks.SetEquals(new HashSet<int> { 3 })).IsTrue();
+            AssertBool(tile.MultiCellBounds == null).IsTrue();
+        }
+    }
+
+    [TestCase]
+    public static void TestTileDataLoaderSuppliesTheRegistryShape()
+    {
+        var result = TileDataLoader.LoadFromTmx(new GodotAssetPaths(), TestTmxPath);
+
+        var tile = result.Tiles.FirstOrDefault(t => t.AutoTileFormatName == "corner16");
+        AssertThat(tile).IsNotNull();
+
+        var expected = AutoTileFormatRegistry.Get("corner16").AllowedBitmasks;
+        AssertBool(tile!.AllowedBitmasks != null && tile.AllowedBitmasks.SetEquals(expected)).IsTrue();
     }
 }

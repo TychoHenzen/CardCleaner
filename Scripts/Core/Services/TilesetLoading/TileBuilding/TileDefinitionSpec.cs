@@ -25,9 +25,8 @@ internal sealed class TileDefinitionSpec
     internal required bool IsGapTile { get; init; }
     internal required float Probability { get; init; }
 
-    internal TileDefinition ToDefinition()
+    internal TileDefinition ToDefinition(TileShape shape)
     {
-        var shape = TileShapeFacts.Resolve(AutoTileFormat);
         return new TileDefinition(
             Id,
             Name,

@@ -22,13 +22,13 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services;
 /// </summary>
 public sealed class GridMapGenerator : IGridMapGenerator
 {
-    private readonly TileCatalogData _tiles;
+    private readonly ITileCatalog _tiles;
     private readonly BiomeSet _biomes;
     private readonly TransitionPairs _transitionPairs;
     private readonly IWfcMapGeneratorFactory _wfcFactory;
 
     public GridMapGenerator(
-        TileCatalogData tiles,
+        ITileCatalog tiles,
         BiomeSet biomes,
         TransitionPairs transitionPairs,
         IWfcMapGeneratorFactory wfcFactory)
@@ -91,7 +91,7 @@ public sealed class GridMapGenerator : IGridMapGenerator
     internal static GridMapGenerationPipeline CreatePipeline(
         IRandom rng,
         IBiomeProvider biomeProvider,
-        TileCatalogData tiles,
+        ITileCatalog tiles,
         IWfcMapGenerator? wfcGenerator = null,
         BiomeSet? biomes = null,
         BaselineGradient? gradient = null)

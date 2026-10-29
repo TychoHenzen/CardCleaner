@@ -13,7 +13,7 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 /// queries as the registry it was taken from, and is the <see cref="IWfcTileCatalog"/> the WFC code reads.
 /// Tiles registered in the source after <see cref="From"/> are not visible.
 /// </summary>
-public sealed class TileCatalogData : IWfcTileCatalog
+public sealed class TileCatalogData : ITileCatalog
 {
     private const int SolidFillBitmask = 15;
 

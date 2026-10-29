@@ -9,11 +9,11 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 
 internal sealed class MeshForegroundWfc
 {
-    private readonly TileCatalogData? _tiles;
+    private readonly ITileCatalog? _tiles;
     private readonly Func<int[][], IReadOnlyCollection<string>, ulong, Func<string, bool>?, WfcGraphSolution> _solve;
 
     public MeshForegroundWfc(
-        TileCatalogData? tiles,
+        ITileCatalog? tiles,
         Func<int[][], IReadOnlyCollection<string>, ulong, Func<string, bool>?, WfcGraphSolution> solve)
     {
         _tiles = tiles;
@@ -57,7 +57,7 @@ internal sealed class MeshForegroundWfc
         return true;
     }
 
-    private static void AssignTiles(IrregularMesh mesh, string?[] collapsedTiles, TileCatalogData tiles)
+    private static void AssignTiles(IrregularMesh mesh, string?[] collapsedTiles, ITileCatalog tiles)
     {
         var autoTileCount = 0;
 

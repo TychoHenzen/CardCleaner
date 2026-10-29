@@ -35,7 +35,7 @@ public class WfcTerrainSolverRuleTileIdsTest
         AssertBool(withGaps.AllTileIds.Contains(ProbeGapTileId)).IsTrue();
         AssertBool(expected.AllTileIds.Contains(ProbeGapTileId)).IsFalse();
 
-        var solver = new WfcTerrainSolver(transitionPairs, TileCatalogData.From(registry));
+        var solver = WfcMapGenerator.Factory.Build(transitionPairs, TileCatalogData.From(registry));
 
         AssertString(string.Join("|", solver.RuleTileIds)).IsEqual(string.Join("|", expected.AllTileIds));
     }

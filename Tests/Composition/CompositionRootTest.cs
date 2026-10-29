@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.Core.DependencyInjection;
 using CardCleaner.Tests.Mocking;
 using Godot;
@@ -180,6 +181,27 @@ public class CompositionRootTest
         {
             // Assert - the cabinet resolves the real generator for the irregular kind, not a test double
             Assertions.AssertThat(TestServices.Resolver.Get<IMeshMapGenerator>()).IsInstanceOf<MeshMapGenerator>();
+        }
+        finally
+        {
+            QueueFreeAll(created);
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TestReinitializeRegistersTheWfcFactoriesAsSingletons()
+    {
+        // Arrange and act - the WFC factories are plain [Service] classes the lazy scan finds
+        TestServices.Reinitialize();
+        var created = ReinitializedNodes();
+        try
+        {
+            // Assert - the map and solver factories resolve through their interfaces, one shared instance each
+            var mapFactory = TestServices.Resolver.Get<IWfcMapGeneratorFactory>();
+            Assertions.AssertThat(mapFactory).IsSame(TestServices.Resolver.Get<IWfcMapGeneratorFactory>());
+            var solverFactory = TestServices.Resolver.Get<IWfcTerrainSolver.IFactory>();
+            Assertions.AssertThat(solverFactory).IsSame(TestServices.Resolver.Get<IWfcTerrainSolver.IFactory>());
         }
         finally
         {

@@ -8,6 +8,7 @@ using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
@@ -52,12 +53,20 @@ public class MeshMapGeneratorTest
         var biomes = MeshMapGeneratorFixture.DefaultBiomes();
         var cards = MeshMapGeneratorFixture.TerrainCards();
         var expected = TerrainGeneratorFactory
-            .Create(TileCatalogData.From(registry), biomes, CompiledTransitionPairs.Load())
+            .Create(
+                TileCatalogData.From(registry),
+                biomes,
+                CompiledTransitionPairs.Load(),
+                new WfcMapGenerator.Factory())
             .GenerateWithSampler(
                 SmallRings, TerrainGeneratorFactory.CardSampler(cards, Seed), Seed, relaxationIterations: 8);
 
         var generator = new IrregularMeshNs.MeshMapGenerator(
-            TileCatalogData.From(registry), biomes, CompiledTransitionPairs.Load(), SmallRings);
+            TileCatalogData.From(registry),
+            biomes,
+            CompiledTransitionPairs.Load(),
+            new WfcMapGenerator.Factory(),
+            SmallRings);
         var generated = (IrregularMeshNs.IMeshGeneratedMap)await generator.GenerateAsync(Config());
 
         var expectedTerrain = MeshMapGeneratorFixture.TerrainOf(expected);

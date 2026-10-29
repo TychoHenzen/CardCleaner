@@ -13,7 +13,7 @@ internal static class MeshForegroundTileCandidates
 {
     internal static bool IsCandidate(TileDefinition tile) => tile.Layer == TileLayer.Terrain;
 
-    internal static HashSet<string> Collect(TileCatalogData tiles, IEnumerable<string> biomeIds)
+    internal static HashSet<string> Collect(ITileCatalog tiles, IEnumerable<string> biomeIds)
     {
         var ids = biomeIds.ToList();
 

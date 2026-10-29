@@ -27,7 +27,7 @@ internal static class WangTileDefinitionBuilder
 
         var props = MergeProperties(setInfo, tileProperties, representative.TileId);
 
-        return new TileDefinitionSpec
+        var spec = new TileDefinitionSpec
         {
             Id = ParseHelpers.ToSnakeCase(setId),
             Name = ParseHelpers.GetString(props, "name", setInfo.Name),
@@ -42,7 +42,8 @@ internal static class WangTileDefinitionBuilder
             AutoTileVariants = WangSetTileLookup.BuildAutoTileVariants(setId, context),
             IsGapTile = ParseHelpers.GetBool(props, "isgaptile", false),
             Probability = representative.Probability
-        }.ToDefinition();
+        };
+        return spec.ToDefinition(context.ShapeOf(spec.AutoTileFormat));
     }
 
     /// <summary>

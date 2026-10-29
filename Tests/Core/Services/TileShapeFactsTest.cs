@@ -17,23 +17,24 @@ public class TileShapeFactsTest
     [TestCategory("Unit")]
     public static void Corner16ResolvesAllSixteenBitmasksAndNoBounds()
     {
-        var (allowed, bounds) = TileShapeFacts.Resolve("corner16");
+        var shape = TileShapeFacts.Resolve("corner16");
+        var allowed = shape.AllowedBitmasks;
 
         AssertThat(allowed).IsNotNull();
         AssertInt(allowed!.Count).IsEqual(16);
         AssertBool(allowed.Contains(0)).IsTrue();
         AssertBool(allowed.Contains(15)).IsTrue();
-        AssertBool(bounds == null).IsTrue();
+        AssertBool(shape.MultiCellBounds == null).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public static void UnknownFormatResolvesToNothing()
     {
-        var (allowed, bounds) = TileShapeFacts.Resolve("no_such_format");
+        var shape = TileShapeFacts.Resolve("no_such_format");
 
-        AssertBool(allowed == null).IsTrue();
-        AssertBool(bounds == null).IsTrue();
+        AssertBool(shape.AllowedBitmasks == null).IsTrue();
+        AssertBool(shape.MultiCellBounds == null).IsTrue();
     }
 
     [TestCase]
@@ -54,11 +55,12 @@ public class TileShapeFactsTest
         AutoTileFormatRegistry.Register(format);
         try
         {
-            var (allowed, bounds) = TileShapeFacts.Resolve("shape_facts_test");
+            var shape = TileShapeFacts.Resolve("shape_facts_test");
+            var allowed = shape.AllowedBitmasks;
 
             AssertBool(allowed != null && allowed.Contains(5)).IsTrue();
             AssertBool(allowed != null && !allowed.Contains(3)).IsTrue();
-            AssertBool(bounds == (new Vector2I(1, 3), new Vector2I(0, -2))).IsTrue();
+            AssertBool(shape.MultiCellBounds == (new Vector2I(1, 3), new Vector2I(0, -2))).IsTrue();
         }
         finally
         {

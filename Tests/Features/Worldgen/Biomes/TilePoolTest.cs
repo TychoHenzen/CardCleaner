@@ -23,7 +23,7 @@ public class TilePoolTest
     {
         var pool = TilePool.Empty;
 
-        var result = pool.SelectRandom(_rng);
+        var result = TilePoolSelection.SelectRandom(pool, _rng);
 
         AssertThat(result).IsNull();
     }
@@ -37,7 +37,7 @@ public class TilePoolTest
 
         for (var i = 0; i < 10; i++)
         {
-            var result = pool.SelectRandom(_rng);
+            var result = TilePoolSelection.SelectRandom(pool, _rng);
             AssertString(result).IsEqual("grass");
         }
     }
@@ -55,7 +55,7 @@ public class TilePoolTest
 
         for (var i = 0; i < 100; i++)
         {
-            var result = pool.SelectRandom(_rng);
+            var result = TilePoolSelection.SelectRandom(pool, _rng);
             if (result == "common") commonCount++;
             else if (result == "rare") rareCount++;
         }
@@ -103,12 +103,12 @@ public class TilePoolTest
         _rng.Seed = 42;
         var results1 = new string[10];
         for (var i = 0; i < 10; i++)
-            results1[i] = pool.SelectRandom(_rng)!;
+            results1[i] = TilePoolSelection.SelectRandom(pool, _rng)!;
 
         _rng.Seed = 42;
         var results2 = new string[10];
         for (var i = 0; i < 10; i++)
-            results2[i] = pool.SelectRandom(_rng)!;
+            results2[i] = TilePoolSelection.SelectRandom(pool, _rng)!;
 
         for (var i = 0; i < 10; i++)
             AssertString(results1[i]).IsEqual(results2[i]);
@@ -119,7 +119,7 @@ public class TilePoolTest
     {
         var pool = new TilePool.Builder().Add("first", 0.0f).Add("second", 0.0f).Build();
 
-        AssertString(pool.SelectRandom(_rng)).IsEqual("first");
+        AssertString(TilePoolSelection.SelectRandom(pool, _rng)).IsEqual("first");
     }
 
     [TestCase]

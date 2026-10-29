@@ -659,7 +659,7 @@ var variantPipeline = new VariantWeightPipeline()
 var variantSelector = new WeightedVariantSelector(variantPipeline);
 
 // GridMapGenerator takes no variant selector: its pipeline picks variants itself. Generating a grid map:
-var generator = new GridMapGenerator(tileRegistry, metadataProvider, biomeRegistry);
+var generator = new GridMapGenerator(tileCatalog, biomes, transitionPairs, wfcFactory); // tileCatalog: ITileCatalog
 var map = await generator.GenerateAsync(new MapGenerationConfig { Size = size, Seed = seed, MapSeeds = cards });
 ```
 
@@ -949,14 +949,15 @@ public interface IProceduralStructure
 }
 ```
 
-Irregular Map reaches WFC only through the front door in `Scripts/Features/Worldgen/Wfc/`. It may name only `Wfc`
-(the static door: `Wfc.CreateTerrainSolver` returns an `IWfcTerrainSolver`), `IWfcTerrainSolver`, `WfcGraphSolution`
-and `WfcGenerationResult` from Wfc, and no Wfc sub-namespace. In a namespace below `Worldgen` the simple name `Wfc` is
-the namespace, so callers alias the class, as `MeshTerrainWfcSetup` does.
+Irregular Map reaches WFC only through interfaces in `Scripts/Features/Worldgen/Wfc/`. It may name only
+`IWfcTerrainSolver`, its nested `IWfcTerrainSolver.IFactory`, `WfcGraphSolution` and `WfcGenerationResult` from Wfc,
+and no Wfc sub-namespace. The concrete classes stay internal to Wfc: the production factory is the internal
+`WfcMapGenerator.Factory`, marked `[Service]` for both factory interfaces, so the lazy `[Service]` scan registers it and
+`CompositionRoot` resolves only the interfaces.
 `IrregularMeshWfcSeamTest` fails when a file under `Scripts/Features/Worldgen/IrregularMesh/` names any other type
 declared under Wfc or references a Wfc sub-namespace. The grid map generator reaches WFC the same way:
-`GridMapGenerator` takes an `IWfcMapGeneratorFactory` (production: `Wfc.MapGeneratorFactory`, which calls
-`Wfc.CreateMapGenerator`) and holds an `IWfcMapGenerator`.
+`GridMapGenerator` takes an `IWfcMapGeneratorFactory` (production: `WfcMapGenerator.Factory`, found by the scan) and
+holds an `IWfcMapGenerator`.
 
 ### Weighted Random Selection Algorithm
 
@@ -1037,8 +1038,8 @@ Scripts/Features/Worldgen/
 │   ├── VariantWeightPipeline.cs
 │   └── WeightedVariantSelector.cs
 └── Wfc/                             # ✅ IMPLEMENTED (Two-Phase WFC)
-    ├── WfcMapGenerator.cs           # High-level WFC orchestrator
-    ├── Wfc.cs                       # Front door: creates the map generator and the terrain solver
+    ├── WfcMapGenerator.cs           # High-level WFC orchestrator; also implements IWfcTerrainSolver
+    ├── WfcSolveRunner.cs            # Times the retrying solve and builds the WfcGenerationResult
     ├── IWfcMapGenerator.cs          # Contract the grid pipeline uses to run WFC
     ├── WfcSolver.cs                 # Core WFC collapse algorithm
     ├── WfcGrid.cs                   # Grid of superposition cells
