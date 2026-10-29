@@ -33,7 +33,7 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
 
     private const int RelaxationIterations = 8;
 
-    private readonly TileCatalogData _tiles;
+    private readonly ITileCatalog _tiles;
     private readonly BiomeSet _biomes;
     private readonly TransitionPairs _transitionPairs;
     private readonly IWfcTerrainSolver.IFactory _solverFactory;
@@ -42,7 +42,7 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
     /// <param name="solverFactory">Builds the WFC terrain solver the mesh terrain solves with.</param>
     /// <param name="rings">Rings of hexes around the mesh centre; more rings make a larger map.</param>
     public MeshMapGenerator(
-        TileCatalogData tiles,
+        ITileCatalog tiles,
         BiomeSet biomes,
         TransitionPairs transitionPairs,
         IWfcTerrainSolver.IFactory solverFactory,

@@ -18,7 +18,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 internal static class TerrainGeneratorFactory
 {
     internal static IMeshTerrainGenerator Create(
-        TileCatalogData tiles,
+        ITileCatalog tiles,
         BiomeSet biomes,
         TransitionPairs transitionPairs,
         IWfcTerrainSolver.IFactory solverFactory)
@@ -50,7 +50,7 @@ internal static class TerrainGeneratorFactory
     /// </summary>
     private static Dictionary<string, int> AssignTerrainTypes(
         IReadOnlyList<string> allTerrainIds,
-        TileCatalogData tiles)
+        ITileCatalog tiles)
     {
         var tileToTerrainType = new Dictionary<string, int>();
         var nextTerrainType = 1;

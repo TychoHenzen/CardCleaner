@@ -13,11 +13,11 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 /// </summary>
 internal sealed record MeshTerrainWfcSetup(
     IWfcTerrainSolver Solver,
-    TileCatalogData? Tiles)
+    ITileCatalog? Tiles)
 {
     public static MeshTerrainWfcSetup ForCatalog(
         IReadOnlyList<(string tileA, string tileB)> transitionPairs,
-        TileCatalogData? tiles,
+        ITileCatalog? tiles,
         IWfcTerrainSolver.IFactory solverFactory)
     {
         var solver = solverFactory.Create(transitionPairs, tiles);

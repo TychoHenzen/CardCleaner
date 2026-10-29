@@ -9,11 +9,11 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 
 internal sealed class MeshTerrainProjection
 {
-    private readonly TileCatalogData? _tiles;
+    private readonly ITileCatalog? _tiles;
     private readonly Dictionary<string, int>? _tileToTerrainType;
 
     public MeshTerrainProjection(
-        TileCatalogData? tiles,
+        ITileCatalog? tiles,
         Dictionary<string, int>? tileToTerrainType)
     {
         _tiles = tiles;
