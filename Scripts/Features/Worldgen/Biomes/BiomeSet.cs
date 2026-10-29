@@ -9,7 +9,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 /// Enumeration order is the order given to <see cref="From"/>; a later duplicate Id replaces the earlier
 /// definition in place.
 /// </summary>
-public sealed class BiomeSet
+public sealed record BiomeSet
 {
     private readonly List<BiomeDefinition> _biomes;
     private readonly Dictionary<string, BiomeDefinition> _byId;

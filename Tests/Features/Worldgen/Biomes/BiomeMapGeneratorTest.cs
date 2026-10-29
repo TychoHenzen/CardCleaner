@@ -150,7 +150,7 @@ public class BiomeMapGeneratorTest
         var biome = generator.GetBiomeAt(new Vector2I(1, 1));
 
         AssertThat(biome.Id).IsEqual("plains");
-        AssertThat(biome.SelectPassableTile(_rng)).IsEqual("grass_tile");
+        AssertThat(TilePoolSelection.SelectPassableTile(biome, _rng)).IsEqual("grass_tile");
     }
 
     [TestCase]

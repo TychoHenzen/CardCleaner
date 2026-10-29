@@ -1,19 +1,16 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Interfaces;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 
 public sealed record TilePool
 {
-    private readonly float _totalWeight;
-
     private TilePool(List<TilePoolEntry> entries)
     {
         Entries = entries.AsReadOnly();
         var total = 0f;
         foreach (var entry in entries)
             total += entry.Weight;
-        _totalWeight = total;
+        TotalWeight = total;
     }
 
     /// <summary>The shared pool with no entries.</summary>
@@ -26,26 +23,8 @@ public sealed record TilePool
 
     public int Count => Entries.Count;
 
-    public string? SelectRandom(IRandom rng)
-    {
-        if (Entries.Count == 0)
-            return null;
-
-        if (_totalWeight <= 0)
-            return Entries[0].TileId;
-
-        var roll = rng.Randf() * _totalWeight;
-        var cumulative = 0f;
-
-        foreach (var entry in Entries)
-        {
-            cumulative += entry.Weight;
-            if (roll <= cumulative)
-                return entry.TileId;
-        }
-
-        return Entries[Entries.Count - 1].TileId;
-    }
+    /// <summary>Sum of the entry weights, summed in <see cref="Entries"/> order at construction.</summary>
+    public float TotalWeight { get; }
 
     /// <summary>Get all tile IDs in this pool.</summary>
     public IEnumerable<string> GetAllTileIds()

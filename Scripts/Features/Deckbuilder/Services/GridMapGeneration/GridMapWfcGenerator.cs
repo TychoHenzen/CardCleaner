@@ -51,7 +51,7 @@ internal sealed class GridMapWfcGenerator
         for (var x = 0; x < size.X; x++)
         {
             var biome = _context.BiomeProvider.GetBiomeAt(new Vector2I(x, y));
-            var tile = biome.SelectPassableTile(_context.Rng) ?? _context.DefaultPassableTileId;
+            var tile = TilePoolSelection.SelectPassableTile(biome, _context.Rng) ?? _context.DefaultPassableTileId;
             layers.BackgroundLayer[y, x] = tile;
             layers.ForegroundLayer[y, x] = "";
             layers.MergedGrid[y, x] = tile;

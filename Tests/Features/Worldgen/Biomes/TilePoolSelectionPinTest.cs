@@ -22,7 +22,7 @@ public class TilePoolSelectionPinTest
 
         var text = new StringBuilder();
         for (var i = 0; i < 40; i++)
-            text.Append(pool.SelectRandom(rng)).Append(',');
+            text.Append(TilePoolSelection.SelectRandom(pool, rng)).Append(',');
 
         AssertString(text.ToString()).IsEqual(PinnedSequence);
     }
