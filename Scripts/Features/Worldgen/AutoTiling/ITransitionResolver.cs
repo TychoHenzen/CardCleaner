@@ -53,7 +53,8 @@ public interface ITransitionResolver
     Vector2I? ResolveAnyVariant(string terrainId, int bitmask);
 
     /// <summary>
-    /// Enumerates all terrain transition pairs as (innerTerrain, outerTerrain) tuples, for WFC adjacency rule extraction.
+    /// Enumerates all terrain transition pairs as (innerTerrain, outerTerrain) tuples,
+    /// for WFC adjacency rule extraction.
     /// </summary>
     IEnumerable<(string innerTerrain, string outerTerrain)> GetAllTransitionPairs();
 }

@@ -129,7 +129,8 @@ public partial class CompositionRoot : Node
         var biomeRegistry = new BiomeRegistry();
         biomeRegistry.RegisterDefaultBiomes(assetPaths);
         container.RegisterSingleton<IBiomeCatalog>(biomeRegistry);
-        // The data the map generators take as constructor parameters; the [Service] scan builds the generators from them.
+        // The data the map generators take as constructor parameters;
+        // the [Service] scan builds the generators from them.
         var biomes = biomeRegistry.ToBiomeSet();
         container.RegisterSingleton(biomes);
         var transitionResolver = TransitionResolvers.Create(assetPaths);
