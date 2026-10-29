@@ -37,7 +37,8 @@ public interface IWfcTerrainSolver
 
     /// <summary>
     /// Builds a solver over fresh rules. The container finds the production implementation, a nested [Service]
-    /// class of WfcTerrainSolver, so callers outside Wfc hold this interface and never the solver class.
+    /// class of WfcMapGenerator (WfcMapGenerator.TerrainSolverFactory), so callers outside Wfc hold this interface
+    /// and never the solver class.
     /// </summary>
     public interface IFactory
     {

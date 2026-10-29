@@ -21,7 +21,7 @@ public class TerrainGeneratorFactoryTest
             TileCatalogData.From(TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource())),
             MeshMapGeneratorFixture.DefaultBiomes(),
             CompiledTransitionPairs.Load(),
-            new WfcTerrainSolver.Factory());
+            new WfcMapGenerator.TerrainSolverFactory());
 
         AssertThat(generator).IsNotNull();
     }

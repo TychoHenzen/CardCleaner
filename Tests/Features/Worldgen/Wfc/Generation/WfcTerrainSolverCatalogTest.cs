@@ -19,7 +19,7 @@ public class WfcTerrainSolverCatalogTest
     public static void SolveGraphWithCatalogWithoutCatalogThrows()
     {
         var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
-        var solver = new WfcTerrainSolver(transitionPairs, null);
+        var solver = new WfcMapGenerator.TerrainSolverFactory().Create(transitionPairs, null);
 
         AssertThrown(() => solver.SolveGraphWithCatalog(Array.Empty<int[]>(), Array.Empty<string>(), 1UL, null))
             .IsInstanceOf<InvalidOperationException>()

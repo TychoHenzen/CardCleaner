@@ -57,7 +57,7 @@ public class MeshMapGeneratorTest
                 TileCatalogData.From(registry),
                 biomes,
                 CompiledTransitionPairs.Load(),
-                new WfcTerrainSolver.Factory())
+                new WfcMapGenerator.TerrainSolverFactory())
             .GenerateWithSampler(
                 SmallRings, TerrainGeneratorFactory.CardSampler(cards, Seed), Seed, relaxationIterations: 8);
 
@@ -65,7 +65,7 @@ public class MeshMapGeneratorTest
             TileCatalogData.From(registry),
             biomes,
             CompiledTransitionPairs.Load(),
-            new WfcTerrainSolver.Factory(),
+            new WfcMapGenerator.TerrainSolverFactory(),
             SmallRings);
         var generated = (IrregularMeshNs.IMeshGeneratedMap)await generator.GenerateAsync(Config());
 
