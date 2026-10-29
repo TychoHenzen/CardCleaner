@@ -1,12 +1,10 @@
 {
   "up_edges": 0,
   "biggest_loop": 1,
-  "seams_leaky_or_missing": 1,
+  "seams_leaky_or_missing": 0,
   "refs_from_non_ui_to_ui": 0,
   "up_edge_pairs": [],
   "biggest_loop_classes": [],
-  "seam_classes": [
-    "BiomeStrengthField"
-  ],
+  "seam_classes": [],
   "ui_ref_pairs": []
 }
