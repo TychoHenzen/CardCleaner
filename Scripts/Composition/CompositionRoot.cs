@@ -62,9 +62,9 @@ public partial class CompositionRoot : Node
             dependent.Inject(Host);
     }
 
-    // Injects once every IDependent node that entered the tree before the autoload subscribed to NodeAdded. That
-    // runs after such a node's _Ready. Services is the first autoload, so today the pass meets only the root and
-    // Services itself; it guards a node that a later change orders before Services.
+    // Injects once every IDependent node that entered the tree before the autoload subscribed to NodeAdded. The
+    // main scene has entered the tree when Services gets _Ready, so the pass injects its nodes, before their _Ready
+    // and before the deferred Compose; such a node must resolve services through Get<T>(callback).
     internal void InjectExistingNodes() => InjectSubtree(GetTree().Root);
 
     private void InjectSubtree(Node node)

@@ -20,28 +20,38 @@ public partial class GameSessionService : Node, IGameSessionService, IDependent
     private IExplorationSession _exploration = null!;
     private SessionFlow _flow = null!;
     private bool _composed;
+    private bool _injected;
 
     private List<CardSignature> _mapSeeds = new();
     private List<CardSignature> _abilityCards = new();
     private IMapGenerator? _mapGenerator;
 
     /// <summary>
-    /// Builds the session's parts from the factories the container registers. The root injects before
-    /// <c>_Ready</c>; a later injection (reparent) keeps the live session.
+    /// Builds the session's parts from the factories the container registers, once both are registered. A node of
+    /// the main scene is injected before the root composes, so the factories arrive through callbacks. A later
+    /// injection (reparent) keeps the live session.
     /// </summary>
     public void Inject(IServiceResolver services)
     {
-        if (_composed)
+        if (_composed || _injected)
             return;
 
-        var sessions = services.Get<ISessionFactory>();
+        _injected = true;
+        services.Get<ISessionFactory>(sessions =>
+            services.Get<ICombatSystemFactory>(combat => Compose(sessions, combat)));
+    }
+
+    private void Compose(ISessionFactory sessions, ICombatSystemFactory combat)
+    {
         _world = sessions.CreateWorld();
         _exploration = sessions.CreateExploration(_world);
         _generation = new MapGenerationCoordinator(this, _world, _generationTracker);
-        _flow = new SessionFlow(this, _world, _exploration, services.Get<ICombatSystemFactory>());
+        _flow = new SessionFlow(this, _world, _exploration, combat);
         ForwardGenerationEvents();
         ForwardExplorationEvents();
         _composed = true;
+        if (IsNodeReady())
+            AttachGameTimer();
     }
 
     public SessionState CurrentState => _composed ? _flow.State : SessionState.WaitingForCards;
@@ -93,8 +103,7 @@ public partial class GameSessionService : Node, IGameSessionService, IDependent
             return;
         }
 
-        if (mapSeeds == null || mapSeeds.Count == 0
-            || abilityCards == null || abilityCards.Count == 0)
+        if (mapSeeds is not { Count: > 0 } || abilityCards is not { Count: > 0 })
         {
             ILog.Error("Cannot start session with null or empty inputs");
             return;
@@ -166,12 +175,19 @@ public partial class GameSessionService : Node, IGameSessionService, IDependent
         // Note: the world's RNG is seeded deterministically from the map seed cards during generation.
         // Do not call Randomize() here as it would make map generation non-reproducible
 
-        if (!_composed)
+        if (!_injected)
         {
             ILog.Error($"{Name} was not injected");
             return;
         }
 
+        // Before the root composes, Compose attaches the timer when the factories arrive.
+        if (_composed)
+            AttachGameTimer();
+    }
+
+    private void AttachGameTimer()
+    {
         // Create timer for game progression
         var gameTimer = new Timer();
         AddChild(gameTimer);
