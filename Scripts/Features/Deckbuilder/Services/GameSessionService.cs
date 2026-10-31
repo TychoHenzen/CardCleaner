@@ -103,8 +103,7 @@ public partial class GameSessionService : Node, IGameSessionService, IDependent
             return;
         }
 
-        if (mapSeeds == null || mapSeeds.Count == 0
-            || abilityCards == null || abilityCards.Count == 0)
+        if (mapSeeds is not { Count: > 0 } || abilityCards is not { Count: > 0 })
         {
             ILog.Error("Cannot start session with null or empty inputs");
             return;
