@@ -13,8 +13,9 @@ public class CardPackGeneratorTest
 {
     private const ulong Seed = 20240531;
     private const int BoxesForRateCheck = 400;
+    private const int CardsPerBox = 512;
 
-    /// <summary>Roughly 4 standard deviations of the special count over <see cref="BoxesForRateCheck" /> boxes.</summary>
+    /// <summary>About 4 standard deviations of the special count over <see cref="BoxesForRateCheck" /> boxes.</summary>
     private const double RateTolerance = 0.20;
 
     private static CardPackGenerator Seeded(ulong seed) => new(RandomSources.Create(seed));
@@ -35,14 +36,14 @@ public class CardPackGeneratorTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void SpecialOddsAreOneInFiveHundredAndTwelve()
+    public static void SpecialOddsAreOneInTwoHundred()
     {
-        AssertThat(CardPackGenerator.SpecialCardOdds).IsEqual(512);
+        AssertThat(CardPackGenerator.SpecialCardOdds).IsEqual(200);
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void SeededSpecialRateIsWithinToleranceOfOneInFiveHundredAndTwelve()
+    public static void SeededSpecialRateIsWithinToleranceOfOneInTwoHundred()
     {
         var generator = Seeded(Seed);
         var specials = 0;
@@ -50,10 +51,10 @@ public class CardPackGeneratorTest
         for (var i = 0; i < BoxesForRateCheck; i++)
             specials += generator.OpenBox().Count(c => c.HasMagicalPotential());
 
-        // One special per box on average, so BoxesForRateCheck specials are expected.
+        var expected = BoxesForRateCheck * CardsPerBox / CardPackGenerator.SpecialCardOdds;
         AssertThat(specials).IsBetween(
-            (int)(BoxesForRateCheck * (1 - RateTolerance)),
-            (int)(BoxesForRateCheck * (1 + RateTolerance)));
+            (int)(expected * (1 - RateTolerance)),
+            (int)(expected * (1 + RateTolerance)));
     }
 
     [TestCase]
