@@ -39,6 +39,18 @@ public class PackMaterialCatalogTest
         AssertThat(atlas).IsEqual($"{SyntyRoot}PolygonDungeon/Dungeons_Texture_01.png");
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void PolygonMiniCityMapsToItsAtlas()
+    {
+        var atlas = PackMaterialCatalog.AtlasPathFor($"{SyntyRoot}PolygonMiniCity/SM_Bld_Shop_01.fbx");
+
+        var miniCityAtlas = $"{SyntyRoot}PolygonMiniCity/PolygonMinis_Texture_01.png";
+
+        AssertThat(atlas).IsEqual(miniCityAtlas);
+        AssertThat(PackMaterialCatalog.AtlasPaths.ToList()).Contains(miniCityAtlas);
+    }
+
     [TestCase("")]
     [TestCase("res://Assets/Models/Button.fbx")]
     [TestCase("res://Assets/Synty/ParticleFx/Generic_Circle_Soft_01.png")]

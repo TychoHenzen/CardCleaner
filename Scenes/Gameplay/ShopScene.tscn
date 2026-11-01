@@ -33,6 +33,7 @@
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/SaleRegister.cs" id="SaleRegister"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/DeliveryMarker.cs" id="DeliveryMarker"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopNavigationRegion.cs" id="ShopNavigationRegion"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Neighbourhood.tscn" id="Neighbourhood"]
 
 [sub_resource type="StandardMaterial3D" id="GrayMaterial"]
 albedo_color = Color(0.62, 0.62, 0.65, 1)
@@ -98,12 +99,27 @@ size = Vector3(2.1, 1.4, 1)
 material = SubResource("PcHighlightMaterial")
 size = Vector3(3.2, 1.2, 1.4)
 
+[sub_resource type="StandardMaterial3D" id="PavementMaterial"]
+albedo_color = Color(0.62, 0.6, 0.58, 1)
+
+[sub_resource type="ProceduralSkyMaterial" id="ShopSkyMaterial"]
+sky_top_color = Color(0.35, 0.55, 0.85, 1)
+sky_horizon_color = Color(0.75, 0.82, 0.9, 1)
+ground_horizon_color = Color(0.6, 0.6, 0.62, 1)
+ground_bottom_color = Color(0.3, 0.3, 0.32, 1)
+
+[sub_resource type="Sky" id="ShopSky"]
+sky_material = SubResource("ShopSkyMaterial")
+
 [sub_resource type="Environment" id="ShopEnvironment"]
-background_mode = 1
-background_color = Color(0.25, 0.27, 0.3, 1)
-ambient_light_source = 2
-ambient_light_color = Color(1, 1, 1, 1)
-ambient_light_energy = 0.3
+background_mode = 2
+sky = SubResource("ShopSky")
+ambient_light_source = 3
+ambient_light_energy = 0.5
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.75, 0.82, 0.9, 1)
+fog_density = 0.001
 
 [sub_resource type="BoxShape3D" id="Shape_0"]
 size = Vector3(16, 0.2, 12)
@@ -616,6 +632,7 @@ shape = SubResource("Shape_2")
 [node name="FloorMesh" type="MeshInstance3D" parent="World/Street/Floor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 mesh = SubResource("StreetBoxMesh")
+material_override = SubResource("PavementMaterial")
 
 [node name="Bounds" type="StaticBody3D" parent="World/Street"]
 
@@ -1412,8 +1429,15 @@ mesh = SubResource("PcHighlightMesh")
 [node name="Player" parent="." instance=ExtResource("Player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 9)
 
+[node name="Neighbourhood" parent="." instance=ExtResource("Neighbourhood")]
+
 [node name="Environment" type="WorldEnvironment" parent="."]
 environment = SubResource("ShopEnvironment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, 0.383022, -0.321394, 0, 0.642788, 0.766044, 0.5, -0.663413, 0.55667, 0, 0, 0)
+light_energy = 1.0
+shadow_enabled = true
 
 [node name="Lights" type="Node3D" parent="."]
 

@@ -1,0 +1,1158 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+
+[sub_resource type="StandardMaterial3D" id="KerbMaterial"]
+albedo_color = Color(0.62, 0.6, 0.58, 1)
+
+[sub_resource type="BoxMesh" id="KerbBox"]
+size = Vector3(160, 0.15, 0.3)
+material = SubResource("KerbMaterial")
+
+[sub_resource type="BoxMesh" id="Box_Road_00"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_01"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_02"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_03"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_04"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_05"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_06"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_07"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_08"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_09"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_10"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_11"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_12"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_13"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_14"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_15"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_16"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_17"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_18"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_19"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_Road_20"]
+size = Vector3(7.5, 0.6486, 7.5)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_00"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_01"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_02"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_03"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_04"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_05"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_06"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_07"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_08"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_09"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_10"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_11"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_12"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_13"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_14"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_15"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_16"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_17"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_18"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_19"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_20"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_21"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_22"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_23"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_24"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_25"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_26"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_27"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_28"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_29"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_30"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_31"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_32"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_33"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_34"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_35"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_36"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_37"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_38"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_FarSidewalk_39"]
+size = Vector3(4, 0.3459, 4)
+
+[sub_resource type="BoxMesh" id="Box_Facade_Shop_01"]
+size = Vector3(5.4741, 4.4665, 5.1792)
+
+[sub_resource type="BoxMesh" id="Box_Facade_Shop_02"]
+size = Vector3(7.7555, 4.2949, 5.3858)
+
+[sub_resource type="BoxMesh" id="Box_Facade_Shop_03"]
+size = Vector3(8.3902, 4.2493, 8.8188)
+
+[sub_resource type="BoxMesh" id="Box_Facade_Apartments_02"]
+size = Vector3(4.3641, 9.8428, 5.0278)
+
+[sub_resource type="BoxMesh" id="Box_Facade_OfficeOld_Small_01"]
+size = Vector3(4.6384, 10.2195, 4.6384)
+
+[sub_resource type="BoxMesh" id="Box_NeighbourLeft"]
+size = Vector3(4.4101, 4.0386, 3.988)
+
+[sub_resource type="BoxMesh" id="Box_NeighbourRight"]
+size = Vector3(3.1566, 3.2795, 4.7342)
+
+[sub_resource type="BoxMesh" id="Box_StreetLight_A"]
+size = Vector3(0.3428, 2.2452, 1.1003)
+
+[sub_resource type="BoxMesh" id="Box_StreetLight_B"]
+size = Vector3(0.655, 2.1957, 0.6083)
+
+[sub_resource type="BoxMesh" id="Box_StreetLight_C"]
+size = Vector3(0.3428, 2.2452, 1.1003)
+
+[sub_resource type="BoxMesh" id="Box_StreetLight_D"]
+size = Vector3(0.655, 2.1957, 0.6083)
+
+[sub_resource type="BoxMesh" id="Box_ParkBench"]
+size = Vector3(1.1285, 0.7104, 0.4245)
+
+[sub_resource type="BoxMesh" id="Box_RubbishBin_A"]
+size = Vector3(0.5987, 0.9427, 0.5185)
+
+[sub_resource type="BoxMesh" id="Box_RubbishBin_B"]
+size = Vector3(0.5987, 0.9427, 0.5185)
+
+[sub_resource type="BoxMesh" id="Box_FireHydrant"]
+size = Vector3(0.613, 1.1112, 0.592)
+
+[sub_resource type="BoxMesh" id="Box_Planter"]
+size = Vector3(0.5691, 0.4169, 0.2351)
+
+[sub_resource type="BoxMesh" id="Box_Tree_A"]
+size = Vector3(1.3745, 2.7935, 1.1904)
+
+[sub_resource type="BoxMesh" id="Box_Tree_B"]
+size = Vector3(1.075, 3.274, 0.9309)
+
+[sub_resource type="BoxMesh" id="Box_ParkedSedan"]
+size = Vector3(1.9928, 1.495, 3.6032)
+
+[sub_resource type="BoxMesh" id="Box_ParkedTaxi"]
+size = Vector3(1.9928, 1.8451, 3.6032)
+
+[node name="Neighbourhood" type="Node3D"]
+
+[node name="Kerb" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0.075, 16.15)
+mesh = SubResource("KerbBox")
+
+[node name="Road" type="Node3D" parent="."]
+
+[node name="Road_00" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -56.25, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_01.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_00"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_00")
+
+[node name="Road_01" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.75, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_01"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_01")
+
+[node name="Road_02" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -41.25, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_01.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_02"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_02")
+
+[node name="Road_03" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.75, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_03"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_03")
+
+[node name="Road_04" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.25, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_01.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_04"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_04")
+
+[node name="Road_05" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.75, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_05"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_05")
+
+[node name="Road_06" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.25, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_01.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_06"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_06")
+
+[node name="Road_07" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.75, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_07"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_07")
+
+[node name="Road_08" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.75, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_01.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_08"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_08")
+
+[node name="Road_09" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.25, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_09"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_09")
+
+[node name="Road_10" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.75, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_01.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_10"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_10")
+
+[node name="Road_11" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.25, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_11"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_11")
+
+[node name="Road_12" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33.75, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_01.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_12"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_12")
+
+[node name="Road_13" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 41.25, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_13"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_13")
+
+[node name="Road_14" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48.75, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_01.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_14"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_14")
+
+[node name="Road_15" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56.25, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_15"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_15")
+
+[node name="Road_16" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 63.75, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_01.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_16"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_16")
+
+[node name="Road_17" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71.25, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_17"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_17")
+
+[node name="Road_18" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 78.75, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_01.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_18"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_18")
+
+[node name="Road_19" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 86.25, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_19"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_19")
+
+[node name="Road_20" type="Node3D" parent="Road" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 93.75, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_01.fbx"
+ArtScale = 1.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Road/Road_20"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3229, 0)
+mesh = SubResource("Box_Road_20")
+
+[node name="FarSidewalk" type="Node3D" parent="."]
+
+[node name="FarSidewalk_00" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_00"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_00")
+
+[node name="FarSidewalk_01" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_01"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_01")
+
+[node name="FarSidewalk_02" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_02"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_02")
+
+[node name="FarSidewalk_03" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_03"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_03")
+
+[node name="FarSidewalk_04" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_04"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_04")
+
+[node name="FarSidewalk_05" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_05"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_05")
+
+[node name="FarSidewalk_06" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_06"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_06")
+
+[node name="FarSidewalk_07" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_07"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_07")
+
+[node name="FarSidewalk_08" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_08"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_08")
+
+[node name="FarSidewalk_09" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_09"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_09")
+
+[node name="FarSidewalk_10" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_10"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_10")
+
+[node name="FarSidewalk_11" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_11"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_11")
+
+[node name="FarSidewalk_12" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_12"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_12")
+
+[node name="FarSidewalk_13" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_13"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_13")
+
+[node name="FarSidewalk_14" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_14"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_14")
+
+[node name="FarSidewalk_15" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_15"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_15")
+
+[node name="FarSidewalk_16" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_16"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_16")
+
+[node name="FarSidewalk_17" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_17"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_17")
+
+[node name="FarSidewalk_18" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_18"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_18")
+
+[node name="FarSidewalk_19" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_19"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_19")
+
+[node name="FarSidewalk_20" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_20"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_20")
+
+[node name="FarSidewalk_21" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_21"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_21")
+
+[node name="FarSidewalk_22" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_22"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_22")
+
+[node name="FarSidewalk_23" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_23"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_23")
+
+[node name="FarSidewalk_24" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_24"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_24")
+
+[node name="FarSidewalk_25" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_25"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_25")
+
+[node name="FarSidewalk_26" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_26"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_26")
+
+[node name="FarSidewalk_27" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_27"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_27")
+
+[node name="FarSidewalk_28" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_28"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_28")
+
+[node name="FarSidewalk_29" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_29"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_29")
+
+[node name="FarSidewalk_30" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_30"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_30")
+
+[node name="FarSidewalk_31" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_31"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_31")
+
+[node name="FarSidewalk_32" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_32"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_32")
+
+[node name="FarSidewalk_33" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 74, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_33"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_33")
+
+[node name="FarSidewalk_34" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 78, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_34"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_34")
+
+[node name="FarSidewalk_35" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 82, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_35"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_35")
+
+[node name="FarSidewalk_36" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 86, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_36"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_36")
+
+[node name="FarSidewalk_37" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_37"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_37")
+
+[node name="FarSidewalk_38" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 94, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_38"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_38")
+
+[node name="FarSidewalk_39" type="Node3D" parent="FarSidewalk" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 98, 0.15, 26)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Tile_Cube_Road_Concrete_02.fbx"
+ArtScale = 0.8
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="FarSidewalk/FarSidewalk_39"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1722, 0)
+mesh = SubResource("Box_FarSidewalk_39")
+
+[node name="Facades" type="Node3D" parent="."]
+
+[node name="Facade_Shop_01" type="Node3D" parent="Facades" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 31)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Bld_Shop_01.fbx"
+ArtScale = 4
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Facades/Facade_Shop_01"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8332, -0.0188)
+mesh = SubResource("Box_Facade_Shop_01")
+
+[node name="Facade_Shop_02" type="Node3D" parent="Facades" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 0, 31)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Bld_Shop_02.fbx"
+ArtScale = 4
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Facades/Facade_Shop_02"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7475, -0.0229)
+mesh = SubResource("Box_Facade_Shop_02")
+
+[node name="Facade_Shop_03" type="Node3D" parent="Facades" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 31)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Bld_Shop_03.fbx"
+ArtScale = 4
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Facades/Facade_Shop_03"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0062, 0.7247, -0.0407)
+mesh = SubResource("Box_Facade_Shop_03")
+
+[node name="Facade_Apartments_02" type="Node3D" parent="Facades" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 0, 31)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Bld_Apartments_02.fbx"
+ArtScale = 4
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Facades/Facade_Apartments_02"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5214, 0)
+mesh = SubResource("Box_Facade_Apartments_02")
+
+[node name="Facade_OfficeOld_Small_01" type="Node3D" parent="Facades" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 31)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Bld_OfficeOld_Small_01.fbx"
+ArtScale = 4
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Facades/Facade_OfficeOld_Small_01"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.7097, 0)
+mesh = SubResource("Box_Facade_OfficeOld_Small_01")
+
+[node name="NeighbourLeft" type="Node3D" parent="." node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 0, 2)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Bld_House_01.fbx"
+ArtScale = 4
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="NeighbourLeft"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6193, 0)
+mesh = SubResource("Box_NeighbourLeft")
+
+[node name="NeighbourRight" type="Node3D" parent="." node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 0, 2)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Bld_House_02.fbx"
+ArtScale = 4
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="NeighbourRight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2398, 0)
+mesh = SubResource("Box_NeighbourRight")
+
+[node name="Props" type="Node3D" parent="."]
+
+[node name="StreetLight_A" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 16.5)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Prop_StreetLight_01.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/StreetLight_A"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1226, 0.4219)
+mesh = SubResource("Box_StreetLight_A")
+
+[node name="StreetLight_B" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 16.5)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Prop_StreetLight_02.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/StreetLight_B"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0032, 1.0979, -0.017)
+mesh = SubResource("Box_StreetLight_B")
+
+[node name="StreetLight_C" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 16.5)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Prop_StreetLight_01.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/StreetLight_C"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1226, 0.4219)
+mesh = SubResource("Box_StreetLight_C")
+
+[node name="StreetLight_D" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, 16.5)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Prop_StreetLight_02.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/StreetLight_D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0032, 1.0979, -0.017)
+mesh = SubResource("Box_StreetLight_D")
+
+[node name="ParkBench" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 16.5)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Prop_ParkBench_01.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/ParkBench"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3552, 0)
+mesh = SubResource("Box_ParkBench")
+
+[node name="RubbishBin_A" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 16.5)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Prop_RubbishBin_01.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/RubbishBin_A"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4714, 0)
+mesh = SubResource("Box_RubbishBin_A")
+
+[node name="RubbishBin_B" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 16.5)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Prop_RubbishBin_01.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/RubbishBin_B"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4714, 0)
+mesh = SubResource("Box_RubbishBin_B")
+
+[node name="FireHydrant" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16.5)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Prop_FireHydrant_01.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/FireHydrant"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5556, 0)
+mesh = SubResource("Box_FireHydrant")
+
+[node name="Planter" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 16.5)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Prop_Planter_01.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/Planter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0492, 0)
+mesh = SubResource("Box_Planter")
+
+[node name="Tree_A" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 16.65)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Env_Generic_Tree_01.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/Tree_A"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7555, 0)
+mesh = SubResource("Box_Tree_A")
+
+[node name="Tree_B" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 16.65)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Env_Generic_Tree_02.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/Tree_B"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9957, 0)
+mesh = SubResource("Box_Tree_B")
+
+[node name="ParkedSedan" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -30, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Veh_Car_Sedan_01.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/ParkedSedan"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7296, 0)
+mesh = SubResource("Box_ParkedSedan")
+
+[node name="ParkedTaxi" type="Node3D" parent="Props" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 40, 0, 20.15)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonMiniCity/SM_Veh_Car_Taxi_01.fbx"
+ArtScale = 2.5
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Props/ParkedTaxi"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9047, 0)
+mesh = SubResource("Box_ParkedTaxi")

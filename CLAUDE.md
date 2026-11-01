@@ -442,7 +442,7 @@ All art and models live in the private repo `TychoHenzen/cardcleaner-assets`, a 
 - Clone with `git clone --recurse-submodules`, or run `git submodule update --init` in an existing clone. An empty `Assets/` means the submodule is not initialised.
 - Changing an asset is two commits: commit and push inside `Assets/` first, then commit the updated `Assets` pointer in this repo. Pushing the pointer before the submodule commit breaks CI.
 - CI fetches the submodule with the read-only deploy key in the `ASSETS_DEPLOY_KEY` secret (`.github/actions/checkout-assets`). The project cannot load without `Assets/`, so the step fails when the key is unavailable; fork and Dependabot pull requests cannot read the secret and fail there.
-- `Z:\Tycho\Projects\Assets` is our internal asset collection. Whenever new assets are needed, look there first. The Synty packs are under `Z:\Tycho\Projects\Assets\CardCleanerAssets` (mostly zips; extract one into the sync script's source root, `../CardCleanerAssets` or `CARDCLEANER_ASSET_SOURCE`, before listing its files in `tools/synty-assets.json`).
+- `Z:\Tycho\Projects\Assets` is our internal asset collection. Whenever new assets are needed, look there first. The Synty packs are under `Z:\Tycho\Projects\Assets2\synty\<pack>` (mostly zips; extract one into the sync script's source root, `../CardCleanerAssets` or `CARDCLEANER_ASSET_SOURCE`, before listing its files in `tools/synty-assets.json`).
 
 ### Shop Scene and Licensed Assets
 
@@ -451,6 +451,8 @@ All art and models live in the private repo `TychoHenzen/cardcleaner-assets`, a 
 - To add Synty files, list them in `tools/synty-assets.json`, run `tools/sync-assets.ps1`, open the project in Godot so it imports the FBX files, then commit the new files and their `.import` files inside `Assets/`. The script copies into `Assets/Synty/`. Set `CARDCLEANER_ASSET_SOURCE` to override the source root (default `../CardCleanerAssets`). A missing root, file or uninitialised submodule is an error.
 - Each shop issue adds its own manifest entries.
 - `ShopArtSlot` nodes load a pack mesh at runtime and hide their graybox placeholder. Without the import the scene still loads and shows the placeholders. The script is a `[Tool]`, so the editor viewport shows the real art too; the placeholder is restored around every editor save (`NotificationEditorPreSave` / `PostSave`) so no scene ever stores it hidden, and the loaded `Art` child has no owner and is never saved. Changing `ArtPath` or `ArtScale` in the inspector reloads the preview. The pack FBX files have no usable texture and are single-sided, so a slot applies its pack's colour atlas on a double-sided material (`PackMaterialCatalog` maps pack folder to atlas; add a new pack there). Collision is hand-authored and independent of the art.
+
+**Street and neighbourhood.** `Scenes/Shop/Neighbourhood.tscn` is visual only: it has no collision. Its `ShopArtSlot` nodes load the POLYGON Mini City pack from `Assets/Synty/PolygonMiniCity`, and the kerb is the only primitive mesh (the sky is set in `ShopScene.tscn`). It sits outside the street bounds and the workshop footprint, and `NeighbourhoodSceneTest` enforces both.
 
 ### Backoffice PC Ordering
 
