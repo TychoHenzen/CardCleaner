@@ -12,10 +12,10 @@ public interface ICardSpawningService
     Node3D? SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent);
 
     /// <summary>
-    /// Spawns a card with an explicit visual signature (a saved one), or draws one when it is null
-    /// and the signature has no magical potential.
+    /// Spawns a card with a saved look seed when one is given. When it is null, a card with no magical
+    /// potential draws a new look seed, and a card with magical potential never has one.
     /// </summary>
-    Node3D? SpawnCard(CardSignature signature, CardSignature? visualSignature, Transform3D spawnTransform, Node3D parent);
+    Node3D? SpawnCard(CardSignature signature, int? lookSeed, Transform3D spawnTransform, Node3D parent);
 
     /// <summary>Spawns a card with a random signature.</summary>
     Node3D? SpawnRandomCard(Transform3D spawnTransform, Node3D parent);

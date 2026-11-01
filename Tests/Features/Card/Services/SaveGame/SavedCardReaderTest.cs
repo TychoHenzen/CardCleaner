@@ -36,27 +36,31 @@ public class SavedCardReaderTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void Read_VisualSignatureElements_AreReadBack()
+    public static void Read_LookSeed_IsReadBack()
     {
-        var entry = Entry();
-        entry["visual_signature_elements"] = SavedElements;
+        // JSON hands an integer back as a long, so the reader must convert it.
+        foreach (var seed in new[] { 4242L, -17L })
+        {
+            var entry = Entry();
+            entry["look_seed"] = seed;
 
-        var record = SavedCardReader.Read(entry);
+            var record = SavedCardReader.Read(entry);
 
-        AssertThat(record!.VisualSignature!.Value.Elements).IsEqual(SavedElements);
+            AssertBool(record!.LookSeed == (int)seed).IsTrue();
+        }
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void Read_AbsentOrNullVisualSignature_GivesNull()
+    public static void Read_AbsentOrNullLookSeed_GivesNull()
     {
         var absent = SavedCardReader.Read(Entry());
         var nullEntry = Entry();
-        nullEntry["visual_signature_elements"] = null!;
+        nullEntry["look_seed"] = null!;
         var explicitNull = SavedCardReader.Read(nullEntry);
 
-        AssertThat(absent!.VisualSignature).IsNull();
-        AssertThat(explicitNull!.VisualSignature).IsNull();
+        AssertBool(absent!.LookSeed.HasValue).IsFalse();
+        AssertBool(explicitNull!.LookSeed.HasValue).IsFalse();
     }
 
     private static Dictionary<string, object> Entry() => new()

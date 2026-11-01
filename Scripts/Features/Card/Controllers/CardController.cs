@@ -35,25 +35,11 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
         HasSignature = false;
     }
 
-    private CardSignature _visualSignature;
-    public bool HasVisualSignature { get; private set; }
-
-    /// <summary>The signature that drives the card's look; differs from Signature for zero-signature cards.</summary>
-    public CardSignature VisualSignature
-    {
-        get => _visualSignature;
-        set
-        {
-            _visualSignature = value;
-            HasVisualSignature = true;
-        }
-    }
-
-    internal void ClearVisualSignature()
-    {
-        _visualSignature = default;
-        HasVisualSignature = false;
-    }
+    /// <summary>
+    /// The look seed of a card with no magical potential, which drives its art and base type. Null for special
+    /// cards and for saves written before look seeds existed.
+    /// </summary>
+    public int? LookSeed { get; set; }
 
     private bool IsHeld => GetParent() is Camera3D; // Check if reparented to camera
 
@@ -85,7 +71,7 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
     public void Save(NodeSave save)
     {
         save.SetOrAddProperty("signature", HasSignature ? Signature : (CardSignature?)null);
-        save.SetOrAddProperty("visualSignature", HasVisualSignature ? VisualSignature : (CardSignature?)null);
+        save.SetOrAddProperty("lookSeed", LookSeed);
         save.SetOrAddProperty("position", GlobalPosition);
         save.SetOrAddProperty("rotation", GlobalRotation);
         save.SetOrAddProperty("isHeld", IsHeld);
@@ -98,10 +84,7 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
         else
             ClearSignature();
 
-        if (save.TryGetProperty("visualSignature", out CardSignature? visual) && visual.HasValue)
-            VisualSignature = visual.Value;
-        else
-            ClearVisualSignature();
+        LookSeed = save.TryGetProperty("lookSeed", out int? seed) ? seed : null;
 
         if (save.TryGetProperty<Vector3>("position", out var pos))
             GlobalPosition = pos;

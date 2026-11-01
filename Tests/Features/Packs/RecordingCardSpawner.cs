@@ -20,7 +20,7 @@ public sealed class RecordingCardSpawner : ICardSpawningService
     }
 
     public Node3D? SpawnCard(
-        CardSignature signature, CardSignature? visualSignature, Transform3D spawnTransform, Node3D parent) =>
+        CardSignature signature, int? lookSeed, Transform3D spawnTransform, Node3D parent) =>
         SpawnCard(signature, spawnTransform, parent);
 
     public Node3D? SpawnRandomCard(Transform3D spawnTransform, Node3D parent) => null;

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
@@ -143,42 +146,64 @@ public class CardSpawningServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TestZeroSignatureCardsGetDifferentVisualSignatures()
+    public void TestZeroSignatureCardsGetDifferentLookSeeds()
     {
         var first = (CardController)_service.SpawnCard(new CardSignature(), Transform3D.Identity, _cardParent)!;
         var second = (CardController)_service.SpawnCard(new CardSignature(), Transform3D.Identity, _cardParent)!;
 
-        Assertions.AssertBool(first.HasVisualSignature).IsTrue();
-        Assertions.AssertBool(first.Signature.Elements.AsSpan().SequenceEqual(second.Signature.Elements)).IsTrue();
-        Assertions.AssertBool(first.VisualSignature.Elements.AsSpan().SequenceEqual(second.VisualSignature.Elements))
-            .IsFalse();
-        Assertions.AssertBool(first.VisualSignature.HasMagicalPotential()).IsTrue();
+        Assertions.AssertBool(first.LookSeed.HasValue).IsTrue();
+        Assertions.AssertBool(second.LookSeed.HasValue).IsTrue();
+        Assertions.AssertBool(first.LookSeed == second.LookSeed).IsFalse();
+        foreach (var card in new[] { first, second })
+        {
+            Assertions.AssertBool(card.Signature.Elements.All(e => e == 0f)).IsTrue();
+            Assertions.AssertBool(card.Signature.HasMagicalPotential()).IsFalse();
+        }
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TestSpecialSignatureCardKeepsItsSignatureAsVisualSignature()
+    public void TestSpecialSignatureCardHasNoLookSeed()
     {
         var signature = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f });
 
         var card = (CardController)_service.SpawnCard(signature, Transform3D.Identity, _cardParent)!;
 
-        Assertions.AssertBool(card.VisualSignature.Elements.AsSpan().SequenceEqual(signature.Elements)).IsTrue();
+        Assertions.AssertBool(card.LookSeed.HasValue).IsFalse();
+        Assertions.AssertBool(card.Signature.Elements.AsSpan().SequenceEqual(signature.Elements)).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TestExplicitVisualSignatureIsUsedAndRngIsNotAdvanced()
+    public void TestExplicitLookSeedIsUsedAndRngIsNotAdvanced()
     {
-        var visual = new CardSignature(new[] { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f });
         _rng.Seed = 7;
         var expectedNext = _rng.Randf();
         _rng.Seed = 7;
 
-        var card = (CardController)_service.SpawnCard(new CardSignature(), visual, Transform3D.Identity, _cardParent)!;
+        var card = (CardController)_service.SpawnCard(new CardSignature(), 555, Transform3D.Identity, _cardParent)!;
 
-        Assertions.AssertBool(card.VisualSignature.Elements.AsSpan().SequenceEqual(visual.Elements)).IsTrue();
+        Assertions.AssertBool(card.LookSeed == 555).IsTrue();
         Assertions.AssertFloat(_rng.Randf()).IsEqual(expectedNext);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task TestLookSeedReachesTheGenerator()
+    {
+        var tree = (SceneTree)Engine.GetMainLoop();
+
+        _service.SpawnCard(new CardSignature(), 77, Transform3D.Identity, _cardParent);
+
+        // The bake is deferred, so wait for the frames that run it.
+        await _cardParent.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+        await _cardParent.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+
+        _mockGenerator.Received(1).GenerateCardRenderer(
+            Arg.Any<CardShaderRenderer>(),
+            Arg.Any<CardSignature>(),
+            77,
+            Arg.Any<CardTemplate>());
     }
 
     [TestCase]

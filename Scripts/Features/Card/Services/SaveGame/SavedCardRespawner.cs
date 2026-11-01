@@ -34,7 +34,7 @@ internal sealed class SavedCardRespawner
         var spawnParent = ResolveSpawnParent(saved.ParentPath);
         var cardInstance = _spawningService.SpawnCard(
             saved.Signature ?? new CardSignature(),
-            saved.VisualSignature,
+            saved.LookSeed,
             spawnTransform,
             spawnParent);
 
@@ -42,10 +42,7 @@ internal sealed class SavedCardRespawner
             return;
 
         if (!saved.Signature.HasValue)
-        {
             controller.ClearSignature();
-            controller.ClearVisualSignature();
-        }
 
         if (saved.IsHeld)
             ReparentWhenHeld(controller);

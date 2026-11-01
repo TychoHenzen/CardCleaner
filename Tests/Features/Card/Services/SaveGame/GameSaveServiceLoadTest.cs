@@ -60,12 +60,14 @@ public class GameSaveServiceLoadTest
             AssertThat(held.Transform.Origin).IsEqual(SavedCardFixture.HeldPosition);
             AssertThat(held.Transform.Basis).IsEqual(Basis.FromEuler(SavedCardFixture.HeldRotation));
             AssertObject(held.Card.GetParent()).IsSame(camera);
+            AssertThat(held.LookSeed).IsNull();
 
             var placed = spawner.Spawned[1];
             AssertThat(placed.Signature.Elements).IsEqual(SavedCardFixture.PlacedElements);
             AssertThat(placed.Transform.Origin).IsEqual(SavedCardFixture.PlacedPosition);
             AssertThat(placed.Transform.Basis).IsEqual(Basis.FromEuler(SavedCardFixture.PlacedRotation));
             AssertObject(placed.Card.GetParent()).IsSame(world);
+            AssertThat(placed.LookSeed).IsNull();
         }
         finally
         {
@@ -128,7 +130,7 @@ public class GameSaveServiceLoadTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static async Task SavingAndLoadingAVisualSignatureHandsItToTheSpawner()
+    public static async Task SavingAndLoadingALookSeedHandsItToTheSpawner()
     {
         var tree = (SceneTree)Engine.GetMainLoop();
         var previousScene = tree.CurrentScene;
@@ -136,14 +138,13 @@ public class GameSaveServiceLoadTest
         TestServices.Reset();
         TestServices.Container.RegisterSingleton<ICardSpawningService>(spawner);
 
-        var savePath = $"user://game-save-visual-{Guid.NewGuid():N}.json";
-        var world = new Node3D { Name = "GameSaveVisualWorld" };
-        var visual = new CardSignature(new[] { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f });
-        var withVisual = new CardController { Name = "WithVisual", Signature = new CardSignature(), VisualSignature = visual };
-        var withoutVisual = new CardController { Name = "WithoutVisual", Signature = new CardSignature() };
+        var savePath = $"user://game-save-look-{Guid.NewGuid():N}.json";
+        var world = new Node3D { Name = "GameSaveLookWorld" };
+        var withLook = new CardController { Name = "WithLook", Signature = new CardSignature(), LookSeed = 4242 };
+        var withoutLook = new CardController { Name = "WithoutLook", Signature = new CardSignature() };
         var service = new GameSaveService { AutoLoadOnStart = false, SavePath = savePath };
-        world.AddChild(withVisual);
-        world.AddChild(withoutVisual);
+        world.AddChild(withLook);
+        world.AddChild(withoutLook);
         world.AddChild(service);
         AddNode(world, autoFree: false);
 
@@ -160,9 +161,9 @@ public class GameSaveServiceLoadTest
             await world.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
 
             AssertThat(spawner.Spawned).HasSize(2);
-            var visuals = spawner.Spawned.Select(s => s.VisualSignature).ToList();
-            AssertBool(visuals.Count(v => v is null) == 1).IsTrue();
-            AssertThat(visuals.Single(v => v.HasValue)!.Value.Elements).IsEqual(visual.Elements);
+            var seeds = spawner.Spawned.Select(s => s.LookSeed).ToList();
+            AssertBool(seeds.Count(v => v is null) == 1).IsTrue();
+            AssertThat(seeds.Single(v => v.HasValue)!.Value).IsEqual(4242);
         }
         finally
         {
@@ -198,11 +199,11 @@ public class GameSaveServiceLoadTest
             SpawnCard(signature, null, spawnTransform, parent);
 
         public Node3D? SpawnCard(
-            CardSignature signature, CardSignature? visualSignature, Transform3D spawnTransform, Node3D parent)
+            CardSignature signature, int? lookSeed, Transform3D spawnTransform, Node3D parent)
         {
             var card = new CardController { Signature = signature };
             parent.AddChild(card);
-            Spawned.Add(new Spawn(signature, spawnTransform, card, visualSignature));
+            Spawned.Add(new Spawn(signature, spawnTransform, card, lookSeed));
             return card;
         }
 
@@ -215,5 +216,5 @@ public class GameSaveServiceLoadTest
         CardSignature Signature,
         Transform3D Transform,
         CardController Card,
-        CardSignature? VisualSignature = null);
+        int? LookSeed = null);
 }

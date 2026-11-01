@@ -12,4 +12,4 @@ internal sealed record SavedCardRecord(
     Vector3 Rotation,
     bool IsHeld,
     string ParentPath,
-    CardSignature? VisualSignature = null);
+    int? LookSeed = null);
