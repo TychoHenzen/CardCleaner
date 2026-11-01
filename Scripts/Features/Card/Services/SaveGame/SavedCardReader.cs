@@ -27,12 +27,18 @@ internal static class SavedCardReader
             ? new CardSignature(GetFloatArrayFromData(signatureData))
             : (CardSignature?)null;
 
+        // JSON hands an integer back as a long; ToInt32 is exact for any seed that was stored as an int.
+        var lookSeed = cardData.TryGetValue("look_seed", out var seedData) && seedData is not null
+            ? Convert.ToInt32(seedData)
+            : (int?)null;
+
         return new SavedCardRecord(
             signature,
             GetVector3FromData(cardData["position"]),
             GetVector3FromData(cardData["rotation"]),
             Convert.ToBoolean(cardData["isHeld"]),
-            cardData["parentPath"]?.ToString() ?? "");
+            cardData["parentPath"]?.ToString() ?? "",
+            lookSeed);
     }
 
     // Handle both Dictionary<string, object> and JObject (from Newtonsoft.Json)

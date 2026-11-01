@@ -64,6 +64,17 @@ public partial class CardTemplate : Resource
             layer.RenderOnFront = visible;
     }
 
+    /// <summary>
+    ///     Shows or hides the energy orb. The layers keep their textures so the shader's layer arrays stay aligned;
+    ///     only their front flag changes.
+    /// </summary>
+    public void SetEnergyOrbVisible(bool visible)
+    {
+        EnergyContainer.RenderOnFront = visible;
+        EnergyFill1.RenderOnFront = visible;
+        EnergyFill2.RenderOnFront = visible;
+    }
+
     public LayerData[] GatherAllLayers()
     {
         return new[]

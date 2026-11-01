@@ -46,6 +46,9 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
     }
 
     public Node3D? SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent)
+        => SpawnCard(signature, null, spawnTransform, parent);
+
+    public Node3D? SpawnCard(CardSignature signature, int? lookSeed, Transform3D spawnTransform, Node3D parent)
     {
         if (CardScene?.Instantiate() is not Node3D cardInstance)
             return null;
@@ -55,10 +58,13 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
         cardInstance.GlobalTransform = spawnTransform;
         cardInstance.Name = "Card";
 
+        var look = CardLookSeed.Resolve(signature, lookSeed, _rng);
+
         // Set up card controller with signature
         if (cardInstance is CardController controller)
         {
             controller.Signature = signature;
+            controller.LookSeed = look;
 
             // Emit signal so other systems can connect to this new card
             CallDeferred(MethodName.EmitCardSpawnedSignal, controller);
@@ -68,7 +74,7 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
         var renderer = cardInstance.GetNodeOrNull<CardShaderRenderer>("CardRenderer");
         if (renderer != null)
             // Use CallDeferred to ensure all components are ready
-            Callable.From(() => BakeCardRenderer(renderer, signature)).CallDeferred();
+            Callable.From(() => BakeCardRenderer(renderer, signature, look)).CallDeferred();
 
         return cardInstance;
     }
@@ -88,10 +94,10 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
         );
     }
 
-    private void BakeCardRenderer(CardShaderRenderer renderer, CardSignature signature)
+    private void BakeCardRenderer(CardShaderRenderer renderer, CardSignature signature, int? look)
     {
         var template = new CardTemplate();
-        _generator.GenerateCardRenderer(renderer, signature, template);
+        _generator.GenerateCardRenderer(renderer, signature, look, template);
         renderer.Bake(template);
     }
 

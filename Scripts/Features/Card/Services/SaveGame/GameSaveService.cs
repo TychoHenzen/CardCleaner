@@ -103,6 +103,7 @@ public partial class GameSaveService : Node, ISaveable, IDependent
             var data = new Dictionary<string, object?>
             {
                 ["signature_elements"] = card.HasSignature ? card.Signature.Elements : null,
+                ["look_seed"] = card.LookSeed,
                 ["position"] = card.GlobalPosition,
                 ["rotation"] = card.GlobalRotation,
                 ["isHeld"] = card.GetParent() is Camera3D,

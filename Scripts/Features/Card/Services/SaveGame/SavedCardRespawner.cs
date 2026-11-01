@@ -34,6 +34,7 @@ internal sealed class SavedCardRespawner
         var spawnParent = ResolveSpawnParent(saved.ParentPath);
         var cardInstance = _spawningService.SpawnCard(
             saved.Signature ?? new CardSignature(),
+            saved.LookSeed,
             spawnTransform,
             spawnParent);
 

@@ -1,6 +1,8 @@
 ﻿// File: SignatureCardHelperTest.cs
 
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Services;
 using GdUnit4;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
@@ -65,5 +67,29 @@ public class SignatureCardHelperTest
     {
         var rarity = SignatureCardHelper.DetermineRarity(new[] { new CardSignature() });
         Assertions.AssertThat(rarity).IsEqual(CardRarity.Common);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void PickUniformOfOneItemDoesNotDraw()
+    {
+        var rng = RandomSources.Create(42UL);
+
+        var picked = SignatureCardHelper.PickUniform(rng, new[] { "only" });
+
+        Assertions.AssertThat(picked).IsEqual("only");
+        Assertions.AssertThat(rng.Randi()).IsEqual(RandomSources.Create(42UL).Randi());
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void PickUniformReachesEveryItem()
+    {
+        var items = new[] { "a", "b", "c" };
+        var reached = new HashSet<string>();
+        for (ulong seed = 1; seed <= 50; seed++)
+            reached.Add(SignatureCardHelper.PickUniform(RandomSources.Create(seed), items));
+
+        Assertions.AssertThat(reached.Count).IsEqual(3);
     }
 }

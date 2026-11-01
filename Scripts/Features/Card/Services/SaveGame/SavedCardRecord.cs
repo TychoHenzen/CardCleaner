@@ -11,4 +11,5 @@ internal sealed record SavedCardRecord(
     Vector3 Position,
     Vector3 Rotation,
     bool IsHeld,
-    string ParentPath);
+    string ParentPath,
+    int? LookSeed = null);
