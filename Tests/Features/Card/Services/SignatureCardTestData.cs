@@ -14,6 +14,40 @@ public static class SignatureCardTestData
         return new SignatureCardGenerator(CreateRarityVisuals(), CreateBaseTypes(), CreateGemVisuals());
     }
 
+    /// <summary>
+    ///     A generator with <paramref name="baseTypeCount" /> base types that no all-zero signature matches, so a card
+    ///     without magical potential picks its art from them by its look seed alone. <paramref name="arts" /> holds
+    ///     each base type's art texture, in base type order.
+    /// </summary>
+    internal static SignatureCardGenerator CreateGeneratorWithBaseTypes(int baseTypeCount, out Texture2D[] arts)
+    {
+        var baseTypes = new BaseCardType[baseTypeCount];
+        arts = new Texture2D[baseTypeCount];
+        for (var i = 0; i < baseTypeCount; i++)
+        {
+            var art = CreateMockTexture();
+            arts[i] = art;
+
+            var baseType = new BaseCardType();
+            baseType.TypeName = $"Test Card {i}";
+            baseType.BaseSignature = new CardSignatureResource { Solidum = 0.9f };
+            baseType.MatchRadius = 0.01f;
+            baseType.ArtOptions = new[] { art };
+            baseType.SymbolOptions = new[] { CreateMockTexture() };
+            baseType.EnergyFill1Options = new[] { CreateMockTexture() };
+            baseType.EnergyFill2Options = new[] { CreateMockTexture() };
+            baseTypes[i] = baseType;
+        }
+
+        var commonVisual = new RarityVisual();
+        commonVisual.Rarity = CardRarity.Common;
+        commonVisual.BaseOptions = new[] { CreateMockTexture(), CreateMockTexture(), CreateMockTexture() };
+        commonVisual.BorderOptions = new[] { CreateMockTexture() };
+        commonVisual.EnergyContainerOptions = new[] { CreateMockTexture(), CreateMockTexture() };
+
+        return new SignatureCardGenerator(new[] { commonVisual }, baseTypes, CreateGemVisuals());
+    }
+
     private static RarityVisual[] CreateRarityVisuals()
     {
         var commonVisual = new RarityVisual();

@@ -98,7 +98,7 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
     private void BakeCardRenderer(CardShaderRenderer renderer, CardSignature signature, CardSignature visual)
     {
         var template = new CardTemplate();
-        _generator.GenerateCardRenderer(renderer, signature, visual, template);
+        _generator.GenerateCardRenderer(renderer, signature, null, template);
         renderer.Bake(template);
     }
 

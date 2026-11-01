@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Core.Randomness;
@@ -31,14 +32,18 @@ internal sealed class SignatureCardGenerator : ICardGenerator
     public void GenerateCardRenderer(
         CardShaderRenderer renderer,
         CardSignature signature,
-        CardSignature visualSignature,
+        int? lookSeed,
         CardTemplate cardTemplate)
     {
         // A provider whose exports are unset registers null arrays; the generator then leaves the card as it was.
         if (_rarityVisuals == null || _baseTypes == null || _gemVisuals == null)
             return;
-        // The visual signature drives the seed and the art choice; rarity and gems stay with the gameplay signature.
-        var rng = RandomSources.Create((uint)SignatureCardHelper.ComputeSeed(visualSignature));
+        // A card with magical potential has no look seed; its look comes from its signature.
+        var look = signature.HasMagicalPotential() ? null : lookSeed;
+        // The look seed drives the seed and the art choice of a mundane card; rarity and gems stay with the signature.
+        var rng = RandomSources.Create(look.HasValue
+            ? unchecked((uint)look.Value)
+            : (uint)SignatureCardHelper.ComputeSeed(signature));
         // 1. Determine rarity
         var rarity = SignatureCardHelper.DetermineRarity(new[] { signature });
 
@@ -55,14 +60,10 @@ internal sealed class SignatureCardGenerator : ICardGenerator
             SignatureCardHelper.Apply(rng, cardTemplate.EnergyContainer, visuals.EnergyContainerOptions);
         }
 
-        // 3. Select matching BaseCardType
-        var candidates = _baseTypes
-            .Where(bt => bt.CanMatch(visualSignature))
-            .ToArray();
-        if (candidates.Length > 0)
+        // 3. Select the BaseCardType: by the look seed alone for a mundane card, otherwise by matching the signature
+        var chosenBase = SelectBaseType(rng, signature, look);
+        if (chosenBase != null)
         {
-            var chosenBase =
-                SignatureCardHelper.SelectWeighted(rng, candidates, bt => bt.CalculateMatchWeight(visualSignature));
             SignatureCardHelper.Apply(rng, cardTemplate.Art, chosenBase.ArtOptions);
             SignatureCardHelper.Apply(rng, cardTemplate.Symbol, chosenBase.SymbolOptions);
             SignatureCardHelper.Apply(rng, cardTemplate.EnergyFill1, chosenBase.EnergyFill1Options);
@@ -84,12 +85,26 @@ internal sealed class SignatureCardGenerator : ICardGenerator
         }
 
         cardTemplate.SetSignatureEdgesVisible(signature.HasMagicalPotential());
+        cardTemplate.SetEnergyOrbVisible(signature.HasMagicalPotential());
 
         // 5. Art-region effects from the rarity and the signature's intensity.
-        SetArtEffects(renderer, signature, visualSignature, rarity, cardTemplate.Art.Texture);
+        SetArtEffects(renderer, signature, look, rarity, cardTemplate.Art.Texture);
 
         renderer.NameLabel.Text = rarity.ToString();
         renderer.AttrLabel.Text = signature.ToDebugString();
+    }
+
+    private BaseCardType? SelectBaseType(IRandom rng, CardSignature signature, int? look)
+    {
+        if (look.HasValue)
+            return _baseTypes.Length == 0 ? null : SignatureCardHelper.PickUniform(rng, _baseTypes);
+
+        var candidates = _baseTypes
+            .Where(bt => bt.CanMatch(signature))
+            .ToArray();
+        return candidates.Length == 0
+            ? null
+            : SignatureCardHelper.SelectWeighted(rng, candidates, bt => bt.CalculateMatchWeight(signature));
     }
 
     /// <remarks>
@@ -104,13 +119,13 @@ internal sealed class SignatureCardGenerator : ICardGenerator
     private static void SetArtEffects(
         CardShaderRenderer renderer,
         CardSignature signature,
-        CardSignature visualSignature,
+        int? look,
         CardRarity rarity,
         Texture2D? art)
     {
         var rarityEffect = CardEffectMapping.RarityEffectFor(rarity);
         var conditionEffect = CardEffectMapping.ConditionEffectFor(CardEffectMapping.IntensityOf(signature.Elements));
-        var seed = CardEffectSeed.For(visualSignature);
+        var seed = look.HasValue ? CardEffectSeed.ForLook(look.Value) : CardEffectSeed.For(signature);
 
         // Only the rarity effects read the bevel map, so a card without one does not wait for it.
         if (rarityEffect == RarityEffect.None || art == null)
