@@ -46,7 +46,8 @@ public partial class PauseController : Node, IDependent
 
         var paused = GetTree().Paused;
 
-        // While something else holds the cursor (a PC screen), Escape belongs to that screen, not to pause
+        // While something else holds the cursor (a PC screen), Escape belongs
+        // to that screen, not to pause
         if (!paused && _cursor != null && _cursor.HasClaimOtherThan(this))
             return;
 

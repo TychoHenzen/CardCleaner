@@ -5,8 +5,9 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Pause.Components;
 
 /// <summary>
-///     Applies the mouse mode for the whole game: the cursor is visible while any owner holds a claim,
-///     and captured otherwise. Place it in a scene under an AutoServiceProvider.
+///     Applies the mouse mode for the whole game: the cursor is visible while
+///     any owner holds a claim, and captured otherwise. Place it in a scene
+///     under an AutoServiceProvider.
 /// </summary>
 [Service(typeof(ICursorOwner))]
 public partial class CursorOwner : Node, ICursorOwner
@@ -17,7 +18,8 @@ public partial class CursorOwner : Node, ICursorOwner
 
     public override void _Ready()
     {
-        // Keep applying the mode while the game is paused, so a pause menu's claim still shows the cursor.
+        // Keep applying the mode while the game is paused, so a pause menu's
+        // claim still shows the cursor.
         ProcessMode = ProcessModeEnum.Always;
         Apply();
     }
@@ -34,11 +36,14 @@ public partial class CursorOwner : Node, ICursorOwner
         Apply();
     }
 
-    public bool HasClaimOtherThan(object owner) => Claims.HasClaimOtherThan(owner);
+    public bool HasClaimOtherThan(object owner) =>
+        Claims.HasClaimOtherThan(owner);
 
     private void Apply()
     {
-        AppliedMode = Claims.HasClaims ? Input.MouseModeEnum.Visible : Input.MouseModeEnum.Captured;
+        AppliedMode = Claims.HasClaims
+            ? Input.MouseModeEnum.Visible
+            : Input.MouseModeEnum.Captured;
         Input.MouseMode = AppliedMode;
     }
 }
