@@ -446,7 +446,7 @@ All art and models live in the private repo `TychoHenzen/cardcleaner-assets`, a 
 
 ### Shop Scene and Licensed Assets
 
-`Scenes/Gameplay/ShopScene.tscn` is the graybox shop (storefront, storage, backoffice). Launch it directly (editor F6); `StartScene.tscn` stays the main scene. Wall, floor, door and counter art comes from the licensed Synty packs. Only the files listed in the manifest are committed, and only in the private submodule, never in this repo:
+`Scenes/Gameplay/ShopScene.tscn` is the graybox shop (a storefront at x 0..16, z 0..12; one storage and backoffice room along its back and right sides, 24 m wide at the back; a road door in the right arm at x 18.05 that joins the room to the street; and a locked expansion lot to the left of the storefront, sealed by the single wall at x = 0). Launch it directly (editor F6); `StartScene.tscn` stays the main scene. Wall, floor, door and counter art comes from the licensed Synty packs. Only the files listed in the manifest are committed, and only in the private submodule, never in this repo:
 
 - To add Synty files, list them in `tools/synty-assets.json`, run `tools/sync-assets.ps1`, open the project in Godot so it imports the FBX files, then commit the new files and their `.import` files inside `Assets/`. The script copies into `Assets/Synty/`. Set `CARDCLEANER_ASSET_SOURCE` to override the source root (default `../CardCleanerAssets`). A missing root, file or uninitialised submodule is an error.
 - Each shop issue adds its own manifest entries.

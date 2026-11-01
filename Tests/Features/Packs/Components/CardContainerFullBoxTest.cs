@@ -26,7 +26,8 @@ public class CardContainerFullBoxTest
     // Two items of one generation (packs, boosters or cards) spawning closer than this share a spot.
     private const float SamePositionTolerance = 0.001f;
 
-    // The storage room of ShopScene (x 0..8, z -8..0) and the box delivery marker inside it.
+    // A synthetic 8 x 8 m storage room and a box delivery marker inside it, modelled on the shop's storage block;
+    // it is not read from ShopScene.
     private static readonly Rect2 StorageRoom = new(0f, -8f, 8f, 8f);
     private static readonly Vector3 StorageDelivery = new(4f, 0f, -5.5f);
 

@@ -106,8 +106,8 @@ public class ShopOrderingSceneTest
 
         AssertBool(Mathf.Abs(local.X) < shape.Size.X / 2f).IsTrue();
         AssertBool(Mathf.Abs(local.Z) < shape.Size.Z / 2f).IsTrue();
-        AssertBool(_terminal.GlobalPosition.IsEqualApprox(_shop.GetNode<Marker3D>("World/Markers/PcLocation").GlobalPosition))
-            .IsTrue();
+        var pcLocation = _shop.GetNode<Marker3D>("World/Markers/PcLocation").GlobalPosition;
+        AssertBool(_terminal.GlobalPosition.IsEqualApprox(pcLocation)).IsTrue();
     }
 
     [TestCase]
@@ -195,9 +195,9 @@ public class ShopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void FirstLayerOfDeliverySlotsFitsInsideTheStorageFloor()
+    public void FirstLayerOfDeliverySlotsFitsInsideTheRightStorageFloor()
     {
-        var storage = _shop.GetNode<StaticBody3D>("World/Storage/Floor");
+        var storage = _shop.GetNode<StaticBody3D>("World/RightStorage/Floor");
         var shape = (BoxShape3D)storage.GetNode<CollisionShape3D>("CollisionShape3D").Shape;
         var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
         const float widestItem = 2.13f;
