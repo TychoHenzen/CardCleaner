@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
@@ -9,18 +10,18 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     A PC the player looks at and clicks to open an ordering screen for <see cref="Catalog" />.
-///     While the screen is open the player cannot move or look, and the mouse cursor is released;
-///     closing it restores both.
+///     While the screen is open the player cannot move or look, and the mouse cursor is released through
+///     ICursorOwner; closing it restores both.
 /// </summary>
 public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
 {
     private const float DefaultInteractionRange = 4.5f;
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
 
-    private Input.MouseModeEnum _mouseModeBeforeOpen = Input.MouseModeEnum.Visible;
     private PlayerController? _player;
     private IMoneyService? _money;
     private IOrderingService? _ordering;
+    private ICursorOwner? _cursor;
     private IServiceResolver? _services;
 
     /// <summary>Items this terminal sells. Assign a different catalog for a different terminal.</summary>
@@ -92,6 +93,7 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         }
 
         _services.Get<IOrderingService>(ordering => _ordering = ordering);
+        _services.Get<ICursorOwner>(cursor => _cursor = cursor);
         _services.Get<IMoneyService>(money =>
         {
             _money = money;
@@ -123,8 +125,7 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         Ui.ShowMessage(string.Empty);
         Ui.Visible = true;
 
-        _mouseModeBeforeOpen = Input.MouseMode;
-        Input.MouseMode = Input.MouseModeEnum.Visible;
+        _cursor?.Claim(this);
         _player = GetTree().GetFirstNodeInGroup("player") as PlayerController;
         if (_player != null)
             _player.ControlEnabled = false;
@@ -139,7 +140,7 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         if (Ui != null)
             Ui.Visible = false;
 
-        Input.MouseMode = _mouseModeBeforeOpen;
+        _cursor?.Release(this);
         if (_player != null && GodotObject.IsInstanceValid(_player))
             _player.ControlEnabled = true;
         _player = null;

@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Pause.Components;
+using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
@@ -33,6 +35,7 @@ public class ShopOrderingSceneTest
     private OrderTerminal _terminal = null!;
     private OrderTerminalUi _ui = null!;
     private MoneyService _money = null!;
+    private CursorOwner _cursor = null!;
 
     [BeforeTest]
     public async Task Setup()
@@ -42,6 +45,7 @@ public class ShopOrderingSceneTest
         _terminal = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
         _ui = _shop.GetNode<OrderTerminalUi>("OrderUi");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
+        _cursor = _shop.GetNode<CursorOwner>("Services/CursorOwner");
         var ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
 
         // The test scene is not the current scene, so hand the scene-owned services over directly.
@@ -49,6 +53,7 @@ public class ShopOrderingSceneTest
         TestServices.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
         TestServices.Container.RegisterSingleton<IMoneyService>(_money);
         TestServices.Container.RegisterSingleton<IOrderingService>(ordering);
+        TestServices.Container.RegisterSingleton<ICursorOwner>(_cursor);
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
@@ -123,6 +128,19 @@ public class ShopOrderingSceneTest
 
         AssertBool(_ui.Visible).IsFalse();
         AssertBool(_player.ControlEnabled).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void PcOpenThenClose_LeavesCursorCaptured()
+    {
+        _terminal.Interact();
+
+        AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Visible);
+
+        _terminal.Close();
+
+        AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Captured);
     }
 
     [TestCase]

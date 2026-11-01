@@ -1,6 +1,8 @@
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Pause.Components;
+using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
 using Godot;
@@ -21,6 +23,7 @@ public static class ShopOrderingRig
         TestServices.Reset();
         TestServices.Container.RegisterSingleton<IGameSettings>(shop.GetNode<GameSettings>("Services/GameSettings"));
         TestServices.Container.RegisterSingleton<IMoneyService>(shop.GetNode<MoneyService>("Services/MoneyService"));
+        TestServices.Container.RegisterSingleton<ICursorOwner>(shop.GetNode<CursorOwner>("Services/CursorOwner"));
         TestServices.Container.RegisterSingleton<IOrderingService>(
             shop.GetNode<OrderingService>("Services/OrderingService"));
         return shop;

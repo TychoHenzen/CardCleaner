@@ -1,3 +1,5 @@
+using CardCleaner.Scripts.Features.Pause.Components;
+using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
@@ -20,6 +22,7 @@ public class OrderTerminalTest
     private OrderingService _ordering = null!;
     private OrderTerminalUi _ui = null!;
     private OrderTerminal _terminal = null!;
+    private CursorOwner _cursor = null!;
 
     [BeforeTest]
     public void Setup()
@@ -31,13 +34,16 @@ public class OrderTerminalTest
         _ordering = new OrderingService { DeliveryPoint = marker, SpawnRoot = _world, Money = _money };
         _ui = new OrderTerminalUi();
         _terminal = new OrderTerminal { Catalog = MakeCatalog(("cheap", CheapPrice), ("dear", DearPrice)), Ui = _ui };
+        _cursor = new CursorOwner();
         _world.AddChild(_money);
         _world.AddChild(_ordering);
         _world.AddChild(_ui);
+        _world.AddChild(_cursor);
 
         TestServices.Reset();
         TestServices.Container.RegisterSingleton<IMoneyService>(_money);
         TestServices.Container.RegisterSingleton<IOrderingService>(_ordering);
+        TestServices.Container.RegisterSingleton<ICursorOwner>(_cursor);
 
         _world.AddChild(_terminal);
         AddNode(_world);
@@ -183,6 +189,49 @@ public class OrderTerminalTest
         AssertThat(_ordering.DeliveredCount).IsEqual(0);
         AssertThat(_money.Balance).IsEqual(StartingBalance);
         _terminal.Free();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void OpenThenClose_LeavesCursorCaptured()
+    {
+        _terminal.Interact();
+
+        AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Visible);
+        AssertBool(_cursor.Claims.HasClaims).IsTrue();
+
+        _terminal.Close();
+
+        AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Captured);
+        AssertBool(_cursor.Claims.HasClaims).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CloseTwiceAndOpenTwice_ClaimsAndReleasesOnce()
+    {
+        _terminal.Open();
+        _terminal.Open();
+        _terminal.Close();
+
+        AssertBool(_cursor.Claims.HasClaims).IsFalse();
+
+        _terminal.Close();
+
+        AssertBool(_cursor.Claims.HasClaims).IsFalse();
+        AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Captured);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void FreedWhileOpen_ReleasesClaim()
+    {
+        _terminal.Interact();
+
+        _terminal.Free();
+
+        AssertBool(_cursor.Claims.HasClaims).IsFalse();
+        AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Captured);
     }
 
     [TestCase]
