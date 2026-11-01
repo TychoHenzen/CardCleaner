@@ -2,15 +2,6 @@ using System;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
-/// <summary>Why a customer declined to buy.</summary>
-public enum RefusalReason
-{
-    PriceTooHigh,
-}
-
-/// <summary>The result of one buy decision: whether the customer buys and, when not, why.</summary>
-public readonly record struct BuyOutcome(bool Buys, RefusalReason? Reason);
-
 /// <summary>
 ///     Decides whether a customer buys an item at an asking price. The chance is 1 at or below the
 ///     market price, 0 at 1.5 times the market price or more, and linear in between. A roll in [0, 1)
