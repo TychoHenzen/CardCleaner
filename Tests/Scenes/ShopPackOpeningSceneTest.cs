@@ -133,9 +133,12 @@ public class ShopPackOpeningSceneTest
         var packs = Containers(CardContainerKind.Pack);
         AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
         foreach (var pack in packs)
-            AssertBool(StorageRoom.HasPoint(new Vector2(pack.GlobalPosition.X, pack.GlobalPosition.Z)) && pack.GlobalPosition.Y > FallLimitY)
-                .OverrideFailureMessage($"pack settled at {pack.GlobalPosition}, outside the storage room")
+        {
+            var at = pack.GlobalPosition;
+            AssertBool(StorageRoom.HasPoint(new Vector2(at.X, at.Z)) && at.Y > FallLimitY)
+                .OverrideFailureMessage($"pack settled at {at}, outside the storage room")
                 .IsTrue();
+        }
     }
 
     private CardContainer OrderBox()
