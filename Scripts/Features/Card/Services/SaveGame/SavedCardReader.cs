@@ -27,12 +27,18 @@ internal static class SavedCardReader
             ? new CardSignature(GetFloatArrayFromData(signatureData))
             : (CardSignature?)null;
 
+        var visualSignature =
+            cardData.TryGetValue("visual_signature_elements", out var visualData) && visualData is not null
+                ? new CardSignature(GetFloatArrayFromData(visualData))
+                : (CardSignature?)null;
+
         return new SavedCardRecord(
             signature,
             GetVector3FromData(cardData["position"]),
             GetVector3FromData(cardData["rotation"]),
             Convert.ToBoolean(cardData["isHeld"]),
-            cardData["parentPath"]?.ToString() ?? "");
+            cardData["parentPath"]?.ToString() ?? "",
+            visualSignature);
     }
 
     // Handle both Dictionary<string, object> and JObject (from Newtonsoft.Json)

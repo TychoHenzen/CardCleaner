@@ -36,6 +36,40 @@ public class SavedCardReaderTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public static void Read_VisualSignatureElements_AreReadBack()
+    {
+        var entry = Entry();
+        entry["visual_signature_elements"] = SavedElements;
+
+        var record = SavedCardReader.Read(entry);
+
+        AssertThat(record!.VisualSignature!.Value.Elements).IsEqual(SavedElements);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void Read_AbsentOrNullVisualSignature_GivesNull()
+    {
+        var absent = SavedCardReader.Read(Entry());
+        var nullEntry = Entry();
+        nullEntry["visual_signature_elements"] = null!;
+        var explicitNull = SavedCardReader.Read(nullEntry);
+
+        AssertThat(absent!.VisualSignature).IsNull();
+        AssertThat(explicitNull!.VisualSignature).IsNull();
+    }
+
+    private static Dictionary<string, object> Entry() => new()
+    {
+        ["signature_elements"] = SavedElements,
+        ["position"] = Vector3.Zero,
+        ["rotation"] = Vector3.Zero,
+        ["isHeld"] = false,
+        ["parentPath"] = "",
+    };
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static void Read_UnconvertibleEntry_ReturnsNull()
     {
         var record = SavedCardReader.Read("not a saved card");

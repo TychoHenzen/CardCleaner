@@ -85,6 +85,7 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
     public void Save(NodeSave save)
     {
         save.SetOrAddProperty("signature", HasSignature ? Signature : (CardSignature?)null);
+        save.SetOrAddProperty("visualSignature", HasVisualSignature ? VisualSignature : (CardSignature?)null);
         save.SetOrAddProperty("position", GlobalPosition);
         save.SetOrAddProperty("rotation", GlobalRotation);
         save.SetOrAddProperty("isHeld", IsHeld);
@@ -96,6 +97,11 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
             Signature = signature.Value;
         else
             ClearSignature();
+
+        if (save.TryGetProperty("visualSignature", out CardSignature? visual) && visual.HasValue)
+            VisualSignature = visual.Value;
+        else
+            ClearVisualSignature();
 
         if (save.TryGetProperty<Vector3>("position", out var pos))
             GlobalPosition = pos;

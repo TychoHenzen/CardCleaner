@@ -135,6 +135,44 @@ public class CardControllerStateTest : CardControllerTestBase
         restored.Load(save);
 
         Assertions.AssertBool(restored.HasSignature).IsFalse();
+        Assertions.AssertBool(restored.HasVisualSignature).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void SaveAndLoad_PreservesVisualSignature()
+    {
+        var visual = new CardSignature(new[] { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f });
+        var source = new CardCleaner.Scripts.Features.Card.Controllers.CardController
+        {
+            Signature = new CardSignature(),
+            VisualSignature = visual
+        };
+        Assertions.AddNode(source);
+        var save = new NodeSave();
+        source.Save(save);
+
+        var restored = new CardCleaner.Scripts.Features.Card.Controllers.CardController();
+        Assertions.AddNode(restored);
+        restored.Load(save);
+
+        Assertions.AssertBool(restored.HasVisualSignature).IsTrue();
+        Assertions.AssertThat(restored.VisualSignature.Elements).IsEqual(visual.Elements);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void Load_SaveWithoutVisualSignatureKey_HasNoVisualSignature()
+    {
+        var save = new NodeSave();
+        save.SetOrAddProperty("signature", new CardSignature());
+        var restored = new CardCleaner.Scripts.Features.Card.Controllers.CardController();
+        Assertions.AddNode(restored);
+
+        restored.Load(save);
+
+        Assertions.AssertBool(restored.HasSignature).IsTrue();
+        Assertions.AssertBool(restored.HasVisualSignature).IsFalse();
     }
 
     #endregion

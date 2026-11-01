@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Debug;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -42,6 +43,8 @@ public class CardEffectComparisonSceneTest
         TestServices.Reset();
         TestServices.RegisterGameServiceClasses(TestServices.Container);
         TestServices.Container.RegisterSingleton(new RandomNumberGenerator { Seed = 1 });
+        // The spawner draws a visual signature for a zero-signature card, so it needs the game's random source.
+        TestServices.Container.RegisterSingleton(RandomSources.Create(1u));
         _scene.GetNode<CardServiceProvider>("Services/CardServiceProvider").RegisterServices(TestServices.Container);
         _scene.GetNode<CardSpawningService>("Services/SpawningService").RegisterServices(TestServices.Container);
 
@@ -195,17 +198,22 @@ public class CardEffectComparisonSceneTest
             .Select(group => group.Select(m => NormalMap(m!).GetInstanceId()).Distinct().Count())
             .ToArray();
         var seedsPerSignature = cards
-            .GroupBy(card => card.Signature.ToDebugString())
+            .GroupBy(card => card.VisualSignature.ToDebugString())
             .Select(group => group.Select(card => (float)Material(card)!.GetShaderParameter("art_seed")).Distinct())
             .ToArray();
+        var gameplaySignatures = cards.Select(card => card.Signature.ToDebugString()).Distinct().Count();
 
         // One bevel map per art texture, however many cards show it: the cache is hit, not re-baked per card.
         AssertThat(normalMapsPerArt.Length).IsLess(withRarity.Length);
         AssertThat(normalMapsPerArt.All(count => count == 1)).IsTrue();
-        // The same signature always gets the same seed, and the fifteen signatures get fifteen different seeds.
-        AssertThat(seedsPerSignature.Length).IsEqual(15);
+        // The same visual signature always gets the same seed, and different ones get different seeds. A
+        // zero-signature card draws its own visual signature, so there can be more visual signatures than the
+        // fifteen gameplay signatures, never fewer.
+        AssertThat(gameplaySignatures).IsEqual(15);
+        AssertThat(seedsPerSignature.Length).IsGreaterEqual(15);
         AssertThat(seedsPerSignature.All(seeds => seeds.Count() == 1)).IsTrue();
-        AssertThat(seedsPerSignature.Select(seeds => seeds.Single()).Distinct().Count()).IsEqual(15);
+        AssertThat(seedsPerSignature.Select(seeds => seeds.Single()).Distinct().Count())
+            .IsEqual(seedsPerSignature.Length);
     }
 
     [TestCase]

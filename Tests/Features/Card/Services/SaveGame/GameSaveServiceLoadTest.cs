@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
@@ -125,6 +126,55 @@ public class GameSaveServiceLoadTest
         }
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static async Task SavingAndLoadingAVisualSignatureHandsItToTheSpawner()
+    {
+        var tree = (SceneTree)Engine.GetMainLoop();
+        var previousScene = tree.CurrentScene;
+        var spawner = new RecordingSpawner();
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<ICardSpawningService>(spawner);
+
+        var savePath = $"user://game-save-visual-{Guid.NewGuid():N}.json";
+        var world = new Node3D { Name = "GameSaveVisualWorld" };
+        var visual = new CardSignature(new[] { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f });
+        var withVisual = new CardController { Name = "WithVisual", Signature = new CardSignature(), VisualSignature = visual };
+        var withoutVisual = new CardController { Name = "WithoutVisual", Signature = new CardSignature() };
+        var service = new GameSaveService { AutoLoadOnStart = false, SavePath = savePath };
+        world.AddChild(withVisual);
+        world.AddChild(withoutVisual);
+        world.AddChild(service);
+        AddNode(world, autoFree: false);
+
+        try
+        {
+            tree.CurrentScene = world;
+            await world.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+
+            var save = new NodeSave();
+            service.Save(save);
+            spawner.Spawned.Clear();
+            service.Load(save);
+            await world.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+            await world.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+
+            AssertThat(spawner.Spawned).HasSize(2);
+            var visuals = spawner.Spawned.Select(s => s.VisualSignature).ToList();
+            AssertBool(visuals.Count(v => v is null) == 1).IsTrue();
+            AssertThat(visuals.Single(v => v.HasValue)!.Value.Elements).IsEqual(visual.Elements);
+        }
+        finally
+        {
+            world.RemoveChild(service);
+            service.Free();
+            world.Free();
+            tree.CurrentScene = previousScene;
+            DeleteSaveFile(savePath);
+            TestServices.Reset();
+        }
+    }
+
     private static void WriteSaveFile(string path)
     {
         var file = FileAccess.Open(path, FileAccess.ModeFlags.Write)
@@ -144,22 +194,26 @@ public class GameSaveServiceLoadTest
     {
         public List<Spawn> Spawned { get; } = [];
 
-        public Node3D? SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent)
+        public Node3D? SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent) =>
+            SpawnCard(signature, null, spawnTransform, parent);
+
+        public Node3D? SpawnCard(
+            CardSignature signature, CardSignature? visualSignature, Transform3D spawnTransform, Node3D parent)
         {
             var card = new CardController { Signature = signature };
             parent.AddChild(card);
-            Spawned.Add(new Spawn(signature, spawnTransform, card));
+            Spawned.Add(new Spawn(signature, spawnTransform, card, visualSignature));
             return card;
         }
-
-        public Node3D? SpawnCard(
-            CardSignature signature, CardSignature? visualSignature, Transform3D spawnTransform, Node3D parent) =>
-            SpawnCard(signature, spawnTransform, parent);
 
         public Node3D? SpawnRandomCard(Transform3D spawnTransform, Node3D parent) => null;
 
         public Vector3 GetRandomOffset(Vector3 offsetRange) => Vector3.Zero;
     }
 
-    private sealed record Spawn(CardSignature Signature, Transform3D Transform, CardController Card);
+    private sealed record Spawn(
+        CardSignature Signature,
+        Transform3D Transform,
+        CardController Card,
+        CardSignature? VisualSignature = null);
 }
