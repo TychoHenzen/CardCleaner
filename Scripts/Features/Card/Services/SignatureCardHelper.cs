@@ -62,6 +62,12 @@ public static class SignatureCardHelper
         layer.Texture = options[idx];
     }
 
+    /// <summary>Picks one item with equal chance. The caller guarantees <paramref name="items" /> is not empty.</summary>
+    public static T PickUniform<T>(IRandom rng, T[] items)
+    {
+        return items.Length == 1 ? items[0] : items[rng.RandiRange(0, items.Length - 1)];
+    }
+
     public static T SelectWeighted<T>(
         IRandom rng,
         T[] items,
