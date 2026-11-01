@@ -71,15 +71,15 @@ public partial class ShopArtSlot : Node3D
     {
         // Only the editor sends these. Saving with the placeholder hidden would store visible = false in the scene.
         if (what == NotificationEditorPreSave)
-            SetPlaceholderVisible(true);
+            ShowPlaceholder();
         else if (what == NotificationEditorPostSave)
-            SetPlaceholderVisible(!ArtLoaded);
+            SyncPlaceholderWithArt();
     }
 
     private void ShowArt()
     {
         ArtLoaded = TryLoadArt();
-        SetPlaceholderVisible(!ArtLoaded);
+        SyncPlaceholderWithArt();
     }
 
     // Inspector edits of ArtPath or ArtScale refresh the preview. While a scene loads, Godot sets the exports
@@ -99,10 +99,17 @@ public partial class ShopArtSlot : Node3D
         ShowArt();
     }
 
-    private void SetPlaceholderVisible(bool visible)
+    private void ShowPlaceholder()
     {
         if (Placeholder != null)
-            Placeholder.Visible = visible;
+            Placeholder.Visible = true;
+    }
+
+    // The graybox stands in only while no pack mesh is loaded.
+    private void SyncPlaceholderWithArt()
+    {
+        if (Placeholder != null)
+            Placeholder.Visible = !ArtLoaded;
     }
 
     private static StandardMaterial3D? PackMaterial(string atlasPath)
