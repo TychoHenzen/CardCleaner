@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
@@ -71,6 +72,22 @@ public class CardContainerFullBoxTest
                 AssertThat(first[i].Elements).IsEqual(new float[8]);
         }
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task SpawnedCardSignaturesMatchTheGeneratorOutputAndIncludeSpecialCards()
+    {
+        await OpenEverything(Make(BoxScene));
+        var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBox();
+        var spawned = _spawner.Spawned.Select(s => s.Signature).ToArray();
+
+        // Spawn order is not generation order, so compare the multiset of all 512 signatures.
+        AssertThat(spawned.Select(SignatureKey).OrderBy(k => k).ToArray())
+            .IsEqual(expected.Select(SignatureKey).OrderBy(k => k).ToArray());
+        AssertThat(spawned.Any(s => s.HasMagicalPotential())).IsTrue();
+    }
+
+    private static string SignatureKey(CardSignature signature) => string.Join(" ", signature.Elements);
 
     [TestCase]
     [TestCategory("Unit")]

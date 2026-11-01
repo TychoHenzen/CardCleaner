@@ -8,14 +8,15 @@ namespace CardCleaner.Scripts.Features.Packs.Services;
 
 /// <summary>
 ///     Decides what is inside a booster. Each card is independently special with probability
-///     1 in <see cref="SpecialCardOdds" />, so one special card per box (512 cards) is the expectation,
-///     not a guarantee. Every other card is common and carries the all-zero signature.
+///     1 in <see cref="SpecialCardOdds" />. With 512 cards per box, about 92 percent of boxes
+///     (1 - (199/200)^512) hold at least one special card; a box is not guaranteed one.
+///     Every other card is common and carries the all-zero signature.
 ///     The random source is injected so tests can seed it.
 /// </summary>
 public class CardPackGenerator(IRandom rng)
 {
-    /// <summary>A card is special with probability 1 / SpecialCardOdds (one per 8 x 8 x 8 card box).</summary>
-    public const int SpecialCardOdds = CardContainerLayout.CardsPerBox;
+    /// <summary>A card is special with probability 1 in 200 (about 92 percent of 512-card boxes hold one).</summary>
+    public const int SpecialCardOdds = 200;
 
     /// <summary>The signature of every common card: no magical potential.</summary>
     public static CardSignature CommonSignature() => new();
@@ -25,8 +26,8 @@ public class CardPackGenerator(IRandom rng)
     /// </summary>
     public CardSignature NextCardSignature()
     {
-        // Randi covers 2^32 values, a multiple of SpecialCardOdds, so the modulo has no bias.
-        var isSpecial = rng.Randi() % SpecialCardOdds == 0;
+        // 200 does not divide 2^32, so Randi() % odds would be biased. RandiRange rejects the biased tail.
+        var isSpecial = rng.RandiRange(0, SpecialCardOdds - 1) == 0;
         return isSpecial ? SignatureRandom.CreateSpecial(rng) : CommonSignature();
     }
 
