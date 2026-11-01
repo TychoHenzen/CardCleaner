@@ -9,8 +9,9 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     A PC the player looks at and clicks to open an ordering screen for <see cref="Catalog" />.
-///     While the screen is open the player cannot move or look, and the mouse cursor is released through
+///     A PC the player looks at and clicks to open an ordering screen
+///     for <see cref="Catalog" />. While the screen is open the player
+///     cannot move or look, and the mouse cursor is released through
 ///     ICursorOwner; closing it restores both.
 /// </summary>
 public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
