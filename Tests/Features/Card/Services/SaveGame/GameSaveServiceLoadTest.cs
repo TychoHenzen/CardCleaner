@@ -73,12 +73,7 @@ public class GameSaveServiceLoadTest
         {
             // GameSaveService._ExitTree saves to savePath. Removing the service first runs that save while the
             // cards are still in the tree; the temp file is deleted only after it has run.
-            world.RemoveChild(service);
-            service.Free();
-            world.Free();
-            tree.CurrentScene = previousScene;
-            DeleteSaveFile(savePath);
-            TestServices.Reset();
+            TearDown(tree, previousScene, world, service, savePath);
         }
     }
 
@@ -119,12 +114,7 @@ public class GameSaveServiceLoadTest
         }
         finally
         {
-            world.RemoveChild(service);
-            service.Free();
-            world.Free();
-            tree.CurrentScene = previousScene;
-            DeleteSaveFile(savePath);
-            TestServices.Reset();
+            TearDown(tree, previousScene, world, service, savePath);
         }
     }
 
@@ -167,13 +157,19 @@ public class GameSaveServiceLoadTest
         }
         finally
         {
-            world.RemoveChild(service);
-            service.Free();
-            world.Free();
-            tree.CurrentScene = previousScene;
-            DeleteSaveFile(savePath);
-            TestServices.Reset();
+            TearDown(tree, previousScene, world, service, savePath);
         }
+    }
+
+    private static void TearDown(
+        SceneTree tree, Node? previousScene, Node3D world, GameSaveService service, string savePath)
+    {
+        world.RemoveChild(service);
+        service.Free();
+        world.Free();
+        tree.CurrentScene = previousScene;
+        DeleteSaveFile(savePath);
+        TestServices.Reset();
     }
 
     private static void WriteSaveFile(string path)

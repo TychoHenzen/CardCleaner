@@ -47,51 +47,59 @@ internal sealed class SignatureCardGenerator : ICardGenerator
         // 1. Determine rarity
         var rarity = SignatureCardHelper.DetermineRarity(new[] { signature });
 
-        // 2. Apply per‐rarity visuals
-        var visuals = _rarityVisuals.FirstOrDefault(rv => rv.Rarity == rarity);
-        if (visuals != null)
-        {
-            SignatureCardHelper.Apply(rng, cardTemplate.CardBase, visuals.BaseOptions);
-            SignatureCardHelper.Apply(rng, cardTemplate.Border, visuals.BorderOptions);
-            SignatureCardHelper.Apply(rng, cardTemplate.Corners, visuals.CornerOptions);
-            SignatureCardHelper.Apply(rng, cardTemplate.Banner, visuals.BannerOptions);
-            SignatureCardHelper.Apply(rng, cardTemplate.ImageBackground, visuals.ImageBackgroundOptions);
-            SignatureCardHelper.Apply(rng, cardTemplate.DescriptionBox, visuals.DescriptionBoxOptions);
-            SignatureCardHelper.Apply(rng, cardTemplate.EnergyContainer, visuals.EnergyContainerOptions);
-        }
+        ApplyRarityVisuals(rng, cardTemplate, rarity);
 
-        // 3. Select the BaseCardType: by the look seed alone for a mundane card, otherwise by matching the signature
-        var chosenBase = SelectBaseType(rng, signature, look);
-        if (chosenBase != null)
-        {
-            SignatureCardHelper.Apply(rng, cardTemplate.Art, chosenBase.ArtOptions);
-            SignatureCardHelper.Apply(rng, cardTemplate.Symbol, chosenBase.SymbolOptions);
-            SignatureCardHelper.Apply(rng, cardTemplate.EnergyFill1, chosenBase.EnergyFill1Options);
-            SignatureCardHelper.Apply(rng, cardTemplate.EnergyFill2, chosenBase.EnergyFill2Options);
-        }
+        // The base type: by the look seed alone for a mundane card, otherwise by matching the signature.
+        ApplyBaseType(rng, cardTemplate, SelectBaseType(rng, signature, look));
 
-        // 4. Assign gems by dominant aspect. Textures are always assigned so the shader layer arrays stay
-        //    aligned; only cards with magical potential then show the signature along their edges, and
-        //    common cards (all-zero signature) render without it.
-        for (var i = 0; i < cardTemplate.GemSockets.Length; i++)
-        {
-            var element = (Element)i;
-            var rawValue = signature[element];
-            var intensity = Mathf.Abs(rawValue); // 0..1
-            var isPos = rawValue >= 0;
-
-            var gemVis = _gemVisuals.FirstOrDefault(gv => gv.Element == element);
-            if (gemVis != null) SetGemVisuals(renderer, cardTemplate, gemVis, isPos, i, intensity);
-        }
+        AssignGems(renderer, cardTemplate, signature);
 
         cardTemplate.SetSignatureEdgesVisible(signature.HasMagicalPotential());
         cardTemplate.SetEnergyOrbVisible(signature.HasMagicalPotential());
 
-        // 5. Art-region effects from the rarity and the signature's intensity.
+        // Art-region effects from the rarity and the signature's intensity.
         SetArtEffects(renderer, signature, look, rarity, cardTemplate.Art.Texture);
 
         renderer.NameLabel.Text = rarity.ToString();
         renderer.AttrLabel.Text = signature.ToDebugString();
+    }
+
+    private void ApplyRarityVisuals(IRandom rng, CardTemplate cardTemplate, CardRarity rarity)
+    {
+        var visuals = _rarityVisuals.FirstOrDefault(rv => rv.Rarity == rarity);
+        if (visuals == null) return;
+
+        SignatureCardHelper.Apply(rng, cardTemplate.CardBase, visuals.BaseOptions);
+        SignatureCardHelper.Apply(rng, cardTemplate.Border, visuals.BorderOptions);
+        SignatureCardHelper.Apply(rng, cardTemplate.Corners, visuals.CornerOptions);
+        SignatureCardHelper.Apply(rng, cardTemplate.Banner, visuals.BannerOptions);
+        SignatureCardHelper.Apply(rng, cardTemplate.ImageBackground, visuals.ImageBackgroundOptions);
+        SignatureCardHelper.Apply(rng, cardTemplate.DescriptionBox, visuals.DescriptionBoxOptions);
+        SignatureCardHelper.Apply(rng, cardTemplate.EnergyContainer, visuals.EnergyContainerOptions);
+    }
+
+    private static void ApplyBaseType(IRandom rng, CardTemplate cardTemplate, BaseCardType? chosenBase)
+    {
+        if (chosenBase == null) return;
+
+        SignatureCardHelper.Apply(rng, cardTemplate.Art, chosenBase.ArtOptions);
+        SignatureCardHelper.Apply(rng, cardTemplate.Symbol, chosenBase.SymbolOptions);
+        SignatureCardHelper.Apply(rng, cardTemplate.EnergyFill1, chosenBase.EnergyFill1Options);
+        SignatureCardHelper.Apply(rng, cardTemplate.EnergyFill2, chosenBase.EnergyFill2Options);
+    }
+
+    // Gem textures are always assigned so the shader layer arrays stay aligned; only cards with magical
+    // potential then show the signature along their edges, and common cards render without it.
+    private void AssignGems(CardShaderRenderer renderer, CardTemplate cardTemplate, CardSignature signature)
+    {
+        for (var i = 0; i < cardTemplate.GemSockets.Length; i++)
+        {
+            var element = (Element)i;
+            var rawValue = signature[element];
+
+            var gemVis = _gemVisuals.FirstOrDefault(gv => gv.Element == element);
+            if (gemVis != null) SetGemVisuals(renderer, cardTemplate, gemVis, i, rawValue);
+        }
     }
 
     private BaseCardType? SelectBaseType(IRandom rng, CardSignature signature, int? look)
@@ -149,10 +157,12 @@ internal sealed class SignatureCardGenerator : ICardGenerator
         CardShaderRenderer renderer,
         CardTemplate cardTemplate,
         GemVisual gemVis,
-        bool isPos,
         int i,
-        float intensity)
+        float rawValue)
     {
+        var isPos = rawValue >= 0;
+        var intensity = Mathf.Abs(rawValue); // 0..1
+
         // Select textures based on sign
         var socketTex = gemVis.SocketTexture;
         var gemTex = isPos

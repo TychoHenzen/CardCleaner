@@ -306,7 +306,7 @@ public class SignatureCardGeneratorTest
         Assertions.AssertThat(renderer.AttrLabel.Text).IsEqual(new CardSignature().ToDebugString());
     }
 
-    /// <summary>Generates a card on a real renderer with the given signature and look seed, and returns its material.</summary>
+    /// <summary>Generates a card on a real renderer with the signature and look seed; returns its material.</summary>
     private ShaderMaterial GenerateOnRealRenderer(CardSignature signature, int? lookSeed)
     {
         var renderer = Assertions.AddNode(CreateRealRenderer());
@@ -321,7 +321,7 @@ public class SignatureCardGeneratorTest
                ?? throw new System.InvalidOperationException("No material applied");
     }
 
-    /// <summary>A real renderer with its material manager and labels, so the art-effect parameters can be read back.</summary>
+    /// <summary>A real renderer with its material manager and labels, so art-effect parameters can be read.</summary>
     private static CardShaderRenderer CreateRealRenderer()
     {
         var renderer = new CardShaderRenderer();
