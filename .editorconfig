@@ -151,6 +151,11 @@ dotnet_diagnostic.IDE0130.severity = suggestion
 # Addons folder - third-party code, be lenient
 [addons/**/*.cs]
 dotnet_analyzer_diagnostic.severity = none
+# The blanket line above does not outrank per-id severities, so ids that fire in vendored addons are listed here.
+dotnet_diagnostic.CA1001.severity = none
+dotnet_diagnostic.CA1822.severity = none
+dotnet_diagnostic.CA1833.severity = none
+dotnet_diagnostic.CA5351.severity = none
 
 # Tests - allow more flexibility
 [Tests/**/*.cs]
