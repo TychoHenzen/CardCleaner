@@ -8,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 ///     Builds the minutes at which customers arrive during a shop day. Arrivals fall in
 ///     [open, close - LastEntryMarginMinutes), so nobody arrives in the last half hour.
 /// </summary>
-public static class ArrivalSchedule
+internal static class ArrivalSchedule
 {
     /// <summary>Minutes before closing after which no customer arrives.</summary>
     public const int LastEntryMarginMinutes = 30;

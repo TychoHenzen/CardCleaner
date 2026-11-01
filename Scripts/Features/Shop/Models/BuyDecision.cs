@@ -7,7 +7,7 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 ///     market price, 0 at 1.5 times the market price or more, and linear in between. A roll in [0, 1)
 ///     decides it: the customer buys when the roll is below the chance.
 /// </summary>
-public static class BuyDecision
+internal static class BuyDecision
 {
     /// <summary>Asking/market ratio at or below which every customer buys.</summary>
     public const double FullChanceRatio = 1.0;
