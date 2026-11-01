@@ -7,7 +7,7 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     Loads one licensed pack mesh at runtime and hides its graybox placeholder.
-///     The pack files live in the private Assets submodule (see tools/sync-assets.ps1), so a missing or
+///     The pack files live in the private Assets submodule (see CLAUDE.md), so a missing or
 ///     unimported file leaves the placeholder visible instead of breaking the scene.
 ///     The pack FBX files carry no usable texture and are single-sided slabs, so a mesh from a known pack
 ///     gets that pack's colour atlas on a double-sided material (see <see cref="PackMaterialCatalog" />).

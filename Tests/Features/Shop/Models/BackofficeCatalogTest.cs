@@ -1,6 +1,7 @@
 using System.Linq;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
@@ -14,7 +15,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class BackofficeCatalogTest
 {
     private const string CatalogPath = "res://Data/Shop/BackofficeCatalog.tres";
-    private const string ManifestPath = "res://tools/synty-assets.json";
     private const string PackPrefix = "res://Assets/Synty/";
 
     private static readonly string[] ExpectedIds = ["shelf", "bulk_packing_station", "cardboard_box"];
@@ -65,17 +65,14 @@ public class BackofficeCatalogTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void EveryItemArtPathIsListedInTheAssetManifest()
+    public void EveryItemArtPathExistsInTheAssetsSubmodule()
     {
-        var manifest = FileAccess.GetFileAsString(ManifestPath);
-        AssertBool(manifest.Length > 0).IsTrue();
-
         foreach (var item in _catalog.Items)
         {
             var instance = item.Scene!.Instantiate<Node3D>();
             var slot = instance.GetNode<ShopArtSlot>("Art");
             AssertBool(slot.ArtPath.StartsWith(PackPrefix)).IsTrue();
-            AssertBool(manifest.Contains($"\"{slot.ArtPath[PackPrefix.Length..]}\"")).IsTrue();
+            AssertBool(SyntyAssets.Exists(slot.ArtPath[PackPrefix.Length..])).IsTrue();
             instance.Free();
         }
     }

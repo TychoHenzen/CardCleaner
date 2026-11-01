@@ -1,7 +1,6 @@
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
@@ -51,21 +50,14 @@ public class PackMaterialCatalogTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void EveryAtlasIsAFileTheSyncManifestCopies()
+    public static void EveryAtlasIsAFileInTheAssetsSubmodule()
     {
-        var manifestPath = ProjectSettings.GlobalizePath("res://tools/synty-assets.json");
-        using var manifest = JsonDocument.Parse(File.ReadAllText(manifestPath));
-        var targets = manifest.RootElement.GetProperty("files")
-            .EnumerateArray()
-            .Select(file => file.GetProperty("target").GetString())
-            .ToHashSet();
-
         var missing = PackMaterialCatalog.AtlasPaths
-            .Where(atlas => !targets.Contains(atlas[SyntyRoot.Length..]))
+            .Where(atlas => !SyntyAssets.Exists(atlas[SyntyRoot.Length..]))
             .ToList();
 
         AssertThat(string.Join(", ", missing)).IsEmpty();
-        // An empty catalog would pass the manifest check above without checking a single atlas.
+        // An empty catalog would pass the existence check above without checking a single atlas.
         AssertThat(PackMaterialCatalog.AtlasPaths.ToList()).IsNotEmpty();
     }
 }

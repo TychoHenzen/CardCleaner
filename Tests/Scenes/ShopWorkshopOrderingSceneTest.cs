@@ -190,15 +190,15 @@ public class ShopWorkshopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TerminalArtSlotsUseManifestPackMeshesWithAPlaceholderFallback()
+    public void TerminalArtSlotsUseExistingPackMeshesWithAPlaceholderFallback()
     {
         var slots = _terminal.GetChildren().OfType<ShopArtSlot>().ToList();
 
         AssertThat(slots.Count).IsEqual(3);
         foreach (var slot in slots)
         {
-            AssertBool(slot.ArtPath.StartsWith("res://Assets/Synty/")).IsTrue();
-            AssertBool(SyntyManifest.ListsTarget(slot.ArtPath["res://Assets/Synty/".Length..])).IsTrue();
+            AssertBool(slot.ArtPath.StartsWith(SyntyAssets.Root)).IsTrue();
+            AssertBool(SyntyAssets.Exists(slot.ArtPath[SyntyAssets.Root.Length..])).IsTrue();
             AssertThat(slot.Placeholder).IsNotNull();
             AssertBool(slot.ArtLoaded != slot.Placeholder!.Visible).IsTrue();
         }

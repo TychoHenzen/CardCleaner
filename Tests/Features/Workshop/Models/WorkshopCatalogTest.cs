@@ -127,16 +127,14 @@ public class WorkshopCatalogTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void EveryItemArtPathIsListedInTheAssetManifest()
+    public void EveryItemArtPathExistsInTheAssetsSubmodule()
     {
-        AssertBool(FileAccess.FileExists(SyntyManifest.Path)).IsTrue();
-
         foreach (var item in _catalog.Items)
         {
             var instance = item.Scene!.Instantiate<Node3D>();
             var slot = ArtSlotOf(instance);
             AssertBool(slot.ArtPath.StartsWith(PackPrefix)).IsTrue();
-            AssertBool(SyntyManifest.ListsTarget(slot.ArtPath[PackPrefix.Length..])).IsTrue();
+            AssertBool(SyntyAssets.Exists(slot.ArtPath[PackPrefix.Length..])).IsTrue();
             instance.Free();
         }
     }
