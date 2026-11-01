@@ -32,6 +32,7 @@
 [ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawningService.cs" id="Card_28_1ia11"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/SaleRegister.cs" id="SaleRegister"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/DeliveryMarker.cs" id="DeliveryMarker"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopNavigationRegion.cs" id="ShopNavigationRegion"]
 
 [sub_resource type="StandardMaterial3D" id="GrayMaterial"]
 albedo_color = Color(0.62, 0.62, 0.65, 1)
@@ -1437,6 +1438,7 @@ omni_range = 14.0
 light_energy = 0.5
 
 [node name="Navigation" type="NavigationRegion3D" parent="World"]
+script = ExtResource("ShopNavigationRegion")
 navigation_mesh = SubResource("ShopNavigationMesh")
 
 [node name="Services" type="Node" parent="."]
