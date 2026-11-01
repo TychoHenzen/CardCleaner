@@ -33,8 +33,8 @@ public class ShopPackOpeningSceneTest
     private const int SettleFrames = 180;
     private const float FallLimitY = -0.5f;
 
-    // The storage room of the shop scene, inside its walls.
-    private static readonly Rect2 StorageRoom = new(0f, -8f, 8f, 8f);
+    // The right storage arm of the shop scene, where the delivery point is, inside its walls.
+    private static readonly Rect2 StorageRoom = new(16f, -8f, 8f, 20f);
 
     private Node3D _shop = null!;
     private Node3D _world = null!;
@@ -133,9 +133,12 @@ public class ShopPackOpeningSceneTest
         var packs = Containers(CardContainerKind.Pack);
         AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
         foreach (var pack in packs)
-            AssertBool(StorageRoom.HasPoint(new Vector2(pack.GlobalPosition.X, pack.GlobalPosition.Z)) && pack.GlobalPosition.Y > FallLimitY)
-                .OverrideFailureMessage($"pack settled at {pack.GlobalPosition}, outside the storage room")
+        {
+            var at = pack.GlobalPosition;
+            AssertBool(StorageRoom.HasPoint(new Vector2(at.X, at.Z)) && at.Y > FallLimitY)
+                .OverrideFailureMessage($"pack settled at {at}, outside the storage room")
                 .IsTrue();
+        }
     }
 
     private CardContainer OrderBox()
