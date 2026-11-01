@@ -135,6 +135,61 @@ public class CardControllerStateTest : CardControllerTestBase
         restored.Load(save);
 
         Assertions.AssertBool(restored.HasSignature).IsFalse();
+        Assertions.AssertBool(restored.LookSeed.HasValue).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void SaveAndLoad_PreservesLookSeed()
+    {
+        var source = new CardCleaner.Scripts.Features.Card.Controllers.CardController
+        {
+            Signature = new CardSignature(),
+            LookSeed = -123456
+        };
+        Assertions.AddNode(source);
+        var save = new NodeSave();
+        source.Save(save);
+
+        var restored = new CardCleaner.Scripts.Features.Card.Controllers.CardController();
+        Assertions.AddNode(restored);
+        restored.Load(save);
+
+        Assertions.AssertBool(restored.LookSeed == -123456).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void SaveAndLoad_PreservesAbsentLookSeed()
+    {
+        var source = new CardCleaner.Scripts.Features.Card.Controllers.CardController
+        {
+            Signature = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f })
+        };
+        Assertions.AddNode(source);
+        var save = new NodeSave();
+        source.Save(save);
+
+        var restored = new CardCleaner.Scripts.Features.Card.Controllers.CardController();
+        Assertions.AddNode(restored);
+        restored.Load(save);
+
+        Assertions.AssertBool(restored.LookSeed.HasValue).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void Load_SaveWithoutLookSeedKey_HasNullLookSeed()
+    {
+        var save = new NodeSave();
+        save.SetOrAddProperty("signature", new CardSignature());
+        var restored = new CardCleaner.Scripts.Features.Card.Controllers.CardController();
+        Assertions.AddNode(restored);
+
+        restored.Load(save);
+
+        Assertions.AssertBool(restored.HasSignature).IsTrue();
+        Assertions.AssertBool(restored.LookSeed.HasValue).IsFalse();
     }
 
     #endregion

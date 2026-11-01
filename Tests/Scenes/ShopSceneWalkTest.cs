@@ -53,8 +53,8 @@ public class ShopSceneWalkTest
     {
         AssertBool(_probe.CanWalk([new Vector2(6.05f, 9f), new Vector2(6.05f, 15.2f)])).IsTrue();
         AssertBool(_probe.CanWalk([new Vector2(6.05f, 15.2f), new Vector2(6.05f, 17f)])).IsFalse();
-        AssertBool(_probe.CanWalk([new Vector2(6.05f, 13f), new Vector2(-1f, 13f)])).IsFalse();
-        AssertBool(_probe.CanWalk([new Vector2(6.05f, 13f), new Vector2(17f, 13f)])).IsFalse();
+        AssertBool(_probe.CanWalk([new Vector2(6.05f, 13f), new Vector2(-15.6f, 13f)])).IsFalse();
+        AssertBool(_probe.CanWalk([new Vector2(6.05f, 13f), new Vector2(23.6f, 13f)])).IsFalse();
     }
 
     [TestCase]
@@ -62,6 +62,18 @@ public class ShopSceneWalkTest
     public void AreasAreNotReachableThroughSolidWalls()
     {
         AssertBool(_probe.CanWalk([new Vector2(6f, 4f), new Vector2(6f, -4f)])).IsFalse();
-        AssertBool(_probe.CanWalk([new Vector2(4f, -4f), new Vector2(12f, -6f)])).IsFalse();
+        AssertBool(_probe.CanWalk([new Vector2(14f, 6f), new Vector2(18f, 6f)])).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RoadDoorRouteReachesTheDeliveryPointAndTheBackoffice()
+    {
+        var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
+
+        AssertBool(_probe.CanWalk([new Vector2(18.05f, 15f), new Vector2(18.05f, 10f),
+            new Vector2(delivery.X, delivery.Z)])).IsTrue();
+        AssertBool(_probe.CanWalk([new Vector2(delivery.X, delivery.Z), new Vector2(20f, -4f),
+            new Vector2(12f, -4f)])).IsTrue();
     }
 }

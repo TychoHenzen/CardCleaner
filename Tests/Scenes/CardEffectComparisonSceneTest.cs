@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Debug;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -42,6 +43,8 @@ public class CardEffectComparisonSceneTest
         TestServices.Reset();
         TestServices.RegisterGameServiceClasses(TestServices.Container);
         TestServices.Container.RegisterSingleton(new RandomNumberGenerator { Seed = 1 });
+        // The spawner draws a look seed for a zero-signature card, so it needs the game's random source.
+        TestServices.Container.RegisterSingleton(RandomSources.Create(1u));
         _scene.GetNode<CardServiceProvider>("Services/CardServiceProvider").RegisterServices(TestServices.Container);
         _scene.GetNode<CardSpawningService>("Services/SpawningService").RegisterServices(TestServices.Container);
 
@@ -195,17 +198,52 @@ public class CardEffectComparisonSceneTest
             .Select(group => group.Select(m => NormalMap(m!).GetInstanceId()).Distinct().Count())
             .ToArray();
         var seedsPerSignature = cards
-            .GroupBy(card => card.Signature.ToDebugString())
+            .GroupBy(card => $"{card.Signature.ToDebugString()}|{card.LookSeed}")
             .Select(group => group.Select(card => (float)Material(card)!.GetShaderParameter("art_seed")).Distinct())
             .ToArray();
+        var gameplaySignatures = cards.Select(card => card.Signature.ToDebugString()).Distinct().Count();
 
         // One bevel map per art texture, however many cards show it: the cache is hit, not re-baked per card.
         AssertThat(normalMapsPerArt.Length).IsLess(withRarity.Length);
         AssertThat(normalMapsPerArt.All(count => count == 1)).IsTrue();
-        // The same signature always gets the same seed, and the fifteen signatures get fifteen different seeds.
-        AssertThat(seedsPerSignature.Length).IsEqual(15);
+        // The same signature and look seed always get the same art seed, and different ones mostly get different
+        // seeds. A zero-signature card carries its own look seed, so there can be more groups than the fifteen
+        // gameplay signatures, never fewer. The art seed is a mixed value mod 10000, so a rare collision between
+        // about 110 cards is allowed.
+        AssertThat(gameplaySignatures).IsEqual(15);
+        AssertThat(seedsPerSignature.Length).IsGreaterEqual(15);
         AssertThat(seedsPerSignature.All(seeds => seeds.Count() == 1)).IsTrue();
-        AssertThat(seedsPerSignature.Select(seeds => seeds.Single()).Distinct().Count()).IsEqual(15);
+        AssertThat(seedsPerSignature.Select(seeds => seeds.Single()).Distinct().Count())
+            .IsGreaterEqual((int)(seedsPerSignature.Length * 0.9));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ZeroSignatureCardsFromTheRealSpawnerLookDifferent()
+    {
+        // Through the real spawning service, not a test double: each mundane card draws its own look seed.
+        var spawner = _scene.GetNode<CardSpawningService>("Services/SpawningService");
+        var parent = new Node3D();
+        _scene.AddChild(parent);
+        var cards = Enumerable.Range(0, 12)
+            .Select(_ => (CardController)spawner.SpawnCard(new CardSignature(), Transform3D.Identity, parent)!)
+            .ToArray();
+        await CardEffectBakeWait.Frames(SettleFrames);
+
+        var zero = new CardSignature().ToDebugString();
+        AssertThat(cards.All(card => card.LookSeed.HasValue)).IsTrue();
+        AssertThat(cards.All(card => card.Signature.ToDebugString() == zero)).IsTrue();
+        AssertThat(cards.Select(card => card.LookSeed).Distinct().Count()).IsEqual(cards.Length);
+
+        var materials = cards.Select(Material).ToArray();
+        AssertThat(materials.All(material => material != null)).IsTrue();
+        var artSeeds = materials.Select(material => (float)material!.GetShaderParameter("art_seed")).Distinct();
+        AssertThat(artSeeds.Count()).IsGreaterEqual(10);
+        foreach (var material in materials)
+        {
+            AssertThat((int)material!.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+            AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Worn);
+        }
     }
 
     [TestCase]

@@ -72,4 +72,25 @@ public class ShopScenePlayerWalkTest
 
         AssertBool(_player.IsOnFloor()).IsTrue();
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task PlayerWalksInThroughTheRoadDoor()
+    {
+        var route = new[]
+        {
+            new Vector2(6.05f, 11.5f), new Vector2(6.05f, 14.5f), new Vector2(18.05f, 14.5f),
+            new Vector2(18.05f, 10f), new Vector2(20f, 9f),
+        };
+
+        foreach (var waypoint in route)
+        {
+            var walk = await PlayerWalker.WalkTo(_player, waypoint);
+
+            AssertBool(walk.Arrived).IsTrue();
+            AssertBool(_player.GlobalPosition.Y > FallLimitY).IsTrue();
+        }
+
+        AssertBool(_player.IsOnFloor()).IsTrue();
+    }
 }

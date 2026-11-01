@@ -73,4 +73,34 @@ public class CardEffectSeedTest
         AssertThat(SignatureCardHelper.ComputeSeed(signature)).IsEqual(expectedHash);
         AssertThat(CardEffectSeed.For(signature)).IsEqual(expectedScratch);
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ForLookIsInRange()
+    {
+        foreach (var look in new[] { int.MinValue, -1, 0, 1, int.MaxValue })
+        {
+            var seed = CardEffectSeed.ForLook(look);
+
+            AssertThat(seed).IsGreaterEqual(0f).IsLess(10000f);
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ForLookIsDeterministic()
+    {
+        AssertThat(CardEffectSeed.ForLook(4242)).IsEqual(CardEffectSeed.ForLook(4242));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ForLookSpreadsConsecutiveSeeds()
+    {
+        var seeds = new HashSet<float>();
+        for (var look = 1; look <= 200; look++)
+            seeds.Add(CardEffectSeed.ForLook(look));
+
+        AssertThat(seeds.Count).IsGreaterEqual(180);
+    }
 }

@@ -78,6 +78,18 @@ public class SignatureCardArtEffectsTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void SeedFollowsTheLookSeedWhileRarityAndConditionFollowTheGameplaySignature()
+    {
+        // A common card (all zeros) with a look seed: only the seed follows the look seed.
+        var material = GenerateAndApply(new CardSignature(), lookSeed: 21);
+
+        AssertThat((float)material.GetShaderParameter("art_seed")).IsEqual(CardEffectSeed.ForLook(21));
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Worn);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public async Task CardShowsNoRarityEffectUntilTheBevelMapOfItsArtIsBaked()
     {
         var template = new CardTemplate();
@@ -119,7 +131,7 @@ public class SignatureCardArtEffectsTest
     {
         var template = new CardTemplate();
         var freed = CreateRenderer();
-        _generator.GenerateCardRenderer(freed, new CardSignature(RareDormant), template);
+        _generator.GenerateCardRenderer(freed, new CardSignature(RareDormant), null, template);
         freed.Free();
 
         // The freed card's request comes first, so a throw on it would keep this one from ever arriving.
@@ -134,12 +146,12 @@ public class SignatureCardArtEffectsTest
     {
         var renderer = Assertions.AddNode(CreateRenderer());
         var first = new CardTemplate();
-        _generator.GenerateCardRenderer(renderer, new CardSignature(RareDormant), first);
+        _generator.GenerateCardRenderer(renderer, new CardSignature(RareDormant), null, first);
         var firstArt = first.Art.Texture!;
 
         // A common card has no rarity effect, so generating it supersedes the first card's pending bevel map.
         var common = new CardSignature();
-        _generator.GenerateCardRenderer(renderer, common, new CardTemplate());
+        _generator.GenerateCardRenderer(renderer, common, null, new CardTemplate());
         var material = renderer.GetNode<CardMaterialManager>("MaterialManager")
             .ApplyMaterial(Assertions.AddNode(new MeshInstance3D()))!;
         AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
@@ -160,7 +172,7 @@ public class SignatureCardArtEffectsTest
         var renderer = Assertions.AddNode(CreateRenderer());
         var template = new CardTemplate();
         var signature = new CardSignature(RareDormant);
-        _generator.GenerateCardRenderer(renderer, signature, template);
+        _generator.GenerateCardRenderer(renderer, signature, null, template);
         var material = renderer.GetNode<CardMaterialManager>("MaterialManager")
             .ApplyMaterial(Assertions.AddNode(new MeshInstance3D()))!;
         AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
@@ -202,10 +214,13 @@ public class SignatureCardArtEffectsTest
     }
 
     /// <summary>Generates a card on a real renderer and returns the material it ends up with.</summary>
-    private ShaderMaterial GenerateAndApply(CardSignature signature, CardTemplate? template = null)
+    private ShaderMaterial GenerateAndApply(
+        CardSignature signature,
+        CardTemplate? template = null,
+        int? lookSeed = null)
     {
         var renderer = Assertions.AddNode(CreateRenderer());
-        _generator.GenerateCardRenderer(renderer, signature, template ?? new CardTemplate());
+        _generator.GenerateCardRenderer(renderer, signature, lookSeed, template ?? new CardTemplate());
         return renderer.GetNode<CardMaterialManager>("MaterialManager")
                    .ApplyMaterial(Assertions.AddNode(new MeshInstance3D()))
                ?? throw new System.InvalidOperationException("No material applied");

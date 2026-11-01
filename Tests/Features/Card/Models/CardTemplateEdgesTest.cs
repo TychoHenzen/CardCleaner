@@ -40,4 +40,45 @@ public class CardTemplateEdgesTest
 
         AssertThat(template.GemSockets.Concat(template.Gems).All(l => l.RenderOnFront)).IsTrue();
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void HidingTheEnergyOrbTurnsOffOnlyItsThreeLayers()
+    {
+        var template = new CardTemplate();
+
+        template.SetEnergyOrbVisible(false);
+
+        AssertThat(template.EnergyContainer.RenderOnFront).IsFalse();
+        AssertThat(template.EnergyFill1.RenderOnFront).IsFalse();
+        AssertThat(template.EnergyFill2.RenderOnFront).IsFalse();
+        AssertThat(template.Border.RenderOnFront).IsTrue();
+        AssertThat(template.Art.RenderOnFront).IsTrue();
+        AssertThat(template.GemSockets.Concat(template.Gems).All(l => l.RenderOnFront)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TheEnergyOrbCanBeShownAgain()
+    {
+        var template = new CardTemplate();
+        template.SetEnergyOrbVisible(false);
+
+        template.SetEnergyOrbVisible(true);
+
+        AssertThat(template.EnergyContainer.RenderOnFront).IsTrue();
+        AssertThat(template.EnergyFill1.RenderOnFront).IsTrue();
+        AssertThat(template.EnergyFill2.RenderOnFront).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void HidingTheEnergyOrbKeepsTheTwentySevenShaderLayers()
+    {
+        var template = new CardTemplate();
+
+        template.SetEnergyOrbVisible(false);
+
+        AssertThat(template.GatherAllLayers().Length).IsEqual(27);
+    }
 }

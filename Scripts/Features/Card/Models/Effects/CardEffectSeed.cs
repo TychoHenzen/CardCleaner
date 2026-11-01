@@ -18,6 +18,12 @@ public static class CardEffectSeed
         return Mix(CardSignatureHash.Of(signature)) % Range;
     }
 
+    /// <summary>The scratch seed of a mundane card, from the look seed drawn for it at spawn.</summary>
+    public static float ForLook(int lookSeed)
+    {
+        return Mix(unchecked((uint)lookSeed)) % Range;
+    }
+
     // SplitMix64's finalizer: every input bit changes every output bit.
     private static ulong Mix(ulong value)
     {

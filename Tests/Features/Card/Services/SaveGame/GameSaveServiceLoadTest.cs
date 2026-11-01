@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
@@ -59,23 +60,20 @@ public class GameSaveServiceLoadTest
             AssertThat(held.Transform.Origin).IsEqual(SavedCardFixture.HeldPosition);
             AssertThat(held.Transform.Basis).IsEqual(Basis.FromEuler(SavedCardFixture.HeldRotation));
             AssertObject(held.Card.GetParent()).IsSame(camera);
+            AssertThat(held.LookSeed).IsNull();
 
             var placed = spawner.Spawned[1];
             AssertThat(placed.Signature.Elements).IsEqual(SavedCardFixture.PlacedElements);
             AssertThat(placed.Transform.Origin).IsEqual(SavedCardFixture.PlacedPosition);
             AssertThat(placed.Transform.Basis).IsEqual(Basis.FromEuler(SavedCardFixture.PlacedRotation));
             AssertObject(placed.Card.GetParent()).IsSame(world);
+            AssertThat(placed.LookSeed).IsNull();
         }
         finally
         {
             // GameSaveService._ExitTree saves to savePath. Removing the service first runs that save while the
             // cards are still in the tree; the temp file is deleted only after it has run.
-            world.RemoveChild(service);
-            service.Free();
-            world.Free();
-            tree.CurrentScene = previousScene;
-            DeleteSaveFile(savePath);
-            TestServices.Reset();
+            TearDown(tree, previousScene, world, service, savePath);
         }
     }
 
@@ -116,13 +114,62 @@ public class GameSaveServiceLoadTest
         }
         finally
         {
-            world.RemoveChild(service);
-            service.Free();
-            world.Free();
-            tree.CurrentScene = previousScene;
-            DeleteSaveFile(savePath);
-            TestServices.Reset();
+            TearDown(tree, previousScene, world, service, savePath);
         }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static async Task SavingAndLoadingALookSeedHandsItToTheSpawner()
+    {
+        var tree = (SceneTree)Engine.GetMainLoop();
+        var previousScene = tree.CurrentScene;
+        var spawner = new RecordingSpawner();
+        TestServices.Reset();
+        TestServices.Container.RegisterSingleton<ICardSpawningService>(spawner);
+
+        var savePath = $"user://game-save-look-{Guid.NewGuid():N}.json";
+        var world = new Node3D { Name = "GameSaveLookWorld" };
+        var withLook = new CardController { Name = "WithLook", Signature = new CardSignature(), LookSeed = 4242 };
+        var withoutLook = new CardController { Name = "WithoutLook", Signature = new CardSignature() };
+        var service = new GameSaveService { AutoLoadOnStart = false, SavePath = savePath };
+        world.AddChild(withLook);
+        world.AddChild(withoutLook);
+        world.AddChild(service);
+        AddNode(world, autoFree: false);
+
+        try
+        {
+            tree.CurrentScene = world;
+            await world.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+
+            var save = new NodeSave();
+            service.Save(save);
+            spawner.Spawned.Clear();
+            service.Load(save);
+            await world.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+            await world.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+
+            AssertThat(spawner.Spawned).HasSize(2);
+            var seeds = spawner.Spawned.Select(s => s.LookSeed).ToList();
+            AssertBool(seeds.Count(v => v is null) == 1).IsTrue();
+            AssertThat(seeds.Single(v => v.HasValue)!.Value).IsEqual(4242);
+        }
+        finally
+        {
+            TearDown(tree, previousScene, world, service, savePath);
+        }
+    }
+
+    private static void TearDown(
+        SceneTree tree, Node? previousScene, Node3D world, GameSaveService service, string savePath)
+    {
+        world.RemoveChild(service);
+        service.Free();
+        world.Free();
+        tree.CurrentScene = previousScene;
+        DeleteSaveFile(savePath);
+        TestServices.Reset();
     }
 
     private static void WriteSaveFile(string path)
@@ -144,11 +191,15 @@ public class GameSaveServiceLoadTest
     {
         public List<Spawn> Spawned { get; } = [];
 
-        public Node3D? SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent)
+        public Node3D? SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent) =>
+            SpawnCard(signature, null, spawnTransform, parent);
+
+        public Node3D? SpawnCard(
+            CardSignature signature, int? lookSeed, Transform3D spawnTransform, Node3D parent)
         {
             var card = new CardController { Signature = signature };
             parent.AddChild(card);
-            Spawned.Add(new Spawn(signature, spawnTransform, card));
+            Spawned.Add(new Spawn(signature, spawnTransform, card, lookSeed));
             return card;
         }
 
@@ -157,5 +208,9 @@ public class GameSaveServiceLoadTest
         public Vector3 GetRandomOffset(Vector3 offsetRange) => Vector3.Zero;
     }
 
-    private sealed record Spawn(CardSignature Signature, Transform3D Transform, CardController Card);
+    private sealed record Spawn(
+        CardSignature Signature,
+        Transform3D Transform,
+        CardController Card,
+        int? LookSeed = null);
 }

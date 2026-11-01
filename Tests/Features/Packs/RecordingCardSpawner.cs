@@ -19,6 +19,10 @@ public sealed class RecordingCardSpawner : ICardSpawningService
         return null;
     }
 
+    public Node3D? SpawnCard(
+        CardSignature signature, int? lookSeed, Transform3D spawnTransform, Node3D parent) =>
+        SpawnCard(signature, spawnTransform, parent);
+
     public Node3D? SpawnRandomCard(Transform3D spawnTransform, Node3D parent) => null;
 
     public Vector3 GetRandomOffset(Vector3 offsetRange) => Vector3.Zero;
