@@ -33,8 +33,8 @@ public class ShopPackOpeningSceneTest
     private const int SettleFrames = 180;
     private const float FallLimitY = -0.5f;
 
-    // The storage room of the shop scene, inside its walls.
-    private static readonly Rect2 StorageRoom = new(0f, -8f, 8f, 8f);
+    // The right storage arm of the shop scene, where the delivery point is, inside its walls.
+    private static readonly Rect2 StorageRoom = new(16f, -8f, 8f, 20f);
 
     private Node3D _shop = null!;
     private Node3D _world = null!;

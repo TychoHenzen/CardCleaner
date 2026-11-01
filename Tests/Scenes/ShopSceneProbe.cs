@@ -44,6 +44,13 @@ public sealed class ShopSceneProbe(Node3D shop, CapsuleShape3D playerShape)
         return true;
     }
 
+    /// <summary>
+    /// Walks the capsule in a straight line between two points. Only X and Z are used: the capsule
+    /// stands at <see cref="CapsuleCenterHeight"/>, so the Y of each point is ignored.
+    /// </summary>
+    public bool ProbeSweep(Vector3 from, Vector3 to) =>
+        CanWalk([new Vector2(from.X, from.Z), new Vector2(to.X, to.Z)]);
+
     public bool SupportedByFloor(Vector3 feet)
     {
         var query = PhysicsRayQueryParameters3D.Create(feet + Vector3.Up * 0.5f, feet + Vector3.Down * 1f);

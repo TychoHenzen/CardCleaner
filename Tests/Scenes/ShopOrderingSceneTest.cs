@@ -195,9 +195,9 @@ public class ShopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void FirstLayerOfDeliverySlotsFitsInsideTheStorageFloor()
+    public void FirstLayerOfDeliverySlotsFitsInsideTheRightStorageFloor()
     {
-        var storage = _shop.GetNode<StaticBody3D>("World/Storage/Floor");
+        var storage = _shop.GetNode<StaticBody3D>("World/RightStorage/Floor");
         var shape = (BoxShape3D)storage.GetNode<CollisionShape3D>("CollisionShape3D").Shape;
         var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
         const float widestItem = 2.13f;
