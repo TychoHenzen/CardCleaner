@@ -44,33 +44,38 @@ public partial class PauseController : Node, IDependent
         if (!@event.IsActionPressed("ui_cancel"))
             return;
 
-        var paused = GetTree().Paused;
+        if (GetTree().Paused)
+        {
+            Resume();
+            return;
+        }
 
         // While something else holds the cursor (a PC screen), Escape belongs
         // to that screen, not to pause
-        if (!paused && _cursor != null && _cursor.HasClaimOtherThan(this))
+        if (_cursor != null && _cursor.HasClaimOtherThan(this))
             return;
 
-        SetPaused(!paused);
+        Pause();
     }
 
-    private void Resume() => SetPaused(false);
-
-    private void SetPaused(bool paused)
+    private void Pause()
     {
-        GetTree().Paused = paused;
-
-        // Show or hide pause menu
-        _pauseMenuRoot.Visible = paused;
-
-        // Toggle in-game UI opposite of pause menu
+        GetTree().Paused = true;
+        _pauseMenuRoot.Visible = true;
         if (UILayer != null)
-            UILayer.Visible = !paused;
+            UILayer.Visible = false;
 
         // The pause menu holds a cursor claim while it is open
-        if (paused)
-            _cursor?.Claim(this);
-        else
-            _cursor?.Release(this);
+        _cursor?.Claim(this);
+    }
+
+    private void Resume()
+    {
+        GetTree().Paused = false;
+        _pauseMenuRoot.Visible = false;
+        if (UILayer != null)
+            UILayer.Visible = true;
+
+        _cursor?.Release(this);
     }
 }

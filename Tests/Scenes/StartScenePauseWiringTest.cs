@@ -1,3 +1,4 @@
+using System;
 using CardCleaner.Scripts.Features.Pause.Components;
 using CardCleaner.Scripts.Features.Pause.Controllers;
 using Godot;
@@ -12,49 +13,37 @@ namespace CardCleaner.Tests.Scenes;
 [RequireGodotRuntime]
 public class StartScenePauseWiringTest
 {
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void ResumeButtonExistsUnderThePauseMenuPanel()
-    {
-        var scene = GD.Load<PackedScene>("res://Scenes/Gameplay/StartScene.tscn").Instantiate<Node>();
-        try
-        {
-            var resume = scene.GetNode<Button>("Ui/PauseMenu/Panel/ResumeButton");
-
-            AssertThat(resume.Text).IsEqual("Resume");
-        }
-        finally
-        {
-            scene.Free();
-        }
-    }
+    private const string ScenePath = "res://Scenes/Gameplay/StartScene.tscn";
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void CursorOwnerSitsUnderServices()
-    {
-        var scene = GD.Load<PackedScene>("res://Scenes/Gameplay/StartScene.tscn").Instantiate<Node>();
-        try
-        {
-            AssertThat(scene.GetNodeOrNull<CursorOwner>("Services/CursorOwner")).IsNotNull();
-        }
-        finally
-        {
-            scene.Free();
-        }
-    }
+    public static void ResumeButtonExistsUnderThePauseMenuPanel() =>
+        WithStartScene(scene =>
+            AssertThat(scene.GetNode<Button>("Ui/PauseMenu/Panel/ResumeButton").Text).IsEqual("Resume"));
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void PauseControllerStillWired()
-    {
-        var scene = GD.Load<PackedScene>("res://Scenes/Gameplay/StartScene.tscn").Instantiate<Node>();
-        try
+    public static void CursorOwnerSitsUnderServices() =>
+        WithStartScene(scene =>
+            AssertThat(scene.GetNodeOrNull<CursorOwner>("Services/CursorOwner")).IsNotNull());
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void PauseControllerStillWired() =>
+        WithStartScene(scene =>
         {
             var pause = scene.GetNode<PauseController>("Ui");
 
             AssertThat(pause.PauseMenuLayer).IsNotNull();
             AssertThat(pause.UILayer).IsNotNull();
+        });
+
+    private static void WithStartScene(Action<Node> check)
+    {
+        var scene = GD.Load<PackedScene>(ScenePath).Instantiate<Node>();
+        try
+        {
+            check(scene);
         }
         finally
         {

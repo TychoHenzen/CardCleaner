@@ -44,7 +44,8 @@ public class ShopPauseTest
         TestServices.Reset();
         TestServices.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
         TestServices.Container.RegisterSingleton<IMoneyService>(_shop.GetNode<MoneyService>("Services/MoneyService"));
-        TestServices.Container.RegisterSingleton<IOrderingService>(_shop.GetNode<OrderingService>("Services/OrderingService"));
+        TestServices.Container.RegisterSingleton<IOrderingService>(
+            _shop.GetNode<OrderingService>("Services/OrderingService"));
         TestServices.Container.RegisterSingleton<ICursorOwner>(_cursor);
 
         AddNode(_shop);
