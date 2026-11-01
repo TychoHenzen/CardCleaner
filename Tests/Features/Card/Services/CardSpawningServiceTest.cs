@@ -142,6 +142,46 @@ public class CardSpawningServiceTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
+    public void TestZeroSignatureCardsGetDifferentVisualSignatures()
+    {
+        var first = (CardController)_service.SpawnCard(new CardSignature(), Transform3D.Identity, _cardParent)!;
+        var second = (CardController)_service.SpawnCard(new CardSignature(), Transform3D.Identity, _cardParent)!;
+
+        Assertions.AssertBool(first.HasVisualSignature).IsTrue();
+        Assertions.AssertBool(first.Signature.Elements.AsSpan().SequenceEqual(second.Signature.Elements)).IsTrue();
+        Assertions.AssertBool(first.VisualSignature.Elements.AsSpan().SequenceEqual(second.VisualSignature.Elements))
+            .IsFalse();
+        Assertions.AssertBool(first.VisualSignature.HasMagicalPotential()).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TestSpecialSignatureCardKeepsItsSignatureAsVisualSignature()
+    {
+        var signature = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f });
+
+        var card = (CardController)_service.SpawnCard(signature, Transform3D.Identity, _cardParent)!;
+
+        Assertions.AssertBool(card.VisualSignature.Elements.AsSpan().SequenceEqual(signature.Elements)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TestExplicitVisualSignatureIsUsedAndRngIsNotAdvanced()
+    {
+        var visual = new CardSignature(new[] { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f });
+        _rng.Seed = 7;
+        var expectedNext = _rng.Randf();
+        _rng.Seed = 7;
+
+        var card = (CardController)_service.SpawnCard(new CardSignature(), visual, Transform3D.Identity, _cardParent)!;
+
+        Assertions.AssertBool(card.VisualSignature.Elements.AsSpan().SequenceEqual(visual.Elements)).IsTrue();
+        Assertions.AssertFloat(_rng.Randf()).IsEqual(expectedNext);
+    }
+
+    [TestCase]
     public void TestRandomOffsetRangeZero()
     {
         var offsetRange = Vector3.Zero;

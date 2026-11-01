@@ -163,6 +163,10 @@ public sealed class WorkshopSceneRig
             return card;
         }
 
+        public Node3D? SpawnCard(
+            CardSignature signature, CardSignature? visualSignature, Transform3D spawnTransform, Node3D parent) =>
+            SpawnCard(signature, spawnTransform, parent);
+
         public Node3D? SpawnRandomCard(Transform3D spawnTransform, Node3D parent) =>
             SpawnCard(new CardSignature(), spawnTransform, parent);
 

@@ -35,6 +35,26 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
         HasSignature = false;
     }
 
+    private CardSignature _visualSignature;
+    public bool HasVisualSignature { get; private set; }
+
+    /// <summary>The signature that drives the card's look; differs from Signature for zero-signature cards.</summary>
+    public CardSignature VisualSignature
+    {
+        get => _visualSignature;
+        set
+        {
+            _visualSignature = value;
+            HasVisualSignature = true;
+        }
+    }
+
+    internal void ClearVisualSignature()
+    {
+        _visualSignature = default;
+        HasVisualSignature = false;
+    }
+
     private bool IsHeld => GetParent() is Camera3D; // Check if reparented to camera
 
     // IInteractable implementation

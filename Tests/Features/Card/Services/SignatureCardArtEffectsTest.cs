@@ -78,6 +78,21 @@ public class SignatureCardArtEffectsTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void SeedFollowsTheVisualSignatureWhileRarityAndConditionFollowTheGameplaySignature()
+    {
+        // A common card (all zeros) drawn with a visual signature of its own: only the seed follows the visual one.
+        var gameplay = new CardSignature();
+        var visual = new CardSignature(RareDormant);
+
+        var material = GenerateAndApply(gameplay, visualSignature: visual);
+
+        AssertThat((float)material.GetShaderParameter("art_seed")).IsEqual(CardEffectSeed.For(visual));
+        AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
+        AssertThat((int)material.GetShaderParameter("condition_effect")).IsEqual((int)ConditionEffect.Worn);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public async Task CardShowsNoRarityEffectUntilTheBevelMapOfItsArtIsBaked()
     {
         var template = new CardTemplate();
@@ -119,7 +134,7 @@ public class SignatureCardArtEffectsTest
     {
         var template = new CardTemplate();
         var freed = CreateRenderer();
-        _generator.GenerateCardRenderer(freed, new CardSignature(RareDormant), template);
+        _generator.GenerateCardRenderer(freed, new CardSignature(RareDormant), new CardSignature(RareDormant), template);
         freed.Free();
 
         // The freed card's request comes first, so a throw on it would keep this one from ever arriving.
@@ -134,12 +149,12 @@ public class SignatureCardArtEffectsTest
     {
         var renderer = Assertions.AddNode(CreateRenderer());
         var first = new CardTemplate();
-        _generator.GenerateCardRenderer(renderer, new CardSignature(RareDormant), first);
+        _generator.GenerateCardRenderer(renderer, new CardSignature(RareDormant), new CardSignature(RareDormant), first);
         var firstArt = first.Art.Texture!;
 
         // A common card has no rarity effect, so generating it supersedes the first card's pending bevel map.
         var common = new CardSignature();
-        _generator.GenerateCardRenderer(renderer, common, new CardTemplate());
+        _generator.GenerateCardRenderer(renderer, common, common, new CardTemplate());
         var material = renderer.GetNode<CardMaterialManager>("MaterialManager")
             .ApplyMaterial(Assertions.AddNode(new MeshInstance3D()))!;
         AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
@@ -160,7 +175,7 @@ public class SignatureCardArtEffectsTest
         var renderer = Assertions.AddNode(CreateRenderer());
         var template = new CardTemplate();
         var signature = new CardSignature(RareDormant);
-        _generator.GenerateCardRenderer(renderer, signature, template);
+        _generator.GenerateCardRenderer(renderer, signature, signature, template);
         var material = renderer.GetNode<CardMaterialManager>("MaterialManager")
             .ApplyMaterial(Assertions.AddNode(new MeshInstance3D()))!;
         AssertThat((int)material.GetShaderParameter("rarity_effect")).IsEqual((int)RarityEffect.None);
@@ -202,10 +217,13 @@ public class SignatureCardArtEffectsTest
     }
 
     /// <summary>Generates a card on a real renderer and returns the material it ends up with.</summary>
-    private ShaderMaterial GenerateAndApply(CardSignature signature, CardTemplate? template = null)
+    private ShaderMaterial GenerateAndApply(
+        CardSignature signature,
+        CardTemplate? template = null,
+        CardSignature? visualSignature = null)
     {
         var renderer = Assertions.AddNode(CreateRenderer());
-        _generator.GenerateCardRenderer(renderer, signature, template ?? new CardTemplate());
+        _generator.GenerateCardRenderer(renderer, signature, visualSignature ?? signature, template ?? new CardTemplate());
         return renderer.GetNode<CardMaterialManager>("MaterialManager")
                    .ApplyMaterial(Assertions.AddNode(new MeshInstance3D()))
                ?? throw new System.InvalidOperationException("No material applied");
