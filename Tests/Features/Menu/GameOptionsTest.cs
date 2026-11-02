@@ -11,7 +11,11 @@ public class GameOptionsTest
     [TestCategory("Unit")]
     public void Clamped_limits_every_field()
     {
-        var options = new GameOptions(9f, false, -1f, 2f, 0.5f, true, 99, false);
+        var options = new GameOptions
+        {
+            MouseSensitivity = 9f, InvertY = false, MasterVolume = -1f, MusicVolume = 2f, SfxVolume = 0.5f,
+            Fullscreen = true, ResolutionIndex = 99, Vsync = false,
+        };
 
         var clamped = options.Clamped();
 
@@ -28,7 +32,11 @@ public class GameOptionsTest
     [TestCategory("Unit")]
     public void Clamped_replaces_nan_with_the_default()
     {
-        var options = new GameOptions(float.NaN, true, float.NaN, float.NaN, float.NaN, false, -5, true);
+        var options = new GameOptions
+        {
+            MouseSensitivity = float.NaN, InvertY = true, MasterVolume = float.NaN, MusicVolume = float.NaN,
+            SfxVolume = float.NaN, Fullscreen = false, ResolutionIndex = -5, Vsync = true,
+        };
 
         var clamped = options.Clamped();
 

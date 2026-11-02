@@ -43,16 +43,17 @@ public class OptionsStore
             }
 
             var defaults = GameOptions.Defaults;
-            return new GameOptions(
-                file.GetValue(Section, "mouse_sensitivity", defaults.MouseSensitivity).AsSingle(),
-                file.GetValue(Section, "invert_y", defaults.InvertY).AsBool(),
-                file.GetValue(Section, "master_volume", defaults.MasterVolume).AsSingle(),
-                file.GetValue(Section, "music_volume", defaults.MusicVolume).AsSingle(),
-                file.GetValue(Section, "sfx_volume", defaults.SfxVolume).AsSingle(),
-                file.GetValue(Section, "fullscreen", defaults.Fullscreen).AsBool(),
-                file.GetValue(Section, "resolution_index", defaults.ResolutionIndex).AsInt32(),
-                file.GetValue(Section, "vsync", defaults.Vsync).AsBool()
-            ).Clamped();
+            return new GameOptions
+            {
+                MouseSensitivity = file.GetValue(Section, "mouse_sensitivity", defaults.MouseSensitivity).AsSingle(),
+                InvertY = file.GetValue(Section, "invert_y", defaults.InvertY).AsBool(),
+                MasterVolume = file.GetValue(Section, "master_volume", defaults.MasterVolume).AsSingle(),
+                MusicVolume = file.GetValue(Section, "music_volume", defaults.MusicVolume).AsSingle(),
+                SfxVolume = file.GetValue(Section, "sfx_volume", defaults.SfxVolume).AsSingle(),
+                Fullscreen = file.GetValue(Section, "fullscreen", defaults.Fullscreen).AsBool(),
+                ResolutionIndex = file.GetValue(Section, "resolution_index", defaults.ResolutionIndex).AsInt32(),
+                Vsync = file.GetValue(Section, "vsync", defaults.Vsync).AsBool(),
+            }.Clamped();
         }
         catch (System.Exception ex)
         {

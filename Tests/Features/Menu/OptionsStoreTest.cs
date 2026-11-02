@@ -28,7 +28,11 @@ public class OptionsStoreTest
     [TestCategory("Unit")]
     public void Save_then_Load_round_trips()
     {
-        var options = new GameOptions(0.25f, true, 0.5f, 0.75f, 0.125f, true, 2, false);
+        var options = new GameOptions
+        {
+            MouseSensitivity = 0.25f, InvertY = true, MasterVolume = 0.5f, MusicVolume = 0.75f, SfxVolume = 0.125f,
+            Fullscreen = true, ResolutionIndex = 2, Vsync = false,
+        };
         var store = new OptionsStore(_path);
 
         store.Save(options);
@@ -63,10 +67,18 @@ public class OptionsStoreTest
     {
         var store = new OptionsStore(_path);
 
-        store.Save(new GameOptions(9f, false, -1f, 2f, 0.5f, false, 99, true));
+        store.Save(new GameOptions
+        {
+            MouseSensitivity = 9f, InvertY = false, MasterVolume = -1f, MusicVolume = 2f, SfxVolume = 0.5f,
+            Fullscreen = false, ResolutionIndex = 99, Vsync = true,
+        });
         var loaded = store.Load();
 
-        Assertions.AssertThat(loaded).IsEqual(new GameOptions(0.5f, false, 0f, 1f, 0.5f, false, 3, true));
+        Assertions.AssertThat(loaded).IsEqual(new GameOptions
+        {
+            MouseSensitivity = 0.5f, InvertY = false, MasterVolume = 0f, MusicVolume = 1f, SfxVolume = 0.5f,
+            Fullscreen = false, ResolutionIndex = 3, Vsync = true,
+        });
     }
 
     [TestCase]
@@ -77,7 +89,11 @@ public class OptionsStoreTest
         var store = new OptionsStore(_path);
         Assertions.AssertThat(store.Load()).IsEqual(GameOptions.Defaults);
 
-        var options = new GameOptions(0.3f, true, 0.2f, 0.4f, 0.6f, false, 1, false);
+        var options = new GameOptions
+        {
+            MouseSensitivity = 0.3f, InvertY = true, MasterVolume = 0.2f, MusicVolume = 0.4f, SfxVolume = 0.6f,
+            Fullscreen = false, ResolutionIndex = 1, Vsync = false,
+        };
         store.Save(options);
 
         Assertions.AssertThat(store.Load()).IsEqual(options);

@@ -87,14 +87,16 @@ public partial class OptionsMenuController : Control, IDependent
 
     private GameOptions ReadControls()
     {
-        return new GameOptions(
-            (float)GetNode<HSlider>(SensitivityPath).Value,
-            GetNode<CheckButton>(InvertYPath).ButtonPressed,
-            (float)GetNode<HSlider>(MasterPath).Value,
-            (float)GetNode<HSlider>(MusicPath).Value,
-            (float)GetNode<HSlider>(SfxPath).Value,
-            GetNode<CheckButton>(FullscreenPath).ButtonPressed,
-            GetNode<OptionButton>(ResolutionPath).Selected,
-            GetNode<CheckButton>(VsyncPath).ButtonPressed).Clamped();
+        return new GameOptions
+        {
+            MouseSensitivity = (float)GetNode<HSlider>(SensitivityPath).Value,
+            InvertY = GetNode<CheckButton>(InvertYPath).ButtonPressed,
+            MasterVolume = (float)GetNode<HSlider>(MasterPath).Value,
+            MusicVolume = (float)GetNode<HSlider>(MusicPath).Value,
+            SfxVolume = (float)GetNode<HSlider>(SfxPath).Value,
+            Fullscreen = GetNode<CheckButton>(FullscreenPath).ButtonPressed,
+            ResolutionIndex = GetNode<OptionButton>(ResolutionPath).Selected,
+            Vsync = GetNode<CheckButton>(VsyncPath).ButtonPressed,
+        }.Clamped();
     }
 }
