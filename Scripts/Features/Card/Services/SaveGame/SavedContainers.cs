@@ -17,7 +17,12 @@ namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 internal static class SavedContainers
 {
     /// <summary>One sealed container read back from a slot, every field already checked.</summary>
-    internal sealed record Saved(string ScenePath, CardContainerKind Kind, ulong? Seed, Vector3 Position, Vector3 Rotation);
+    internal sealed record Saved(
+        string ScenePath,
+        CardContainerKind Kind,
+        ulong? Seed,
+        Vector3 Position,
+        Vector3 Rotation);
 
     // One sealed container as it is written to a slot. Position and Rotation are typed object, as the card records
     // are: a Vector3 cannot be read back into a typed property, so they are read through SavedCardReader like cards.
@@ -56,7 +61,9 @@ internal static class SavedContainers
         return records.Select(ParseOne).ToList();
     }
 
-    /// <summary>Frees the scene's own containers, then adds one container under <paramref name="world" /> per saved one.</summary>
+    /// <summary>
+    ///     Frees the scene's own containers, then adds one container under <paramref name="world" /> per saved one.
+    /// </summary>
     internal static void Restore(SceneTree tree, IEnumerable<Saved> saved, Node3D world)
     {
         foreach (var existing in tree.GetNodesInGroup("card_containers").OfType<CardContainer>()
