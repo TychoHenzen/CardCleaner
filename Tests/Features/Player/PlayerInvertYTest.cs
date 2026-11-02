@@ -22,7 +22,7 @@ public class PlayerInvertYTest
     [TestCategory("Unit")]
     public void InvertY_true_raises_pitch_on_positive_delta()
     {
-        var headPitch = HeadPitchAfterMouseMove(invertY: true);
+        var headPitch = HeadPitchAfterMouseMove(new GameSettings { InvertY = true });
 
         Assertions.AssertThat(headPitch).IsGreater(0f);
     }
@@ -31,14 +31,14 @@ public class PlayerInvertYTest
     [TestCategory("Unit")]
     public void InvertY_false_lowers_pitch_on_positive_delta()
     {
-        var headPitch = HeadPitchAfterMouseMove(invertY: false);
+        var headPitch = HeadPitchAfterMouseMove(new GameSettings { InvertY = false });
 
         Assertions.AssertThat(headPitch).IsLess(0f);
     }
 
-    private static float HeadPitchAfterMouseMove(bool invertY)
+    // Takes ownership of the settings node and frees it.
+    private static float HeadPitchAfterMouseMove(GameSettings settings)
     {
-        var settings = new GameSettings { InvertY = invertY };
         var host = new ServiceHost();
         host.Container.RegisterSingleton<IGameSettings>(settings);
 
@@ -51,7 +51,8 @@ public class PlayerInvertYTest
             // directly is what CardControllerTestBase does for the same reason.
             player._Ready();
 
-            var onMouseMoved = typeof(PlayerController).GetMethod("OnMouseMoved", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            var onMouseMoved = typeof(PlayerController).GetMethod(
+                "OnMouseMoved", BindingFlags.NonPublic | BindingFlags.Instance)!;
             onMouseMoved.Invoke(player, new object[] { new Vector2(0f, VerticalDelta) });
 
             return player.GetNode<Node3D>("Head").RotationDegrees.X;

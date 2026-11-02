@@ -90,7 +90,8 @@ public class OptionsApplierTest
         var plan = OptionsApplier.DisplayFor(GameOptions.Defaults with { ResolutionIndex = 2, Vsync = true });
 
         Assertions.AssertThat(plan).IsEqual(
-            new DisplayPlan(DisplayServer.WindowMode.Windowed, new Vector2I(1920, 1080), DisplayServer.VSyncMode.Enabled));
+            new DisplayPlan(
+                DisplayServer.WindowMode.Windowed, new Vector2I(1920, 1080), DisplayServer.VSyncMode.Enabled));
     }
 
     [TestCase]
