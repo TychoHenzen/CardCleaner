@@ -52,9 +52,11 @@ public class PauseMenuEntriesSceneTest
     [TestCategory("Unit")]
     public void Options_button_opens_options_and_Closed_returns_to_pause_panel()
     {
-        var menu = BuildMenu(new FakeSaveGame(true), out _, out _);
+        var menu = BuildMenu(new FakeSaveGame(true), out _, out var pause);
         var options = menu.GetNode<Control>("OptionsMenu");
         var pausePanel = menu.GetNode<Control>("Panel");
+        pause._UnhandledInput(EscapeEvent());
+        Assertions.AssertBool(pausePanel.Visible).IsTrue();
         Assertions.AssertBool(options.Visible).IsFalse();
 
         menu.GetNode<Button>("Panel/OptionsButton").EmitSignal(BaseButton.SignalName.Pressed);
