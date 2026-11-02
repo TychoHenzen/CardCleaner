@@ -16,6 +16,7 @@ namespace CardCleaner.Tests.Scenes;
 public class NeighbourhoodSceneTest
 {
     private const string NeighbourhoodPath = "Neighbourhood";
+    private const string ArtNodeName = "Art";
     private const string PackPrefix = "res://Assets/Synty/PolygonMiniCity/";
     private const float PropClearanceX = 1f;
     private static readonly Rect2 ShopAndStreetFootprint = new(-16f, -8f, 40f, 24f);
@@ -85,6 +86,41 @@ public class NeighbourhoodSceneTest
         AssertThat(kerb is ShopArtSlot)
             .OverrideFailureMessage($"{kerb.GetPath()} is the kerb primitive and must not be a ShopArtSlot")
             .IsFalse();
+    }
+
+    // Headless stand-in for the doorway screenshot (owner decision 2026-11-01: no acceptance check may need a
+    // window; the look is judged by eye and never gates merging). After the shop loads, every slot must have
+    // loaded its pack mesh, hidden its placeholder and carry a material on each of its meshes.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void EveryArtSlotLoadedItsMeshHidPlaceholderAndHasMaterial()
+    {
+        var neighbourhood = RequireNode(_shop, NeighbourhoodPath);
+        var slots = Descendants(neighbourhood).OfType<ShopArtSlot>().ToList();
+        AssertThat(slots.Count).OverrideFailureMessage("no ShopArtSlot under the neighbourhood").IsGreaterEqual(1);
+
+        foreach (var slot in slots)
+        {
+            AssertThat(slot.ArtLoaded)
+                .OverrideFailureMessage($"{slot.GetPath()} did not load its Art mesh from '{slot.ArtPath}'")
+                .IsTrue();
+            AssertThat(slot.Placeholder != null && !slot.Placeholder.Visible)
+                .OverrideFailureMessage($"{slot.GetPath()} keeps its placeholder visible")
+                .IsTrue();
+
+            var art = slot.GetNodeOrNull<Node3D>(ArtNodeName);
+            AssertThat(art).OverrideFailureMessage($"{slot.GetPath()} has no {ArtNodeName} child").IsNotNull();
+            var meshes = art is MeshInstance3D self
+                ? Descendants(art!).OfType<MeshInstance3D>().Append(self).ToList()
+                : Descendants(art!).OfType<MeshInstance3D>().ToList();
+            AssertThat(meshes.Count).OverrideFailureMessage($"{art!.GetPath()} holds no mesh").IsGreaterEqual(1);
+            foreach (var mesh in meshes)
+            {
+                AssertThat(mesh.MaterialOverride != null)
+                    .OverrideFailureMessage($"{mesh.GetPath()} has no material")
+                    .IsTrue();
+            }
+        }
     }
 
     [TestCase]
