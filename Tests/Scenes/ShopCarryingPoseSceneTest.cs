@@ -233,8 +233,9 @@ public class ShopCarryingPoseSceneTest
         await FaceBox(box);
     }
 
-    // Turns the player and the camera at the box from where the player stands, without moving the player. A
-    // teleport next to a settled box makes the physics shove it away, so the second pick-up only turns.
+    // Turns the player and the camera at the box from where the player stands, without moving the player. The
+    // dropped box lies between the player and the far side of it, so teleporting there crosses the box and the
+    // physics launches it about 12 m away, out of reach; the second pick-up therefore only turns.
     private async Task FaceBox(CardContainer box)
     {
         var boxXz = new Vector2(box.GlobalPosition.X, box.GlobalPosition.Z);
