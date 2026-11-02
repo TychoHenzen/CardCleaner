@@ -1,4 +1,6 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://Scenes/UI/OptionsMenu.tscn" id="1_options_menu"]
 
 [node name="PauseMenu" type="CanvasLayer"]
 layer = 10
@@ -54,3 +56,35 @@ offset_bottom = 104.0
 grow_horizontal = 2
 grow_vertical = 2
 horizontal_alignment = 1
+
+[node name="OptionsButton" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = 110.0
+offset_right = 60.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Options"
+
+[node name="QuitToMenuButton" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = 160.0
+offset_right = 60.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Quit to menu"
+
+[node name="OptionsMenu" parent="." instance=ExtResource("1_options_menu")]
