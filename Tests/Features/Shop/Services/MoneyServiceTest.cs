@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Shop.Services;
+using Saveable;
 
 namespace CardCleaner.Tests.Features.Shop.Services;
 
@@ -86,5 +87,43 @@ public class MoneyServiceTest
         AssertThat(seen.Count).IsEqual(2);
         AssertThat(seen[0]).IsEqual(70);
         AssertThat(seen[1]).IsEqual(75);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void SaveThenLoadRestoresBalance()
+    {
+        _money.Add(77);
+        var save = new NodeSave();
+        _money.Save(save);
+
+        var restored = new MoneyService { StartingBalance = 100 };
+        try
+        {
+            restored.Load(save);
+
+            AssertThat(restored.Balance).IsEqual(_money.Balance);
+        }
+        finally
+        {
+            restored.Free();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void LoadWithoutBalancePropertyKeepsStartingBalance()
+    {
+        var restored = new MoneyService { StartingBalance = 100 };
+        try
+        {
+            restored.Load(new NodeSave());
+
+            AssertThat(restored.Balance).IsEqual(100);
+        }
+        finally
+        {
+            restored.Free();
+        }
     }
 }
