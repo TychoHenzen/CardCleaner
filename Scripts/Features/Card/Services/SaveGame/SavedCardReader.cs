@@ -68,7 +68,7 @@ internal static class SavedCardReader
         return null;
     }
 
-    private static Vector3 GetVector3FromData(object vectorData)
+    internal static Vector3 GetVector3FromData(object vectorData)
     {
         if (vectorData is Vector3 vec)
             return vec;

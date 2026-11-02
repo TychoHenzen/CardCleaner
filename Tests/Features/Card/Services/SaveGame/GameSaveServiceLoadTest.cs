@@ -6,6 +6,9 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services.SaveGame;
+using CardCleaner.Scripts.Features.SaveSlots.Models;
+using CardCleaner.Scripts.Features.SaveSlots.Services;
+using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
 using Godot;
@@ -15,7 +18,8 @@ namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
 
 /// <summary>
 /// Loads the committed pre-move save through the real save system (#172 U1). The game save service respawns each saved
-/// card, and the held card is handed to the player camera. The service saves to the test's own GUID-named file only.
+/// card, and the held card is handed to the player camera. The service reads and writes an in-memory slot file system,
+/// so no test touches the user folder.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -31,7 +35,11 @@ public class GameSaveServiceLoadTest
         TestServices.Reset();
         TestServices.Container.RegisterSingleton<ICardSpawningService>(spawner);
 
-        var savePath = $"user://game-save-load-{Guid.NewGuid():N}.json";
+        var activeSlot = SelectSlot("a");
+        var files = new InMemorySlotFileSystem();
+        var envelope = SaveEnvelope.Write(SavedCardFixture.ReadText(), DateTime.UtcNow);
+        files.Seed(SaveSlotLayout.FileFor(activeSlot.Current), envelope);
+
         var world = new Node3D { Name = "GameSaveLoadWorld" };
         var player = new Node3D { Name = "Player" };
         var head = new Node3D { Name = "Head" };
@@ -39,7 +47,7 @@ public class GameSaveServiceLoadTest
         player.AddToGroup("player");
         head.AddChild(camera);
         player.AddChild(head);
-        var service = new GameSaveService { AutoLoadOnStart = false, SavePath = savePath };
+        var service = TestServices.Inject(new GameSaveService(files, activeSlot) { AutoLoadOnStart = false });
         world.AddChild(player);
         world.AddChild(service);
         AddNode(world, autoFree: false);
@@ -47,8 +55,7 @@ public class GameSaveServiceLoadTest
         try
         {
             tree.CurrentScene = world;
-            WriteSaveFile(savePath);
-            SaveSystem.LoadFile(savePath, world);
+            service.LoadGame();
 
             // Load defers RecreateCards, and RecreateCards defers the held card's reparent: wait for both.
             await world.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
@@ -71,9 +78,9 @@ public class GameSaveServiceLoadTest
         }
         finally
         {
-            // GameSaveService._ExitTree saves to savePath. Removing the service first runs that save while the
-            // cards are still in the tree; the temp file is deleted only after it has run.
-            TearDown(tree, previousScene, world, service, savePath);
+            // GameSaveService._ExitTree saves to the in-memory slot. Removing the service first runs that save while
+            // the cards are still in the tree.
+            TearDown(tree, previousScene, world, service);
         }
     }
 
@@ -87,10 +94,10 @@ public class GameSaveServiceLoadTest
         TestServices.Reset();
         TestServices.Container.RegisterSingleton<ICardSpawningService>(spawner);
 
-        var savePath = $"user://game-save-absent-{Guid.NewGuid():N}.json";
-        var world = new Node3D { Name = "GameSaveAbsentWorld" };
         var card = new CardController { Name = "AbsentCard" };
-        var service = new GameSaveService { AutoLoadOnStart = false, SavePath = savePath };
+        var world = new Node3D { Name = "GameSaveAbsentWorld" };
+        var service = TestServices.Inject(
+            new GameSaveService(new InMemorySlotFileSystem(), SelectSlot("a")) { AutoLoadOnStart = false });
         world.AddChild(card);
         world.AddChild(service);
         AddNode(world, autoFree: false);
@@ -114,7 +121,7 @@ public class GameSaveServiceLoadTest
         }
         finally
         {
-            TearDown(tree, previousScene, world, service, savePath);
+            TearDown(tree, previousScene, world, service);
         }
     }
 
@@ -128,11 +135,11 @@ public class GameSaveServiceLoadTest
         TestServices.Reset();
         TestServices.Container.RegisterSingleton<ICardSpawningService>(spawner);
 
-        var savePath = $"user://game-save-look-{Guid.NewGuid():N}.json";
         var world = new Node3D { Name = "GameSaveLookWorld" };
         var withLook = new CardController { Name = "WithLook", Signature = new CardSignature(), LookSeed = 4242 };
         var withoutLook = new CardController { Name = "WithoutLook", Signature = new CardSignature() };
-        var service = new GameSaveService { AutoLoadOnStart = false, SavePath = savePath };
+        var service = TestServices.Inject(
+            new GameSaveService(new InMemorySlotFileSystem(), SelectSlot("a")) { AutoLoadOnStart = false });
         world.AddChild(withLook);
         world.AddChild(withoutLook);
         world.AddChild(service);
@@ -157,33 +164,27 @@ public class GameSaveServiceLoadTest
         }
         finally
         {
-            TearDown(tree, previousScene, world, service, savePath);
+            TearDown(tree, previousScene, world, service);
         }
     }
 
-    private static void TearDown(
-        SceneTree tree, Node? previousScene, Node3D world, GameSaveService service, string savePath)
+    private static ActiveSaveSlot SelectSlot(string raw)
+    {
+        if (!SaveSlotName.TryCreate(raw, out var name, out var reason))
+            throw new InvalidOperationException(reason);
+
+        var slot = new ActiveSaveSlot();
+        slot.Select(name);
+        return slot;
+    }
+
+    private static void TearDown(SceneTree tree, Node? previousScene, Node3D world, GameSaveService service)
     {
         world.RemoveChild(service);
         service.Free();
         world.Free();
         tree.CurrentScene = previousScene;
-        DeleteSaveFile(savePath);
         TestServices.Reset();
-    }
-
-    private static void WriteSaveFile(string path)
-    {
-        var file = FileAccess.Open(path, FileAccess.ModeFlags.Write)
-            ?? throw new InvalidOperationException($"Cannot write {path}");
-        file.StoreString(SavedCardFixture.ReadText());
-        file.Close();
-    }
-
-    private static void DeleteSaveFile(string path)
-    {
-        // Removes only this GUID-named file. DirAccess.Remove does not recurse.
-        DirAccess.Open("user://")?.Remove(System.IO.Path.GetFileName(path));
     }
 
     /// <summary>Records each respawn and adds the card under its parent, as the real spawner does.</summary>

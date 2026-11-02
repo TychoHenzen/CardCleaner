@@ -11,7 +11,7 @@ namespace CardCleaner.Scripts.Features.SaveSlots.Services;
 // ASSUMPTION: a bare [Service] registers under interfaces only, and this class has none, so it names its own type,
 // as SlotStore does.
 [Service(typeof(LegacySaveImporter))]
-public sealed class LegacySaveImporter(SlotStore store, ISlotFileSystem files)
+public sealed class LegacySaveImporter(SlotStore store, ISlotFileSystem files, IActiveSaveSlot activeSlot)
 {
     /// <summary>The path GameSaveService wrote before save slots.</summary>
     public const string LegacyPath = "user://game_save.json";
@@ -20,7 +20,8 @@ public sealed class LegacySaveImporter(SlotStore store, ISlotFileSystem files)
 
     /// <summary>
     ///     Imports the legacy save when there are no slots and the legacy file exists. Returns true only when the
-    ///     import slot was written.
+    ///     import slot was written; then the import slot becomes the active slot, so the first load after the upgrade
+    ///     reads the player's old save. When nothing is imported the active slot is left unchanged.
     /// </summary>
     public bool TryImport()
     {
@@ -36,6 +37,12 @@ public sealed class LegacySaveImporter(SlotStore store, ISlotFileSystem files)
         }
 
         SaveSlotName.TryCreate(ImportedSlotKey, out var name, out _);
-        return store.Save(name, text, DateTime.UtcNow);
+        if (!store.Save(name, text, DateTime.UtcNow))
+        {
+            return false;
+        }
+
+        activeSlot.Select(name);
+        return true;
     }
 }

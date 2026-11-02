@@ -281,6 +281,25 @@ public static class SaveSystem
         return tree;
     }
 
+    /// <summary>
+    /// Serializes every <see cref="ISaveable"/> under <paramref name="root"/> to the JSON that
+    /// <see cref="SaveFile(string, Node, TreeSave?)"/> would write, without touching a file.
+    /// </summary>
+    public static string SerializeTree(Node root)
+    {
+        return SaveExtension.SerializeObject(SaveTree(root));
+    }
+
+    /// <summary>
+    /// Loads the JSON produced by <see cref="SerializeTree"/> into the <see cref="ISaveable"/> nodes under
+    /// <paramref name="root"/>, without reading a file.
+    /// </summary>
+    public static void LoadTreeFromJson(string json, Node root)
+    {
+        var save = SaveExtension.DeserializeObject<TreeSave>(json);
+        LoadTree(root, save);
+    }
+
     private static void RunInChildrenRecursive<T>(
         Node parent,
         System.Action<T> action)

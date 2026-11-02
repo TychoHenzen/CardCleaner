@@ -79,6 +79,9 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     public void Inject(IServiceResolver services) => _services = services;
 
+    // Sealed containers in this group are saved by GameSaveService, so a slot restores what was left on the floor.
+    public override void _EnterTree() => AddToGroup("card_containers");
+
     public override void _Ready()
     {
         CollisionLayer |= InteractableLayerBit;

@@ -24,7 +24,7 @@ public class LegacySaveImporterTest
     {
         var files = new InMemorySlotFileSystem();
         files.Seed(LegacySaveImporter.LegacyPath, Legacy);
-        var importer = new LegacySaveImporter(new SlotStore(files), files);
+        var importer = new LegacySaveImporter(new SlotStore(files), files, new ActiveSaveSlot());
 
         AssertThat(importer.TryImport()).IsTrue();
 
@@ -35,11 +35,41 @@ public class LegacySaveImporterTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public static void SuccessfulImportMakesImportedTheActiveSlot()
+    {
+        var files = new InMemorySlotFileSystem();
+        files.Seed(LegacySaveImporter.LegacyPath, Legacy);
+        var active = new ActiveSaveSlot();
+        var importer = new LegacySaveImporter(new SlotStore(files), files, active);
+
+        importer.TryImport();
+
+        AssertThat(active.Current.Key).IsEqual("imported");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void NoImportLeavesTheActiveSlotUnchanged()
+    {
+        var files = new InMemorySlotFileSystem();
+        var store = new SlotStore(files);
+        store.Save(Name("shop"), "{}", System.DateTime.UtcNow);
+        files.Seed(LegacySaveImporter.LegacyPath, Legacy);
+        var active = new ActiveSaveSlot();
+        var importer = new LegacySaveImporter(store, files, active);
+
+        importer.TryImport();
+
+        AssertThat(active.Current.Key).IsEqual("default");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static void LegacyBytesAreIdenticalAfterImport()
     {
         var files = new InMemorySlotFileSystem();
         files.Seed(LegacySaveImporter.LegacyPath, Legacy);
-        var importer = new LegacySaveImporter(new SlotStore(files), files);
+        var importer = new LegacySaveImporter(new SlotStore(files), files, new ActiveSaveSlot());
 
         importer.TryImport();
 
@@ -52,7 +82,7 @@ public class LegacySaveImporterTest
     {
         var files = new InMemorySlotFileSystem();
         files.Seed(LegacySaveImporter.LegacyPath, Legacy);
-        var importer = new LegacySaveImporter(new SlotStore(files), files);
+        var importer = new LegacySaveImporter(new SlotStore(files), files, new ActiveSaveSlot());
         importer.TryImport();
         var writesAfterFirstCall = files.WriteCalls;
 
@@ -69,7 +99,7 @@ public class LegacySaveImporterTest
         var store = new SlotStore(files);
         store.Save(Name("shop"), "{}", System.DateTime.UtcNow);
         files.Seed(LegacySaveImporter.LegacyPath, Legacy);
-        var importer = new LegacySaveImporter(store, files);
+        var importer = new LegacySaveImporter(store, files, new ActiveSaveSlot());
 
         AssertThat(importer.TryImport()).IsFalse();
 
@@ -81,7 +111,7 @@ public class LegacySaveImporterTest
     public static void NoImportWhenLegacyFileIsAbsent()
     {
         var files = new InMemorySlotFileSystem();
-        var importer = new LegacySaveImporter(new SlotStore(files), files);
+        var importer = new LegacySaveImporter(new SlotStore(files), files, new ActiveSaveSlot());
 
         AssertThat(importer.TryImport()).IsFalse();
 
