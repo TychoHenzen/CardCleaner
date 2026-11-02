@@ -174,7 +174,7 @@ public class GameSaveServiceLoadTest
             throw new InvalidOperationException(reason);
 
         var slot = new ActiveSaveSlot();
-        slot.Select(name);
+        slot.Activate(name);
         return slot;
     }
 

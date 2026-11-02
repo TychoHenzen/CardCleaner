@@ -71,7 +71,7 @@ public class SaveSlotRoundTripTest
             money.TrySpend(380);
 
             // Slot A: balance 120, one card, the player at PlayerPosition and one sealed container.
-            Select(slots, "a");
+            Activate(slots, "a");
             service.SaveGame();
 
             // Slot B: balance 700, no card and no container. The player stays where slot A put it.
@@ -80,10 +80,10 @@ public class SaveSlotRoundTripTest
             card.Free();
             world.RemoveChild(container);
             container.Free();
-            Select(slots, "b");
+            Activate(slots, "b");
             service.SaveGame();
 
-            Select(slots, "a");
+            Activate(slots, "a");
             service.LoadGame();
             await NextFrames(world, tree);
             AssertThat(money.Balance).IsEqual(120);
@@ -93,14 +93,14 @@ public class SaveSlotRoundTripTest
             AssertThat(restored.ContentSeed).IsEqual(ContainerSeed);
             AssertBool(restored.HasSeed).IsTrue();
 
-            Select(slots, "b");
+            Activate(slots, "b");
             service.LoadGame();
             await NextFrames(world, tree);
             AssertThat(money.Balance).IsEqual(700);
             AssertThat(CardsIn(world)).HasSize(0);
             AssertThat(ContainersIn(tree)).HasSize(0);
 
-            Select(slots, "a");
+            Activate(slots, "a");
             service.LoadGame();
             await NextFrames(world, tree);
             AssertThat(money.Balance).IsEqual(120);
@@ -132,12 +132,12 @@ public class SaveSlotRoundTripTest
     private static List<CardContainer> ContainersIn(SceneTree tree) =>
         tree.GetNodesInGroup("card_containers").OfType<CardContainer>().ToList();
 
-    private static void Select(ActiveSaveSlot slots, string raw)
+    private static void Activate(ActiveSaveSlot slots, string raw)
     {
         if (!SaveSlotName.TryCreate(raw, out var name, out var reason))
             throw new InvalidOperationException(reason);
 
-        slots.Select(name);
+        slots.Activate(name);
     }
 
     // Load defers the card respawn and frees the old containers at the end of the frame: wait for both.

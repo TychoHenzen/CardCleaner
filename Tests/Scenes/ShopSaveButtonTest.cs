@@ -44,7 +44,7 @@ public class ShopSaveButtonTest
         var slots = new ActiveSaveSlot();
         if (!SaveSlotName.TryCreate("a", out _slot, out var reason))
             throw new InvalidOperationException(reason);
-        slots.Select(_slot);
+        slots.Activate(_slot);
 
         var saveService = _shop.GetNode<GameSaveService>("Services/GameSaveService");
         TestServices.Container.RegisterSingleton<IActiveSaveSlot>(slots);

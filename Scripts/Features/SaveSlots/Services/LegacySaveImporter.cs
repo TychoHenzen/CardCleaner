@@ -42,7 +42,7 @@ public sealed class LegacySaveImporter(SlotStore store, ISlotFileSystem files, I
             return false;
         }
 
-        activeSlot.Select(name);
+        activeSlot.Activate(name);
         return true;
     }
 }

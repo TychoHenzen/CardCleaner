@@ -33,7 +33,7 @@ public class SaveSlotAutosaveTest
         var slots = new ActiveSaveSlot();
         if (!SaveSlotName.TryCreate("a", out var slotA, out var reason))
             throw new InvalidOperationException(reason);
-        slots.Select(slotA);
+        slots.Activate(slotA);
 
         var world = new Node3D { Name = "SlotAutosaveWorld" };
         var service = TestServices.Inject(new GameSaveService(files, slots)

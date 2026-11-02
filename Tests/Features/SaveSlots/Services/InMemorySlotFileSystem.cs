@@ -36,7 +36,7 @@ public sealed class InMemorySlotFileSystem : ISlotFileSystem
         _files[path] = text;
     }
 
-    public void Rename(string from, string to)
+    public void Rename(string from, string destination)
     {
         if (FailRename)
         {
@@ -48,7 +48,7 @@ public sealed class InMemorySlotFileSystem : ISlotFileSystem
             throw new IOException($"No file {from} to rename.");
         }
 
-        _files[to] = text;
+        _files[destination] = text;
         _files.Remove(from);
     }
 

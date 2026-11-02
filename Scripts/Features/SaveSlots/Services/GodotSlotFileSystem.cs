@@ -39,8 +39,8 @@ internal sealed class GodotSlotFileSystem : ISlotFileSystem
     ///     Moves the file over the target in one replace step (MoveFileEx with replace-existing on Windows, rename(2)
     ///     elsewhere), so the target is never deleted first and a failed move leaves the old target in place.
     /// </summary>
-    public void Rename(string from, string to) =>
-        File.Move(ProjectSettings.GlobalizePath(from), ProjectSettings.GlobalizePath(to), overwrite: true);
+    public void Rename(string from, string destination) =>
+        File.Move(ProjectSettings.GlobalizePath(from), ProjectSettings.GlobalizePath(destination), overwrite: true);
 
     public void Delete(string path)
     {

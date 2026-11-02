@@ -19,14 +19,14 @@ public class ActiveSaveSlotTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void SelectRaisesChangedOnceWithNewName()
+    public static void ActivateRaisesChangedOnceWithNewName()
     {
         var slot = new ActiveSaveSlot();
         var raised = new System.Collections.Generic.List<string>();
         slot.Changed += name => raised.Add(name.Key);
         SaveSlotName.TryCreate("My Shop", out var name, out _);
 
-        slot.Select(name);
+        slot.Activate(name);
 
         AssertThat(raised.Count).IsEqual(1);
         AssertThat(raised[0]).IsEqual("my shop");

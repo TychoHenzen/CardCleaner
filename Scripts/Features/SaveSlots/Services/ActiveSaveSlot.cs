@@ -15,7 +15,7 @@ internal sealed class ActiveSaveSlot : IActiveSaveSlot
 
     public event Action<SaveSlotName>? Changed;
 
-    public void Select(SaveSlotName name)
+    public void Activate(SaveSlotName name)
     {
         _current = name;
         Changed?.Invoke(name);

@@ -120,7 +120,7 @@ public class SealedBoxSaveTest
         if (!SaveSlotName.TryCreate(raw, out var name, out var reason))
             throw new InvalidOperationException(reason);
 
-        slots.Select(name);
+        slots.Activate(name);
     }
 
     private static void TearDown(SceneTree tree, Node? previousScene, Node3D world, GameSaveService service)

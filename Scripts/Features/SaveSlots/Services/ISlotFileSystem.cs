@@ -16,7 +16,7 @@ public interface ISlotFileSystem
     void WriteAllText(string path, string text);
 
     /// <summary>Moves a file to a new path, replacing the target when it exists.</summary>
-    void Rename(string from, string to);
+    void Rename(string from, string destination);
 
     /// <summary>Deletes a file, or an empty folder. Does nothing when the path does not exist.</summary>
     void Delete(string path);

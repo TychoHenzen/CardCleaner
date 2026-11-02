@@ -10,8 +10,8 @@ public interface IActiveSaveSlot
 {
     SaveSlotName Current { get; }
 
-    void Select(SaveSlotName name);
+    void Activate(SaveSlotName name);
 
-    /// <summary>Raised on every <see cref="Select" />, with the newly selected slot.</summary>
+    /// <summary>Raised on every <see cref="Activate" />, with the newly selected slot.</summary>
     event Action<SaveSlotName>? Changed;
 }
