@@ -18,21 +18,30 @@ public static class PackMaterialCatalog
     [
         ("SimpleShopInterior", "SimpleShopInterior_Texture.png"),
         ("PolygonOffice", "PolygonOffice_Texture_01_A.png"),
-        ("PolygonDungeon", "Dungeons_Texture_01.png")
+        ("PolygonDungeon", "Dungeons_Texture_01.png"),
+        ("PolygonMiniCity", "PolygonMinis_Texture_01.png")
     ];
 
     /// <summary>The atlas file of every known pack.</summary>
-    public static IEnumerable<string> AtlasPaths => Packs.Select(pack => AtlasPath(pack.Folder, pack.Atlas));
+    public static IEnumerable<string> AtlasPaths =>
+        Packs.Select(pack => AtlasPath(pack.Folder, pack.Atlas));
 
-    /// <summary>The atlas for a mesh under one of the known pack folders, or null for any other path.</summary>
+    /// <summary>
+    ///     The atlas for a mesh under one of the known pack folders, or null
+    ///     for any other path.
+    /// </summary>
     public static string? AtlasPathFor(string artPath)
     {
         foreach (var (folder, atlas) in Packs)
-            if (artPath.StartsWith($"{SyntyRoot}{folder}/", StringComparison.Ordinal))
+        {
+            string prefix = $"{SyntyRoot}{folder}/";
+            if (artPath.StartsWith(prefix, StringComparison.Ordinal))
                 return AtlasPath(folder, atlas);
+        }
 
         return null;
     }
 
-    private static string AtlasPath(string folder, string atlas) => $"{SyntyRoot}{folder}/{atlas}";
+    private static string AtlasPath(string folder, string atlas) =>
+        $"{SyntyRoot}{folder}/{atlas}";
 }
