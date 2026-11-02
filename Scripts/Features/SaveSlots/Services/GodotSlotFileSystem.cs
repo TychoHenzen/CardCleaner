@@ -11,10 +11,8 @@ namespace CardCleaner.Scripts.Features.SaveSlots.Services;
 ///     The game's <see cref="ISlotFileSystem" />, built on Godot's FileAccess and DirAccess. Paths are converted to
 ///     absolute system paths for the rename and delete calls, which only take absolute paths.
 /// </summary>
-// ASSUMPTION: public rather than internal, because the test project has no InternalsVisibleTo and must construct it
-// directly. The [Service] scan finds it either way.
 [Service(typeof(ISlotFileSystem))]
-public sealed class GodotSlotFileSystem : ISlotFileSystem
+internal sealed class GodotSlotFileSystem : ISlotFileSystem
 {
     public bool Exists(string path) => FileAccess.FileExists(path);
 

@@ -8,11 +8,24 @@ namespace CardCleaner.Scripts.Features.SaveSlots.Models;
 ///     The versioned wrapper around one slot's payload. The payload is opaque text here; the save format owns its
 ///     meaning.
 /// </summary>
-public sealed record SaveEnvelope(int Version, string SavedAtUtc, string Payload)
+public sealed record SaveEnvelope
 {
     public const int CurrentVersion = 1;
 
     private static readonly JsonSerializerOptions ReadOptions = new() { PropertyNameCaseInsensitive = true };
+
+    public SaveEnvelope(int version, string savedAtUtc, string payload)
+    {
+        Version = version;
+        SavedAtUtc = savedAtUtc;
+        Payload = payload;
+    }
+
+    public int Version { get; init; }
+
+    public string SavedAtUtc { get; init; }
+
+    public string Payload { get; init; }
 
     /// <summary>
     ///     Reads an envelope. Refusals carry one of the reasons "empty", "unreadable", "newer version N" or

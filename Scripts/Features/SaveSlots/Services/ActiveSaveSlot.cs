@@ -5,7 +5,7 @@ using CardCleaner.Scripts.Features.SaveSlots.Models;
 namespace CardCleaner.Scripts.Features.SaveSlots.Services;
 
 [Service(typeof(IActiveSaveSlot))]
-public sealed class ActiveSaveSlot : IActiveSaveSlot
+internal sealed class ActiveSaveSlot : IActiveSaveSlot
 {
     private static readonly SaveSlotName DefaultName = CreateDefaultName();
 

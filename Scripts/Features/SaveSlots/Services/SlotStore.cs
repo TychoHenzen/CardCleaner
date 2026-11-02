@@ -13,8 +13,15 @@ namespace CardCleaner.Scripts.Features.SaveSlots.Services;
 ///     so a failed write leaves the previous save in place.
 /// </summary>
 [Service(typeof(SlotStore))]
-public sealed class SlotStore(ISlotFileSystem files)
+public sealed class SlotStore
 {
+    private readonly ISlotFileSystem _files;
+
+    public SlotStore(ISlotFileSystem files)
+    {
+        _files = files;
+    }
+
     /// <summary>
     ///     Writes the payload as the slot's save. Returns false, and logs the error, when any file step fails.
     /// </summary>
@@ -22,9 +29,9 @@ public sealed class SlotStore(ISlotFileSystem files)
     {
         try
         {
-            files.EnsureFolder(SaveSlotLayout.FolderFor(name));
-            files.WriteAllText(SaveSlotLayout.TempFor(name), SaveEnvelope.Write(payload, utcNow));
-            files.Rename(SaveSlotLayout.TempFor(name), SaveSlotLayout.FileFor(name));
+            _files.EnsureFolder(SaveSlotLayout.FolderFor(name));
+            _files.WriteAllText(SaveSlotLayout.TempFor(name), SaveEnvelope.Write(payload, utcNow));
+            _files.Rename(SaveSlotLayout.TempFor(name), SaveSlotLayout.FileFor(name));
             return true;
         }
         catch (Exception ex)
@@ -42,12 +49,12 @@ public sealed class SlotStore(ISlotFileSystem files)
     public LoadResult Load(SaveSlotName name)
     {
         var file = SaveSlotLayout.FileFor(name);
-        if (!files.Exists(file))
+        if (!_files.Exists(file))
         {
             return LoadResult.Missing;
         }
 
-        var result = SaveEnvelope.Read(files.ReadAllText(file));
+        var result = SaveEnvelope.Read(_files.ReadAllText(file));
         if (result.Envelope is { } envelope)
         {
             return LoadResult.Loaded(envelope);
@@ -64,7 +71,7 @@ public sealed class SlotStore(ISlotFileSystem files)
     public IReadOnlyList<SaveSlotName> List()
     {
         var entries = new List<(SaveSlotName Name, DateTime? SavedAt)>();
-        foreach (var folder in files.ListFolders(SaveSlotLayout.Root))
+        foreach (var folder in _files.ListFolders(SaveSlotLayout.Root))
         {
             if (!SaveSlotName.TryCreate(folder, out var name, out _))
             {
@@ -87,20 +94,20 @@ public sealed class SlotStore(ISlotFileSystem files)
     /// </summary>
     public void Delete(SaveSlotName name)
     {
-        files.Delete(SaveSlotLayout.TempFor(name));
-        files.Delete(SaveSlotLayout.FileFor(name));
-        files.Delete(SaveSlotLayout.FolderFor(name));
+        _files.Delete(SaveSlotLayout.TempFor(name));
+        _files.Delete(SaveSlotLayout.FileFor(name));
+        _files.Delete(SaveSlotLayout.FolderFor(name));
     }
 
     private DateTime? ReadSavedAt(SaveSlotName name)
     {
         var file = SaveSlotLayout.FileFor(name);
-        if (!files.Exists(file))
+        if (!_files.Exists(file))
         {
             return null;
         }
 
-        var result = SaveEnvelope.Read(files.ReadAllText(file));
+        var result = SaveEnvelope.Read(_files.ReadAllText(file));
         if (result.Envelope is null)
         {
             return null;

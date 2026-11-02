@@ -7,9 +7,16 @@ namespace CardCleaner.Scripts.Features.SaveSlots.Models;
 ///     A player-chosen save slot name. Its key is the lower-case form, which is also its folder name, so two names that
 ///     differ only by case are the same slot.
 /// </summary>
-public readonly record struct SaveSlotName(string Value)
+public readonly record struct SaveSlotName
 {
     public const int MaxLength = 32;
+
+    public SaveSlotName(string value)
+    {
+        Value = value;
+    }
+
+    public string Value { get; init; }
 
     private static readonly string[] ReservedNames = { "con", "prn", "aux", "nul" };
 
