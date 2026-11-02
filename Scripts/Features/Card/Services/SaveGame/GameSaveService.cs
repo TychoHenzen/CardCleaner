@@ -1,18 +1,21 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.SaveSlots.Models;
+using CardCleaner.Scripts.Features.SaveSlots.Services;
 using Godot;
 using Saveable;
-using System.Collections.Generic;
-using System.Linq;
+using Saveable.Extensions;
 
 namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 
-// Names ISaveable, the one service type the bare attribute exposed before IDependent was added.
-[Service(typeof(ISaveable))]
-public partial class GameSaveService : Node, ISaveable, IDependent
+// Names ISaveable (the save file's owner) and ISaveGameCommand (the pause menu's Save button).
+[Service(typeof(ISaveable), typeof(ISaveGameCommand))]
+public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDependent
 {
     // Default values for exported properties
     private const float DefaultAutoSaveInterval = 10.0f;
@@ -41,14 +44,30 @@ public partial class GameSaveService : Node, ISaveable, IDependent
         };
     }
 
-    private const string DefaultSavePath = "user://game_save.json";
-    // Tests point this at their own GUID-named file. _ExitTree saves here, so a test that frees the service must not
-    // leave the player's real save overwritten.
-    internal string SavePath { get; set; } = DefaultSavePath;
     private Timer? _autoSaveTimer;
     private ICardSpawningService? _cardSpawningService;
     private List<object>? _pendingCardData;
     private IServiceResolver? _services;
+
+    // The slot files this service reads and writes. Production resolves them in _Ready; tests pass them to the
+    // internal constructor, which keeps every save inside their in-memory file system.
+    private ISlotFileSystem? _files;
+    private IActiveSaveSlot? _activeSlot;
+    private SlotStore? _store;
+    private LegacySaveImporter? _importer;
+
+    // Godot instantiates scenes through this constructor, and the DI scan does not build Godot objects.
+    public GameSaveService()
+    {
+    }
+
+    internal GameSaveService(ISlotFileSystem files, IActiveSaveSlot activeSlot)
+    {
+        _files = files;
+        _activeSlot = activeSlot;
+        _store = new SlotStore(files);
+        _importer = new LegacySaveImporter(_store, files, activeSlot);
+    }
 
     // ISaveable implementation for managing dynamic cards
     public StringName UniqueID => "game_save_service";
@@ -63,10 +82,13 @@ public partial class GameSaveService : Node, ISaveable, IDependent
             return;
         }
 
-        _services.Get<ICardSpawningService>(service => _cardSpawningService = service);
+        ResolveServices(_services);
+
+        // Bring a pre-slot game_save.json across before the first load reads the active slot.
+        _importer?.TryImport();
 
         SetupAutoSave();
-        
+
         if (AutoLoadOnStart)
         {
             // Defer loading to ensure scene is fully ready
@@ -74,6 +96,17 @@ public partial class GameSaveService : Node, ISaveable, IDependent
         }
     }
     
+    // ASSUMPTION: these services are registered before this node readies, so each callback runs synchronously and
+    // the ??= below leaves the seam collaborators of a test untouched. A pending callback only fills a null field.
+    private void ResolveServices(IServiceResolver services)
+    {
+        services.Get<ICardSpawningService>(service => _cardSpawningService = service);
+        services.Get<IActiveSaveSlot>(slot => _activeSlot ??= slot);
+        services.Get<ISlotFileSystem>(files => _files ??= files);
+        services.Get<SlotStore>(store => _store ??= store);
+        services.Get<LegacySaveImporter>(importer => _importer ??= importer);
+    }
+
     private void SetupAutoSave()
     {
         // Ensure AutoSaveInterval is valid (Godot Timer requires WaitTime > 0)
@@ -94,13 +127,19 @@ public partial class GameSaveService : Node, ISaveable, IDependent
     
     public void Save(NodeSave save)
     {
-        // Find all cards in the scene and save their spawn data
-        var cardData = new List<Dictionary<string, object?>>();
-        var cards = GetTree().GetNodesInGroup("Cards").OfType<CardController>();
-        
-        foreach (var card in cards)
-        {
-            var data = new Dictionary<string, object?>
+        var cardData = CaptureCards();
+        save.SetOrAddProperty("cards", cardData);
+        ILog.Print($"Saved {cardData.Count} cards to persistence data");
+
+        var containers = SavedContainers.Capture(GetTree());
+        save.SetOrAddProperty("containers", containers);
+        ILog.Print($"Saved {containers.Count} containers to persistence data");
+    }
+
+    private List<Dictionary<string, object?>> CaptureCards()
+    {
+        return GetTree().GetNodesInGroup("Cards").OfType<CardController>()
+            .Select(card => new Dictionary<string, object?>
             {
                 ["signature_elements"] = card.HasSignature ? card.Signature.Elements : null,
                 ["look_seed"] = card.LookSeed,
@@ -108,18 +147,17 @@ public partial class GameSaveService : Node, ISaveable, IDependent
                 ["rotation"] = card.GlobalRotation,
                 ["isHeld"] = card.GetParent() is Camera3D,
                 ["parentPath"] = card.GetParent()?.GetPath().ToString() ?? ""
-            };
-            cardData.Add(data);
-        }
-        
-        save.SetOrAddProperty("cards", cardData);
-        ILog.Print($"Saved {cardData.Count} cards to persistence data");
+            })
+            .ToList();
     }
-    
+
     public void Load(NodeSave save)
     {
         ILog.Print("GameSaveService Load() called");
-        
+
+        if (save.TryGetProperty<List<object>>("containers", out var containerDataRaw))
+            RestoreContainers(containerDataRaw ?? new List<object>(), GetTree().CurrentScene as Node3D);
+
         if (!save.TryGetProperty<List<object>>("cards", out var cardDataRaw))
         {
             ILog.Print("No 'cards' property found in save data");
@@ -147,6 +185,19 @@ public partial class GameSaveService : Node, ISaveable, IDependent
         CallDeferred(MethodName.RecreateCards);
     }
     
+    // Every container record is checked before the first node is freed, so a malformed slot leaves the scene as it was.
+    private void RestoreContainers(List<object> containerDataRaw, Node3D? world)
+    {
+        var saved = SavedContainers.Parse(containerDataRaw);
+        if (world == null)
+        {
+            ILog.Error("CurrentScene is not a Node3D, cannot restore containers");
+            return;
+        }
+
+        SavedContainers.Restore(GetTree(), saved, world);
+    }
+
     private void RecreateCards()
     {
         ILog.Print("RecreateCards() called");
@@ -217,32 +268,51 @@ public partial class GameSaveService : Node, ISaveable, IDependent
         }
     }
     
-    public void SaveGame()
+    // The autosave timer's Timeout handler; the bool result is for ManualSave only.
+    public void SaveGame() => TrySave();
+
+    private bool TrySave()
     {
+        if (_store == null || _activeSlot == null)
+            return false;
+
         try
         {
-            var root = GetTree().CurrentScene;
-            SaveSystem.SaveFile(SavePath, root);
-            ILog.Print($"🔄 Game auto-saved to {SavePath}");
+            var slot = _activeSlot.Current;
+            var payload = SaveSystem.SerializeTree(GetTree().CurrentScene);
+            if (!_store.Save(slot, payload, DateTime.UtcNow))
+                return false;
+
+            ILog.Print($"Game auto-saved to slot {slot.Value}");
+            return true;
         }
         catch (System.Exception ex)
         {
             ILog.Error($"Failed to save game: {ex.Message}");
+            return false;
         }
     }
-    
+
     public void LoadGame()
     {
-        if (!FileAccess.FileExists(SavePath))
+        if (_store == null || _activeSlot == null)
+            return;
+
+        var result = _store.Load(_activeSlot.Current);
+        if (result.IsMissing)
         {
             ILog.Print("No save file found - starting fresh");
             return;
         }
-        
+
+        // A refused file is logged by the store and left in place; nothing is loaded from it.
+        if (!result.IsLoaded)
+            return;
+
         try
         {
             var root = GetTree().CurrentScene;
-            SaveSystem.LoadFile(SavePath, root);
+            SaveSystem.LoadTreeFromJson(result.Envelope!.Payload, root);
             ILog.Print("📁 Game loaded from save file");
         }
         catch (System.Exception ex)
@@ -250,21 +320,26 @@ public partial class GameSaveService : Node, ISaveable, IDependent
             ILog.Error($"Failed to load game: {ex.Message}");
         }
     }
-    
+
     public bool HasSaveFile()
     {
-        return FileAccess.FileExists(SavePath);
+        return _files != null && _activeSlot != null && _files.Exists(SaveSlotLayout.FileFor(_activeSlot.Current));
     }
     
-    public void ManualSave()
+    public bool ManualSave()
     {
-        SaveGame();
-        ILog.Print("💾 Manual save completed");
+        var saved = TrySave();
+        if (saved)
+            ILog.Print("Manual save completed");
+        return saved;
     }
     
     public override void _ExitTree()
     {
-        // Final save when exiting
+        // Final save when exiting; without a store there is no slot to write to
+        if (_store == null)
+            return;
+
         if (HasSaveFile() || GetTree().CurrentScene.GetChildCount() > 0)
         {
             SaveGame();

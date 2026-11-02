@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
@@ -26,6 +27,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     private readonly Queue<Action> _pendingSpawns = new();
     private IServiceResolver? _services;
+    private IRandom? _random;
 
     /// <summary>What this container is. Decides what opening it produces.</summary>
     [Export]
@@ -41,8 +43,17 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     [Export]
     public float InteractionRange { get; set; } = DefaultInteractionRange;
 
-    /// <summary>Decides the cards in a booster. Resolved at startup; assignable directly in tests.</summary>
-    public CardPackGenerator? Generator { get; set; }
+    /// <summary>
+    ///     Decides the cards in a booster. Only set when a test assigns it; otherwise a booster rolls its cards
+    ///     from <see cref="ContentSeed" /> when it has one, else from the shared random source.
+    /// </summary>
+    internal CardPackGenerator? Generator { get; set; }
+
+    /// <summary>
+    ///     Seed of everything this container opens into, or null while it has none (it then opens from the shared
+    ///     random source). A parent or a saved slot sets it; <see cref="SeedForSave" /> draws one on demand.
+    /// </summary>
+    public ulong? ContentSeed { get; internal set; }
 
     /// <summary>Spawns the cards. Resolved at startup; assignable directly in tests.</summary>
     public ICardSpawningService? Spawning { get; set; }
@@ -59,10 +70,16 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     public Node3D InteractionBody => this;
 
+    // A booster with no test Generator, no seed and no injected IRandom stays closed, as it did before seeds existed.
     private bool HasContents =>
-        Kind == CardContainerKind.Booster ? Spawning != null && Generator != null : ChildScene != null;
+        Kind == CardContainerKind.Booster
+            ? Spawning != null && (Generator != null || ContentSeed != null || _random != null)
+            : ChildScene != null;
 
     public void Inject(IServiceResolver services) => _services = services;
+
+    // Sealed containers in this group are saved by GameSaveService, so a slot restores what was left on the floor.
+    public override void _EnterTree() => AddToGroup("card_containers");
 
     public override void _Ready()
     {
@@ -76,8 +93,21 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
             return;
         }
 
-        _services.Get<IRandom>(rng => Generator ??= new CardPackGenerator(rng));
+        _services.Get<IRandom>(rng => _random = rng);
         _services.Get<ICardSpawningService>(service => Spawning ??= service);
+    }
+
+    /// <summary>
+    ///     The seed to write into a save: the one this container has, else one drawn now from the shared random
+    ///     source (the only time a container draws a seed, so opening unseeded boxes keeps its draw order). Null when
+    ///     no random source was injected.
+    /// </summary>
+    internal ulong? SeedForSave()
+    {
+        if (ContentSeed == null && _random != null)
+            ContentSeed = ((ulong)_random.Randi() << 32) | _random.Randi();
+
+        return ContentSeed;
     }
 
     public override void _Process(double delta)
@@ -158,7 +188,10 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     private void QueueCards(Node3D parent, Vector3 origin)
     {
-        var signatures = Generator!.OpenBooster();
+        var generator = Generator ?? new CardPackGenerator(ContentSeed is { } seed
+            ? RandomSources.Create(seed)
+            : _random!);
+        var signatures = generator.OpenBooster();
         for (var i = 0; i < signatures.Length; i++)
         {
             var signature = signatures[i];
@@ -171,8 +204,26 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     {
         for (var i = 0; i < CardContainerLayout.ItemsPerContainer; i++)
         {
-            var position = origin + SpawnOffset(i, Kind);
-            _pendingSpawns.Enqueue(() => SpawnContainer(parent, position));
+            var index = i;
+            var position = origin + SpawnOffset(index, Kind);
+            _pendingSpawns.Enqueue(() => SpawnContainer(parent, position, index));
+        }
+    }
+
+    // Each child of a sealed container gets its own seed, derived from this one and the child's index. The parent
+    // seed is mixed before the index is added, so neighbouring parent seeds (777, 778) share no child seed.
+    private static ulong ChildSeed(ulong parentSeed, int index) =>
+        SplitMix64(unchecked(SplitMix64(parentSeed) + (ulong)index));
+
+    // One splitmix64 step: spreads a counter into a well-mixed seed.
+    private static ulong SplitMix64(ulong value)
+    {
+        unchecked
+        {
+            var z = value + 0x9E3779B97F4A7C15UL;
+            z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9UL;
+            z = (z ^ (z >> 27)) * 0x94D049BB133111EBUL;
+            return z ^ (z >> 31);
         }
     }
 
@@ -185,16 +236,19 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         Spawning?.SpawnCard(signature, transform, parent);
     }
 
-    private void SpawnContainer(Node3D parent, Vector3 position)
+    private void SpawnContainer(Node3D parent, Vector3 position, int index)
     {
         if (!GodotObject.IsInstanceValid(parent) || ChildScene?.Instantiate() is not Node3D child)
             return;
 
         if (child is CardContainer container)
         {
-            // Children share this container's random source and card spawner, so one seed drives the whole box.
+            // Children share this container's card spawner. A seeded parent seeds each child before it enters the
+            // tree; a test-set Generator still passes down unchanged.
             container.Generator = Generator;
             container.Spawning = Spawning;
+            if (ContentSeed is { } seed)
+                container.ContentSeed = ChildSeed(seed, index);
         }
 
         parent.AddChild(child);

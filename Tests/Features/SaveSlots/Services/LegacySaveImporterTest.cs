@@ -1,0 +1,150 @@
+using CardCleaner.Scripts.Features.SaveSlots.Models;
+using CardCleaner.Scripts.Features.SaveSlots.Services;
+using CardCleaner.Tests.TestUtilities;
+
+namespace CardCleaner.Tests.Features.SaveSlots.Services;
+
+[TestSuite]
+[RequireGodotRuntime]
+public class LegacySaveImporterTest
+{
+    private const string Legacy = "{\"tree\":1}";
+
+    private static SaveSlotName Name(string raw)
+    {
+        SaveSlotName.TryCreate(raw, out var name, out _);
+        return name;
+    }
+
+    private static SaveSlotName ImportedName() => Name("imported");
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ImportWhenNoSlotsWritesLegacyPayloadToImportedSlot()
+    {
+        var files = new InMemorySlotFileSystem();
+        files.Seed(LegacySaveImporter.LegacyPath, Legacy);
+        var importer = new LegacySaveImporter(new SlotStore(files), files, new ActiveSaveSlot());
+
+        AssertThat(importer.TryImport()).IsTrue();
+
+        var result = new SlotStore(files).Load(ImportedName());
+        AssertThat(result.IsLoaded).IsTrue();
+        AssertThat(result.Envelope!.Payload).IsEqual(Legacy);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void SuccessfulImportMakesImportedTheActiveSlot()
+    {
+        var files = new InMemorySlotFileSystem();
+        files.Seed(LegacySaveImporter.LegacyPath, Legacy);
+        var active = new ActiveSaveSlot();
+        var importer = new LegacySaveImporter(new SlotStore(files), files, active);
+
+        importer.TryImport();
+
+        AssertThat(active.Current.Key).IsEqual("imported");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void NoImportLeavesTheActiveSlotUnchanged()
+    {
+        var files = new InMemorySlotFileSystem();
+        var store = new SlotStore(files);
+        store.Save(Name("shop"), "{}", System.DateTime.UtcNow);
+        files.Seed(LegacySaveImporter.LegacyPath, Legacy);
+        var active = new ActiveSaveSlot();
+        var importer = new LegacySaveImporter(store, files, active);
+
+        importer.TryImport();
+
+        AssertThat(active.Current.Key).IsEqual("default");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void LegacyBytesAreIdenticalAfterImport()
+    {
+        var files = new InMemorySlotFileSystem();
+        files.Seed(LegacySaveImporter.LegacyPath, Legacy);
+        var importer = new LegacySaveImporter(new SlotStore(files), files, new ActiveSaveSlot());
+
+        importer.TryImport();
+
+        AssertThat(files.Peek(LegacySaveImporter.LegacyPath)).IsEqual(Legacy);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void SecondCallReturnsFalseAndCreatesNothing()
+    {
+        var files = new InMemorySlotFileSystem();
+        files.Seed(LegacySaveImporter.LegacyPath, Legacy);
+        var importer = new LegacySaveImporter(new SlotStore(files), files, new ActiveSaveSlot());
+        importer.TryImport();
+        var writesAfterFirstCall = files.WriteCalls;
+
+        AssertThat(importer.TryImport()).IsFalse();
+
+        AssertThat(files.WriteCalls).IsEqual(writesAfterFirstCall);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void NoImportWhenAnySlotExists()
+    {
+        var files = new InMemorySlotFileSystem();
+        var store = new SlotStore(files);
+        store.Save(Name("shop"), "{}", System.DateTime.UtcNow);
+        files.Seed(LegacySaveImporter.LegacyPath, Legacy);
+        var importer = new LegacySaveImporter(store, files, new ActiveSaveSlot());
+
+        AssertThat(importer.TryImport()).IsFalse();
+
+        AssertThat(files.Exists(SaveSlotLayout.FileFor(ImportedName()))).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void NoImportWhenLegacyFileIsAbsent()
+    {
+        var files = new InMemorySlotFileSystem();
+        var importer = new LegacySaveImporter(new SlotStore(files), files, new ActiveSaveSlot());
+
+        AssertThat(importer.TryImport()).IsFalse();
+
+        AssertThat(new SlotStore(files).List().Count).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void FailedFirstImportLeavesNoSlotSoALaterImportSucceeds()
+    {
+        var files = new InMemorySlotFileSystem { FailRename = true };
+        files.Seed(LegacySaveImporter.LegacyPath, Legacy);
+        var importer = new LegacySaveImporter(new SlotStore(files), files, new ActiveSaveSlot());
+
+        AssertThat(importer.TryImport()).IsFalse();
+        AssertThat(new SlotStore(files).List().Count).IsEqual(0);
+
+        files.FailRename = false;
+        AssertThat(importer.TryImport()).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void EmptyOrInvalidLegacyFileIsNotImported()
+    {
+        foreach (var content in new[] { "", "not json", "[1]" })
+        {
+            var files = new InMemorySlotFileSystem();
+            files.Seed(LegacySaveImporter.LegacyPath, content);
+            var importer = new LegacySaveImporter(new SlotStore(files), files, new ActiveSaveSlot());
+
+            AssertThat(importer.TryImport()).IsFalse();
+            AssertThat(new SlotStore(files).List().Count).IsEqual(0);
+        }
+    }
+}

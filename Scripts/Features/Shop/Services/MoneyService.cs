@@ -1,6 +1,7 @@
 using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using Godot;
+using Saveable;
 
 namespace CardCleaner.Scripts.Features.Shop.Services;
 
@@ -8,15 +9,35 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 ///     Minimal money balance for the shop. Place it in a scene under an AutoServiceProvider.
 /// </summary>
 [Service(typeof(IMoneyService))]
-public partial class MoneyService : Node, IMoneyService
+public partial class MoneyService : Node, IMoneyService, ISaveable
 {
     private const int DefaultStartingBalance = 500;
+    private const string BalanceKey = "balance";
 
     private bool _initialized;
     private int _balance;
 
     [Export]
     public int StartingBalance { get; set; } = DefaultStartingBalance;
+
+    public StringName UniqueID => "money";
+
+    public void Save(NodeSave save)
+    {
+        EnsureInitialized();
+        save.SetOrAddProperty(BalanceKey, _balance);
+    }
+
+    // JSON numbers come back as long, so the balance is read as long and clamped into the int range.
+    public void Load(NodeSave save)
+    {
+        if (!save.TryGetProperty<long>(BalanceKey, out var saved))
+            return;
+
+        _initialized = true;
+        _balance = (int)Math.Clamp(saved, 0, int.MaxValue);
+        BalanceChanged?.Invoke(_balance);
+    }
 
     public int Balance
     {
