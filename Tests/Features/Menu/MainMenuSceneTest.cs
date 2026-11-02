@@ -65,7 +65,8 @@ public class MainMenuSceneTest
     {
         _node?.Free();
         _node = null;
-        new OptionsApplier().Apply(GameOptions.Defaults, _window);
+        // Restore the buses through a sink that does not touch the window.
+        new OptionsApplier(static (_, _) => { }).Apply(GameOptions.Defaults, _window);
         _window.Size = _originalWindowSize;
         TestServices.Reinitialize();
         if (FileAccess.FileExists(_path))
@@ -205,6 +206,24 @@ public class MainMenuSceneTest
 
         var masterDb = AudioServer.GetBusVolumeDb(AudioServer.GetBusIndex("Master"));
         Assertions.AssertFloat(masterDb).IsEqualApprox(-6.02f, 0.05f);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void Menu_sends_stored_display_options_to_the_display_sink()
+    {
+        var options = GameOptions.Defaults with { Fullscreen = true, Vsync = false };
+        new OptionsStore(_path).Save(options);
+        var plans = new List<DisplayPlan>();
+        TestServices.Container.RegisterSingleton<OptionsApplier>(new OptionsApplier((plan, _) => plans.Add(plan)));
+
+        AddMenu();
+
+        Assertions.AssertInt(plans.Count).IsEqual(1);
+        Assertions.AssertThat(plans[0]).IsEqual(OptionsApplier.DisplayFor(options));
+        Assertions.AssertBool(plans[0].Mode == DisplayServer.WindowMode.ExclusiveFullscreen).IsTrue();
+        Assertions.AssertBool(plans[0].Size.HasValue).IsFalse();
+        Assertions.AssertBool(plans[0].VSync == DisplayServer.VSyncMode.Disabled).IsTrue();
     }
 
     private T Get<T>(string path) where T : Node => _node!.GetNode<T>(path);

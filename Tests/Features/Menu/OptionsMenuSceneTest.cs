@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Menu.Controllers;
@@ -25,6 +26,7 @@ public class OptionsMenuSceneTest
     private Vector2I _originalWindowSize;
     private OptionsMenuController? _node;
     private GameSettings? _settings;
+    private List<DisplayPlan> _plans = new();
 
     [BeforeTest]
     public void Setup()
@@ -47,7 +49,8 @@ public class OptionsMenuSceneTest
         _node = null;
         _settings?.Free();
         _settings = null;
-        new OptionsApplier().Apply(GameOptions.Defaults, _window);
+        // Restore the buses through a sink that does not touch the window.
+        new OptionsApplier(static (_, _) => { }).Apply(GameOptions.Defaults, _window);
         _window.Size = _originalWindowSize;
         TestServices.Reinitialize();
         if (FileAccess.FileExists(_path))
@@ -116,6 +119,67 @@ public class OptionsMenuSceneTest
 
         Assertions.AssertFloat((float)GetSlider("Layout/MasterSlider").Value).IsEqual(0.25f);
         Assertions.AssertString(FileAccess.GetFileAsString(_path)).IsEqual(before);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void Controls_start_without_sending_a_display_plan()
+    {
+        UseRecorder();
+
+        AddScreen();
+
+        Assertions.AssertInt(_plans.Count).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void Toggling_fullscreen_sends_ExclusiveFullscreen_live()
+    {
+        UseRecorder();
+        AddScreen();
+
+        GetNode<CheckButton>("Layout/FullscreenCheck").ButtonPressed = true;
+
+        Assertions.AssertInt(_plans.Count).IsEqual(1);
+        Assertions.AssertBool(_plans[^1].Mode == DisplayServer.WindowMode.ExclusiveFullscreen).IsTrue();
+        Assertions.AssertBool(_plans[^1].Size.HasValue).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void Choosing_a_resolution_sends_that_size_live()
+    {
+        UseRecorder();
+        AddScreen();
+        var resolution = GetNode<OptionButton>("Layout/ResolutionOption");
+
+        resolution.Select(2);
+        resolution.EmitSignal(OptionButton.SignalName.ItemSelected, 2L);
+
+        Assertions.AssertInt(_plans.Count).IsEqual(1);
+        Assertions.AssertBool(_plans[^1].Mode == DisplayServer.WindowMode.Windowed).IsTrue();
+        Assertions.AssertThat(_plans[^1].Size).IsEqual(new Vector2I(1920, 1080));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void Toggling_vsync_off_sends_Disabled_live()
+    {
+        UseRecorder();
+        AddScreen();
+
+        GetNode<CheckButton>("Layout/VsyncCheck").ButtonPressed = false;
+
+        Assertions.AssertInt(_plans.Count).IsEqual(1);
+        Assertions.AssertBool(_plans[^1].VSync == DisplayServer.VSyncMode.Disabled).IsTrue();
+    }
+
+    // Registers an applier that records each display plan instead of changing the window.
+    private void UseRecorder()
+    {
+        _plans = new List<DisplayPlan>();
+        TestServices.Container.RegisterSingleton<OptionsApplier>(new OptionsApplier((plan, _) => _plans.Add(plan)));
     }
 
     private T GetNode<T>(string path) where T : Node => _node!.GetNode<T>(path);
