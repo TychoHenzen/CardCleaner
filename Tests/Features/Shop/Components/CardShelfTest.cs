@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -24,7 +25,8 @@ public class CardShelfTest
     public async Task Setup()
     {
         var floor = new StaticBody3D { Position = new Vector3(0f, -FloorThickness / 2f, 0f) };
-        floor.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = new Vector3(10f, FloorThickness, 10f) } });
+        var floorShape = new BoxShape3D { Size = new Vector3(10f, FloorThickness, 10f) };
+        floor.AddChild(new CollisionShape3D { Shape = floorShape });
         AddNode(floor);
         _shelf = GD.Load<PackedScene>(ShelfScene).Instantiate<CardShelf>();
         AddNode(_shelf);
@@ -38,6 +40,15 @@ public class CardShelfTest
         AssertThat(_shelf.SlotCount).IsGreater(1);
         AssertBool(_shelf.Slots.All(slot => slot.Capacity == 1)).IsTrue();
         AssertBool(_shelf.IsInGroup(CardShelf.GroupName)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CardShelfJoinsTheCardAndSalesGroupsButNotTheStorageGroup()
+    {
+        AssertThat(_shelf.Kind).IsEqual(ShelfKind.CardShelf);
+        AssertBool(_shelf.IsInGroup(CardShelf.SalesGroupName)).IsTrue();
+        AssertBool(_shelf.IsInGroup(CardShelf.StorageGroupName)).IsFalse();
     }
 
     [TestCase]

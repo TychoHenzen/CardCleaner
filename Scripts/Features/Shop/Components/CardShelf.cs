@@ -1,20 +1,34 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     A shelf that displays cards in its slots. Each slot is a one-card <see cref="DeckSlot" /> child:
-///     a card dropped on a slot locks and shows there, and picking it up releases it again.
+///     A shelf that displays stock in its slots. Each slot is a one-card <see cref="DeckSlot" /> child:
+///     a body dropped on a slot locks and shows there, and picking it up releases it again. The
+///     <see cref="Kind" /> decides which stock the slots take and which group the shelf joins.
 /// </summary>
 public partial class CardShelf : RigidBody3D
 {
-    /// <summary>Scene-tree group every shelf joins, so a register finds ordered shelves without wiring.</summary>
+    /// <summary>Scene-tree group every card shelf joins, so a register finds card shelves without wiring.</summary>
     public const string GroupName = "card_shelves";
 
-    public override void _Ready() => AddToGroup(GroupName);
+    /// <summary>Scene-tree group of every product shelf and card shelf, for shop code that lists sales stock.</summary>
+    public const string SalesGroupName = "sales_shelves";
+
+    /// <summary>Scene-tree group of every storage rack.</summary>
+    public const string StorageGroupName = "storage_racks";
+
+    private const ShelfKind DefaultKind = ShelfKind.CardShelf;
+
+    /// <summary>What this shelf is: a card shelf, a product shelf or a storage rack.</summary>
+    [Export] public ShelfKind Kind { get; set; } = DefaultKind;
+
+    /// <summary>True for a storage rack.</summary>
+    public bool IsStorage => Kind == ShelfKind.StorageRack;
 
     /// <summary>The slots of this shelf, in scene order.</summary>
     public IEnumerable<DeckSlot> Slots => GetChildren().OfType<DeckSlot>();
@@ -22,10 +36,31 @@ public partial class CardShelf : RigidBody3D
     /// <summary>Total number of slots.</summary>
     public int SlotCount => Slots.Count();
 
-    /// <summary>Cards currently shown on the shelf.</summary>
+    /// <summary>Stock currently shown on the shelf.</summary>
     public IEnumerable<RigidBody3D> StockedCards => Slots.SelectMany(slot => slot.Cards);
 
     public int StockedCount => StockedCards.Count();
+
+    public override bool _PropertyCanRevert(StringName property)
+    {
+        return property.ToString() == nameof(Kind) || base._PropertyCanRevert(property);
+    }
+
+    public override Variant _PropertyGetRevert(StringName property)
+    {
+        return property.ToString() == nameof(Kind)
+            ? (int)DefaultKind
+            : base._PropertyGetRevert(property);
+    }
+
+    public override void _Ready()
+    {
+        // Only a card shelf joins card_shelves, the group the register walks: product stock is not a card sale.
+        if (Kind == ShelfKind.CardShelf) AddToGroup(GroupName);
+        AddToGroup(IsStorage ? StorageGroupName : SalesGroupName);
+
+        foreach (var slot in Slots) slot.Kind = Kind;
+    }
 
     /// <summary>
     ///     Drops a card from whichever slot holds it, without moving the card itself (see
