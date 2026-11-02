@@ -36,7 +36,8 @@ public partial class GameSettings : Node, IGameSettings
     [Export] public float MaxPitch { get; set; } = DefaultMaxPitch;
     [Export] public bool InvertY { get; set; } = DefaultInvertY;
 
-    [ExportGroup("Blacklight")] public LightMode CurrentLightMode { get; set; } = DefaultLightMode;
+    [ExportGroup("Blacklight")]
+    public LightMode CurrentLightMode { get; set; } = DefaultLightMode;
 
     public float LightIntensity { get; set; } = DefaultLightIntensity;
 
