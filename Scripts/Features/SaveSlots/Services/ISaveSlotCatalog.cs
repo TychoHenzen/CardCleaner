@@ -16,8 +16,8 @@ public interface ISaveSlotCatalog
     IReadOnlyList<SaveSlotInfo> List();
 
     /// <summary>
-    ///     Creates an empty slot named by the text. Returns false with the reason when the name is not allowed or a slot
-    ///     with the same name (ignoring case) exists. Writes no save file.
+    ///     Creates an empty slot named by the text. Returns false with the reason when the name is not allowed or a
+    ///     slot with the same name (ignoring case) exists. Writes no save file.
     /// </summary>
     bool TryCreate(string? rawName, out SaveSlotName name, out string reason);
 

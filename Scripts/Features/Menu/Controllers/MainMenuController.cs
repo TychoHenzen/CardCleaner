@@ -11,8 +11,9 @@ namespace CardCleaner.Scripts.Features.Menu.Controllers;
 
 /// <summary>
 ///     The main menu: continue, new game, load, delete, options and quit. It applies the engine-global options, imports
-///     an older single-file save once before it lists the slots, and then lists them. The saved mouse options are applied
-///     when the shop starts (MouseOptionsStartup), not here. Every failure is logged and shown in the message label.
+///     an older single-file save once before it lists the slots, and then lists them. The saved mouse options are
+///     applied when the shop starts (MouseOptionsStartup), not here. Every failure is logged and shown in the message
+///     label.
 /// </summary>
 public partial class MainMenuController : Control, IDependent
 {
@@ -31,8 +32,8 @@ public partial class MainMenuController : Control, IDependent
     private const string OptionsPath = "Options";
 
     /// <summary>
-    ///     Changes the scene. Set it before the node enters the tree to replace the default; _Ready keeps a value that is
-    ///     already set and otherwise uses the tree's ChangeSceneToFile.
+    ///     Changes the scene. Set it before the node enters the tree to replace the default; _Ready keeps a value that
+    ///     is already set and otherwise uses the tree's ChangeSceneToFile.
     /// </summary>
     public Action<string>? ChangeScene;
 

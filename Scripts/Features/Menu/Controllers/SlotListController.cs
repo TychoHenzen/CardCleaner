@@ -7,8 +7,9 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Menu.Controllers;
 
 /// <summary>
-///     Lists the save slots as rows of name, saved time, a Load button and a Delete button. A slot that cannot be read is
-///     tagged Unreadable and its Load button is disabled; its Delete button stays enabled. The menu handles both requests.
+///     Lists the save slots as rows of name, saved time, a Load button and a Delete button. A slot that cannot be
+///     read is tagged Unreadable and its Load button is disabled; its Delete button stays enabled. The menu handles
+///     both requests.
 /// </summary>
 public partial class SlotListController : VBoxContainer
 {
