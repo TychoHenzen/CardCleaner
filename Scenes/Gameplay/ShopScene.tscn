@@ -10,6 +10,9 @@
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Ui/OrderTerminalUi.cs" id="OrderTerminalUi"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/MoneyService.cs" id="MoneyService"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/OrderingService.cs" id="OrderingService"]
+[ext_resource type="Script" path="res://Scripts/Features/Pause/Controllers/PauseController.cs" id="PauseController"]
+[ext_resource type="Script" path="res://Scripts/Features/Pause/Components/CursorOwner.cs" id="CursorOwner"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/PauseMenu.tscn" id="PauseMenuScene"]
 [ext_resource type="Resource" path="res://Data/Shop/BackofficeCatalog.tres" id="BackofficeCatalog"]
 
 [ext_resource type="PackedScene" path="res://Scenes/Components/CardShader.tscn" id="Card_3_4bcsh"]
@@ -1450,6 +1453,9 @@ script = ExtResource("GameSettings")
 [node name="MoneyService" type="Node" parent="Services"]
 script = ExtResource("MoneyService")
 
+[node name="CursorOwner" type="Node" parent="Services"]
+script = ExtResource("CursorOwner")
+
 [node name="OrderingService" type="Node" parent="Services" node_paths=PackedStringArray("DeliveryPoint", "SpawnRoot")]
 script = ExtResource("OrderingService")
 DeliveryPoint = NodePath("../../World/Markers/DeliveryPoint")
@@ -1457,6 +1463,12 @@ SpawnRoot = NodePath("../../World")
 
 [node name="OrderUi" type="CanvasLayer" parent="."]
 script = ExtResource("OrderTerminalUi")
+
+[node name="Pause" type="Node" parent="." node_paths=PackedStringArray("PauseMenuLayer")]
+script = ExtResource("PauseController")
+PauseMenuLayer = NodePath("PauseMenu")
+
+[node name="PauseMenu" parent="Pause" instance=ExtResource("PauseMenuScene")]
 
 [node name="CardServiceProvider" type="Node" parent="Services" node_paths=PackedStringArray("CardRoot")]
 script = ExtResource("Card_11_r0o6j")
