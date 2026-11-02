@@ -161,7 +161,8 @@ public partial class PlayerController : CharacterBody3D, ISaveable, IDependent
         var yawDelta = -delta.X * _settings.MouseSensitivity;
         RotateY(Mathf.DegToRad(yawDelta));
 
-        _pitchDeg = Mathf.Clamp(_pitchDeg - delta.Y * _settings.MouseSensitivity, _settings.MinPitch,
+        var pitchSign = _settings.InvertY ? -1f : 1f;
+        _pitchDeg = Mathf.Clamp(_pitchDeg - delta.Y * _settings.MouseSensitivity * pitchSign, _settings.MinPitch,
             _settings.MaxPitch);
         _head.RotationDegrees = new Vector3(_pitchDeg, 0, 0);
     }

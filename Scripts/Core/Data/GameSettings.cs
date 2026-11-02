@@ -18,6 +18,7 @@ public partial class GameSettings : Node, IGameSettings
     private const float DefaultMouseSensitivity = 0.1f;
     private const float DefaultMinPitch = -80f;
     private const float DefaultMaxPitch = 80f;
+    private const bool DefaultInvertY = false;
     private const LightMode DefaultLightMode = LightMode.Off;
     private const float DefaultLightIntensity = 1.5f;
 
@@ -33,6 +34,7 @@ public partial class GameSettings : Node, IGameSettings
 
     [Export] public float MinPitch { get; set; } = DefaultMinPitch;
     [Export] public float MaxPitch { get; set; } = DefaultMaxPitch;
+    [Export] public bool InvertY { get; set; } = DefaultInvertY;
 
     [ExportGroup("Blacklight")] public LightMode CurrentLightMode { get; set; } = DefaultLightMode;
 
@@ -47,6 +49,7 @@ public partial class GameSettings : Node, IGameSettings
             nameof(MouseSensitivity) => true,
             nameof(MinPitch) => true,
             nameof(MaxPitch) => true,
+            nameof(InvertY) => true,
             nameof(CurrentLightMode) => true,
             nameof(LightIntensity) => true,
             _ => base._PropertyCanRevert(property)
@@ -62,6 +65,7 @@ public partial class GameSettings : Node, IGameSettings
             nameof(MouseSensitivity) => DefaultMouseSensitivity,
             nameof(MinPitch) => DefaultMinPitch,
             nameof(MaxPitch) => DefaultMaxPitch,
+            nameof(InvertY) => DefaultInvertY,
             nameof(CurrentLightMode) => (int)DefaultLightMode,
             nameof(LightIntensity) => DefaultLightIntensity,
             _ => base._PropertyGetRevert(property)

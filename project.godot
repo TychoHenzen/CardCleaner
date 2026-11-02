@@ -24,6 +24,10 @@ config/defaults/default_clear_color=Color(0.3, 0.3, 0.3, 1)
 
 export_roots={"models": "res://Assets/Models", "images": "res://Assets/Images", "sounds": "res://Assets/Sounds", "music": "res://Assets/Music", "videos": "res://Assets/Videos", "hdris": "res://Assets/HDRIs", "materials": "res://Assets/Materials", "effects": "res://Assets/Effects", "shaders": "res://Assets/Shaders", "themes": "res://Assets/Themes", "scenes": "res://Assets/Scenes", "other": "res://Assets/Other"}
 
+[audio]
+
+buses/default_bus_layout="res://default_bus_layout.tres"
+
 [autoload]
 
 Services="*res://Scripts/Composition/CompositionRoot.cs"

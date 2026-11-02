@@ -12,6 +12,7 @@ public interface IGameSettings
     float MouseSensitivity { get; }
     float MinPitch { get; }
     float MaxPitch { get; }
+    bool InvertY { get; }
 
     // Blacklight settings
     LightMode CurrentLightMode { get; set; }
