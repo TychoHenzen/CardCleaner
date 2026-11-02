@@ -13,8 +13,8 @@ using Godot;
 namespace CardCleaner.Tests.Features.SaveSlots;
 
 /// <summary>
-/// Saves a carried sealed box and restores it through <see cref="SavedContainers" /> with a <see cref="ContainerHolder" />
-/// in the world, the way the player's hand has one. Covers the held flag, the fallbacks to the floor, a restore over a
+/// Saves a carried sealed box and restores it through <see cref="SavedContainers" /> with a
+/// <see cref="ContainerHolder" /> in the world, the way the player's hand has one. Covers the held flag, the fallbacks to the floor, a restore over a
 /// carried container, and an old slot that has no held key. The recording spawner keeps cards out of the tree.
 /// </summary>
 [TestSuite]
@@ -85,7 +85,8 @@ public class HeldContainerSaveTest
         try
         {
             var position = new Vector3(-1f, 0f, 4f);
-            var held = new SavedContainers.Saved(BoxScene, CardContainerKind.Box, BoxSeed, position, Vector3.Zero, true);
+            var held = new SavedContainers.Saved(
+                BoxScene, CardContainerKind.Box, BoxSeed, position, Vector3.Zero, true);
             SavedContainers.Restore(scene.Tree, new[] { held }, scene.World);
 
             var restored = OnlyRestoredBox(scene);
@@ -170,15 +171,17 @@ public class HeldContainerSaveTest
     }
 
     // A holder in the world with a hand anchor the way the player's camera provides one, built with the test services.
-    private static (ContainerHolder Holder, Camera3D Hand) BuildHolder(SaveWorld scene)
+    private static HolderRig BuildHolder(SaveWorld scene)
     {
         var hand = new Camera3D { Name = "HandAnchor" };
         scene.World.AddChild(hand);
         var holder = TestServices.Inject(new ContainerHolder());
         scene.World.AddChild(holder);
         holder.SetReferences(hand);
-        return (holder, hand);
+        return new HolderRig(holder, hand);
     }
+
+    private sealed record HolderRig(ContainerHolder Holder, Camera3D Hand);
 
     private static CardContainer PlacedBox(SaveWorld scene, Vector3 position)
     {

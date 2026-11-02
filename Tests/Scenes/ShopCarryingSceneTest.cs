@@ -69,15 +69,7 @@ public class ShopCarryingSceneTest
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
 
         // The test scene is not the current scene, so hand the scene-owned services over directly.
-        TestServices.Reset();
-        TestServices.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
-        TestServices.Container.RegisterSingleton<IMoneyService>(_money);
-        TestServices.Container.RegisterSingleton<IOrderingService>(_ordering);
-        TestServices.Container.RegisterSingleton(RandomSources.Create(Seed));
-        TestServices.Container.RegisterSingleton(Substitute.For<ICardGenerator>());
-        TestServices.Container.RegisterSingleton<ICardSpawningService>(
-            _shop.GetNode<CardSpawningService>("Services/SpawningService"));
-        TestServices.Container.RegisterSingleton<ICardSpawner>((ICardSpawner)_shop.GetNode("World/Cards"));
+        ShopSceneServices.RegisterWithCardSpawner(_shop, Seed);
 
         // Captures the three callbacks the scene registers, so the test presses them the way the device would.
         var input = Substitute.For<IInputService>();

@@ -51,7 +51,8 @@ public class CardHighlighterContainerTest
 
         _input = Substitute.For<IInputService>();
         TestServices.Container.RegisterSingleton(_input);
-        _input.When(x => x.RegisterAction(Arg.Any<object>(), "card_drop_prepare", MouseButton.Right, Arg.Any<Action<bool>>()))
+        _input.When(x => x.RegisterAction(
+                Arg.Any<object>(), "card_drop_prepare", MouseButton.Right, Arg.Any<Action<bool>>()))
             .Do(ci => _rightPress = ci.Arg<Action<bool>>());
 
         _interaction = TestServices.Inject(new InteractionSystem());

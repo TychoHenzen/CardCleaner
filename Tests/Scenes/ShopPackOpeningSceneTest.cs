@@ -52,14 +52,7 @@ public class ShopPackOpeningSceneTest
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
 
         // The test scene is not the current scene, so hand the scene-owned services over directly.
-        TestServices.Reset();
-        TestServices.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
-        TestServices.Container.RegisterSingleton<IMoneyService>(_money);
-        TestServices.Container.RegisterSingleton<IOrderingService>(_ordering);
-        TestServices.Container.RegisterSingleton(RandomSources.Create(Seed));
-        TestServices.Container.RegisterSingleton(Substitute.For<ICardGenerator>());
-        TestServices.Container.RegisterSingleton<ICardSpawningService>(
-            _shop.GetNode<CardSpawningService>("Services/SpawningService"));
+        ShopSceneServices.Register(_shop, Seed);
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;

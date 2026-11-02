@@ -37,7 +37,8 @@ public class ContainerHolderTest
     public void Setup()
     {
         _world = Assertions.AddNode(new Node3D());
-        // The hand anchor is the camera in the game (CardHighlighter passes it), so a held container's parent is a Camera3D.
+        // The hand anchor is the camera in the game (CardHighlighter passes it), so a held container's parent is a
+        // Camera3D.
         _hand = new Camera3D { Name = "HandAnchor" };
         _world.AddChild(_hand);
 
