@@ -336,7 +336,52 @@ public class MainMenuSceneTest
         Assertions.AssertInt(_changedScenes.Count).IsEqual(0);
     }
 
-    private async Task Settle()
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task Unreadable_slot_delete_through_the_menu_removes_it_and_a_new_game_can_reuse_the_name()
+    {
+        _store.TryCreate("broken", out var broken, out _);
+        _files.Seed(SaveSlotLayout.FileFor(broken), "not a save");
+        _files.Seed(SaveSlotLayout.TempFor(broken), "half written");
+        AddMenu();
+        await Settle();
+
+        var row = Row("broken");
+        var tag = row.GetNode<Label>("Label").Text;
+        Assertions.AssertBool(tag.Contains("Unreadable", StringComparison.Ordinal)).IsTrue();
+        Assertions.AssertBool(Get<Button>("Layout/ContinueButton").Disabled).IsTrue();
+
+        await Click(row.GetNode<Button>("Delete"));
+
+        var dialog = Get<ConfirmationDialog>("DeleteDialog");
+        Assertions.AssertBool(dialog.Visible).IsTrue();
+        Assertions.AssertBool(dialog.DialogText.Contains("broken", StringComparison.Ordinal)).IsTrue();
+
+        dialog.EmitSignal("confirmed");
+        await CloseDialog("DeleteDialog");
+        await Settle();
+
+        Assertions.AssertInt(_store.List().Count).IsEqual(0);
+        Assertions.AssertBool(_files.Exists(SaveSlotLayout.FileFor(broken))).IsFalse();
+        Assertions.AssertBool(_files.Exists(SaveSlotLayout.TempFor(broken))).IsFalse();
+        Assertions.AssertBool(_files.ListFolders(SaveSlotLayout.Root).Contains(broken.Folder)).IsFalse();
+        Assertions.AssertInt(RowCount()).IsEqual(0);
+        Assertions.AssertBool(Get<Button>("Layout/ContinueButton").Disabled).IsTrue();
+        Assertions.AssertString(Get<Label>("Layout/MessageLabel").Text).IsEmpty();
+
+        await Click(Get<Button>("Layout/NewGameButton"));
+        Get<LineEdit>("NewGameDialog/NameEdit").Text = "broken";
+        Get<ConfirmationDialog>("NewGameDialog").EmitSignal("confirmed");
+        await CloseDialog("NewGameDialog");
+        await Settle();
+
+        Assertions.AssertInt(_changedScenes.Count).IsEqual(1);
+        Assertions.AssertString(_changedScenes[0]).IsEqual(MainMenuController.ShopScenePath);
+        Assertions.AssertString(_active.Current.Value).IsEqual("broken");
+        Assertions.AssertInt(_store.List().Count).IsEqual(1);
+    }
+
+    private static async Task Settle()
     {
         await Frame();
         await Frame();
