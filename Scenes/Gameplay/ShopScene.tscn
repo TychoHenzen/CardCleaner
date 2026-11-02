@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/Components/player.tscn" id="Player"]
 [ext_resource type="Script" path="res://Scripts/Core/DependencyInjection/AutoServiceProvider.cs" id="AutoServiceProvider"]
 [ext_resource type="Script" path="res://Scripts/Core/Data/GameSettings.cs" id="GameSettings"]
+[ext_resource type="Script" path="res://Scripts/Features/Menu/Controllers/MouseOptionsStartup.cs" id="MouseOptionsStartup"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/OrderTerminal.cs" id="OrderTerminal"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Ui/OrderTerminalUi.cs" id="OrderTerminalUi"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/MoneyService.cs" id="MoneyService"]
@@ -1480,6 +1481,9 @@ script = ExtResource("MoneyService")
 
 [node name="CursorOwner" type="Node" parent="Services"]
 script = ExtResource("CursorOwner")
+
+[node name="MouseOptionsStartup" type="Node" parent="."]
+script = ExtResource("MouseOptionsStartup")
 
 [node name="OrderingService" type="Node" parent="Services" node_paths=PackedStringArray("DeliveryPoint", "SpawnRoot")]
 script = ExtResource("OrderingService")
