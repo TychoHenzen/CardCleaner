@@ -143,7 +143,7 @@ public class SlotStoreTest
         var list = store.List();
 
         AssertThat(list.Count).IsEqual(1);
-        AssertThat(list[0].Key).IsEqual("good shop");
+        AssertThat(list[0].Name.Key).IsEqual("good shop");
     }
 
     [TestCase]
@@ -158,8 +158,92 @@ public class SlotStoreTest
         var list = store.List();
 
         AssertThat(list.Count).IsEqual(2);
-        AssertThat(list[0].Key).IsEqual("new shop");
-        AssertThat(list[1].Key).IsEqual("old shop");
+        AssertThat(list[0].Name.Key).IsEqual("new shop");
+        AssertThat(list[1].Name.Key).IsEqual("old shop");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ListReportsSavedTimeAndReadableFlag()
+    {
+        var files = new InMemorySlotFileSystem();
+        var store = new SlotStore(files);
+        store.Save(Name("old shop"), "a", SavedAt.AddDays(-1));
+        store.Save(Name("new shop"), "b", SavedAt);
+
+        var list = store.List();
+
+        AssertThat(list[0].IsReadable).IsTrue();
+        AssertThat(list[0].SavedAtUtc == SavedAt).IsTrue();
+        AssertThat(list[1].IsReadable).IsTrue();
+        AssertThat(list[1].SavedAtUtc == SavedAt.AddDays(-1)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ListPutsUnreadableLast()
+    {
+        var files = new InMemorySlotFileSystem();
+        var store = new SlotStore(files);
+        store.Save(Name("good"), "a", SavedAt);
+        files.Seed(SaveSlotLayout.FileFor(Name("broken")), "garbage");
+        files.EnsureFolder(SaveSlotLayout.FolderFor(Name("broken")));
+        files.EnsureFolder(SaveSlotLayout.FolderFor(Name("empty")));
+
+        var list = store.List();
+
+        AssertThat(list.Count).IsEqual(3);
+        AssertThat(list[0].Name.Key).IsEqual("good");
+        AssertThat(list[0].IsReadable).IsTrue();
+        AssertThat(list[1].Name.Key).IsEqual("broken");
+        AssertThat(list[1].IsReadable).IsFalse();
+        AssertThat(list[2].Name.Key).IsEqual("empty");
+        AssertThat(list[2].IsReadable).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TryCreateRefusesEmptyPathCharacterAndReservedNames()
+    {
+        var files = new InMemorySlotFileSystem();
+        var store = new SlotStore(files);
+        var before = files.ListFolders(SaveSlotLayout.Root).Count;
+
+        foreach (var raw in new[] { "", "a/b", "con" })
+        {
+            AssertThat(store.TryCreate(raw, out _, out var reason)).IsFalse();
+            AssertThat(reason.Length > 0).IsTrue();
+        }
+
+        AssertThat(files.ListFolders(SaveSlotLayout.Root).Count).IsEqual(before);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TryCreateRefusesDuplicateIgnoringCase()
+    {
+        var files = new InMemorySlotFileSystem();
+        var store = new SlotStore(files);
+        AssertThat(store.TryCreate("Shop", out _, out _)).IsTrue();
+
+        AssertThat(store.TryCreate("shop", out _, out var reason)).IsFalse();
+
+        AssertThat(reason).Contains("already exists");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TryCreateMakesAnEmptyUnreadableSlot()
+    {
+        var files = new InMemorySlotFileSystem();
+        var store = new SlotStore(files);
+
+        AssertThat(store.TryCreate("Fresh", out _, out _)).IsTrue();
+
+        var list = store.List();
+        AssertThat(list.Count).IsEqual(1);
+        AssertThat(list[0].IsReadable).IsFalse();
+        AssertThat(files.Exists(SaveSlotLayout.FileFor(Name("Fresh")))).IsFalse();
     }
 
     [TestCase]

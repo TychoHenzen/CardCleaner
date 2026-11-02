@@ -12,8 +12,9 @@ namespace CardCleaner.Scripts.Features.SaveSlots.Services;
 /// </summary>
 // ASSUMPTION: a bare [Service] registers under interfaces only, and this class has none, so it names its own type,
 // as SlotStore does.
-[Service(typeof(LegacySaveImporter))]
+[Service(typeof(LegacySaveImporter), typeof(ILegacySaveImporter))]
 public sealed class LegacySaveImporter(SlotStore store, ISlotFileSystem files, IActiveSaveSlot activeSlot)
+    : ILegacySaveImporter
 {
     /// <summary>The path GameSaveService wrote before save slots.</summary>
     public const string LegacyPath = "user://game_save.json";
