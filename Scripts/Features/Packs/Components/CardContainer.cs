@@ -72,7 +72,9 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     // A booster with no test Generator, no seed and no injected IRandom stays closed, as it did before seeds existed.
     private bool HasContents =>
-        Kind == CardContainerKind.Booster ? Spawning != null && (Generator != null || ContentSeed != null || _random != null) : ChildScene != null;
+        Kind == CardContainerKind.Booster
+            ? Spawning != null && (Generator != null || ContentSeed != null || _random != null)
+            : ChildScene != null;
 
     public void Inject(IServiceResolver services) => _services = services;
 

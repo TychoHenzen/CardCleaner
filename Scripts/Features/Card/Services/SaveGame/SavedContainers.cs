@@ -97,21 +97,31 @@ internal static class SavedContainers
 
     private static Saved ParseOne(ContainerRecord record)
     {
-        if (!Enum.TryParse<CardContainerKind>(record.Kind, out var kind) || !Enum.IsDefined(kind))
-            throw new FormatException($"Container from {record.ScenePath} has unknown kind '{record.Kind}'");
-
-        ulong? seed = null;
-        if (record.Seed != null)
-        {
-            if (!ulong.TryParse(record.Seed, NumberStyles.None, CultureInfo.InvariantCulture, out var parsed))
-                throw new FormatException($"Container from {record.ScenePath} has unreadable seed '{record.Seed}'");
-            seed = parsed;
-        }
-
+        var kind = ParseKind(record);
+        var seed = ParseSeed(record);
         var position = SavedCardReader.GetVector3FromData(record.Position
             ?? throw new FormatException($"Container from {record.ScenePath} has no position"));
         var rotation = SavedCardReader.GetVector3FromData(record.Rotation
             ?? throw new FormatException($"Container from {record.ScenePath} has no rotation"));
         return new Saved(record.ScenePath, kind, seed, position, rotation);
+    }
+
+    private static CardContainerKind ParseKind(ContainerRecord record)
+    {
+        if (Enum.TryParse<CardContainerKind>(record.Kind, out var kind) && Enum.IsDefined(kind))
+            return kind;
+
+        throw new FormatException($"Container from {record.ScenePath} has unknown kind '{record.Kind}'");
+    }
+
+    private static ulong? ParseSeed(ContainerRecord record)
+    {
+        if (record.Seed == null)
+            return null;
+
+        if (ulong.TryParse(record.Seed, NumberStyles.None, CultureInfo.InvariantCulture, out var seed))
+            return seed;
+
+        throw new FormatException($"Container from {record.ScenePath} has unreadable seed '{record.Seed}'");
     }
 }
