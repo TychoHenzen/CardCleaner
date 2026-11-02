@@ -3,7 +3,9 @@ using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Tests.TestUtilities;
+using System;
 using Godot;
+using NSubstitute;
 
 namespace CardCleaner.Tests.Features.Packs.Components;
 
@@ -21,6 +23,7 @@ public class ContainerHolderTest
     private Mocking.MockCardSpawner _cardSpawner = null!;
     private RecordingCardSpawner _spawner = null!;
     private ContainerHolder _holder = null!;
+    private Action? _qPress;
 
     [Before]
     public static void SetupSuite()
@@ -42,6 +45,10 @@ public class ContainerHolderTest
 
         _spawner = new RecordingCardSpawner();
 
+        var input = Substitute.For<IInputService>();
+        TestServices.Container.RegisterSingleton(input);
+        input.When(x => x.RegisterAction(Arg.Any<object>(), "container_open", Key.Q, Arg.Any<Action>()))
+            .Do(ci => _qPress = ci.Arg<Action>());
         _holder = TestServices.Inject(new ContainerHolder());
         _world.AddChild(_holder);
         _holder.SetReferences(_hand);
@@ -153,6 +160,19 @@ public class ContainerHolderTest
         AssertBool(_holder.IsHolding).IsFalse();
         AssertBool(box.IsOpened).IsTrue();
         AssertBool(box.GetParent() == _cardSpawner).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void QKey_OpensHeldContainer()
+    {
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+
+        _qPress!.Invoke();
+
+        AssertBool(box.IsOpened).IsTrue();
+        AssertBool(_holder.IsHolding).IsFalse();
     }
 
     private CardContainer Make(string scenePath)

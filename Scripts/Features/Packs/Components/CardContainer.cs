@@ -96,6 +96,8 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         CollisionLayer |= InteractableLayerBit;
         ClearHighlight();
         SetProcess(false);
+        // The card highlighter finds every container through this group, including ones Open() spawns later.
+        AddToGroup("Containers");
 
         if (_services == null)
         {

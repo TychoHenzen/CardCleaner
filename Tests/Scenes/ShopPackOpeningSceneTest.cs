@@ -99,18 +99,18 @@ public class ShopPackOpeningSceneTest
     public async Task OpeningAnOrderedBoxLeadsThroughPacksAndBoostersToRealCardsWithGeneratedSignatures()
     {
         var box = OrderBox();
-        box.Interact();
+        box.Open();
         await Frames(OpenFrames);
 
         var packs = Containers(CardContainerKind.Pack);
         AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
 
-        packs[0].Interact();
+        packs[0].Open();
         await Frames(OpenFrames);
         var boosters = Containers(CardContainerKind.Booster);
         AssertThat(boosters.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
 
-        boosters[0].Interact();
+        boosters[0].Open();
         await Frames(OpenFrames);
         var cards = _world.GetChildren().OfType<CardController>().ToArray();
 
@@ -126,7 +126,7 @@ public class ShopPackOpeningSceneTest
     {
         var box = OrderBox();
         await PhysicsFrames(SettleFrames);
-        box.Interact();
+        box.Open();
         await Frames(OpenFrames);
         await PhysicsFrames(SettleFrames);
 

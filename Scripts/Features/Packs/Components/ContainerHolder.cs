@@ -23,6 +23,7 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
     [Export] public Vector3 HoldOffset = DefaultHoldOffset;
 
     private IServiceResolver? _services;
+    private IInputService? _inputService;
     private Node3D? _handAnchor;
     private CardContainer? _held;
     private uint _savedLayer;
@@ -52,6 +53,26 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
     public bool IsHolding => _held != null;
 
     public void Inject(IServiceResolver services) => _services = services;
+
+    public override void _Ready()
+    {
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<IInputService>(input =>
+        {
+            _inputService = input;
+            _inputService.RegisterAction(this, "container_open", Key.Q, () => OpenHeld());
+        });
+    }
+
+    public override void _ExitTree()
+    {
+        _inputService?.UnregisterAllActions(this);
+    }
 
     public void SetReferences(Node3D handAnchor)
     {

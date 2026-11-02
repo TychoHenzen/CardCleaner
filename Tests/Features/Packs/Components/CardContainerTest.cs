@@ -48,6 +48,15 @@ public class CardContainerTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void Ready_AddsToContainersGroup()
+    {
+        var box = Make(BoxScene);
+
+        AssertBool(box.IsInGroup("Containers")).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public async Task BoxOpensIntoEightPacksOneAfterAnother()
     {
         var box = Make(BoxScene);
@@ -119,7 +128,7 @@ public class CardContainerTest
     {
         var box = Make(BoxScene);
 
-        box.Interact();
+        box.Open();
 
         AssertThat(box.CollisionLayer).IsEqual(0u);
         AssertBool(box.Visible).IsFalse();
