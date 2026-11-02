@@ -50,11 +50,27 @@ public class PauseMenuEntriesSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void Options_button_opens_the_options_screen_and_its_Back_button_closes_it()
+    public void Options_button_opens_options_and_Closed_returns_to_pause_panel()
     {
         var menu = BuildMenu(new FakeSaveGame(true), out _, out _);
         var options = menu.GetNode<Control>("OptionsMenu");
+        var pausePanel = menu.GetNode<Control>("Panel");
         Assertions.AssertBool(options.Visible).IsFalse();
+
+        menu.GetNode<Button>("Panel/OptionsButton").EmitSignal(BaseButton.SignalName.Pressed);
+        Assertions.AssertBool(options.Visible).IsTrue();
+
+        menu.GetNode<OptionsMenuController>("OptionsMenu").EmitSignal(OptionsMenuController.SignalName.Closed);
+        Assertions.AssertBool(options.Visible).IsFalse();
+        Assertions.AssertBool(pausePanel.Visible).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void Options_Back_button_closes_the_options_screen()
+    {
+        var menu = BuildMenu(new FakeSaveGame(true), out _, out _);
+        var options = menu.GetNode<Control>("OptionsMenu");
 
         menu.GetNode<Button>("Panel/OptionsButton").EmitSignal(BaseButton.SignalName.Pressed);
         Assertions.AssertBool(options.Visible).IsTrue();
@@ -65,7 +81,7 @@ public class PauseMenuEntriesSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void Quit_to_menu_with_a_saved_game_resumes_and_changes_to_the_main_menu()
+    public void Quit_autosaves_then_changes_scene_to_MainMenu()
     {
         var save = new FakeSaveGame(true);
         var menu = BuildMenu(save, out var scenes, out var pause);
@@ -82,7 +98,7 @@ public class PauseMenuEntriesSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void Quit_to_menu_with_a_failed_save_stays_paused_and_does_not_change_the_scene()
+    public void Quit_stays_when_autosave_fails()
     {
         var save = new FakeSaveGame(false);
         var menu = BuildMenu(save, out var scenes, out var pause);
@@ -93,7 +109,7 @@ public class PauseMenuEntriesSceneTest
         Assertions.AssertInt(save.Calls).IsEqual(1);
         Assertions.AssertBool(_root!.GetTree().Paused).IsTrue();
         Assertions.AssertInt(scenes.Count).IsEqual(0);
-        Assertions.AssertString(menu.GetNode<Label>("Panel/SaveStatusLabel").Text).IsEqual("Save failed");
+        Assertions.AssertString(menu.GetNode<Label>("Panel/SaveStatusLabel").Text).IsEqual("Save failed - not leaving");
     }
 
     /// <summary>

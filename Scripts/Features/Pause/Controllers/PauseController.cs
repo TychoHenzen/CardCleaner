@@ -21,8 +21,8 @@ public partial class PauseController : Node, IDependent
     [Export] public CanvasLayer? UILayer;
 
     /// <summary>
-    ///     Changes the scene when the player quits to the main menu. Set it before the node enters the tree to replace the
-    ///     default; _Ready keeps a value that is already set and otherwise uses the tree's ChangeSceneToFile.
+    ///     Changes the scene when the player quits to the main menu. Set it before the node enters the tree to replace
+    ///     the default; _Ready keeps a value that is already set and otherwise uses the tree's ChangeSceneToFile.
     /// </summary>
     public Action<string>? ChangeScene;
 
@@ -99,7 +99,7 @@ public partial class PauseController : Node, IDependent
         // Leave only after the save went through: a failed save keeps the player here, paused, with the message shown
         var saved = _saveGame?.ManualSave() ?? false;
         if (_saveStatusLabel != null)
-            _saveStatusLabel.Text = saved ? "Saved" : "Save failed";
+            _saveStatusLabel.Text = saved ? "Saved" : "Save failed - not leaving";
         if (!saved)
             return;
 
