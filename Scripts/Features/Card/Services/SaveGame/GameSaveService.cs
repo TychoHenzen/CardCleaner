@@ -16,9 +16,9 @@ using Saveable.Extensions;
 
 namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 
-// Names ISaveable, the one service type the bare attribute exposed before IDependent was added.
-[Service(typeof(ISaveable))]
-public partial class GameSaveService : Node, ISaveable, IDependent
+// Names ISaveable (the save file's owner) and ISaveGameCommand (the pause menu's Save button).
+[Service(typeof(ISaveable), typeof(ISaveGameCommand))]
+public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDependent
 {
     // Default values for exported properties
     private const float DefaultAutoSaveInterval = 10.0f;
@@ -323,21 +323,28 @@ public partial class GameSaveService : Node, ISaveable, IDependent
         }
     }
     
-    public void SaveGame()
+    // The autosave timer's Timeout handler; the bool result is for ManualSave only.
+    public void SaveGame() => TrySave();
+
+    private bool TrySave()
     {
         if (_store == null || _activeSlot == null)
-            return;
+            return false;
 
         try
         {
             var slot = _activeSlot.Current;
             var payload = SaveSystem.SerializeTree(GetTree().CurrentScene);
-            if (_store.Save(slot, payload, DateTime.UtcNow))
-                ILog.Print($"Game auto-saved to slot {slot.Value}");
+            if (!_store.Save(slot, payload, DateTime.UtcNow))
+                return false;
+
+            ILog.Print($"Game auto-saved to slot {slot.Value}");
+            return true;
         }
         catch (System.Exception ex)
         {
             ILog.Error($"Failed to save game: {ex.Message}");
+            return false;
         }
     }
 
@@ -374,10 +381,12 @@ public partial class GameSaveService : Node, ISaveable, IDependent
         return _files != null && _activeSlot != null && _files.Exists(SaveSlotLayout.FileFor(_activeSlot.Current));
     }
     
-    public void ManualSave()
+    public bool ManualSave()
     {
-        SaveGame();
-        ILog.Print("💾 Manual save completed");
+        var saved = TrySave();
+        if (saved)
+            ILog.Print("Manual save completed");
+        return saved;
     }
     
     public override void _ExitTree()

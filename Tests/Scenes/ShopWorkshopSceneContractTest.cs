@@ -99,7 +99,7 @@ public class ShopWorkshopSceneContractTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void ShopSceneCarriesOneCopyOfEachCabinetSingletonAndNoSaveService()
+    public static void ShopSceneCarriesOneCopyOfEachCabinetSingletonAndOneSaveService()
     {
         var shop = GD.Load<PackedScene>(ShopScenePath).Instantiate<Node3D>();
         try
@@ -107,7 +107,9 @@ public class ShopWorkshopSceneContractTest
             AssertThat(Count<GameSessionService>(shop)).IsEqual(1);
             AssertThat(Count<DeckBuilderController>(shop)).IsEqual(1);
             AssertThat(Count<CardSpawningService>(shop)).IsEqual(1);
-            AssertThat(Count<GameSaveService>(shop)).IsEqual(0);
+            AssertThat(Count<GameSaveService>(shop)).IsEqual(1);
+            AssertThat(shop.GetNode("Services/GameSaveService")).IsInstanceOf<GameSaveService>();
+            AssertThat(shop.GetNode<Button>("Pause/PauseMenu/Panel/SaveButton").Text).IsEqual("Save");
         }
         finally
         {

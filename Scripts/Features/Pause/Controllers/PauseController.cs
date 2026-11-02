@@ -1,5 +1,6 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Pause.Models;
+using CardCleaner.Scripts.Features.SaveSlots.Services;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Pause.Controllers;
@@ -8,6 +9,8 @@ public partial class PauseController : Node, IDependent
 {
     private Control _pauseMenuRoot = null!;
     private ICursorOwner? _cursor;
+    private ISaveGameCommand? _saveGame;
+    private Label? _saveStatusLabel;
     private IServiceResolver? _services;
 
     [Export] public CanvasLayer PauseMenuLayer = null!;
@@ -26,6 +29,11 @@ public partial class PauseController : Node, IDependent
         _pauseMenuRoot.SetProcessMode(ProcessModeEnum.WhenPaused);
         PauseMenuLayer.GetNode<Button>("Panel/ResumeButton").Pressed += Resume;
 
+        // The Save button and its status line are optional: a menu without them still pauses and resumes
+        _saveStatusLabel = PauseMenuLayer.GetNodeOrNull<Label>("Panel/SaveStatusLabel");
+        if (PauseMenuLayer.GetNodeOrNull<Button>("Panel/SaveButton") is { } saveButton)
+            saveButton.Pressed += OnSavePressed;
+
         // In-game UI starts visible
         if (UILayer != null)
             UILayer.Visible = true;
@@ -37,6 +45,15 @@ public partial class PauseController : Node, IDependent
         }
 
         _services.Get<ICursorOwner>(cursor => _cursor = cursor);
+        _services.Get<ISaveGameCommand>(saveGame => _saveGame = saveGame);
+    }
+
+    private void OnSavePressed()
+    {
+        // No save command (for example, no save service in this scene) reports as a failed save
+        var saved = _saveGame?.ManualSave() ?? false;
+        if (_saveStatusLabel != null)
+            _saveStatusLabel.Text = saved ? "Saved" : "Save failed";
     }
 
     public override void _UnhandledInput(InputEvent @event)

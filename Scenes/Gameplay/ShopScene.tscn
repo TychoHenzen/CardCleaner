@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Ui/OrderTerminalUi.cs" id="OrderTerminalUi"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/MoneyService.cs" id="MoneyService"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/OrderingService.cs" id="OrderingService"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Services/SaveGame/GameSaveService.cs" id="GameSaveService"]
 [ext_resource type="Script" path="res://Scripts/Features/Pause/Controllers/PauseController.cs" id="PauseController"]
 [ext_resource type="Script" path="res://Scripts/Features/Pause/Components/CursorOwner.cs" id="CursorOwner"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/PauseMenu.tscn" id="PauseMenuScene"]
@@ -1484,6 +1485,11 @@ script = ExtResource("CursorOwner")
 script = ExtResource("OrderingService")
 DeliveryPoint = NodePath("../../World/Markers/DeliveryPoint")
 SpawnRoot = NodePath("../../World")
+
+[node name="GameSaveService" type="Node" parent="Services"]
+script = ExtResource("GameSaveService")
+AutoSaveInterval = 30.0
+AutoLoadOnStart = true
 
 [node name="OrderUi" type="CanvasLayer" parent="."]
 script = ExtResource("OrderTerminalUi")
