@@ -5,12 +5,10 @@ using System.Linq;
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>
-///     Which colour atlas belongs to which Synty pack. Every mesh of a pack
-///     shares one palette texture, and the FBX files point at source texture
-///     files that do not ship, so the atlas has to be applied by us.
-///     The atlas files are the ones tools/synty-assets.json copies next to
-///     the meshes. An art path outside these pack folders (the particle
-///     textures, our own models) has no atlas.
+///     Which colour atlas belongs to which Synty pack. Every mesh of a pack shares one palette texture, and
+///     the FBX files point at source texture files that do not ship, so the atlas has to be applied by us.
+///     The atlas files sit next to the meshes in the Assets submodule. An art path outside these
+///     pack folders (the particle textures, our own models) has no atlas.
 /// </summary>
 public static class PackMaterialCatalog
 {

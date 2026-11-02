@@ -1,6 +1,4 @@
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -114,17 +112,14 @@ public class ShopSeamSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void SeamArtIsListedInTheManifestWithPlaceholderAndPlainGlowFallbacks()
+    public void SeamArtExistsWithPlaceholderAndPlainGlowFallbacks()
     {
-        var manifest = JsonDocument.Parse(File.ReadAllText(ProjectSettings.GlobalizePath("res://tools/synty-assets.json")));
-        var targets = manifest.RootElement.GetProperty("files").EnumerateArray()
-            .Select(entry => entry.GetProperty("target").GetString()).ToArray();
         var art = _rig.Seam.Door!.GetNode<ShopArtSlot>("DoorArt");
 
         AssertThat(art.ArtPath).IsEqual(ArchwayPath);
         AssertThat(_rig.Seam.GlowTexturePath).IsEqual(GlowTexturePath);
-        AssertThat(targets).Contains(ArchwayPath["res://Assets/Synty/".Length..]);
-        AssertThat(targets).Contains(GlowTexturePath["res://Assets/Synty/".Length..]);
+        AssertBool(SyntyAssets.Exists(ArchwayPath[SyntyAssets.Root.Length..])).IsTrue();
+        AssertBool(SyntyAssets.Exists(GlowTexturePath[SyntyAssets.Root.Length..])).IsTrue();
         AssertBool(art.ArtLoaded || art.Placeholder!.Visible).IsTrue();
         AssertThat(_rig.Seam.GlowTextureLoaded).IsEqual(ResourceLoader.Exists(GlowTexturePath));
     }

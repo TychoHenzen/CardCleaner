@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Shop.Components;
@@ -95,18 +93,17 @@ public class ShopWorkshopSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void WorkshopArtUsesPackMeshesListedInTheManifestWithPlaceholderFallbacks()
+    public void WorkshopArtUsesExistingPackMeshesWithPlaceholderFallbacks()
     {
         var slots = new List<ShopArtSlot>();
         CollectArtSlots(_rig.Workshop, slots);
-        var manifest = File.ReadAllText(ProjectSettings.GlobalizePath("res://tools/synty-assets.json"));
 
         AssertBool(slots.Exists(s => s.ArtPath.Contains("ArcadeMachine"))).IsTrue();
         AssertBool(slots.Exists(s => s.ArtPath.Contains("Archway"))).IsTrue();
         foreach (var slot in slots)
         {
-            AssertBool(slot.ArtPath.StartsWith("res://Assets/Synty/")).IsTrue();
-            AssertBool(ManifestTargets(manifest).Contains(slot.ArtPath["res://Assets/Synty/".Length..])).IsTrue();
+            AssertBool(slot.ArtPath.StartsWith(SyntyAssets.Root)).IsTrue();
+            AssertBool(SyntyAssets.Exists(slot.ArtPath[SyntyAssets.Root.Length..])).IsTrue();
             AssertThat(slot.Placeholder).IsNotNull();
             AssertBool(slot.ArtLoaded || slot.Placeholder!.Visible).IsTrue();
         }
@@ -116,14 +113,6 @@ public class ShopWorkshopSceneTest
         _rig.Workshop.GetNode("Cabinet/Assembly/Wires").GetChildren()
             .OfType<MeshInstance3D>()
             .Where(wire => wire.Name.ToString().StartsWith(prefix));
-
-    private static HashSet<string> ManifestTargets(string manifest)
-    {
-        using var document = JsonDocument.Parse(manifest);
-        return document.RootElement.GetProperty("files").EnumerateArray()
-            .Select(file => file.GetProperty("target").GetString()!)
-            .ToHashSet();
-    }
 
     // The cabinet room is the square inside its walls, centred on the workshop origin.
     private bool IsInsideRoom(Vector3 position)
