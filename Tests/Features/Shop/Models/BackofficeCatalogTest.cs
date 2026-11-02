@@ -15,7 +15,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class BackofficeCatalogTest
 {
     private const string CatalogPath = "res://Data/Shop/BackofficeCatalog.tres";
-    private const string PackPrefix = "res://Assets/Synty/";
 
     private static readonly string[] ExpectedIds = ["shelf", "bulk_packing_station", "cardboard_box"];
 
@@ -71,8 +70,8 @@ public class BackofficeCatalogTest
         {
             var instance = item.Scene!.Instantiate<Node3D>();
             var slot = instance.GetNode<ShopArtSlot>("Art");
-            AssertBool(slot.ArtPath.StartsWith(PackPrefix)).IsTrue();
-            AssertBool(SyntyAssets.Exists(slot.ArtPath[PackPrefix.Length..])).IsTrue();
+            AssertBool(slot.ArtPath.StartsWith(SyntyAssets.Root)).IsTrue();
+            AssertBool(SyntyAssets.Exists(slot.ArtPath[SyntyAssets.Root.Length..])).IsTrue();
             instance.Free();
         }
     }
@@ -85,7 +84,7 @@ public class BackofficeCatalogTest
         {
             var instance = item.Scene!.Instantiate<Node3D>();
             var slot = instance.GetNode<ShopArtSlot>("Art");
-            slot.ArtPath = PackPrefix + "DoesNotExist/Missing.fbx";
+            slot.ArtPath = SyntyAssets.Root + "DoesNotExist/Missing.fbx";
             AddNode(instance);
 
             AssertBool(slot.ArtLoaded).IsFalse();

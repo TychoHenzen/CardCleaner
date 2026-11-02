@@ -18,7 +18,6 @@ public class WorkshopCatalogTest
     private const string CatalogPath = "res://Data/Workshop/WorkshopCatalog.tres";
     private const string ShopCatalogPath = "res://Data/Shop/BackofficeCatalog.tres";
     private const string ConveyorId = "conveyor";
-    private const string PackPrefix = "res://Assets/Synty/";
 
     private static readonly string[] ExpectedIds = ["conveyor", "arcade_cabinet", "wiring"];
 
@@ -133,8 +132,8 @@ public class WorkshopCatalogTest
         {
             var instance = item.Scene!.Instantiate<Node3D>();
             var slot = ArtSlotOf(instance);
-            AssertBool(slot.ArtPath.StartsWith(PackPrefix)).IsTrue();
-            AssertBool(SyntyAssets.Exists(slot.ArtPath[PackPrefix.Length..])).IsTrue();
+            AssertBool(slot.ArtPath.StartsWith(SyntyAssets.Root)).IsTrue();
+            AssertBool(SyntyAssets.Exists(slot.ArtPath[SyntyAssets.Root.Length..])).IsTrue();
             instance.Free();
         }
     }
@@ -147,7 +146,7 @@ public class WorkshopCatalogTest
         {
             var instance = item.Scene!.Instantiate<Node3D>();
             var slot = ArtSlotOf(instance);
-            slot.ArtPath = PackPrefix + "DoesNotExist/Missing.fbx";
+            slot.ArtPath = SyntyAssets.Root + "DoesNotExist/Missing.fbx";
             AddNode(instance);
 
             AssertBool(slot.ArtLoaded).IsFalse();
