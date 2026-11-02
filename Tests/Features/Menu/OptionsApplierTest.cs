@@ -73,6 +73,76 @@ public class OptionsApplierTest
         }
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void DisplayFor_fullscreen_has_exclusive_mode_and_no_size()
+    {
+        var plan = OptionsApplier.DisplayFor(GameOptions.Defaults with { Fullscreen = true, ResolutionIndex = 2 });
+
+        Assertions.AssertThat(plan).IsEqual(
+            new DisplayPlan(DisplayServer.WindowMode.ExclusiveFullscreen, null, DisplayServer.VSyncMode.Enabled));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void DisplayFor_windowed_uses_the_resolution_and_vsync()
+    {
+        var plan = OptionsApplier.DisplayFor(GameOptions.Defaults with { ResolutionIndex = 2, Vsync = true });
+
+        Assertions.AssertThat(plan).IsEqual(
+            new DisplayPlan(DisplayServer.WindowMode.Windowed, new Vector2I(1920, 1080), DisplayServer.VSyncMode.Enabled));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void DisplayFor_vsync_off_is_Disabled()
+    {
+        var plan = OptionsApplier.DisplayFor(GameOptions.Defaults with { Vsync = false });
+
+        Assertions.AssertThat(plan.VSync == DisplayServer.VSyncMode.Disabled).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void DisplayFor_clamps_an_out_of_range_index()
+    {
+        var plan = OptionsApplier.DisplayFor(GameOptions.Defaults with { ResolutionIndex = 99 });
+
+        var last = GameOptions.Resolutions[^1];
+        Assertions.AssertThat(plan.Size).IsEqual(new Vector2I(last.Width, last.Height));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void Apply_sends_the_display_plan_to_the_sink()
+    {
+        DisplayPlan? seen = null;
+        Window? seenWindow = null;
+        var window = new Window();
+        var options = GameOptions.Defaults with { Fullscreen = true, Vsync = false, MasterVolume = 0.5f };
+        try
+        {
+            new OptionsApplier((plan, win) =>
+            {
+                seen = plan;
+                seenWindow = win;
+            }).Apply(options, window);
+
+            Assertions.AssertThat(seen).IsEqual(OptionsApplier.DisplayFor(options));
+            Assertions.AssertThat(ReferenceEquals(seenWindow, window)).IsTrue();
+
+            var master = AudioServer.GetBusVolumeDb(AudioServer.GetBusIndex("Master"));
+            Assertions.AssertFloat(master).IsGreater(-6.1f);
+            Assertions.AssertFloat(master).IsLess(-5.9f);
+        }
+        finally
+        {
+            // Restore the buses through a sink that does not touch the window.
+            new OptionsApplier(static (_, _) => { }).Apply(GameOptions.Defaults, window);
+            window.Free();
+        }
+    }
+
     private static float ApplyAndReadMasterDb(GameOptions options)
     {
         var window = new Window();
