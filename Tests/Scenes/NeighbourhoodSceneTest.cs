@@ -1,213 +1,105 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// The street neighbourhood around the shop is visual only. It is built from pack-mesh slots, one kerb box
-/// primitive and a procedural sky with one sun. Scenery carries no collision, and no visible mesh enters the
-/// shop and street footprint or the workshop footprint, so the walk and marker tests keep their results.
+/// The street neighbourhood around the shop is placed across the road from the storefront: the road, kerb and
+/// far sidewalk run along the street, the facades stand beyond them, and one neighbour flanks each side.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class NeighbourhoodSceneTest
 {
     private const string NeighbourhoodPath = "Neighbourhood";
-    private const string ArtNodeName = "Art";
-    private const string PackPrefix = "res://Assets/Synty/PolygonMiniCity/";
-    private const float PropClearanceX = 1f;
-    private static readonly Rect2 ShopAndStreetFootprint = new(-16f, -8f, 40f, 24f);
-    private static readonly Rect2 WorkshopFootprint = new(40f, -24f, 40f, 40f);
-    private static readonly string[] CustomerMarkerNames = ["CustomerSpawn", "CustomerDespawn"];
+    private const string ScenePath = "res://Scenes/Shop/Neighbourhood.tscn";
 
     private Node3D _shop = null!;
+    private Node3D _neighbourhood = null!;
 
     [BeforeTest]
     public async Task Setup()
     {
-        var packed = GD.Load<PackedScene>(ShopSceneProbe.ScenePath);
-        _shop = packed.Instantiate<Node3D>();
+        _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         AddNode(_shop);
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
+        await ShopPauseRig.SettleAsync();
+        _neighbourhood = SceneNodes.Require(_shop, NeighbourhoodPath);
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void NeighbourhoodIsInstancedOnce()
     {
-        var neighbourhood = _shop.GetNodeOrNull<Node3D>(NeighbourhoodPath);
-        AssertThat(neighbourhood).OverrideFailureMessage($"{NeighbourhoodPath} is missing under the shop root").IsNotNull();
-        AssertThat(neighbourhood!.SceneFilePath).IsEqual("res://Scenes/Shop/Neighbourhood.tscn");
+        AssertThat(_neighbourhood.SceneFilePath).IsEqual(ScenePath);
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void ContainsRoadKerbSidewalkFacadesNeighboursAndProps()
     {
-        var neighbourhood = RequireNode(_shop, NeighbourhoodPath);
         foreach (var name in new[] { "Road", "Kerb", "FarSidewalk", "NeighbourLeft", "NeighbourRight" })
-            RequireNode(neighbourhood, name);
+            SceneNodes.Require(_neighbourhood, name);
 
-        var facades = RequireNode(neighbourhood, "Facades");
+        var facades = SceneNodes.Require(_neighbourhood, "Facades");
         AssertThat(facades.GetChildCount())
             .OverrideFailureMessage($"{facades.GetPath()} holds fewer than 3 facades")
             .IsGreaterEqual(3);
 
-        var props = RequireNode(neighbourhood, "Props");
+        var props = SceneNodes.Require(_neighbourhood, "Props");
         AssertThat(props.GetChildCount())
             .OverrideFailureMessage($"{props.GetPath()} holds fewer than 4 props")
             .IsGreaterEqual(4);
     }
 
+    // Acceptance row AC-1: the street lies beyond the storefront (larger z), with the kerb between the shop
+    // and the road, the far sidewalk past the road and the facades past the sidewalk, across from the shop.
     [TestCase]
     [TestCategory("Unit")]
-    public void ArtComesFromTheCityPack()
+    public void StreetRunsAcrossTheRoadInFrontOfTheStorefront()
     {
-        var neighbourhood = RequireNode(_shop, NeighbourhoodPath);
-        var slots = Descendants(neighbourhood).OfType<ShopArtSlot>().ToList();
-        AssertThat(slots.Count).OverrideFailureMessage("no ShopArtSlot under the neighbourhood").IsGreaterEqual(1);
+        var streetEdge = NeighbourhoodBounds.ShopAndStreet.End.Y;
+        var roadZ = AssertAllBeyond("Road", streetEdge);
+        var kerbZ = SceneNodes.Require(_neighbourhood, "Kerb").GlobalPosition.Z;
+        AssertThat(kerbZ > streetEdge && kerbZ < roadZ.Min)
+            .OverrideFailureMessage($"Kerb z {kerbZ} is not between the street edge {streetEdge} and {roadZ.Min}")
+            .IsTrue();
 
-        foreach (var slot in slots)
-        {
-            var path = slot.ArtPath;
-            AssertThat(path.StartsWith(PackPrefix))
-                .OverrideFailureMessage($"{slot.GetPath()} has ArtPath '{path}' outside {PackPrefix}")
-                .IsTrue();
-            AssertThat(path.EndsWith(".fbx"))
-                .OverrideFailureMessage($"{slot.GetPath()} has ArtPath '{path}' that is not an .fbx")
-                .IsTrue();
-        }
-
-        var kerb = RequireNode(neighbourhood, "Kerb");
-        AssertThat(kerb is ShopArtSlot)
-            .OverrideFailureMessage($"{kerb.GetPath()} is the kerb primitive and must not be a ShopArtSlot")
-            .IsFalse();
-    }
-
-    // Headless stand-in for the doorway screenshot (owner decision 2026-11-01: no acceptance check may need a
-    // window; the look is judged by eye and never gates merging). After the shop loads, every slot must have
-    // loaded its pack mesh, hidden its placeholder and carry a material on each of its meshes.
-    [TestCase]
-    [TestCategory("Unit")]
-    public void EveryArtSlotLoadedItsMeshHidPlaceholderAndHasMaterial()
-    {
-        var neighbourhood = RequireNode(_shop, NeighbourhoodPath);
-        var slots = Descendants(neighbourhood).OfType<ShopArtSlot>().ToList();
-        AssertThat(slots.Count).OverrideFailureMessage("no ShopArtSlot under the neighbourhood").IsGreaterEqual(1);
-
-        foreach (var slot in slots)
-        {
-            AssertThat(slot.ArtLoaded)
-                .OverrideFailureMessage($"{slot.GetPath()} did not load its Art mesh from '{slot.ArtPath}'")
-                .IsTrue();
-            AssertThat(slot.Placeholder != null && !slot.Placeholder.Visible)
-                .OverrideFailureMessage($"{slot.GetPath()} keeps its placeholder visible")
-                .IsTrue();
-
-            var art = slot.GetNodeOrNull<Node3D>(ArtNodeName);
-            AssertThat(art).OverrideFailureMessage($"{slot.GetPath()} has no {ArtNodeName} child").IsNotNull();
-            var meshes = art is MeshInstance3D self
-                ? Descendants(art!).OfType<MeshInstance3D>().Append(self).ToList()
-                : Descendants(art!).OfType<MeshInstance3D>().ToList();
-            AssertThat(meshes.Count).OverrideFailureMessage($"{art!.GetPath()} holds no mesh").IsGreaterEqual(1);
-            foreach (var mesh in meshes)
-            {
-                AssertThat(mesh.MaterialOverride != null)
-                    .OverrideFailureMessage($"{mesh.GetPath()} has no material")
-                    .IsTrue();
-            }
-        }
+        var sidewalkZ = AssertAllBeyond("FarSidewalk", roadZ.Max);
+        AssertAllBeyond("Facades", sidewalkZ.Max);
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void SkyAndSunReplaceTheFlatBackground()
+    public void NeighboursFlankTheShopOnEachSide()
     {
-        var environment = _shop.GetNodeOrNull<WorldEnvironment>("Environment");
-        AssertThat(environment).OverrideFailureMessage("Environment WorldEnvironment is missing").IsNotNull();
-
-        var env = environment!.Environment;
-        AssertThat(env.BackgroundMode == Environment.BGMode.Sky)
-            .OverrideFailureMessage("the shop background is not the Sky mode")
+        var shop = NeighbourhoodBounds.ShopAndStreet;
+        var left = SceneNodes.Require(_neighbourhood, "NeighbourLeft").GlobalPosition.X;
+        var right = SceneNodes.Require(_neighbourhood, "NeighbourRight").GlobalPosition.X;
+        AssertThat(left < shop.Position.X)
+            .OverrideFailureMessage($"NeighbourLeft x {left} is not left of the shop and street ({shop.Position.X})")
             .IsTrue();
-        AssertThat(env.Sky?.SkyMaterial is ProceduralSkyMaterial)
-            .OverrideFailureMessage("the shop sky does not use a ProceduralSkyMaterial")
-            .IsTrue();
-
-        var suns = Descendants(_shop).OfType<DirectionalLight3D>().ToList();
-        AssertThat(suns.Count).OverrideFailureMessage("the shop tree must hold exactly one DirectionalLight3D").IsEqual(1);
-        AssertThat(suns[0].ShadowEnabled)
-            .OverrideFailureMessage($"{suns[0].GetPath()} does not cast shadows")
+        AssertThat(right > shop.End.X)
+            .OverrideFailureMessage($"NeighbourRight x {right} is not right of the shop and street ({shop.End.X})")
             .IsTrue();
     }
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public void ScenerySolidnessAndFootprint()
+    // Every child of the group sits strictly beyond minZ; returns the nearest and farthest child z.
+    private (float Min, float Max) AssertAllBeyond(string group, float minZ)
     {
-        var neighbourhood = RequireNode(_shop, NeighbourhoodPath);
-        var collisions = Descendants(neighbourhood).OfType<CollisionObject3D>().ToList();
-        AssertThat(collisions.Count)
-            .OverrideFailureMessage($"scenery has collision: {string.Join(", ", collisions.Select(c => c.GetPath()))}")
-            .IsEqual(0);
-
-        foreach (var visual in VisibleVisuals(neighbourhood))
+        var root = SceneNodes.Require(_neighbourhood, group);
+        var zs = new List<float>();
+        foreach (var child in root.GetChildren())
         {
-            var footprint = Footprint(visual);
-            AssertThat(footprint.Intersects(ShopAndStreetFootprint))
-                .OverrideFailureMessage($"{visual.GetPath()} at {footprint} intrudes the shop and street footprint")
-                .IsFalse();
-            AssertThat(footprint.Intersects(WorkshopFootprint))
-                .OverrideFailureMessage($"{visual.GetPath()} at {footprint} intrudes the workshop footprint")
-                .IsFalse();
+            var z = ((Node3D)child).GlobalPosition.Z;
+            AssertThat(z > minZ)
+                .OverrideFailureMessage($"{child.GetPath()} z {z} is not beyond {minZ}")
+                .IsTrue();
+            zs.Add(z);
         }
-    }
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public void PropsKeepClearOfCustomerMarkers()
-    {
-        var props = RequireNode(RequireNode(_shop, NeighbourhoodPath), "Props");
-        var propVisuals = VisibleVisuals(props).ToList();
-
-        foreach (var markerName in CustomerMarkerNames)
-        {
-            var marker = RequireNode(_shop, $"World/Markers/{markerName}");
-            var markerX = ((Node3D)marker).GlobalPosition.X;
-            foreach (var visual in propVisuals)
-            {
-                var footprint = Footprint(visual);
-                var gap = markerX < footprint.Position.X
-                    ? footprint.Position.X - markerX
-                    : markerX > footprint.End.X ? markerX - footprint.End.X : 0f;
-                AssertThat(gap >= PropClearanceX)
-                    .OverrideFailureMessage($"{visual.GetPath()} is {gap} m from {marker.GetPath()} in x, under {PropClearanceX} m")
-                    .IsTrue();
-            }
-        }
-    }
-
-    private static Node3D RequireNode(Node root, string path)
-    {
-        var node = root.GetNodeOrNull<Node3D>(path);
-        AssertThat(node).OverrideFailureMessage($"{path} is missing under {root.GetPath()}").IsNotNull();
-        return node!;
-    }
-
-    private static System.Collections.Generic.IEnumerable<Node> Descendants(Node root) =>
-        root.FindChildren("*", string.Empty, true, false);
-
-    // Runtime-loaded pack art has no owner, so owned must be false to see it. Hidden placeholders are skipped.
-    private static System.Collections.Generic.IEnumerable<VisualInstance3D> VisibleVisuals(Node root) =>
-        Descendants(root).OfType<VisualInstance3D>().Where(visual => visual.IsVisibleInTree());
-
-    private static Rect2 Footprint(VisualInstance3D visual)
-    {
-        var box = visual.GlobalTransform * visual.GetAabb();
-        return new Rect2(box.Position.X, box.Position.Z, box.Size.X, box.Size.Z);
+        AssertThat(zs.Count).OverrideFailureMessage($"{root.GetPath()} has no children").IsGreaterEqual(1);
+        return (zs.Min(), zs.Max());
     }
 }

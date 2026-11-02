@@ -105,18 +105,8 @@ public class ShopArtMaterialSceneTest
     }
 
     private static IEnumerable<ShopArtSlot> Slots(Node root) =>
-        Descendants(root).OfType<ShopArtSlot>();
+        SceneNodes.Descendants(root).OfType<ShopArtSlot>();
 
     private static IEnumerable<MeshInstance3D> Meshes(Node root) =>
-        Descendants(root).Append(root).OfType<MeshInstance3D>();
-
-    private static IEnumerable<Node> Descendants(Node root)
-    {
-        foreach (var child in root.GetChildren())
-        {
-            yield return child;
-            foreach (var descendant in Descendants(child))
-                yield return descendant;
-        }
-    }
+        SceneNodes.Descendants(root).Append(root).OfType<MeshInstance3D>();
 }
