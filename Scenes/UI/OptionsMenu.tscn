@@ -1,0 +1,103 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Menu/Controllers/OptionsMenuController.cs" id="1_options"]
+
+[node name="OptionsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_options")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -240.0
+offset_right = 200.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="Layout"]
+layout_mode = 2
+text = "Options"
+horizontal_alignment = 1
+
+[node name="SensitivityLabel" type="Label" parent="Layout"]
+layout_mode = 2
+text = "Mouse sensitivity"
+
+[node name="SensitivitySlider" type="HSlider" parent="Layout"]
+layout_mode = 2
+min_value = 0.02
+max_value = 0.5
+step = 0.01
+value = 0.1
+
+[node name="InvertYCheck" type="CheckButton" parent="Layout"]
+layout_mode = 2
+text = "Invert Y"
+
+[node name="MasterLabel" type="Label" parent="Layout"]
+layout_mode = 2
+text = "Master volume"
+
+[node name="MasterSlider" type="HSlider" parent="Layout"]
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="MusicLabel" type="Label" parent="Layout"]
+layout_mode = 2
+text = "Music volume"
+
+[node name="MusicSlider" type="HSlider" parent="Layout"]
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="SfxLabel" type="Label" parent="Layout"]
+layout_mode = 2
+text = "Sound effects volume"
+
+[node name="SfxSlider" type="HSlider" parent="Layout"]
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="FullscreenCheck" type="CheckButton" parent="Layout"]
+layout_mode = 2
+text = "Fullscreen"
+
+[node name="ResolutionLabel" type="Label" parent="Layout"]
+layout_mode = 2
+text = "Resolution"
+
+[node name="ResolutionOption" type="OptionButton" parent="Layout"]
+layout_mode = 2
+
+[node name="VsyncCheck" type="CheckButton" parent="Layout"]
+layout_mode = 2
+text = "VSync"
+
+[node name="BackButton" type="Button" parent="Layout"]
+layout_mode = 2
+text = "Back"

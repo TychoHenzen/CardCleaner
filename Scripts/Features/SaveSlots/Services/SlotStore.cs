@@ -12,8 +12,8 @@ namespace CardCleaner.Scripts.Features.SaveSlots.Services;
 ///     Saves, loads, lists and deletes slots. A save is written to a temp file and then renamed over the save file,
 ///     so a failed write leaves the previous save in place.
 /// </summary>
-[Service(typeof(SlotStore))]
-public sealed class SlotStore
+[Service(typeof(SlotStore), typeof(ISaveSlotCatalog))]
+public sealed class SlotStore : ISaveSlotCatalog
 {
     private readonly ISlotFileSystem _files;
 
@@ -84,12 +84,13 @@ public sealed class SlotStore
     }
 
     /// <summary>
-    ///     The slots on disk. Folders with invalid names are skipped. Readable slots come first, newest save first;
-    ///     the rest follow in name order.
+    ///     The slots on disk. Folders with invalid names are skipped. Readable slots come first, newest save first, a
+    ///     readable slot without a parsable time after those with one; unreadable slots follow. Ties are broken by
+    ///     name.
     /// </summary>
-    public IReadOnlyList<SaveSlotName> List()
+    public IReadOnlyList<SaveSlotInfo> List()
     {
-        var entries = new List<(SaveSlotName Name, DateTime? SavedAt)>();
+        var entries = new List<SaveSlotInfo>();
         foreach (var folder in _files.ListFolders(SaveSlotLayout.Root))
         {
             if (!SaveSlotName.TryCreate(folder, out var name, out _))
@@ -97,15 +98,50 @@ public sealed class SlotStore
                 continue;
             }
 
-            entries.Add((name, ReadSavedAt(name)));
+            entries.Add(ReadInfo(name));
         }
 
         return entries
-            .OrderBy(entry => entry.SavedAt is null)
-            .ThenByDescending(entry => entry.SavedAt ?? DateTime.MinValue)
+            .OrderBy(entry => !entry.IsReadable)
+            .ThenBy(entry => entry.SavedAtUtc is null)
+            .ThenByDescending(entry => entry.SavedAtUtc ?? DateTime.MinValue)
             .ThenBy(entry => entry.Name.Key, StringComparer.Ordinal)
-            .Select(entry => entry.Name)
             .ToList();
+    }
+
+    /// <summary>
+    ///     Creates an empty slot folder for the name. Refuses an invalid name, or a name that matches an existing slot
+    ///     ignoring case. Writes no save file, so the new slot is listed as unreadable until its first save.
+    /// </summary>
+    public bool TryCreate(string? rawName, out SaveSlotName name, out string reason)
+    {
+        if (!SaveSlotName.TryCreate(rawName, out name, out reason))
+        {
+            return false;
+        }
+
+        var folderKey = name.Folder;
+        var exists = _files.ListFolders(SaveSlotLayout.Root)
+            .Any(folder => string.Equals(folder, folderKey, StringComparison.Ordinal));
+        if (exists)
+        {
+            reason = $"A slot named '{name.Value}' already exists.";
+            return false;
+        }
+
+        try
+        {
+            _files.EnsureFolder(SaveSlotLayout.FolderFor(name));
+        }
+        catch (Exception ex)
+        {
+            ILog.Error($"Could not create slot '{name.Value}': {ex.Message}");
+            reason = "The slot could not be created.";
+            return false;
+        }
+
+        reason = string.Empty;
+        return true;
     }
 
     /// <summary>
@@ -118,26 +154,27 @@ public sealed class SlotStore
         _files.Delete(SaveSlotLayout.FolderFor(name));
     }
 
-    private DateTime? ReadSavedAt(SaveSlotName name)
+    private SaveSlotInfo ReadInfo(SaveSlotName name)
     {
         var file = SaveSlotLayout.FileFor(name);
         if (!_files.Exists(file))
         {
-            return null;
+            return new SaveSlotInfo(name, null, false);
         }
 
         var result = SaveEnvelope.Read(_files.ReadAllText(file));
         if (result.Envelope is null)
         {
-            return null;
+            return new SaveSlotInfo(name, null, false);
         }
 
-        return DateTime.TryParse(
+        DateTime? savedAt = DateTime.TryParse(
             result.Envelope.SavedAtUtc,
             CultureInfo.InvariantCulture,
             DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal,
-            out var savedAt)
-            ? savedAt
+            out var parsed)
+            ? parsed
             : null;
+        return new SaveSlotInfo(name, savedAt, true);
     }
 }

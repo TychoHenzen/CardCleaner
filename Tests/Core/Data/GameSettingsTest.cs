@@ -52,6 +52,17 @@ public class GameSettingsTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void InvertY_defaults_false_and_can_be_set()
+    {
+        Assertions.AssertThat(_settings.InvertY).IsFalse();
+
+        _settings.InvertY = true;
+
+        Assertions.AssertThat(_settings.InvertY).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void PitchBounds_AreValid()
     {
         // Assert - Min should be less than max

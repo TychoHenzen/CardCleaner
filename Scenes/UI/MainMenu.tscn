@@ -1,0 +1,88 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Menu/Controllers/MainMenuController.cs" id="1_menu"]
+[ext_resource type="Script" path="res://Scripts/Features/Menu/Controllers/SlotListController.cs" id="2_slots"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/OptionsMenu.tscn" id="3_options"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -240.0
+offset_right = 200.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="Layout"]
+layout_mode = 2
+text = "CardCleaner"
+horizontal_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="Layout"]
+layout_mode = 2
+text = "Continue"
+
+[node name="NewGameButton" type="Button" parent="Layout"]
+layout_mode = 2
+text = "New game"
+
+[node name="LoadLabel" type="Label" parent="Layout"]
+layout_mode = 2
+text = "Load game"
+
+[node name="SlotList" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+script = ExtResource("2_slots")
+
+[node name="OptionsButton" type="Button" parent="Layout"]
+layout_mode = 2
+text = "Options"
+
+[node name="QuitButton" type="Button" parent="Layout"]
+layout_mode = 2
+text = "Quit"
+
+[node name="MessageLabel" type="Label" parent="Layout"]
+layout_mode = 2
+
+[node name="NewGameDialog" type="ConfirmationDialog" parent="."]
+title = "New game"
+size = Vector2i(400, 160)
+dialog_text = "Name the new save slot."
+
+[node name="NameEdit" type="LineEdit" parent="NewGameDialog"]
+offset_left = 16.0
+offset_top = 60.0
+offset_right = 384.0
+offset_bottom = 92.0
+placeholder_text = "Save name"
+
+[node name="DeleteDialog" type="ConfirmationDialog" parent="."]
+title = "Delete save"
+size = Vector2i(420, 140)
+dialog_text = "Delete this save slot?"
+
+[node name="Options" parent="." instance=ExtResource("3_options")]
+visible = false

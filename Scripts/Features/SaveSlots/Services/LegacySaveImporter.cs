@@ -12,13 +12,24 @@ namespace CardCleaner.Scripts.Features.SaveSlots.Services;
 /// </summary>
 // ASSUMPTION: a bare [Service] registers under interfaces only, and this class has none, so it names its own type,
 // as SlotStore does.
-[Service(typeof(LegacySaveImporter))]
-public sealed class LegacySaveImporter(SlotStore store, ISlotFileSystem files, IActiveSaveSlot activeSlot)
+[Service(typeof(LegacySaveImporter), typeof(ILegacySaveImporter))]
+public sealed class LegacySaveImporter : ILegacySaveImporter
 {
     /// <summary>The path GameSaveService wrote before save slots.</summary>
     public const string LegacyPath = "user://game_save.json";
 
     private const string ImportedSlotKey = "imported";
+
+    private readonly SlotStore _store;
+    private readonly ISlotFileSystem _files;
+    private readonly IActiveSaveSlot _activeSlot;
+
+    public LegacySaveImporter(SlotStore store, ISlotFileSystem files, IActiveSaveSlot activeSlot)
+    {
+        _store = store;
+        _files = files;
+        _activeSlot = activeSlot;
+    }
 
     /// <summary>
     ///     Imports the legacy save when there are no slots and the legacy file exists. Returns true only when the
@@ -27,12 +38,12 @@ public sealed class LegacySaveImporter(SlotStore store, ISlotFileSystem files, I
     /// </summary>
     public bool TryImport()
     {
-        if (store.List().Count > 0 || !files.Exists(LegacyPath))
+        if (_store.List().Count > 0 || !_files.Exists(LegacyPath))
         {
             return false;
         }
 
-        var text = files.ReadAllText(LegacyPath);
+        var text = _files.ReadAllText(LegacyPath);
         if (text is null)
         {
             ILog.Warning($"The legacy save {LegacyPath} could not be read; it was not imported.");
@@ -46,12 +57,12 @@ public sealed class LegacySaveImporter(SlotStore store, ISlotFileSystem files, I
         }
 
         SaveSlotName.TryCreate(ImportedSlotKey, out var name, out _);
-        if (!store.Save(name, text, DateTime.UtcNow))
+        if (!_store.Save(name, text, DateTime.UtcNow))
         {
             return false;
         }
 
-        activeSlot.Activate(name);
+        _activeSlot.Activate(name);
         return true;
     }
 

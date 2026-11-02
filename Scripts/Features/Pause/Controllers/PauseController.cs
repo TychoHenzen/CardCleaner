@@ -1,3 +1,4 @@
+using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
@@ -11,10 +12,19 @@ public partial class PauseController : Node, IDependent
     private ICursorOwner? _cursor;
     private ISaveGameCommand? _saveGame;
     private Label? _saveStatusLabel;
+    private Control? _optionsMenu;
     private IServiceResolver? _services;
+
+    private const string MainMenuScenePath = "res://Scenes/UI/MainMenu.tscn";
 
     [Export] public CanvasLayer PauseMenuLayer = null!;
     [Export] public CanvasLayer? UILayer;
+
+    /// <summary>
+    ///     Changes the scene when the player quits to the main menu. Set it before the node enters the tree to replace
+    ///     the default; _Ready keeps a value that is already set and otherwise uses the tree's ChangeSceneToFile.
+    /// </summary>
+    public Action<string>? ChangeScene;
 
     public void Inject(IServiceResolver services) => _services = services;
 
@@ -22,6 +32,7 @@ public partial class PauseController : Node, IDependent
     {
         // Always run so we can unpause via input
         ProcessMode = ProcessModeEnum.Always;
+        ChangeScene ??= path => GetTree().ChangeSceneToFile(path);
 
         // Cache and hide the pause menu
         _pauseMenuRoot = PauseMenuLayer.GetNode<Control>("Panel");
@@ -33,6 +44,21 @@ public partial class PauseController : Node, IDependent
         _saveStatusLabel = PauseMenuLayer.GetNodeOrNull<Label>("Panel/SaveStatusLabel");
         if (PauseMenuLayer.GetNodeOrNull<Button>("Panel/SaveButton") is { } saveButton)
             saveButton.Pressed += OnSavePressed;
+
+        // The options screen and Quit to menu are optional too; a menu without them still pauses and resumes.
+        // The options screen is a child of the menu, hidden until Options opens it and closed by its Back button.
+        _optionsMenu = PauseMenuLayer.GetNodeOrNull<Control>("OptionsMenu");
+        if (_optionsMenu != null)
+        {
+            _optionsMenu.SetProcessMode(ProcessModeEnum.WhenPaused);
+            _optionsMenu.Visible = false;
+            _optionsMenu.Connect("Closed", Callable.From(() => CloseOptions()));
+            if (PauseMenuLayer.GetNodeOrNull<Button>("Panel/OptionsButton") is { } optionsButton)
+                optionsButton.Pressed += OpenOptions;
+        }
+
+        if (PauseMenuLayer.GetNodeOrNull<Button>("Panel/QuitToMenuButton") is { } quitButton)
+            quitButton.Pressed += OnQuitToMenuPressed;
 
         // In-game UI starts visible
         if (UILayer != null)
@@ -54,6 +80,31 @@ public partial class PauseController : Node, IDependent
         var saved = _saveGame?.ManualSave() ?? false;
         if (_saveStatusLabel != null)
             _saveStatusLabel.Text = saved ? "Saved" : "Save failed";
+    }
+
+    private void OpenOptions()
+    {
+        if (_optionsMenu != null)
+            _optionsMenu.Visible = true;
+    }
+
+    private void CloseOptions()
+    {
+        if (_optionsMenu != null)
+            _optionsMenu.Visible = false;
+    }
+
+    private void OnQuitToMenuPressed()
+    {
+        // Leave only after the save went through: a failed save keeps the player here, paused, with the message shown
+        var saved = _saveGame?.ManualSave() ?? false;
+        if (_saveStatusLabel != null)
+            _saveStatusLabel.Text = saved ? "Saved" : "Save failed - not leaving";
+        if (!saved)
+            return;
+
+        Resume();
+        ChangeScene!(MainMenuScenePath);
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -90,6 +141,8 @@ public partial class PauseController : Node, IDependent
     {
         GetTree().Paused = false;
         _pauseMenuRoot.Visible = false;
+        if (_optionsMenu != null)
+            _optionsMenu.Visible = false;
         if (UILayer != null)
             UILayer.Visible = true;
 
