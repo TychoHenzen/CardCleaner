@@ -14,8 +14,9 @@ namespace CardCleaner.Tests.Features.SaveSlots;
 
 /// <summary>
 /// Saves a carried sealed box and restores it through <see cref="SavedContainers" /> with a
-/// <see cref="ContainerHolder" /> in the world, the way the player's hand has one. Covers the held flag, the fallbacks to the floor, a restore over a
-/// carried container, and an old slot that has no held key. The recording spawner keeps cards out of the tree.
+/// <see cref="ContainerHolder" /> in the world, the way the player's hand has one. Covers the held flag, the fallbacks
+/// to the floor, a restore over a carried container, and an old slot that has no held key. The recording spawner
+/// keeps cards out of the tree.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
