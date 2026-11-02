@@ -4,6 +4,8 @@ using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Tests.TestUtilities;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Godot;
 using NSubstitute;
 
@@ -173,6 +175,186 @@ public class ContainerHolderTest
 
         AssertBool(box.IsOpened).IsTrue();
         AssertBool(_holder.IsHolding).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void HeldContainerFreed_ClearsHeld()
+    {
+        var log = new RecordingLog();
+        var previous = ILog.Sink;
+        ILog.Sink = log;
+        try
+        {
+            var box = Make(BoxScene);
+            _holder.TryPickUp(box);
+
+            box.Free();
+
+            AssertThat(_holder.Held).IsNull();
+            AssertBool(_holder.IsHolding).IsFalse();
+            AssertThat(log.Errors).IsEmpty();
+        }
+        finally
+        {
+            ILog.Sink = previous;
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void HeldContainerOpened_ClearsHeld()
+    {
+        var log = new RecordingLog();
+        var previous = ILog.Sink;
+        ILog.Sink = log;
+        try
+        {
+            // A camera anchor refuses Open() while the container is held, so this case holds it on a plain Node3D.
+            var anchor = new Node3D();
+            _world.AddChild(anchor);
+            _holder.SetReferences(anchor);
+            var box = Make(BoxScene);
+            _holder.TryPickUp(box);
+
+            AssertBool(box.Open()).IsTrue();
+
+            AssertThat(_holder.Held).IsNull();
+            AssertBool(_holder.IsHolding).IsFalse();
+            AssertThat(log.Errors).IsEmpty();
+        }
+        finally
+        {
+            ILog.Sink = previous;
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void PickUp_FreedContainer_ReturnsFalse()
+    {
+        var log = new RecordingLog();
+        var previous = ILog.Sink;
+        ILog.Sink = log;
+        try
+        {
+            var box = Make(BoxScene);
+            box.Free();
+
+            AssertBool(_holder.TryPickUp(box)).IsFalse();
+
+            AssertThat(_holder.Held).IsNull();
+            AssertThat(log.Errors).IsEmpty();
+        }
+        finally
+        {
+            ILog.Sink = previous;
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void PickUp_OpenedContainer_ReturnsFalse()
+    {
+        var log = new RecordingLog();
+        var previous = ILog.Sink;
+        ILog.Sink = log;
+        try
+        {
+            var box = Make(BoxScene);
+            AssertBool(box.Open()).IsTrue();
+
+            AssertBool(_holder.TryPickUp(box)).IsFalse();
+
+            AssertThat(_holder.Held).IsNull();
+            AssertThat(log.Errors).IsEmpty();
+        }
+        finally
+        {
+            ILog.Sink = previous;
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void Drop_NothingHeld_NoOp()
+    {
+        var log = new RecordingLog();
+        var previous = ILog.Sink;
+        ILog.Sink = log;
+        try
+        {
+            var box = Make(BoxScene);
+
+            _holder.Drop();
+
+            AssertBool(box.GetParent() == _world).IsTrue();
+            AssertBool(box.Freeze).IsFalse();
+            AssertBool(_holder.IsHolding).IsFalse();
+            AssertThat(log.Errors).IsEmpty();
+        }
+        finally
+        {
+            ILog.Sink = previous;
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void OpenHeld_NothingHeld_False()
+    {
+        var log = new RecordingLog();
+        var previous = ILog.Sink;
+        ILog.Sink = log;
+        try
+        {
+            var box = Make(BoxScene);
+
+            AssertBool(_holder.OpenHeld()).IsFalse();
+
+            AssertBool(box.IsOpened).IsFalse();
+            AssertThat(log.Errors).IsEmpty();
+        }
+        finally
+        {
+            ILog.Sink = previous;
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task InTree_IsInContainerHoldersGroup()
+    {
+        var tree = _world.GetTree();
+        // Setup already put one holder in the tree, so the group holds that one and this one.
+        var holder = TestServices.Inject(new ContainerHolder());
+        _world.AddChild(holder);
+
+        AssertBool(holder.IsInGroup(ContainerHolder.GroupName)).IsTrue();
+        AssertThat(tree.GetNodesInGroup(ContainerHolder.GroupName).Count).IsEqual(2);
+
+        holder.QueueFree();
+        await _world.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+
+        AssertBool(GodotObject.IsInstanceValid(holder)).IsFalse();
+        AssertThat(tree.GetNodesInGroup(ContainerHolder.GroupName).Count).IsEqual(1);
+    }
+
+    private sealed class RecordingLog : ILog
+    {
+        public List<string> Errors { get; } = new();
+
+        public void LogMessage(string message)
+        {
+        }
+
+        public void LogWarning(string message)
+        {
+        }
+
+        public void LogError(string message) => Errors.Add(message);
+
+        public void LogError(string message, Exception exception) => Errors.Add(message);
     }
 
     private CardContainer Make(string scenePath)

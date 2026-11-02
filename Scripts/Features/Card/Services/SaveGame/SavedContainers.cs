@@ -12,7 +12,8 @@ namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 
 /// <summary>
 ///     Writes the sealed containers lying in the scene into a slot and rebuilds them from one. Only sealed
-///     containers placed from a scene file can be rebuilt; an opened one has spilled its contents.
+///     containers placed from a scene file can be rebuilt; an opened one has spilled its contents. A carried
+///     container is saved with a held flag and handed back to the player's hand on restore.
 /// </summary>
 internal static class SavedContainers
 {
@@ -22,7 +23,8 @@ internal static class SavedContainers
         CardContainerKind Kind,
         ulong? Seed,
         Vector3 Position,
-        Vector3 Rotation);
+        Vector3 Rotation,
+        bool Held = false);
 
     // One sealed container as it is written to a slot. Position and Rotation are typed object, as the card records
     // are: a Vector3 cannot be read back into a typed property, so they are read through SavedCardReader like cards.
@@ -33,6 +35,7 @@ internal static class SavedContainers
         public string? Seed { get; set; }
         public object? Position { get; set; }
         public object? Rotation { get; set; }
+        public bool Held { get; set; }
     }
 
     /// <summary>The records to write for the sealed containers in <paramref name="tree" />.</summary>
@@ -45,7 +48,8 @@ internal static class SavedContainers
                 Kind = container.Kind.ToString(),
                 Seed = container.SeedForSave()?.ToString(CultureInfo.InvariantCulture),
                 Position = container.GlobalPosition,
-                Rotation = container.GlobalRotation
+                Rotation = container.GlobalRotation,
+                Held = container.IsHeld
             })
             .ToList();
     }
@@ -66,9 +70,14 @@ internal static class SavedContainers
     /// </summary>
     internal static void Restore(SceneTree tree, IEnumerable<Saved> saved, Node3D world)
     {
+        // ASSUMPTION: one player holds one container (Risk Low), so only the first holder in the group is used.
+        var holder = tree.GetNodesInGroup(ContainerHolder.GroupName).OfType<IContainerHolder>().FirstOrDefault();
+
         foreach (var existing in tree.GetNodesInGroup("card_containers").OfType<CardContainer>()
                      .Where(container => !string.IsNullOrEmpty(container.SceneFilePath)).ToList())
         {
+            // RemoveChild leaves the tree at once, so a held one is released now, not when Godot frees it.
+            existing.GetParent()?.RemoveChild(existing);
             existing.QueueFree();
         }
 
@@ -88,6 +97,8 @@ internal static class SavedContainers
             // The transform needs the node in the tree, so it is set after AddChild.
             container.GlobalPosition = record.Position;
             container.GlobalRotation = record.Rotation;
+            // A failed pick-up leaves the container at its saved position.
+            if (record.Held) holder?.TryPickUp(container);
         }
     }
 
@@ -103,7 +114,7 @@ internal static class SavedContainers
             ?? throw new FormatException($"Container from {record.ScenePath} has no position"));
         var rotation = SavedCardReader.GetVector3FromData(record.Rotation
             ?? throw new FormatException($"Container from {record.ScenePath} has no rotation"));
-        return new Saved(record.ScenePath, kind, seed, position, rotation);
+        return new Saved(record.ScenePath, kind, seed, position, rotation, record.Held);
     }
 
     private static CardContainerKind ParseKind(ContainerRecord record)

@@ -16,6 +16,8 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
     [Signal]
     public delegate void ContainerDroppedEventHandler(CardContainer container);
 
+    public const string GroupName = "container_holders";
+
     private const float DefaultDropDistance = 1.5f;
     private static readonly Vector3 DefaultHoldOffset = new(0.5f, -0.4f, -1.2f);
 
@@ -49,10 +51,12 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         };
     }
 
-    public CardContainer? Held => _held;
-    public bool IsHolding => _held != null;
+    public CardContainer? Held => HeldContainer();
+    public bool IsHolding => HeldContainer() != null;
 
     public void Inject(IServiceResolver services) => _services = services;
+
+    public override void _EnterTree() => AddToGroup(GroupName);
 
     public override void _Ready()
     {
@@ -81,7 +85,8 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
 
     public bool TryPickUp(CardContainer container)
     {
-        if (_held != null || !GodotObject.IsInstanceValid(container) || container.IsOpened || _handAnchor == null)
+        if (HeldContainer() != null || !GodotObject.IsInstanceValid(container) || container.IsOpened
+            || _handAnchor == null)
             return false;
 
         // Remember the layers before clearing them, so a drop restores exactly what the container had.
@@ -103,7 +108,8 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
 
     public void Drop()
     {
-        if (_held == null || _handAnchor == null) return;
+        var container = HeldContainer();
+        if (container == null || _handAnchor == null) return;
 
         if (_services == null)
         {
@@ -111,7 +117,6 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
             return;
         }
 
-        var container = _held;
         var spawnerNode = _services.Get<ICardSpawner>().GetNode();
         var dropPosition = _handAnchor.GlobalPosition + (-_handAnchor.GlobalBasis.Z * DropDistance);
 
@@ -128,9 +133,9 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
 
     public bool OpenHeld()
     {
-        if (_held == null) return false;
+        var container = HeldContainer();
+        if (container == null) return false;
 
-        var container = _held;
         Drop();
         return container.Open();
     }
@@ -139,5 +144,18 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
     private void OnHeldTreeExiting()
     {
         _held = null;
+    }
+
+    // The container the hand holds, or null. A container that was freed or opened is no longer held, so the hand
+    // lets go of it here and unsubscribes from it, so a later held container is never cleared by a stale handler.
+    private CardContainer? HeldContainer()
+    {
+        if (_held == null) return null;
+        if (GodotObject.IsInstanceValid(_held) && !_held.IsOpened) return _held;
+
+        if (GodotObject.IsInstanceValid(_held))
+            _held.TreeExiting -= OnHeldTreeExiting;
+        _held = null;
+        return null;
     }
 }
