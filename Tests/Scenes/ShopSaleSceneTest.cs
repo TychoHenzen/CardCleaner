@@ -1,4 +1,3 @@
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
@@ -91,13 +90,12 @@ public class ShopSaleSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void CounterUsesAPackMeshListedInTheManifestWithAPlaceholderFallback()
+    public void CounterUsesAnExistingPackMeshWithAPlaceholderFallback()
     {
         var art = _register.GetNode<ShopArtSlot>("CounterArt");
-        var manifest = File.ReadAllText(ProjectSettings.GlobalizePath("res://tools/synty-assets.json"));
 
         AssertThat(art.ArtPath).IsEqual(CounterArtPath);
-        AssertThat(manifest).Contains(Path.GetFileName(CounterArtPath));
+        AssertBool(SyntyAssets.Exists(CounterArtPath[SyntyAssets.Root.Length..])).IsTrue();
         AssertThat(art.Placeholder).IsNotNull();
         AssertBool(art.ArtLoaded || art.Placeholder!.Visible).IsTrue();
     }

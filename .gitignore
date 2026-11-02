@@ -144,3 +144,6 @@ Scripts/Tools/*.png.import
 # Cygwin/MSYS tools (for example grep.exe in Git Bash) write this file when they crash
 *.stackdump
 
+
+# The Asset Manager plugin (addons/asset_manager) writes its catalog, tags, thumbnails and legacy index.db here
+.assetmanager/
