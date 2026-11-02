@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Menu.Controllers;
@@ -224,6 +225,169 @@ public class MainMenuSceneTest
         Assertions.AssertBool(plans[0].Mode == DisplayServer.WindowMode.ExclusiveFullscreen).IsTrue();
         Assertions.AssertBool(plans[0].Size.HasValue).IsFalse();
         Assertions.AssertBool(plans[0].VSync == DisplayServer.VSyncMode.Disabled).IsTrue();
+    }
+
+    // Clicks go through Input.ParseInputEvent at the centre of the button's global rect, so they reach the
+    // GUI input path the player uses. No test in this class calls EmitSignal in place of a click; the dialog
+    // buttons inside ConfirmationDialog are still driven through their confirmed/canceled signals.
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task Load_button_click_activates_that_slot()
+    {
+        SaveSlot("older", OlderSave);
+        SaveSlot("newer", NewerSave);
+        AddMenu();
+        await Settle();
+
+        await Click(Row("older").GetNode<Button>("Load"));
+
+        Assertions.AssertString(_active.Current.Value).IsEqual("older");
+        Assertions.AssertInt(_changedScenes.Count).IsEqual(1);
+        Assertions.AssertString(_changedScenes[0]).IsEqual(MainMenuController.ShopScenePath);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task Load_click_on_an_unreadable_slot_does_nothing()
+    {
+        _store.TryCreate("broken", out _, out _);
+        _files.Seed(SaveSlotLayout.FileFor(Name("broken")), "not a save");
+        AddMenu();
+        await Settle();
+
+        await Click(Row("broken").GetNode<Button>("Load"));
+
+        Assertions.AssertInt(_changedScenes.Count).IsEqual(0);
+        Assertions.AssertString(_active.Current.Value).IsEqual("default");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task Delete_button_click_opens_the_confirmation_and_confirm_removes_only_that_slot()
+    {
+        SaveSlot("alpha", OlderSave);
+        SaveSlot("beta", NewerSave);
+        AddMenu();
+        await Settle();
+
+        await Click(Row("alpha").GetNode<Button>("Delete"));
+
+        var dialog = Get<ConfirmationDialog>("DeleteDialog");
+        Assertions.AssertBool(dialog.Visible).IsTrue();
+        Assertions.AssertBool(dialog.DialogText.Contains("alpha", StringComparison.Ordinal)).IsTrue();
+
+        dialog.EmitSignal("confirmed");
+        await CloseDialog("DeleteDialog");
+        await Settle();
+
+        var names = _store.List().Select(info => info.Name.Value).ToList();
+        Assertions.AssertInt(names.Count).IsEqual(1);
+        Assertions.AssertString(names[0]).IsEqual("beta");
+        Assertions.AssertInt(RowCount()).IsEqual(1);
+        Assertions.AssertBool(Row("beta") is not null).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task Delete_click_then_cancel_keeps_the_slot()
+    {
+        SaveSlot("alpha", OlderSave);
+        AddMenu();
+        await Settle();
+
+        await Click(Row("alpha").GetNode<Button>("Delete"));
+        Assertions.AssertBool(Get<ConfirmationDialog>("DeleteDialog").Visible).IsTrue();
+
+        Get<ConfirmationDialog>("DeleteDialog").EmitSignal("canceled");
+        await CloseDialog("DeleteDialog");
+        await Settle();
+
+        Assertions.AssertInt(_store.List().Count).IsEqual(1);
+        Assertions.AssertInt(RowCount()).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task Continue_button_click_loads_the_newest_slot()
+    {
+        SaveSlot("older", OlderSave);
+        SaveSlot("newer", NewerSave);
+        AddMenu();
+        await Settle();
+
+        await Click(Get<Button>("Layout/ContinueButton"));
+
+        Assertions.AssertString(_active.Current.Value).IsEqual("newer");
+        Assertions.AssertInt(_changedScenes.Count).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task New_game_button_click_opens_the_name_dialog()
+    {
+        AddMenu();
+        await Settle();
+
+        await Click(Get<Button>("Layout/NewGameButton"));
+
+        Assertions.AssertBool(Get<ConfirmationDialog>("NewGameDialog").Visible).IsTrue();
+        Assertions.AssertString(Get<LineEdit>("NewGameDialog/NameEdit").Text).IsEmpty();
+        await CloseDialog("NewGameDialog");
+        Assertions.AssertInt(_changedScenes.Count).IsEqual(0);
+    }
+
+    private async Task Settle()
+    {
+        await Frame();
+        await Frame();
+    }
+
+    private async Task CloseDialog(string path)
+    {
+        Get<ConfirmationDialog>(path).Hide();
+        await Frame();
+    }
+
+    private static async Task Frame() => await ISceneRunner.SyncProcessFrame;
+
+    private static void Send(InputEvent input)
+    {
+        Input.ParseInputEvent(input);
+        Input.FlushBufferedEvents();
+    }
+
+    private static async Task Click(Control control)
+    {
+        var rect = control.GetGlobalRect();
+        Assertions.AssertBool(rect.Size.X > 0 && rect.Size.Y > 0).IsTrue();
+        Assertions.AssertBool(control.IsVisibleInTree()).IsTrue();
+        var point = rect.GetCenter();
+
+        Send(new InputEventMouseMotion { Position = point, GlobalPosition = point });
+        await Frame();
+        Send(new InputEventMouseButton
+        {
+            ButtonIndex = MouseButton.Left,
+            Pressed = true,
+            ButtonMask = MouseButtonMask.Left,
+            Position = point,
+            GlobalPosition = point,
+        });
+        await Frame();
+        Send(new InputEventMouseButton
+        {
+            ButtonIndex = MouseButton.Left,
+            Pressed = false,
+            ButtonMask = 0,
+            Position = point,
+            GlobalPosition = point,
+        });
+        await Frame();
+    }
+
+    private int RowCount()
+    {
+        return Get<VBoxContainer>("Layout/SlotList").GetChildren().OfType<HBoxContainer>().Count();
     }
 
     private T Get<T>(string path) where T : Node => _node!.GetNode<T>(path);
