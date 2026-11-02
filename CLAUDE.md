@@ -410,7 +410,9 @@ The `GameSessionService` manages the game loop through states: `WaitingForCards`
 
 ### Persistence
 
-Uses the Saveable addon (`addons/saveable/`) with Newtonsoft.Json. Implement `ISaveable` interface with `UniqueID`, `Load(NodeSave)`, and `Save(NodeSave)` methods. The `GameSaveService` handles auto-saving of game state.
+Uses the Saveable addon (`addons/saveable/`) with Newtonsoft.Json. Implement `ISaveable` interface with `UniqueID`, `Load(NodeSave)`, and `Save(NodeSave)` methods. The shop's `GameSaveService` autosaves the active slot on a timer and on the pause menu's Save button (`ISaveGameCommand.ManualSave`).
+
+Save slots (`Scripts/Features/SaveSlots`) live under `user://saves/<slot>/save.json` (`SaveSlotLayout`). Each file is a `SaveEnvelope` at version 1. `SlotStore` writes `save.json.tmp` first and renames it into place, so a crash leaves the previous save intact. Slot names (`SaveSlotName`) are 1 to 32 characters of letters, digits, spaces, `-` and `_`, and cannot be a reserved Windows name. `ActiveSaveSlot` starts on the `default` slot until one is selected. `LegacySaveImporter` copies the old single-file `user://game_save.json` into a slot named `imported`, and runs only when no slot exists yet. The shop's `CardContainer` content seed is saved with the slot, so the same seed opens the same cards after a reload. Each later stateful slice adds its own saved state to the envelope and a round-trip test that saves, reloads and compares it.
 
 ### Feature Organization
 
