@@ -39,7 +39,6 @@ public class ShopCarryingPoseSceneTest
     private static readonly Rect2 StorageRoom = new(16f, -8f, 8f, 20f);
 
     private Node3D _shop = null!;
-    private Node3D _world = null!;
     private PlayerController _player = null!;
     private MoneyService _money = null!;
     private OrderingService _ordering = null!;
@@ -54,7 +53,6 @@ public class ShopCarryingPoseSceneTest
         root.Size = new Vector2I(1280, 720);
 
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
-        _world = _shop.GetNode<Node3D>("World");
         _player = _shop.GetNode<PlayerController>("Player");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
@@ -219,7 +217,7 @@ public class ShopCarryingPoseSceneTest
 
     private ContainerHolder Holder() => _player.GetNode<ContainerHolder>("CardInteraction/ContainerHolder");
 
-    private Node3D SpawnerNode() => TestServices.Resolver.Get<ICardSpawner>().GetNode();
+    private static Node3D SpawnerNode() => TestServices.Resolver.Get<ICardSpawner>().GetNode();
 
     private Camera3D Camera() => _player.GetNode<Camera3D>("Head/Camera3D");
 
