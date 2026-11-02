@@ -5,7 +5,8 @@ using System.Text.Json;
 namespace CardCleaner.Scripts.Features.SaveSlots.Models;
 
 /// <summary>
-///     The versioned wrapper around one slot's payload. The payload is opaque text here; the save format owns its meaning.
+///     The versioned wrapper around one slot's payload. The payload is opaque text here; the save format owns its
+///     meaning.
 /// </summary>
 public sealed record SaveEnvelope(int Version, string SavedAtUtc, string Payload)
 {
@@ -64,26 +65,4 @@ public sealed record SaveEnvelope(int Version, string SavedAtUtc, string Payload
     }
 
     private sealed record Wire(int? Version, string? SavedAtUtc, string? Payload);
-}
-
-/// <summary>
-///     The outcome of reading an envelope: either the envelope, or the reason it was refused.
-/// </summary>
-public sealed record SaveEnvelopeReadResult
-{
-    private SaveEnvelopeReadResult(SaveEnvelope? envelope, string? refusal)
-    {
-        Envelope = envelope;
-        Refusal = refusal;
-    }
-
-    public SaveEnvelope? Envelope { get; }
-
-    public string? Refusal { get; }
-
-    public bool IsOk => Envelope is not null;
-
-    public static SaveEnvelopeReadResult Ok(SaveEnvelope envelope) => new(envelope, null);
-
-    public static SaveEnvelopeReadResult Refused(string reason) => new(null, reason);
 }

@@ -5,6 +5,8 @@ namespace CardCleaner.Scripts.Features.SaveSlots.Services;
 /// </summary>
 public interface ISaveGameCommand
 {
-    /// <summary>Writes the active slot now. Returns false when the write failed or there is no store to write to.</summary>
+    /// <summary>
+    ///     Writes the active slot now. Returns false when the write failed or there is no store to write to.
+    /// </summary>
     bool ManualSave();
 }

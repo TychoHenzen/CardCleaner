@@ -21,7 +21,9 @@ public interface ISlotFileSystem
     /// <summary>Deletes a file, or an empty folder. Does nothing when the path does not exist.</summary>
     void Delete(string path);
 
-    /// <summary>The names (not full paths) of the folders directly under the path; empty when it does not exist.</summary>
+    /// <summary>
+    ///     The names (not full paths) of the folders directly under the path; empty when it does not exist.
+    /// </summary>
     IReadOnlyList<string> ListFolders(string path);
 
     void EnsureFolder(string path);

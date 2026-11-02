@@ -146,7 +146,8 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         save.SetOrAddProperty("cards", cardData);
         ILog.Print($"Saved {cardData.Count} cards to persistence data");
 
-        // Only sealed containers that were placed from a scene file can be rebuilt; an opened one has spilled its contents.
+        // Only sealed containers that were placed from a scene file can be rebuilt; an opened one has spilled its
+        // contents.
         var containers = GetTree().GetNodesInGroup("card_containers").OfType<CardContainer>()
             .Where(container => !container.IsOpened && !string.IsNullOrEmpty(container.SceneFilePath))
             .Select(container => new ContainerRecord
