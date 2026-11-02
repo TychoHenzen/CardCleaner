@@ -9,10 +9,10 @@ public interface IGameSettings
     float JumpVelocity { get; }
 
     // Camera/Mouse settings
-    float MouseSensitivity { get; }
+    float MouseSensitivity { get; set; }
     float MinPitch { get; }
     float MaxPitch { get; }
-    bool InvertY { get; }
+    bool InvertY { get; set; }
 
     // Blacklight settings
     LightMode CurrentLightMode { get; set; }

@@ -35,21 +35,39 @@ public class OptionsApplierTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void Mouse_settings_reach_the_game_settings_node()
+    public void ApplyMouse_sets_sensitivity_and_invert_on_the_settings()
     {
         var settings = new GameSettings();
-        var window = new Window();
         try
         {
             var options = GameOptions.Defaults with { MouseSensitivity = 0.25f, InvertY = true };
 
-            new OptionsApplier().Apply(options, settings, window);
+            new OptionsApplier().ApplyMouse(options, settings);
 
             Assertions.AssertFloat(settings.MouseSensitivity).IsEqual(0.25f);
             Assertions.AssertThat(settings.InvertY).IsTrue();
         }
         finally
         {
+            settings.Free();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void Apply_does_not_touch_the_mouse_settings()
+    {
+        var settings = new GameSettings { MouseSensitivity = 0.3f };
+        var window = new Window();
+        try
+        {
+            new OptionsApplier().Apply(GameOptions.Defaults with { MouseSensitivity = 0.05f }, window);
+
+            Assertions.AssertFloat(settings.MouseSensitivity).IsEqual(0.3f);
+        }
+        finally
+        {
+            new OptionsApplier().Apply(GameOptions.Defaults, window);
             window.Free();
             settings.Free();
         }
@@ -57,19 +75,17 @@ public class OptionsApplierTest
 
     private static float ApplyAndReadMasterDb(GameOptions options)
     {
-        var settings = new GameSettings();
         var window = new Window();
         try
         {
-            new OptionsApplier().Apply(options, settings, window);
+            new OptionsApplier().Apply(options, window);
             return AudioServer.GetBusVolumeDb(AudioServer.GetBusIndex("Master"));
         }
         finally
         {
             // Restore the default volume so later suites hear the master bus at unity gain.
-            new OptionsApplier().Apply(GameOptions.Defaults, settings, window);
+            new OptionsApplier().Apply(GameOptions.Defaults, window);
             window.Free();
-            settings.Free();
         }
     }
 }

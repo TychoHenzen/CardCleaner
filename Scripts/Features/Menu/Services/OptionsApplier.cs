@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Menu.Models;
@@ -7,8 +6,9 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Menu.Services;
 
 /// <summary>
-///     Pushes a <see cref="GameOptions" /> value into the engine: audio bus volumes, window mode, size and vsync,
-///     and the mouse settings on the <see cref="GameSettings" /> node the player reads.
+///     Pushes a <see cref="GameOptions" /> value into the engine. <see cref="Apply" /> sets the engine-global parts
+///     (audio bus volumes, window mode, size and vsync) and works in any scene. <see cref="ApplyMouse" /> sets the
+///     mouse parts on the <see cref="IGameSettings" /> of the current scene, when that scene has one.
 /// </summary>
 // ASSUMPTION: registered under its own type (no interface), matching OptionsStore; the menu resolves it directly.
 // Medium risk: revisit if a contract is wanted.
@@ -19,7 +19,7 @@ public class OptionsApplier
     private const string MusicBus = "Music";
     private const string SfxBus = "SFX";
 
-    public void Apply(GameOptions options, GameSettings settings, Window window)
+    public void Apply(GameOptions options, Window window)
     {
         ApplyBusVolume(MasterBus, options.MasterVolume);
         ApplyBusVolume(MusicBus, options.MusicVolume);
@@ -37,7 +37,10 @@ public class OptionsApplier
         DisplayServer.WindowSetVsyncMode(options.Vsync
             ? DisplayServer.VSyncMode.Enabled
             : DisplayServer.VSyncMode.Disabled);
+    }
 
+    public void ApplyMouse(GameOptions options, IGameSettings settings)
+    {
         settings.MouseSensitivity = options.MouseSensitivity;
         settings.InvertY = options.InvertY;
     }
