@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://wv6a67swhus"]
+[gd_scene load_steps=10 format=3 uid="uid://wv6a67swhus"]
 
 [ext_resource type="Script" uid="uid://mykuqlivmgwc" path="res://Scripts/Features/Player/Controllers/PlayerController.cs" id="1_v0iea"]
 [ext_resource type="Script" uid="uid://ck2dgpln07wf4" path="res://Scripts/Features/Player/Controllers/InteractionSystem.cs" id="2_3smsa"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://dvoklxj3c2cba" path="res://Scripts/Features/Card/Components/DropPreview.cs" id="5_f1ek2"]
 [ext_resource type="Script" uid="uid://cgcld0ulj1e3p" path="res://Scripts/Features/Card/Components/CardHolder.cs" id="6_tx1dd"]
 [ext_resource type="Script" uid="uid://dmugtsg7qkg3m" path="res://Scripts/Features/Card/Components/CardDropper.cs" id="7_gymyn"]
+[ext_resource type="Script" uid="uid://dic66gso1rs2y" path="res://Scripts/Features/Packs/Components/ContainerHolder.cs" id="8_chold"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_f60y1"]
 height = 1.8
@@ -35,11 +36,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.520677, -0.145628, 0)
 script = ExtResource("2_3smsa")
 Camera = NodePath("..")
 
-[node name="CardInteraction" type="Node3D" parent="." node_paths=PackedStringArray("InteractionSystem", "CardDropper", "CardHolder", "Preview")]
+[node name="CardInteraction" type="Node3D" parent="." node_paths=PackedStringArray("InteractionSystem", "CardDropper", "CardHolder", "ContainerHolderNode", "Preview")]
 script = ExtResource("2_cvnsp")
 InteractionSystem = NodePath("../Head/Camera3D/InteractionSystem")
 CardDropper = NodePath("CardDropper")
 CardHolder = NodePath("CardHolder")
+ContainerHolderNode = NodePath("ContainerHolder")
 Preview = NodePath("DropPreview")
 
 [node name="DropPreview" type="Node3D" parent="CardInteraction"]
@@ -51,3 +53,6 @@ HoldDistance = 1.0
 
 [node name="CardDropper" type="Node3D" parent="CardInteraction"]
 script = ExtResource("7_gymyn")
+
+[node name="ContainerHolder" type="Node3D" parent="CardInteraction"]
+script = ExtResource("8_chold")

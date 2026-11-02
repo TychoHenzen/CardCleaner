@@ -48,6 +48,15 @@ public class CardContainerTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void Ready_AddsToContainersGroup()
+    {
+        var box = Make(BoxScene);
+
+        AssertBool(box.IsInGroup("Containers")).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public async Task BoxOpensIntoEightPacksOneAfterAnother()
     {
         var box = Make(BoxScene);
@@ -119,10 +128,39 @@ public class CardContainerTest
     {
         var box = Make(BoxScene);
 
-        box.Interact();
+        box.Open();
 
         AssertThat(box.CollisionLayer).IsEqual(0u);
         AssertBool(box.Visible).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void Interact_EmitsPickUpRequested_AndDoesNotOpen()
+    {
+        var box = Make(BoxScene);
+        var received = new List<CardContainer>();
+        box.Connect(CardContainer.SignalName.PickUpRequested, Callable.From<CardContainer>(received.Add));
+
+        box.Interact();
+
+        AssertBool(box.IsOpened).IsFalse();
+        AssertThat(received.Count).IsEqual(1);
+        AssertBool(received[0] == box).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CanInteract_FalseWhenParentIsCamera()
+    {
+        var box = Make(BoxScene);
+        AssertBool(box.CanInteract).IsTrue();
+
+        var camera = AddNode(new Camera3D());
+        box.Reparent(camera);
+
+        AssertBool(box.IsHeld).IsTrue();
+        AssertBool(box.CanInteract).IsFalse();
     }
 
     [TestCase]

@@ -22,6 +22,13 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     /// <summary>Height above the container's origin of the first item it opens into.</summary>
     public const float LiftHeight = 0.4f;
 
+    /// <summary>
+    ///     Raised when the player interacts with a container that can be opened or carried. The holder that
+    ///     listens for it decides whether the container is picked up; interacting never opens it directly.
+    /// </summary>
+    [Signal]
+    public delegate void PickUpRequestedEventHandler(CardContainer container);
+
     private const float DefaultInteractionRange = 4.5f;
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
 
@@ -66,7 +73,10 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     /// <summary>Items still waiting to be spawned over the next frames.</summary>
     public int PendingCount => _pendingSpawns.Count;
 
-    public bool CanInteract => !IsOpened && HasContents;
+    /// <summary>True while a holder carries this container (its parent is the holder's camera).</summary>
+    public bool IsHeld => GetParent() is Camera3D;
+
+    public bool CanInteract => !IsOpened && !IsHeld && HasContents;
 
     public Node3D InteractionBody => this;
 
@@ -86,6 +96,8 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         CollisionLayer |= InteractableLayerBit;
         ClearHighlight();
         SetProcess(false);
+        // The card highlighter finds every container through this group, including ones Open() spawns later.
+        AddToGroup("Containers");
 
         if (_services == null)
         {
@@ -122,7 +134,11 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
             QueueFree();
     }
 
-    public void Interact() => Open();
+    public void Interact()
+    {
+        if (CanInteract)
+            EmitSignal(SignalName.PickUpRequested, this);
+    }
 
     public void Highlight()
     {
