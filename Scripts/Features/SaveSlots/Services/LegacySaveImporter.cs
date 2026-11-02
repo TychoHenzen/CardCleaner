@@ -1,12 +1,14 @@
 using System;
+using System.Text.Json;
 using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
 
 namespace CardCleaner.Scripts.Features.SaveSlots.Services;
 
 /// <summary>
 ///     Copies the single-file save from before slots existed into a slot named "imported". It runs only when no slot
-///     exists yet. The legacy file is only read, never changed.
+///     exists yet and the legacy file holds a JSON object. The legacy file is only read, never changed.
 /// </summary>
 // ASSUMPTION: a bare [Service] registers under interfaces only, and this class has none, so it names its own type,
 // as SlotStore does.
@@ -33,6 +35,13 @@ public sealed class LegacySaveImporter(SlotStore store, ISlotFileSystem files, I
         var text = files.ReadAllText(LegacyPath);
         if (text is null)
         {
+            ILog.Warning($"The legacy save {LegacyPath} could not be read; it was not imported.");
+            return false;
+        }
+
+        if (!IsJsonDocument(text))
+        {
+            ILog.Warning($"The legacy save {LegacyPath} is empty or not valid JSON; it was not imported.");
             return false;
         }
 
@@ -44,5 +53,18 @@ public sealed class LegacySaveImporter(SlotStore store, ISlotFileSystem files, I
 
         activeSlot.Activate(name);
         return true;
+    }
+
+    private static bool IsJsonDocument(string text)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(text);
+            return document.RootElement.ValueKind == JsonValueKind.Object;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
     }
 }

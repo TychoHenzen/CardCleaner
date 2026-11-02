@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Packs.Components;
@@ -75,6 +77,38 @@ public class CardContainerSeedTest
         AssertThat(Keys(secondRun.Cards)).IsEqual(Keys(firstRun.Cards));
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void UnseededContainerDrawsFromTheSharedSourceOnlyWhenItIsSaved()
+    {
+        TestServices.Reset();
+        var shared = RandomSources.Create(SeedA);
+        var reference = RandomSources.Create(SeedA);
+        TestServices.Container.RegisterSingleton<IRandom>(shared);
+        var booster = TestServices.Inject(GD.Load<PackedScene>(BoosterScene).Instantiate<CardContainer>());
+
+        _world.AddChild(booster);
+
+        // Starting up draws nothing, so opening unseeded boxes keeps the shared source's draw order.
+        AssertThat(booster.ContentSeed).IsNull();
+        AssertThat(shared.Randi()).IsEqual(reference.Randi());
+
+        var seed = booster.SeedForSave();
+
+        // Saving draws exactly one seed, and asking again returns it without another draw.
+        AssertBool(seed.HasValue).IsTrue();
+        AssertThat(booster.SeedForSave()!.Value).IsEqual(seed!.Value);
+        AssertThat(shared.Randi()).IsEqual(DrawAfterSeed(reference));
+        TestServices.Reset();
+    }
+
+    private static uint DrawAfterSeed(IRandom reference)
+    {
+        reference.Randi();
+        reference.Randi();
+        return reference.Randi();
+    }
+
     private static ulong FirstSeedWithSpecialBooster()
     {
         for (ulong seed = 1; seed < SeedSearchLimit; seed++)
@@ -87,11 +121,10 @@ public class CardContainerSeedTest
         throw new System.InvalidOperationException($"No booster seed below {SeedSearchLimit} holds a special card.");
     }
 
-    private CardContainer SeededBooster(Node3D parent, ulong seed, RecordingCardSpawner spawner)
+    private static CardContainer SeededBooster(Node3D parent, ulong seed, RecordingCardSpawner spawner)
     {
         var booster = GD.Load<PackedScene>(BoosterScene).Instantiate<CardContainer>();
         booster.ContentSeed = seed;
-        booster.HasSeed = true;
         booster.Spawning = spawner;
         parent.AddChild(booster);
         return booster;
@@ -101,13 +134,12 @@ public class CardContainerSeedTest
 
     // Opens a seeded box, then each pack and its boosters in tree order, and returns every card it spawned and the
     // seed of every booster it opened.
-    private async Task<OpenedBox> OpenWholeBox(ulong seed)
+    private static async Task<OpenedBox> OpenWholeBox(ulong seed)
     {
         var world = AddNode(new Node3D());
         var opened = new OpenedBox(new RecordingCardSpawner(), new List<ulong>());
         var box = GD.Load<PackedScene>(BoxScene).Instantiate<CardContainer>();
         box.ContentSeed = seed;
-        box.HasSeed = true;
         box.Spawning = opened.Cards;
         world.AddChild(box);
 
@@ -123,7 +155,7 @@ public class CardContainerSeedTest
 
             foreach (var booster in Containers(world, CardContainerKind.Booster))
             {
-                opened.BoosterSeeds.Add(booster.ContentSeed);
+                opened.BoosterSeeds.Add(booster.ContentSeed!.Value);
                 booster.Open();
             }
 

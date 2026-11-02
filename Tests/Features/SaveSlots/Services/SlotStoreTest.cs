@@ -102,10 +102,24 @@ public class SlotStoreTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public static void FailedFirstSaveLeavesNoSlotBehind()
+    {
+        var files = new InMemorySlotFileSystem { FailRename = true };
+        var store = new SlotStore(files);
+
+        AssertThat(store.Save(Name("shop"), "first", SavedAt)).IsFalse();
+
+        AssertThat(store.List().Count).IsEqual(0);
+        AssertThat(files.Exists(SaveSlotLayout.TempFor(Name("shop")))).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static void NextSaveAfterFailureOverwritesStaleTemp()
     {
         var files = new InMemorySlotFileSystem();
         var store = new SlotStore(files);
+        store.Save(Name("shop"), "first", SavedAt);
         files.FailRename = true;
         store.Save(Name("shop"), "failed", SavedAt);
         AssertThat(files.Exists(SaveSlotLayout.TempFor(Name("shop")))).IsTrue();

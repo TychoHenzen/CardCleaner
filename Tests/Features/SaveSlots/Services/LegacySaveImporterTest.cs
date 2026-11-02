@@ -117,4 +117,34 @@ public class LegacySaveImporterTest
 
         AssertThat(new SlotStore(files).List().Count).IsEqual(0);
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void FailedFirstImportLeavesNoSlotSoALaterImportSucceeds()
+    {
+        var files = new InMemorySlotFileSystem { FailRename = true };
+        files.Seed(LegacySaveImporter.LegacyPath, Legacy);
+        var importer = new LegacySaveImporter(new SlotStore(files), files, new ActiveSaveSlot());
+
+        AssertThat(importer.TryImport()).IsFalse();
+        AssertThat(new SlotStore(files).List().Count).IsEqual(0);
+
+        files.FailRename = false;
+        AssertThat(importer.TryImport()).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void EmptyOrInvalidLegacyFileIsNotImported()
+    {
+        foreach (var content in new[] { "", "not json", "[1]" })
+        {
+            var files = new InMemorySlotFileSystem();
+            files.Seed(LegacySaveImporter.LegacyPath, content);
+            var importer = new LegacySaveImporter(new SlotStore(files), files, new ActiveSaveSlot());
+
+            AssertThat(importer.TryImport()).IsFalse();
+            AssertThat(new SlotStore(files).List().Count).IsEqual(0);
+        }
+    }
 }

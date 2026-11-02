@@ -27,6 +27,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     private readonly Queue<Action> _pendingSpawns = new();
     private IServiceResolver? _services;
+    private IRandom? _random;
 
     /// <summary>What this container is. Decides what opening it produces.</summary>
     [Export]
@@ -43,19 +44,16 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     public float InteractionRange { get; set; } = DefaultInteractionRange;
 
     /// <summary>
-    ///     Decides the cards in a booster. Only set when a test assigns it; when it is null a booster rolls its
-    ///     cards from <see cref="ContentSeed" />, so the same seed always opens the same cards.
+    ///     Decides the cards in a booster. Only set when a test assigns it; otherwise a booster rolls its cards
+    ///     from <see cref="ContentSeed" /> when it has one, else from the shared random source.
     /// </summary>
-    public CardPackGenerator? Generator { get; set; }
+    internal CardPackGenerator? Generator { get; set; }
 
     /// <summary>
-    ///     Seed of everything this container opens into. A booster rolls its cards from it; a box or pack gives
-    ///     each child a seed derived from it, so one seed fixes the whole box. Drawn at startup unless already set.
+    ///     Seed of everything this container opens into, or null while it has none (it then opens from the shared
+    ///     random source). A parent or a saved slot sets it; <see cref="SeedForSave" /> draws one on demand.
     /// </summary>
-    public ulong ContentSeed { get; set; }
-
-    /// <summary>True once <see cref="ContentSeed" /> holds a seed, drawn at startup or given by the parent.</summary>
-    public bool HasSeed { get; set; }
+    public ulong? ContentSeed { get; internal set; }
 
     /// <summary>Spawns the cards. Resolved at startup; assignable directly in tests.</summary>
     public ICardSpawningService? Spawning { get; set; }
@@ -72,10 +70,9 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     public Node3D InteractionBody => this;
 
-    // ASSUMPTION: a booster with neither a test Generator nor a seed (no IRandom injected) stays closed, as it did
-    // before seeds existed, rather than rolling from an unseeded source.
+    // A booster with no test Generator, no seed and no injected IRandom stays closed, as it did before seeds existed.
     private bool HasContents =>
-        Kind == CardContainerKind.Booster ? Spawning != null && (Generator != null || HasSeed) : ChildScene != null;
+        Kind == CardContainerKind.Booster ? Spawning != null && (Generator != null || ContentSeed != null || _random != null) : ChildScene != null;
 
     public void Inject(IServiceResolver services) => _services = services;
 
@@ -94,17 +91,21 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
             return;
         }
 
-        _services.Get<IRandom>(DrawSeedIfMissing);
+        _services.Get<IRandom>(rng => _random = rng);
         _services.Get<ICardSpawningService>(service => Spawning ??= service);
     }
 
-    private void DrawSeedIfMissing(IRandom rng)
+    /// <summary>
+    ///     The seed to write into a save: the one this container has, else one drawn now from the shared random
+    ///     source (the only time a container draws a seed, so opening unseeded boxes keeps its draw order). Null when
+    ///     no random source was injected.
+    /// </summary>
+    internal ulong? SeedForSave()
     {
-        if (HasSeed)
-            return;
+        if (ContentSeed == null && _random != null)
+            ContentSeed = ((ulong)_random.Randi() << 32) | _random.Randi();
 
-        ContentSeed = ((ulong)rng.Randi() << 32) | rng.Randi();
-        HasSeed = true;
+        return ContentSeed;
     }
 
     public override void _Process(double delta)
@@ -185,7 +186,9 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     private void QueueCards(Node3D parent, Vector3 origin)
     {
-        var generator = Generator ?? new CardPackGenerator(RandomSources.Create(ContentSeed));
+        var generator = Generator ?? new CardPackGenerator(ContentSeed is { } seed
+            ? RandomSources.Create(seed)
+            : _random!);
         var signatures = generator.OpenBooster();
         for (var i = 0; i < signatures.Length; i++)
         {
@@ -207,7 +210,8 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     // Each child of a sealed container gets its own seed, derived from this one and the child's index. The parent
     // seed is mixed before the index is added, so neighbouring parent seeds (777, 778) share no child seed.
-    private ulong ChildSeed(int index) => SplitMix64(unchecked(SplitMix64(ContentSeed) + (ulong)index));
+    private static ulong ChildSeed(ulong parentSeed, int index) =>
+        SplitMix64(unchecked(SplitMix64(parentSeed) + (ulong)index));
 
     // One splitmix64 step: spreads a counter into a well-mixed seed.
     private static ulong SplitMix64(ulong value)
@@ -238,14 +242,11 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         if (child is CardContainer container)
         {
             // Children share this container's card spawner. A seeded parent seeds each child before it enters the
-            // tree, so its _Ready keeps that seed; a test-set Generator still passes down unchanged.
+            // tree; a test-set Generator still passes down unchanged.
             container.Generator = Generator;
             container.Spawning = Spawning;
-            if (HasSeed)
-            {
-                container.ContentSeed = ChildSeed(index);
-                container.HasSeed = true;
-            }
+            if (ContentSeed is { } seed)
+                container.ContentSeed = ChildSeed(seed, index);
         }
 
         parent.AddChild(child);

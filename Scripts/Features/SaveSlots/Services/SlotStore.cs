@@ -23,7 +23,8 @@ public sealed class SlotStore
     }
 
     /// <summary>
-    ///     Writes the payload as the slot's save. Returns false, and logs the error, when any file step fails.
+    ///     Writes the payload as the slot's save. Returns false, and logs the error, when any file step fails; a slot
+    ///     that had no save yet is then removed again.
     /// </summary>
     public bool Save(SaveSlotName name, string payload, DateTime utcNow)
     {
@@ -39,7 +40,25 @@ public sealed class SlotStore
             // ASSUMPTION: any exception from the file seam counts as a failed save, because the seam wraps the
             // Godot errors and this method must return false rather than leave a half-written slot.
             ILog.Error($"Could not save slot '{name.Value}': {ex.Message}");
+            RemoveSlotWithoutSave(name);
             return false;
+        }
+    }
+
+    // A first save that fails after its folder was made would leave an empty slot behind, which then counts as an
+    // existing slot. A slot that already holds a save keeps it.
+    private void RemoveSlotWithoutSave(SaveSlotName name)
+    {
+        try
+        {
+            if (!_files.Exists(SaveSlotLayout.FileFor(name)))
+            {
+                Delete(name);
+            }
+        }
+        catch (Exception cleanup)
+        {
+            ILog.Error($"Could not remove the empty slot '{name.Value}': {cleanup.Message}");
         }
     }
 
