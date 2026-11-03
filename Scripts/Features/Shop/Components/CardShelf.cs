@@ -44,6 +44,12 @@ public partial class CardShelf : RigidBody3D, IUnpackTarget
 
     public int StockedCount => StockedCards.Count();
 
+    /// <summary>The price tags of this shelf, one sibling per slot.</summary>
+    public IEnumerable<SlotPricing> Pricings => GetChildren().OfType<SlotPricing>();
+
+    /// <summary>The price tag that prices <paramref name="slot" />, or null when the shelf has none.</summary>
+    public SlotPricing? PricingFor(DeckSlot slot) => Pricings.FirstOrDefault(pricing => pricing.Slot == slot);
+
     public override bool _PropertyCanRevert(StringName property)
     {
         return property.ToString() == nameof(Kind) || base._PropertyCanRevert(property);
@@ -87,5 +93,15 @@ public partial class CardShelf : RigidBody3D, IUnpackTarget
     public bool Release(RigidBody3D card)
     {
         return Slots.Any(slot => slot.ReleaseCard(card));
+    }
+
+    /// <summary>
+    ///     The asking price of the slot tag that prices <paramref name="card" />, or null when no tag holds the card
+    ///     or its asking value is not above zero, so the sale falls back to the card's market value.
+    /// </summary>
+    public int? AskingPriceFor(RigidBody3D card)
+    {
+        var value = Pricings.FirstOrDefault(pricing => pricing.Holds(card))?.AskingValue ?? 0;
+        return value > 0 ? value : null;
     }
 }

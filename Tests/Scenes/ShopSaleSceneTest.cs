@@ -110,7 +110,7 @@ public class ShopSaleSceneTest
 
         _register.Interact();
 
-        AssertThat(_money.Balance).IsEqual(balance + CardPricing.FixedCardPrice);
+        AssertThat(_money.Balance).IsEqual(balance + CardValue.MinimumCardPrice);
         AssertThat(shelf.StockedCount).IsEqual(0);
         AssertBool(card.IsQueuedForDeletion()).IsTrue();
         AssertThat(_register.StatusLabel!.Text).Contains($"Balance: {_money.Balance}");
@@ -151,10 +151,11 @@ public class ShopSaleSceneTest
         _shop.GetNode("World/Cards").AddChild(card);
         holder.AddCard(card);
         var balance = _money.Balance;
+        var marketValue = StockMarketValue.ForCard(card);
 
         _register.Interact();
 
-        AssertThat(_money.Balance).IsEqual(balance + CardPricing.FixedCardPrice);
+        AssertThat(_money.Balance).IsEqual(balance + marketValue);
         AssertThat(holder.HeldCount).IsEqual(0);
         AssertBool(card.IsQueuedForDeletion()).IsTrue();
     }
