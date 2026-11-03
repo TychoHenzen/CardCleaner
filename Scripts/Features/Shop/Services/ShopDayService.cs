@@ -1,8 +1,10 @@
 using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
+using Saveable;
 
 namespace CardCleaner.Scripts.Features.Shop.Services;
 
@@ -12,11 +14,13 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 ///     balance rises during open hours; complaints are counted for the day and reported at close.
 /// </summary>
 [Service(typeof(IShopDayService), typeof(IComplaintLog))]
-public partial class ShopDayService : Node, IShopDayService, IComplaintLog, IDependent
+public partial class ShopDayService : Node, IShopDayService, IComplaintLog, IDependent, ISaveable
 {
     private const float DefaultOpeningMinutes = 480f;
     private const float DefaultClosingMinutes = 1080f;
     private const float DefaultDayLengthSeconds = 600f;
+    private const string DayKey = "day";
+    private const string DebtKey = "debt";
 
     private readonly ComplaintTally _tally = new();
     private IServiceResolver? _services;
@@ -58,6 +62,12 @@ public partial class ShopDayService : Node, IShopDayService, IComplaintLog, IDep
     /// <summary>Resolved through the injected service resolver at startup; assignable directly in tests.</summary>
     public IDailyBillBook? Bills { get; set; }
 
+    /// <summary>
+    ///     Saves the game when the day closes. Resolved through the injected service resolver at startup; assignable
+    ///     directly in tests.
+    /// </summary>
+    public ISaveGameCommand? SaveCommand { get; set; }
+
     public bool IsOpen => Clock.IsOpen;
 
     public int Day => Clock.Day;
@@ -95,6 +105,8 @@ public partial class ShopDayService : Node, IShopDayService, IComplaintLog, IDep
             _services.Get<IMoneyService>(money => Money ??= money);
         if (Bills == null)
             _services.Get<IDailyBillBook>(bills => Bills ??= bills);
+        if (SaveCommand == null)
+            _services.Get<ISaveGameCommand>(saveCommand => SaveCommand ??= saveCommand);
     }
 
     public override void _EnterTree()
@@ -158,7 +170,9 @@ public partial class ShopDayService : Node, IShopDayService, IComplaintLog, IDep
         _tally.Clear();
         _takings = 0;
         Clock.StartNextDay();
-        // T3 step 1 inserts the day-close save here, between StartNextDay and the Closed event.
+        // The save serializes the whole tree, so it must run after TrySpend, the debt update and StartNextDay.
+        if (SaveCommand?.ManualSave() != true)
+            ILog.Warning("Day-close save failed or unavailable; the day is not rolled back");
         _lastRaisedMinute = MinutesOfDay;
         Closed?.Invoke(report);
         TimeChanged?.Invoke(Day, _lastRaisedMinute);
@@ -179,6 +193,48 @@ public partial class ShopDayService : Node, IShopDayService, IComplaintLog, IDep
         Restored?.Invoke();
         TimeChanged?.Invoke(Day, _lastRaisedMinute);
     }
+
+    public StringName UniqueID => "shop_day";
+
+    public void Save(NodeSave save)
+    {
+        save.SetOrAddProperty(DayKey, Day);
+        save.SetOrAddProperty(DebtKey, Debt);
+    }
+
+    public void Load(NodeSave save)
+    {
+        var day = ReadWhole(save, DayKey);
+        var debt = ReadWhole(save, DebtKey);
+        if (!DayState.TryParse(day, debt, out var state))
+        {
+            ILog.Error($"{Name}: saved '{DayKey}' ({Describe(day)}) or '{DebtKey}' ({Describe(debt)}) is missing or "
+                + "not a whole number in range; the day is set to 1 with no debt.");
+            Restore(state.Day, state.Debt);
+            return;
+        }
+
+        if (state.Day != day || state.Debt != debt)
+            ILog.Warning($"{Name}: saved day or debt was out of range and has been clamped to day {state.Day}, "
+                + $"debt {state.Debt}.");
+        // A load always lands closed at opening time, so the report is never shown again after a reload.
+        Restore(state.Day, state.Debt);
+    }
+
+    // Read as object: a typed read of a corrupt value throws and would stop every later saveable's load.
+    private static long? ReadWhole(NodeSave save, string key)
+    {
+        if (!save.TryGetProperty<object>(key, out var raw))
+            return null;
+        return raw switch
+        {
+            long whole => whole,
+            int whole => whole,
+            _ => (long?)null,
+        };
+    }
+
+    private static string Describe(long? value) => value is { } number ? number.ToString() : "missing";
 
     private void RaiseTimeIfMinuteChanged()
     {

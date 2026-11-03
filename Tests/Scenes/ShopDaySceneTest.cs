@@ -3,6 +3,7 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
@@ -87,6 +88,9 @@ public class ShopDaySceneTest
     [TestCategory("Unit")]
     public void SignOpensAndClosesTheShopInTheScene()
     {
+        var save = new FakeSaveGame();
+        _service.SaveCommand = save;
+
         _sign.Interact();
 
         AssertBool(_service.IsOpen).IsTrue();
@@ -97,9 +101,22 @@ public class ShopDaySceneTest
         AssertThat(_service.Day).IsEqual(2);
         AssertThat(_money.Balance).IsEqual(460);
         AssertBool(_reportPanel.Visible).IsTrue();
+        AssertThat(save.Calls).IsEqual(1);
 
         _reportPanel.ContinueButton!.EmitSignal(BaseButton.SignalName.Pressed);
 
         AssertBool(_reportPanel.Visible).IsFalse();
+    }
+
+    // Stands in for the slot writer so the day close writes no file during the scene test.
+    private sealed class FakeSaveGame : ISaveGameCommand
+    {
+        public int Calls { get; private set; }
+
+        public bool ManualSave()
+        {
+            Calls++;
+            return true;
+        }
     }
 }

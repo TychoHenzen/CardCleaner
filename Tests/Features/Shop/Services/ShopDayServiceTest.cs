@@ -149,6 +149,40 @@ public class ShopDayServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void ClosingTimeWhileReportOpenChargesOnce()
+    {
+        var service = NewService(500);
+        var closed = 0;
+        service.Closed += _ => closed++;
+
+        service.OpenShop();
+        service.Tick(600);
+        service.CloseShop();
+
+        AssertThat(closed).IsEqual(1);
+        AssertThat(service.Money!.Balance).IsEqual(500 - RentAmount);
+        AssertThat(service.Day).IsEqual(2);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ManualCloseThenClockTickChargesOnce()
+    {
+        var service = NewService(500);
+        var closed = 0;
+        service.Closed += _ => closed++;
+
+        service.OpenShop();
+        service.CloseShop();
+        service.Tick(600);
+
+        AssertThat(closed).IsEqual(1);
+        AssertThat(service.Money!.Balance).IsEqual(500 - RentAmount);
+        AssertThat(service.Day).IsEqual(2);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void ComplaintsAppearInReportAndResetNextDay()
     {
         var service = NewService(500);
