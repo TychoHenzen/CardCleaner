@@ -13,11 +13,12 @@ namespace CardCleaner.Tests.Features.Packs.Components;
 
 [TestSuite]
 [RequireGodotRuntime]
-public class ContainerHolderTest
+public partial class ContainerHolderTest
 {
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
+    private const string CardShelfScene = "res://Scenes/Shop/Items/Shelf.tscn";
     private const ulong Seed = 777;
 
     private Node3D _world = null!;
@@ -339,6 +340,116 @@ public class ContainerHolderTest
 
         AssertBool(GodotObject.IsInstanceValid(holder)).IsFalse();
         AssertThat(tree.GetNodesInGroup(ContainerHolder.GroupName).Count).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task OpenHeld_WithUnpackTarget_CallsTryUnpackOnceAndDoesNotOpenLoose()
+    {
+        var target = MakeTarget(accepts: true);
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+        await ISceneRunner.SyncPhysicsFrame;
+        await ISceneRunner.SyncPhysicsFrame;
+
+        AssertBool(_holder.OpenHeld()).IsTrue();
+
+        AssertThat(target.Calls).IsEqual(1);
+        AssertBool(box.IsOpened).IsFalse();
+        AssertBool(_holder.IsHolding).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task OpenHeld_TargetRefuses_OpensLooseAfterOneTryUnpack()
+    {
+        var target = MakeTarget(accepts: false);
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+        await ISceneRunner.SyncPhysicsFrame;
+        await ISceneRunner.SyncPhysicsFrame;
+
+        AssertBool(_holder.OpenHeld()).IsTrue();
+
+        AssertThat(target.Calls).IsEqual(1);
+        AssertBool(box.IsOpened).IsTrue();
+        AssertBool(_holder.IsHolding).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task OpenHeld_TargetBeyondUnpackReach_OpensLooseWithoutTryUnpack()
+    {
+        var target = MakeTarget(accepts: true, distance: 4f);
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+        await ISceneRunner.SyncPhysicsFrame;
+        await ISceneRunner.SyncPhysicsFrame;
+
+        AssertBool(_holder.OpenHeld()).IsTrue();
+
+        AssertThat(target.Calls).IsEqual(0);
+        AssertBool(box.IsOpened).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task OpenHeld_TargetJustInsideUnpackReach_Unpacks()
+    {
+        var target = MakeTarget(accepts: true, distance: 2.4f);
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+        await ISceneRunner.SyncPhysicsFrame;
+        await ISceneRunner.SyncPhysicsFrame;
+
+        AssertBool(_holder.OpenHeld()).IsTrue();
+
+        AssertThat(target.Calls).IsEqual(1);
+        AssertBool(box.IsOpened).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task OpenHeld_RealCardShelfAhead_OpensLoose()
+    {
+        var shelf = GD.Load<PackedScene>(CardShelfScene).Instantiate<Node3D>();
+        _world.AddChild(shelf);
+        shelf.Position = new Vector3(0f, 0f, -1.5f);
+        // The shelf is on the unpack layer, so the holder's ray can find it and the card shelf itself refuses.
+        AssertThat(((CollisionObject3D)shelf).CollisionLayer & ContainerHolder.UnpackLayerBit)
+            .IsEqual(ContainerHolder.UnpackLayerBit);
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+        await ISceneRunner.SyncPhysicsFrame;
+        await ISceneRunner.SyncPhysicsFrame;
+
+        AssertBool(_holder.OpenHeld()).IsTrue();
+
+        AssertBool(box.IsOpened).IsTrue();
+    }
+
+    // A physics body on the unpack layer, distance metres in front of the hand, so the holder's ray hits it when the
+    // distance is within UnpackReach.
+    private StubUnpackTarget MakeTarget(bool accepts, float distance = 1.5f)
+    {
+        var target = new StubUnpackTarget { Accepts = accepts, CollisionLayer = ContainerHolder.UnpackLayerBit };
+        target.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = Vector3.One } });
+        _world.AddChild(target);
+        target.Position = new Vector3(0f, 0f, -distance);
+        return target;
+    }
+
+    private sealed partial class StubUnpackTarget : StaticBody3D, IUnpackTarget
+    {
+        public bool Accepts { get; set; }
+
+        public int Calls { get; private set; }
+
+        public bool TryUnpack(CardContainer container)
+        {
+            Calls++;
+            return Accepts;
+        }
     }
 
     private sealed class RecordingLog : ILog

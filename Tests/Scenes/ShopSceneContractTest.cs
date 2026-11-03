@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Portal.Components;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -21,6 +22,7 @@ public class ShopSceneContractTest
         ["PcLocation", "SeamLocation", "DeliveryPoint", "ShelfSlotsArea", "ExpansionLot1"];
     private static readonly string[] StreetMarkerNames = ["CustomerSpawn", "CustomerDespawn"];
     private const float RoadDoorX = 18.05f;
+    private const string BackofficeCatalogPath = "res://Data/Shop/BackofficeCatalog.tres";
 
     private PackedScene _packed = null!;
     private Node3D _shop = null!;
@@ -241,6 +243,58 @@ public class ShopSceneContractTest
         AssertBool(player.IsInsideTree()).IsTrue();
         AssertThat(_shop.GetNode<WallSeam>("World/Markers/SeamLocation/Seam").Player).IsSame(player);
         AssertThat(_shop.GetNode<WallSeam>("World/Workshop/ReturnSeam").Player).IsSame(player);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ExactlyOneStorageRackJoinsTheStorageRackGroup()
+    {
+        AssertThat(_shop.GetTree().GetNodesInGroup(CardShelf.StorageGroupName).Count).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void EveryCardShelfGroupMemberIsACardShelfKind()
+    {
+        // The register walks card_shelves, so a product shelf or rack must never join it.
+        foreach (var node in _shop.GetTree().GetNodesInGroup(CardShelf.GroupName))
+        {
+            AssertThat(node).IsInstanceOf<CardShelf>();
+            AssertThat(((CardShelf)node).Kind).IsEqual(ShelfKind.CardShelf);
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AProductShelfStandsUnderWorld()
+    {
+        var shelves = Descendants(_shop.GetNode("World")).OfType<CardShelf>().ToArray();
+
+        AssertThat(shelves.Count(shelf => shelf.Kind == ShelfKind.ProductShelf)).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void BackofficeCatalogOrdersTheProductShelfAndTheStorageRack()
+    {
+        var items = GD.Load<OrderCatalog>(BackofficeCatalogPath).Items;
+
+        foreach (var id in new[] { "product_shelf", "storage_rack" })
+        {
+            var item = items.FirstOrDefault(entry => entry.Id == id);
+            AssertThat(item).IsNotNull();
+            AssertThat(item!.Scene).IsNotNull();
+        }
+    }
+
+    private static System.Collections.Generic.IEnumerable<Node> Descendants(Node root)
+    {
+        foreach (var child in root.GetChildren())
+        {
+            yield return child;
+            foreach (var grandchild in Descendants(child))
+                yield return grandchild;
+        }
     }
 
     private Vector3 MarkerPosition(string marker) =>

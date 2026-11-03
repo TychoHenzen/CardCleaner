@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
@@ -20,6 +21,8 @@ public class SaleRegisterTest
 {
     private const int StartingBalance = 100;
     private const string ShelfScene = "res://Scenes/Shop/Items/Shelf.tscn";
+    private const string ProductShelfScene = "res://Scenes/Shop/Items/ProductShelf.tscn";
+    private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
 
     private Node3D _world = null!;
     private MoneyService _money = null!;
@@ -173,6 +176,72 @@ public class SaleRegisterTest
 
         AssertThat(result.Status).IsEqual(SaleStatus.NothingToSell);
         AssertThat(_money.Balance).IsEqual(StartingBalance);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task AStockedProductIsNeverSold()
+    {
+        var shelf = await AddProductShelf();
+        var booster = MakeBooster();
+        AssertBool(shelf.Slots.First().TryLock(booster)).IsTrue();
+        await ISceneRunner.SyncPhysicsFrame;
+
+        var result = _register.Sell();
+
+        AssertThat(result.Status).IsEqual(SaleStatus.NothingToSell);
+        AssertThat(_label.Text).Contains("Nothing to sell");
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
+        AssertBool(GodotObject.IsInstanceValid(booster)).IsTrue();
+        AssertBool(booster.IsQueuedForDeletion()).IsFalse();
+        AssertThat(shelf.StockedCount).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task AProductInTheCardShelvesGroupIsStillNotSold()
+    {
+        var shelf = await AddProductShelf();
+        shelf.AddToGroup(CardShelf.GroupName);
+        var booster = MakeBooster();
+        AssertBool(shelf.Slots.First().TryLock(booster)).IsTrue();
+        await ISceneRunner.SyncPhysicsFrame;
+
+        var result = _register.Sell();
+
+        AssertThat(result.Status).IsEqual(SaleStatus.NotSellable);
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
+        AssertBool(booster.IsQueuedForDeletion()).IsFalse();
+        AssertThat(shelf.StockedCount).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ACardStillSellsWhileAProductShelfHoldsStock()
+    {
+        var shelf = await AddProductShelf();
+        var booster = MakeBooster();
+        AssertBool(shelf.Slots.First().TryLock(booster)).IsTrue();
+        await Stock(new CardSignature());
+
+        var result = _register.Sell();
+
+        AssertThat(result.Status).IsEqual(SaleStatus.Sold);
+        AssertThat(result.Price).IsEqual(CardPricing.FixedCardPrice);
+        AssertBool(shelf.StockedCards.Contains(booster)).IsTrue();
+    }
+
+    private async Task<CardShelf> AddProductShelf()
+    {
+        var shelf = GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>();
+        _world.AddChild(shelf);
+        await ISceneRunner.SyncPhysicsFrame;
+        return shelf;
+    }
+
+    private static CardContainer MakeBooster()
+    {
+        return AddNode(GD.Load<PackedScene>(BoosterScene).Instantiate<CardContainer>());
     }
 
     private static CardController MakeCard(CardSignature? signature)

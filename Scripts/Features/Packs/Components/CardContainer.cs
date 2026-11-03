@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
@@ -69,6 +70,9 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     /// <summary>Items opened out of this container so far.</summary>
     public int SpawnedCount { get; private set; }
+
+    /// <summary>Items that <see cref="OpenOnto" /> locked into a shelf slot.</summary>
+    public int PlacedCount { get; private set; }
 
     /// <summary>Items still waiting to be spawned over the next frames.</summary>
     public int PendingCount => _pendingSpawns.Count;
@@ -185,6 +189,47 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         if (!CanInteract || GetParent() is not Node3D parent)
             return false;
 
+        var origin = Hide();
+
+        if (Kind == CardContainerKind.Booster)
+            QueueCards(parent, origin);
+        else
+            QueueContainers(parent, origin, 0);
+
+        SetProcess(true);
+        return true;
+    }
+
+    /// <summary>
+    ///     Unpacks a box or pack onto a shelf: the first items it holds are spawned and locked into
+    ///     <paramref name="freeSlots" /> in order, and the rest spill onto the floor above the container, as
+    ///     <see cref="Open" /> does. An item whose slot refuses it stays loose. Returns false when this container
+    ///     cannot be unpacked (a booster, or one that is not openable).
+    /// </summary>
+    public bool OpenOnto(IReadOnlyList<DeckSlot> freeSlots)
+    {
+        if (Kind == CardContainerKind.Booster || !CanInteract || GetParent() is not Node3D parent)
+            return false;
+
+        var origin = Hide();
+        var placeable = Math.Min(CardContainerLayout.ItemsPerContainer, freeSlots.Count);
+        for (var i = 0; i < placeable; i++)
+        {
+            // The same index as Open() uses, so each placed child gets the seed it would have got when opened loose.
+            var child = SpawnContainer(parent, origin + SpawnOffset(i, Kind), i);
+            if (child is CardContainer container && freeSlots[i].TryLock(container))
+                PlacedCount++;
+        }
+
+        QueueContainers(parent, origin, placeable);
+        SetProcess(true);
+        return true;
+    }
+
+    // Marks the container opened and hidden, and stops it colliding and falling. Returns the origin its contents
+    // spawn above.
+    private Vector3 Hide()
+    {
         IsOpened = true;
         var origin = GlobalPosition;
         ClearHighlight();
@@ -192,14 +237,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         CollisionLayer = 0;
         CollisionMask = 0;
         Freeze = true;
-
-        if (Kind == CardContainerKind.Booster)
-            QueueCards(parent, origin);
-        else
-            QueueContainers(parent, origin);
-
-        SetProcess(true);
-        return true;
+        return origin;
     }
 
     private void QueueCards(Node3D parent, Vector3 origin)
@@ -216,9 +254,9 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         }
     }
 
-    private void QueueContainers(Node3D parent, Vector3 origin)
+    private void QueueContainers(Node3D parent, Vector3 origin, int startIndex)
     {
-        for (var i = 0; i < CardContainerLayout.ItemsPerContainer; i++)
+        for (var i = startIndex; i < CardContainerLayout.ItemsPerContainer; i++)
         {
             var index = i;
             var position = origin + SpawnOffset(index, Kind);
@@ -252,10 +290,11 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         Spawning?.SpawnCard(signature, transform, parent);
     }
 
-    private void SpawnContainer(Node3D parent, Vector3 position, int index)
+    // Returns the spawned child, or null when nothing was spawned.
+    private Node3D? SpawnContainer(Node3D parent, Vector3 position, int index)
     {
         if (!GodotObject.IsInstanceValid(parent) || ChildScene?.Instantiate() is not Node3D child)
-            return;
+            return null;
 
         if (child is CardContainer container)
         {
@@ -269,5 +308,6 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
         parent.AddChild(child);
         child.GlobalPosition = position;
+        return child;
     }
 }

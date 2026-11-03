@@ -1,0 +1,49 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/CardShelf.cs" id="CardShelf"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/CardSlot.tscn" id="CardSlot"]
+
+[sub_resource type="BoxShape3D" id="Shape"]
+size = Vector3(2.13, 2.0, 1.0)
+
+[sub_resource type="StandardMaterial3D" id="PlaceholderMaterial"]
+albedo_color = Color(0.35, 0.35, 0.4, 1)
+
+[sub_resource type="BoxMesh" id="PlaceholderMesh"]
+material = SubResource("PlaceholderMaterial")
+size = Vector3(2.13, 2.0, 1.0)
+
+[node name="StorageRack" type="RigidBody3D"]
+script = ExtResource("CardShelf")
+Kind = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("Shape")
+
+[node name="Art" type="Node3D" parent="." node_paths=PackedStringArray("Placeholder")]
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Prop_RecordShelf_01.fbx"
+ArtScale = 100
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Art"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("PlaceholderMesh")
+
+[node name="Slot1" parent="." instance=ExtResource("CardSlot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.2, -0.2)
+Capacity = 1
+
+[node name="Slot2" parent="." instance=ExtResource("CardSlot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.2, -0.2)
+Capacity = 1
+
+[node name="Slot3" parent="." instance=ExtResource("CardSlot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.1, -0.2)
+Capacity = 1
+
+[node name="Slot4" parent="." instance=ExtResource("CardSlot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.1, -0.2)
+Capacity = 1
