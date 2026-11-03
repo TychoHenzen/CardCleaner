@@ -36,7 +36,6 @@ public class StorageRackTest
         AssertBool(_rack.IsStorage).IsTrue();
         AssertThat(_rack.SlotCount).IsEqual(4);
         AssertBool(_rack.IsInGroup(CardShelf.StorageGroupName)).IsTrue();
-        AssertBool(_rack.IsInGroup(CardShelf.GroupName)).IsFalse();
         AssertBool(_rack.IsInGroup(CardShelf.SalesGroupName)).IsFalse();
     }
 

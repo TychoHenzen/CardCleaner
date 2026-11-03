@@ -16,9 +16,6 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 /// </summary>
 public partial class CardShelf : RigidBody3D, IUnpackTarget
 {
-    /// <summary>Scene-tree group every card shelf joins, so a register finds card shelves without wiring.</summary>
-    public const string GroupName = "card_shelves";
-
     /// <summary>Scene-tree group of every product shelf and card shelf, for shop code that lists sales stock.</summary>
     public const string SalesGroupName = "sales_shelves";
 
@@ -64,8 +61,6 @@ public partial class CardShelf : RigidBody3D, IUnpackTarget
 
     public override void _Ready()
     {
-        // Only a card shelf joins card_shelves, the group the register walks: product stock is not a card sale.
-        if (Kind == ShelfKind.CardShelf) AddToGroup(GroupName);
         AddToGroup(IsStorage ? StorageGroupName : SalesGroupName);
 
         foreach (var slot in Slots) slot.Kind = Kind;
@@ -84,24 +79,5 @@ public partial class CardShelf : RigidBody3D, IUnpackTarget
             return false;
 
         return container.OpenOnto(Slots.Where(slot => !slot.HasCards).ToList());
-    }
-
-    /// <summary>
-    ///     Drops a card from whichever slot holds it, without moving the card itself (see
-    ///     <see cref="DeckSlot.ReleaseCard" />). False when the card is not on this shelf.
-    /// </summary>
-    public bool Release(RigidBody3D card)
-    {
-        return Slots.Any(slot => slot.ReleaseCard(card));
-    }
-
-    /// <summary>
-    ///     The asking price of the slot tag that prices <paramref name="card" />, or null when no tag holds the card
-    ///     or its asking value is not above zero, so the sale falls back to the card's market value.
-    /// </summary>
-    public int? AskingPriceFor(RigidBody3D card)
-    {
-        var value = Pricings.FirstOrDefault(pricing => pricing.Holds(card))?.AskingValue ?? 0;
-        return value > 0 ? value : null;
     }
 }

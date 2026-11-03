@@ -36,7 +36,6 @@ public class ProductShelfTest
         AssertThat(_shelf.Kind).IsEqual(ShelfKind.ProductShelf);
         AssertThat(_shelf.SlotCount).IsEqual(3);
         AssertBool(_shelf.IsInGroup(CardShelf.SalesGroupName)).IsTrue();
-        AssertBool(_shelf.IsInGroup(CardShelf.GroupName)).IsFalse();
         AssertBool(_shelf.IsInGroup(CardShelf.StorageGroupName)).IsFalse();
     }
 
