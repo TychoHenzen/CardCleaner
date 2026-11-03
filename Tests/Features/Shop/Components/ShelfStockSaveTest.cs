@@ -21,8 +21,8 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
 /// Stock on the shop's product shelf and storage rack goes into the shop save and comes back in the same slots after a
-/// reload. The restored stock re-locks through the slot's own body entry, is never sold at the register, and a container
-/// that lies outside every slot restores without an error. The slot files live in an in-memory file system.
+/// reload. The restored stock re-locks through the slot's own body entry, is never sold at the register, and a
+/// container that lies outside every slot restores without an error. The slot files live in an in-memory file system.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]

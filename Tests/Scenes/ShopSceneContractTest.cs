@@ -270,7 +270,7 @@ public class ShopSceneContractTest
     {
         var shelves = Descendants(_shop.GetNode("World")).OfType<CardShelf>().ToArray();
 
-        AssertBool(shelves.Any(shelf => shelf.Kind == ShelfKind.ProductShelf)).IsTrue();
+        AssertThat(shelves.Count(shelf => shelf.Kind == ShelfKind.ProductShelf)).IsEqual(1);
     }
 
     [TestCase]
