@@ -16,7 +16,8 @@ public class BackofficeCatalogTest
 {
     private const string CatalogPath = "res://Data/Shop/BackofficeCatalog.tres";
 
-    private static readonly string[] ExpectedIds = ["shelf", "bulk_packing_station", "cardboard_box"];
+    private static readonly string[] ExpectedIds =
+        ["shelf", "bulk_packing_station", "cardboard_box", "product_shelf", "storage_rack"];
 
     private OrderCatalog _catalog = null!;
 
@@ -28,7 +29,7 @@ public class BackofficeCatalogTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void CatalogListsShelfPackingStationAndCardboardBox()
+    public void CatalogListsShelvesPackingStationBoxAndRack()
     {
         AssertThat(_catalog).IsNotNull();
         AssertThat(_catalog.Items.Select(i => i.Id).ToArray()).IsEqual(ExpectedIds);

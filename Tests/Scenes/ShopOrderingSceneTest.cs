@@ -28,7 +28,8 @@ public class ShopOrderingSceneTest
     private const int ShelvesUntilFull = 18;
     private const float ShelfHeight = 1.07f;
     private const float HeightTolerance = 0.001f;
-    private static readonly string[] ExpectedItems = ["shelf", "bulk_packing_station", "cardboard_box"];
+    private static readonly string[] ExpectedItems =
+        ["shelf", "bulk_packing_station", "cardboard_box", "product_shelf", "storage_rack"];
 
     private Node3D _shop = null!;
     private PlayerController _player = null!;

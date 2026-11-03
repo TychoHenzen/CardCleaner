@@ -18,11 +18,20 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
 
     public const string GroupName = "container_holders";
 
+    /// <summary>Physics layer 5: the bodies a carried container can be unpacked onto (shelves and racks).</summary>
+    public const uint UnpackLayerBit = 16;
+
     private const float DefaultDropDistance = 1.5f;
+    private const float DefaultUnpackReach = 3.0f;
     private static readonly Vector3 DefaultHoldOffset = new(0.5f, -0.4f, -1.2f);
 
     [Export] public float DropDistance = DefaultDropDistance;
     [Export] public Vector3 HoldOffset = DefaultHoldOffset;
+
+    /// <summary>
+    /// How far in front of the hand the ray looks for an unpack target when Q opens a carried container.
+    /// </summary>
+    [Export] public float UnpackReach = DefaultUnpackReach;
 
     private IServiceResolver? _services;
     private IInputService? _inputService;
@@ -37,6 +46,7 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         {
             nameof(DropDistance) => true,
             nameof(HoldOffset) => true,
+            nameof(UnpackReach) => true,
             _ => base._PropertyCanRevert(property)
         };
     }
@@ -47,6 +57,7 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         {
             nameof(DropDistance) => DefaultDropDistance,
             nameof(HoldOffset) => DefaultHoldOffset,
+            nameof(UnpackReach) => DefaultUnpackReach,
             _ => base._PropertyGetRevert(property)
         };
     }
@@ -136,8 +147,43 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         var container = HeldContainer();
         if (container == null) return false;
 
+        // The target is looked for from the hand before the drop, and the drop comes first because a held container
+        // cannot be opened (CanInteract is false while held).
+        var target = FindUnpackTarget();
         Drop();
-        return container.Open();
+        return target?.TryUnpack(container) == true || container.Open();
+    }
+
+    // The unpack target the hand points at within UnpackReach, or null. The ray starts at the hand anchor and runs
+    // along its forward axis, so it follows the player's view, not the holder's position.
+    private IUnpackTarget? FindUnpackTarget()
+    {
+        if (_handAnchor == null || !_handAnchor.IsInsideTree()) return null;
+
+        var origin = _handAnchor.GlobalPosition;
+        var to = origin - _handAnchor.GlobalBasis.Z * UnpackReach;
+        var result = _handAnchor.GetWorld3D().DirectSpaceState.IntersectRay(new PhysicsRayQueryParameters3D
+        {
+            From = origin,
+            To = to,
+            CollideWithBodies = true,
+            CollideWithAreas = false,
+            CollisionMask = UnpackLayerBit
+        });
+
+        return result.Count > 0 && result["collider"].Obj is Node3D body ? FindUnpackTargetInHierarchy(body) : null;
+    }
+
+    // Walks from the hit body up through its parents, as InteractionSystem does, so a shelf's child body still counts.
+    private static IUnpackTarget? FindUnpackTargetInHierarchy(Node3D startNode)
+    {
+        for (Node? current = startNode; current != null; current = current.GetParent())
+        {
+            if (current is IUnpackTarget target)
+                return target;
+        }
+
+        return null;
     }
 
     // The held container was freed while the hand held it, so the hand lets go of it.

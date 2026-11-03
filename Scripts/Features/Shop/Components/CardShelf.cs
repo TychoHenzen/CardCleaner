@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Packs.Components;
+using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
@@ -9,9 +11,10 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 /// <summary>
 ///     A shelf that displays stock in its slots. Each slot is a one-card <see cref="DeckSlot" /> child:
 ///     a body dropped on a slot locks and shows there, and picking it up releases it again. The
-///     <see cref="Kind" /> decides which stock the slots take and which group the shelf joins.
+///     <see cref="Kind" /> decides which stock the slots take and which group the shelf joins. A shelf is also an
+///     <see cref="IUnpackTarget" />: a carried box or pack pointed at it unpacks into its free slots.
 /// </summary>
-public partial class CardShelf : RigidBody3D
+public partial class CardShelf : RigidBody3D, IUnpackTarget
 {
     /// <summary>Scene-tree group every card shelf joins, so a register finds card shelves without wiring.</summary>
     public const string GroupName = "card_shelves";
@@ -60,6 +63,21 @@ public partial class CardShelf : RigidBody3D
         AddToGroup(IsStorage ? StorageGroupName : SalesGroupName);
 
         foreach (var slot in Slots) slot.Kind = Kind;
+        CollisionLayer |= ContainerHolder.UnpackLayerBit;
+    }
+
+    /// <summary>
+    ///     Unpacks a box or pack into this shelf's free slots, when the shelf takes the items it holds (a box or pack
+    ///     onto a product shelf or storage rack; a card shelf takes none). False when the shelf does not take them,
+    ///     so the holder opens the container loose.
+    /// </summary>
+    public bool TryUnpack(CardContainer container)
+    {
+        var childKind = CardContainerLayout.ChildKind(container.Kind);
+        if (childKind is not { } kind || !ShelfPlacementRule.Accepts(Kind, ShelfPlacementRule.From(kind)))
+            return false;
+
+        return container.OpenOnto(Slots.Where(slot => !slot.HasCards).ToList());
     }
 
     /// <summary>

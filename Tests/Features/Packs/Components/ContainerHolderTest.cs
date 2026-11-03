@@ -13,7 +13,7 @@ namespace CardCleaner.Tests.Features.Packs.Components;
 
 [TestSuite]
 [RequireGodotRuntime]
-public class ContainerHolderTest
+public partial class ContainerHolderTest
 {
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
@@ -34,7 +34,7 @@ public class ContainerHolderTest
     }
 
     [BeforeTest]
-    public void Setup()
+    public async Task Setup()
     {
         _world = Assertions.AddNode(new Node3D());
         // The hand anchor is the camera in the game (CardHighlighter passes it), so a held container's parent is a
@@ -55,6 +55,10 @@ public class ContainerHolderTest
         _holder = TestServices.Inject(new ContainerHolder());
         _world.AddChild(_holder);
         _holder.SetReferences(_hand);
+
+        // The hand's world has no physics space to query until one physics frame has run, so the unpack ray
+        // (FindUnpackTarget) needs this frame before a cast.
+        await ISceneRunner.SyncPhysicsFrame;
     }
 
     [AfterTest]
@@ -339,6 +343,61 @@ public class ContainerHolderTest
 
         AssertBool(GodotObject.IsInstanceValid(holder)).IsFalse();
         AssertThat(tree.GetNodesInGroup(ContainerHolder.GroupName).Count).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task OpenHeld_WithUnpackTarget_CallsTryUnpackOnceAndDoesNotOpenLoose()
+    {
+        var target = MakeTarget(accepts: true);
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+        await ISceneRunner.SyncPhysicsFrame;
+
+        AssertBool(_holder.OpenHeld()).IsTrue();
+
+        AssertThat(target.Calls).IsEqual(1);
+        AssertBool(box.IsOpened).IsFalse();
+        AssertBool(_holder.IsHolding).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task OpenHeld_TargetRefuses_OpensLooseAfterOneTryUnpack()
+    {
+        var target = MakeTarget(accepts: false);
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+        await ISceneRunner.SyncPhysicsFrame;
+
+        AssertBool(_holder.OpenHeld()).IsTrue();
+
+        AssertThat(target.Calls).IsEqual(1);
+        AssertBool(box.IsOpened).IsTrue();
+        AssertBool(_holder.IsHolding).IsFalse();
+    }
+
+    // A physics body on the unpack layer, one metre in front of the hand, so the holder's ray hits it.
+    private StubUnpackTarget MakeTarget(bool accepts)
+    {
+        var target = new StubUnpackTarget { Accepts = accepts, CollisionLayer = ContainerHolder.UnpackLayerBit };
+        target.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = Vector3.One } });
+        _world.AddChild(target);
+        target.Position = new Vector3(0f, 0f, -1.5f);
+        return target;
+    }
+
+    private sealed partial class StubUnpackTarget : StaticBody3D, IUnpackTarget
+    {
+        public bool Accepts { get; set; }
+
+        public int Calls { get; private set; }
+
+        public bool TryUnpack(CardContainer container)
+        {
+            Calls++;
+            return Accepts;
+        }
     }
 
     private sealed class RecordingLog : ILog

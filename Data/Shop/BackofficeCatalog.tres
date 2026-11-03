@@ -5,6 +5,8 @@
 [ext_resource type="Script" uid="uid://d144tmal3smw7" path="res://Scripts/Features/Shop/Models/OrderItem.cs" id="OrderItemScript"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/PackingStation.tscn" id="PackingStation"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Shelf.tscn" id="Shelf"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/ProductShelf.tscn" id="ProductShelf"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/StorageRack.tscn" id="StorageRack"]
 
 [sub_resource type="Resource" id="ShelfItem"]
 script = ExtResource("OrderItemScript")
@@ -27,6 +29,20 @@ DisplayName = "Cardboard box (8 booster packs)"
 Price = 60
 Scene = ExtResource("CardboardBox")
 
+[sub_resource type="Resource" id="ProductShelfItem"]
+script = ExtResource("OrderItemScript")
+Id = "product_shelf"
+DisplayName = "Product shelf"
+Price = 120
+Scene = ExtResource("ProductShelf")
+
+[sub_resource type="Resource" id="StorageRackItem"]
+script = ExtResource("OrderItemScript")
+Id = "storage_rack"
+DisplayName = "Storage rack"
+Price = 150
+Scene = ExtResource("StorageRack")
+
 [resource]
 script = ExtResource("OrderCatalogScript")
-Items = [SubResource("ShelfItem"), SubResource("PackingStationItem"), SubResource("CardboardBoxItem")]
+Items = [SubResource("ShelfItem"), SubResource("PackingStationItem"), SubResource("CardboardBoxItem"), SubResource("ProductShelfItem"), SubResource("StorageRackItem")]
