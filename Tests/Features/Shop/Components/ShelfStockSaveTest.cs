@@ -9,7 +9,6 @@ using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.Scenes;
@@ -21,8 +20,8 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
 /// Stock on the shop's product shelf and storage rack goes into the shop save and comes back in the same slots after a
-/// reload. The restored stock re-locks through the slot's own body entry, is never sold at the register, and a
-/// container that lies outside every slot restores without an error. The slot files live in an in-memory file system.
+/// reload. The restored stock re-locks through the slot's own body entry, and a container that lies outside every
+/// slot restores without an error. The slot files live in an in-memory file system.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -42,8 +41,6 @@ public class ShelfStockSaveTest
     private GameSaveService _saves = null!;
     private CardShelf _product = null!;
     private CardShelf _rack = null!;
-    private SaleRegister _register = null!;
-    private MoneyService _money = null!;
     private InMemorySlotFileSystem _files = null!;
     private SaveSlotName _slot;
 
@@ -71,8 +68,6 @@ public class ShelfStockSaveTest
 
         _product = _shop.GetNode<CardShelf>("World/Storefront/ProductShelf");
         _rack = _shop.GetNode<CardShelf>("World/RightStorage/StorageRack");
-        _register = _shop.GetNode<SaleRegister>("World/Storefront/CheckoutCounter");
-        _money = _shop.GetNode<MoneyService>("Services/MoneyService");
 
         AddNode(_shop, autoFree: false);
         _tree.CurrentScene = _shop;
@@ -157,21 +152,6 @@ public class ShelfStockSaveTest
         var restored = WithSeed(LooseBoxSeed);
         AssertThat(restored.Length).IsEqual(1);
         AssertBool(restored[0].GetParent() is DeckSlot).IsFalse();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task RestoredStockIsNeverSoldAtTheRegister()
-    {
-        await LockStockAndReloadAsync();
-        var balance = _money.Balance;
-
-        var result = _register.Sell();
-
-        AssertThat(result.Status).IsEqual(SaleStatus.NothingToSell);
-        AssertThat(_money.Balance).IsEqual(balance);
-        AssertBool(_product.Slots.First().HasCards).IsTrue();
-        AssertBool(_rack.Slots.First().HasCards).IsTrue();
     }
 
     // Locks a booster into the product shelf's first slot and a box into the storage rack's first slot, saves, loads

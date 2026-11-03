@@ -149,16 +149,4 @@ public class SlotPricingTest
         AssertBool(_pricing.CanInteract).IsFalse();
         AssertThat(_pricing.AskingValue).IsEqual(0);
     }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void HoldsIsTrueOnlyForTheStockedBody()
-    {
-        var card = AddNode(ShopTestCards.Create(new CardSignature()));
-        var other = AddNode(new RigidBody3D());
-        _slot.TryLock(card);
-
-        AssertBool(_pricing.Holds(card)).IsTrue();
-        AssertBool(_pricing.Holds(other)).IsFalse();
-    }
 }

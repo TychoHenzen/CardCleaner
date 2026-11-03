@@ -39,7 +39,6 @@ public class CardShelfTest
     {
         AssertThat(_shelf.SlotCount).IsGreater(1);
         AssertBool(_shelf.Slots.All(slot => slot.Capacity == 1)).IsTrue();
-        AssertBool(_shelf.IsInGroup(CardShelf.GroupName)).IsTrue();
     }
 
     [TestCase]
@@ -88,19 +87,12 @@ public class CardShelfTest
         var first = MakeCard();
         await Drop(slot, first);
 
-        AssertBool(_shelf.Release(first)).IsTrue();
+        first.EmitPickupSignal();
         var second = MakeCard();
         await Drop(slot, second);
 
         AssertThat(_shelf.StockedCount).IsEqual(1);
         AssertBool(_shelf.StockedCards.Contains(second)).IsTrue();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void ReleasingACardThatIsNotOnTheShelfIsRefused()
-    {
-        AssertBool(_shelf.Release(MakeCard())).IsFalse();
     }
 
     [TestCase]

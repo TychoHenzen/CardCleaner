@@ -51,8 +51,6 @@ public partial class SlotPricing : StaticBody3D, IInteractable, ISaveable
 
     public int AskingValue => MarketValue <= 0 ? 0 : AskingPrice.For(MarketValue, MarkupPercent);
 
-    public bool Holds(RigidBody3D body) => Slot?.Cards.Contains(body) == true;
-
     public bool CanInteract => MarketValue > 0;
 
     public Node3D InteractionBody => this;
@@ -67,7 +65,7 @@ public partial class SlotPricing : StaticBody3D, IInteractable, ISaveable
 
     public override void _EnterTree()
     {
-        // A tag that leaves and re-enters the tree must listen again, as SaleRegister does.
+        // A tag that leaves and re-enters the tree must listen again.
         Unsubscribe();
         Subscribe();
     }

@@ -129,6 +129,9 @@ public partial class CustomerSpawner : Node, IDependent
         var offers = new ShelfOfferIndex(GetTree());
         var wish = ShoppingPlanner.DrawWish(RandomSource);
         var plan = ShoppingPlanner.Plan(offers.Collect(), _claimed, wish, RandomSource);
+        // ASSUMPTION (Low): about half of the customers pay by card; the draw comes after the plan draws so the plan
+        // of each customer is unchanged.
+        customer.Method = RandomSource.RandiRange(0, 1) == 0 ? PaymentMethod.Card : PaymentMethod.Cash;
         var claims = plan.Where(pick => pick.Outcome.Buys).Select(pick => pick.Offer.OfferId).ToList();
         foreach (var id in claims)
             _claimed.Add(id);

@@ -9,7 +9,7 @@ namespace CardCleaner.Tests.Scenes;
 public static class ShopScenePlayer
 {
     /// <summary>
-    /// Takes the player out of play without freeing it: the seams, the register and every other node that
+    /// Takes the player out of play without freeing it: the seams, the checkout and every other node that
     /// exports the player keep a valid object, but it never processes, takes input or moves, and with no
     /// collision layer or mask no physics query, capsule sweep or room volume can see it.
     /// </summary>

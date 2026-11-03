@@ -18,7 +18,7 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// End to end in the shop scene: a carried box or pack, aimed at a product shelf or storage rack, unpacks into the
-/// shelf's free slots when Q is pressed, and the stocked containers are not sold at the register.
+/// shelf's free slots when Q is pressed.
 /// The input service is replaced so the scene's Q callback is captured and invoked directly; the unpack target is
 /// found by the hand's real ray because the camera is aimed at the shelf.
 /// </summary>
@@ -44,7 +44,6 @@ public class ShopShelfUnpackSceneTest
     private ContainerHolder _holder = null!;
     private MoneyService _money = null!;
     private OrderingService _ordering = null!;
-    private SaleRegister _register = null!;
     private Action? _qPress;
     private string _optionsPath = null!;
 
@@ -62,7 +61,6 @@ public class ShopShelfUnpackSceneTest
         _holder = _player.GetNode<ContainerHolder>("CardInteraction/ContainerHolder");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
-        _register = _shop.GetNode<SaleRegister>("World/Storefront/CheckoutCounter");
 
         // The test scene is not the current scene, so hand the scene-owned services over directly.
         ShopSceneServices.RegisterWithCardSpawner(_shop, Seed);
@@ -138,22 +136,6 @@ public class ShopShelfUnpackSceneTest
 
         AssertThat(rack.StockedCount).IsEqual(rack.SlotCount);
         AssertBool(rack.StockedCards.All(c => c is CardContainer { Kind: CardContainerKind.Booster })).IsTrue();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task RegisterDoesNotSellStockedContainers()
-    {
-        var shelf = await StockProductShelf();
-        var balance = _money.Balance;
-        var stocked = shelf.StockedCards.ToArray();
-
-        var result = _register.Sell();
-
-        AssertThat(result.Status).IsEqual(SaleStatus.NothingToSell);
-        AssertThat(_money.Balance).IsEqual(balance);
-        AssertThat(shelf.StockedCount).IsEqual(shelf.SlotCount);
-        AssertBool(stocked.Any(c => c.IsQueuedForDeletion())).IsFalse();
     }
 
     // Orders a box, carries it to the product shelf, and presses Q so it unpacks into the shelf's free slots.

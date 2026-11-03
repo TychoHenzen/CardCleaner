@@ -41,7 +41,8 @@
 [ext_resource type="Resource" path="res://Assets/CardGems/Subsidium.tres" id="Card_15_dta7m"]
 [ext_resource type="Resource" path="res://Assets/CardGems/Spatium.tres" id="Card_16_r0o6j"]
 [ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardSpawningService.cs" id="Card_28_1ia11"]
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/SaleRegister.cs" id="SaleRegister"]
+[ext_resource type="Script" uid="uid://dcjl7kemvk20b" path="res://Scripts/Features/Shop/Components/CheckoutCounter.cs" id="CheckoutCounter"]
+[ext_resource type="Script" uid="uid://ccane0a7emd86" path="res://Scripts/Features/Shop/Ui/CheckoutPaymentUi.cs" id="CheckoutPaymentUi"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/DeliveryMarker.cs" id="DeliveryMarker"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopNavigationRegion.cs" id="ShopNavigationRegion"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Neighbourhood.tscn" id="Neighbourhood"]
@@ -607,10 +608,9 @@ Placeholder = NodePath("Placeholder")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
 mesh = SubResource("FloorBoxMesh")
 
-[node name="CheckoutCounter" type="StaticBody3D" parent="World/Storefront" node_paths=PackedStringArray("PlayerHolder", "StatusLabel", "HighlightMesh")]
+[node name="CheckoutCounter" type="StaticBody3D" parent="World/Storefront" node_paths=PackedStringArray("StatusLabel", "HighlightMesh")]
 collision_layer = 5
-script = ExtResource("SaleRegister")
-PlayerHolder = NodePath("../../../Player/CardInteraction/CardHolder")
+script = ExtResource("CheckoutCounter")
 StatusLabel = NodePath("StatusLabel")
 HighlightMesh = NodePath("Highlight")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 6)
@@ -640,6 +640,30 @@ billboard = 1
 text = "Balance: -"
 font_size = 48
 outline_size = 12
+
+[node name="QueueSlot0" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.4)
+
+[node name="QueueSlot1" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.6)
+
+[node name="QueueSlot2" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.8)
+
+[node name="QueueSlot3" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+
+[node name="ItemSpot0" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 1.15, 0)
+
+[node name="ItemSpot1" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 1.15, 0)
+
+[node name="ItemSpot2" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 1.15, 0)
+
+[node name="ItemSpot3" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.15, 0)
 
 [node name="Street" type="Node3D" parent="World" groups=["shop_navigation"]]
 
@@ -1616,4 +1640,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("DayReportPanel")
+
+[node name="CheckoutUi" type="CanvasLayer" parent="." node_paths=PackedStringArray("Counter")]
+script = ExtResource("CheckoutPaymentUi")
+Counter = NodePath("../World/Storefront/CheckoutCounter")
 

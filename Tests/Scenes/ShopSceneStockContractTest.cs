@@ -53,13 +53,13 @@ public class ShopSceneStockContractTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void EveryCardShelfGroupMemberIsACardShelfKind()
+    public void EverySalesShelfGroupMemberIsAShelfAndNoStorageRackJoinsIt()
     {
-        // The register walks card_shelves, so a product shelf or rack must never join it.
-        foreach (var node in _shop.GetTree().GetNodesInGroup(CardShelf.GroupName))
+        // Sales stock is listed through sales_shelves, so a storage rack must never join it.
+        foreach (var node in _shop.GetTree().GetNodesInGroup(CardShelf.SalesGroupName))
         {
             AssertThat(node).IsInstanceOf<CardShelf>();
-            AssertThat(((CardShelf)node).Kind).IsEqual(ShelfKind.CardShelf);
+            AssertThat(((CardShelf)node).Kind).IsNotEqual(ShelfKind.StorageRack);
         }
     }
 
@@ -74,7 +74,7 @@ public class ShopSceneStockContractTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void BackofficeCatalogOrdersTheProductShelfAndTheStorageRack()
+    public static void BackofficeCatalogOrdersTheProductShelfAndTheStorageRack()
     {
         var items = GD.Load<OrderCatalog>(BackofficeCatalogPath).Items;
 
