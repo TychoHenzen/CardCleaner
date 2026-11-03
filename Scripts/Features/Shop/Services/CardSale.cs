@@ -23,28 +23,48 @@ public static class CardSale
     public static SaleResult TrySell(RigidBody3D? card, IMoneyService money, Func<RigidBody3D, bool>? release = null,
         int? askingPrice = null)
     {
-        if (card == null || !GodotObject.IsInstanceValid(card))
+        var refusal = Appraise(card, askingPrice, out var price);
+        if (refusal != null)
+            return new SaleResult(refusal.Value);
+
+        if (!TryRelease(card!, release))
             return new SaleResult(SaleStatus.NothingToSell);
 
+        money.Add(price);
+        card.QueueFree();
+
+        ILog.Print($"Card sold for {price}, balance now {money.Balance}");
+        return new SaleResult(SaleStatus.Sold, price, money.Balance);
+    }
+
+    // Returns why the card cannot be sold, or null with the price to pay.
+    private static SaleStatus? Appraise(RigidBody3D? card, int? askingPrice, out int price)
+    {
+        price = 0;
+        if (card == null || !GodotObject.IsInstanceValid(card))
+            return SaleStatus.NothingToSell;
+
         if (card.IsQueuedForDeletion() || card.HasMeta(SoldMeta))
-            return new SaleResult(SaleStatus.AlreadySold);
+            return SaleStatus.AlreadySold;
 
         if (card is not CardController { HasSignature: true } cardController)
-            return new SaleResult(SaleStatus.NotSellable);
+            return SaleStatus.NotSellable;
 
-        var price = askingPrice ?? StockMarketValue.ForCard(cardController);
-        if (price <= 0)
-            return new SaleResult(SaleStatus.NotSellable);
+        price = askingPrice ?? StockMarketValue.ForCard(cardController);
+        return price <= 0 ? SaleStatus.NotSellable : null;
+    }
 
-        // Mark first so a second request in the same frame cannot pay out again.
+    // Marks the card sold first so a second request in the same frame cannot pay out again.
+    private static bool TryRelease(RigidBody3D card, Func<RigidBody3D, bool>? release)
+    {
         card.SetMeta(SoldMeta, true);
         try
         {
-            if (release != null && !release(card))
-            {
-                card.RemoveMeta(SoldMeta);
-                return new SaleResult(SaleStatus.NothingToSell);
-            }
+            if (release == null || release(card))
+                return true;
+
+            card.RemoveMeta(SoldMeta);
+            return false;
         }
         catch
         {
@@ -52,11 +72,5 @@ public static class CardSale
             card.RemoveMeta(SoldMeta);
             throw;
         }
-
-        money.Add(price);
-        card.QueueFree();
-
-        ILog.Print($"Card sold for {price}, balance now {money.Balance}");
-        return new SaleResult(SaleStatus.Sold, price, money.Balance);
     }
 }

@@ -125,10 +125,12 @@ public class ShelfPriceTagSceneTest
         AssertBool(tag.CollisionMask == 0).IsTrue();
 
         var space = shelf.GetWorld3D().DirectSpaceState;
-        var tagHit = Climb(Cast(space, tag.GlobalPosition + new Vector3(0, 0, -1), tag.GlobalPosition + new Vector3(0, 0, 1)));
+        var tagHit = Climb(Cast(
+            space, tag.GlobalPosition + new Vector3(0, 0, -1), tag.GlobalPosition + new Vector3(0, 0, 1)));
         AssertBool(ReferenceEquals(tagHit, tag)).IsTrue();
 
-        var cardHit = Climb(Cast(space, card.GlobalPosition + new Vector3(0, 1, 0), card.GlobalPosition + new Vector3(0, -1, 0)));
+        var cardHit = Climb(Cast(
+            space, card.GlobalPosition + new Vector3(0, 1, 0), card.GlobalPosition + new Vector3(0, -1, 0)));
         AssertBool(ReferenceEquals(cardHit, card)).IsTrue();
     }
 
