@@ -99,13 +99,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
 
     public override void _Process(double delta)
     {
-        // A front customer who stopped waiting forfeits the session.
-        if (Front is { } front && !front.Waiting && Session != null)
-            CloseSession("The customer left before paying");
-
-        foreach (var customer in _queue.Where(customer => !customer.Waiting).ToList())
-            Dequeue(customer);
-
+        DropDeparted();
         Refresh();
     }
 
@@ -176,6 +170,13 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         if (Session == null || Front is not { } customer)
             return false;
 
+        if (!customer.Waiting)
+        {
+            DropDeparted();
+            Refresh();
+            return false;
+        }
+
         if (Session.State == CheckoutState.Scanning)
         {
             SetMessage("Scan every item first");
@@ -197,17 +198,28 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         return true;
     }
 
-    // Gives each queued customer its spot when its place changed, then starts a session for the front one.
+    // A front customer who stopped waiting forfeits the session; any other who stopped leaves the line.
+    private void DropDeparted()
+    {
+        if (Front is { } front && !front.Waiting && Session != null)
+            CloseSession("The customer left before paying");
+
+        foreach (var customer in _queue.Where(customer => !customer.Waiting).ToList())
+            Dequeue(customer);
+    }
+
+    // Gives each queued customer its spot (extras share the last one), then starts a session for the front one.
     private void Refresh()
     {
-        for (var i = 0; i < _queue.Count && i < _queueSpots.Length; i++)
+        for (var i = 0; i < _queue.Count && _queueSpots.Length > 0; i++)
         {
             var customer = _queue[i];
-            if (_slotOf.TryGetValue(customer, out var slot) && slot == i)
+            var spot = Math.Min(i, _queueSpots.Length - 1);
+            if (_slotOf.TryGetValue(customer, out var slot) && slot == spot)
                 continue;
 
-            _slotOf[customer] = i;
-            var position = _queueSpots[i].GlobalPosition;
+            _slotOf[customer] = spot;
+            var position = _queueSpots[spot].GlobalPosition;
             customer.QueueAt(new QueueSpot(position.X, position.Y, position.Z));
         }
 
@@ -249,9 +261,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
 
     private void ClearItems()
     {
-        foreach (var prop in _props)
-            prop.QueueFree();
-
+        _props.ForEach(prop => prop.QueueFree());
         _props.Clear();
     }
 

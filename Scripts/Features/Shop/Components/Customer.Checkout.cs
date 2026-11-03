@@ -27,10 +27,10 @@ public partial class Customer
         StartWalk(Walk.ToQueue, new Vector3(spot.X, spot.Y, spot.Z));
     }
 
-    /// <summary>Ends the wait: the customer walks out. Does nothing once it has left.</summary>
+    /// <summary>Ends the wait: the customer walks out. Does nothing once it has left or been freed.</summary>
     public void Leave()
     {
-        if (State == CustomerState.Queued)
+        if (Waiting)
             StartLeaving();
     }
 

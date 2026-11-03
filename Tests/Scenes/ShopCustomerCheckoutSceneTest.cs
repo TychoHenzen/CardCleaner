@@ -98,6 +98,23 @@ public class ShopCustomerCheckoutSceneTest
         AssertThat(_rig.Money.Balance).IsEqual(balanceBefore);
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task LeaveDoesNothingForACustomerThatWasRemovedFromTheTree()
+    {
+        _rig.StockBooster();
+        var customer = _rig.Spawner.SpawnNow();
+        await WaitUntil(() => _handoff.Customer != null);
+        var queued = (Customer)_handoff.Customer!;
+
+        customer!.GetParent().RemoveChild(customer);
+        queued.Leave();
+
+        AssertBool(queued.Waiting).IsFalse();
+        AssertThat(queued.State).IsEqual(CustomerState.Queued);
+        customer.Free();
+    }
+
     /// <summary>
     /// Stores the customer it is handed and neither pays nor tells it to leave, so the test controls both.
     /// </summary>

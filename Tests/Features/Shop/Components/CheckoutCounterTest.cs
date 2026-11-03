@@ -14,16 +14,11 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 [RequireGodotRuntime]
 public class CheckoutCounterTest
 {
-    private const int StartingBalance = 100;
-    private const int QueueSlotCount = 3;
-    private const float QueueSlotSpacing = 1.2f;
-    private const float QueueSlotStart = 1.4f;
+    private const int StartingBalance = CheckoutCounterRig.StartingBalance;
     private const float XzTolerance = 0.01f;
     private const int MaxProcessFrames = 10;
 
-    private Node3D _world = null!;
     private MoneyService _money = null!;
-    private Label3D _label = null!;
     private CheckoutCounter _counter = null!;
     private Marker3D[] _slots = null!;
     private Marker3D[] _itemSpots = null!;
@@ -31,46 +26,11 @@ public class CheckoutCounterTest
     [BeforeTest]
     public async Task Setup()
     {
-        TestServices.Reset();
-        _world = new Node3D();
-        _money = new MoneyService { StartingBalance = StartingBalance };
-        _label = new Label3D();
-        _counter = new CheckoutCounter { StatusLabel = _label };
-        TestServices.Container.RegisterSingleton<IMoneyService>(_money);
-        TestServices.Inject(_counter);
-
-        _slots = new Marker3D[QueueSlotCount];
-        for (var i = 0; i < QueueSlotCount; i++)
-        {
-            _slots[i] = new Marker3D
-            {
-                Name = $"QueueSlot{i}",
-                Position = new Vector3(0f, 0f, QueueSlotStart + QueueSlotSpacing * i),
-            };
-        }
-
-        _itemSpots = new Marker3D[2];
-        for (var i = 0; i < _itemSpots.Length; i++)
-        {
-            _itemSpots[i] = new Marker3D
-            {
-                Name = $"ItemSpot{i}",
-                Position = new Vector3(i == 0 ? -0.4f : 0.4f, 1.15f, 0f),
-            };
-        }
-
-        // The markers are children of the counter before it enters the tree, so its _Ready finds them.
-        foreach (var marker in _slots.Concat(_itemSpots))
-        {
-            _counter.AddChild(marker);
-        }
-
-        _counter.AddChild(_label);
-        _world.AddChild(_money);
-        _world.AddChild(_counter);
-        AddNode(_world);
-        _counter.Money = _money;
-        await ISceneRunner.SyncPhysicsFrame;
+        var rig = await CheckoutCounterRig.Create();
+        _money = rig.Money;
+        _counter = rig.Counter;
+        _slots = rig.Slots;
+        _itemSpots = rig.ItemSpots;
     }
 
     [AfterTest]
@@ -97,7 +57,45 @@ public class CheckoutCounterTest
         AssertThat(first.Spots[0]).IsEqual(SlotSpot(0));
         AssertThat(second.Spots[0]).IsEqual(SlotSpot(1));
         AssertThat(third.Spots[0]).IsEqual(SlotSpot(2));
-        AssertThat(fourth.Spots.Count).IsEqual(0);
+        AssertThat(fourth.Spots.Count).IsEqual(1);
+        AssertThat(fourth.Spots[0]).IsEqual(SlotSpot(2));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CustomersBeyondTheLastSlotShareItAndAdvanceWhenAPlaceFrees()
+    {
+        var customers = Enumerable.Range(0, 5).Select(_ => new FakeCheckoutCustomer(PaymentMethod.Card, 3)).ToList();
+        customers.ForEach(_counter.Checkout);
+
+        AssertThat(customers.All(customer => customer.Spots.Count == 1)).IsTrue();
+        AssertThat(customers[4].Spots[0]).IsEqual(SlotSpot(2));
+
+        _counter.Scan(0);
+        AssertThat(_counter.PayCard(3)).IsTrue();
+
+        AssertThat(customers[3].Spots[^1]).IsEqual(SlotSpot(2));
+        AssertThat(customers[2].Spots[^1]).IsEqual(SlotSpot(1));
+        AssertThat(customers[1].Spots[^1]).IsEqual(SlotSpot(0));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void PayingForACustomerWhoAlreadyLeftTakesNothingAndDropsThem()
+    {
+        var gone = new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4);
+        var next = new FakeCheckoutCustomer(PaymentMethod.Card, 5);
+        _counter.Checkout(gone);
+        _counter.Checkout(next);
+        _counter.Scan(0);
+        _counter.Scan(1);
+
+        gone.Waiting = false;
+
+        AssertThat(_counter.PayCard(7)).IsFalse();
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
+        AssertThat(gone.LeaveCount).IsEqual(0);
+        AssertThat(ReferenceEquals(_counter.Front, next)).IsTrue();
     }
 
     [TestCase]

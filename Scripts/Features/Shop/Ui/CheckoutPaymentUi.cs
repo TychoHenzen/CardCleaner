@@ -69,6 +69,8 @@ public partial class CheckoutPaymentUi : CanvasLayer, IDependent
 
     public override void _ExitTree()
     {
+        // Freed while open: give the cursor and the player's control back.
+        Close();
         if (Counter != null)
         {
             Counter.PaymentReady -= Open;

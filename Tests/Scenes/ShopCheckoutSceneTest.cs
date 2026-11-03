@@ -186,6 +186,24 @@ public class ShopCheckoutSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public async Task FreeingTheScreenWhileOpenGivesTheCursorAndControlBack()
+    {
+        var player = _rig.Shop.GetNode<PlayerController>("Player");
+        _rig.Counter.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4));
+        _rig.ScanAll();
+        AssertBool(_rig.Ui.Visible).IsTrue();
+        AssertBool(player.ControlEnabled).IsFalse();
+
+        _rig.Shop.RemoveChild(_rig.Ui);
+        await ISceneRunner.SyncProcessFrame;
+
+        AssertBool(player.ControlEnabled).IsTrue();
+        AssertThat(_rig.Cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Captured);
+        _rig.Ui.Free();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void CounterUsesAnExistingPackMeshWithAPlaceholderFallback()
     {
         var art = _rig.Counter.GetNode<ShopArtSlot>("CounterArt");
