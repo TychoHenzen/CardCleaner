@@ -44,6 +44,12 @@ public partial class CardShelf : RigidBody3D, IUnpackTarget
 
     public int StockedCount => StockedCards.Count();
 
+    /// <summary>The price tags of this shelf, one sibling per slot.</summary>
+    public IEnumerable<SlotPricing> Pricings => GetChildren().OfType<SlotPricing>();
+
+    /// <summary>The price tag that prices <paramref name="slot" />, or null when the shelf has none.</summary>
+    public SlotPricing? PricingFor(DeckSlot slot) => Pricings.FirstOrDefault(pricing => pricing.Slot == slot);
+
     public override bool _PropertyCanRevert(StringName property)
     {
         return property.ToString() == nameof(Kind) || base._PropertyCanRevert(property);

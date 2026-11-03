@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/CardShelf.cs" id="CardShelf"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CardSlot.tscn" id="CardSlot"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/PriceTag.tscn" id="PriceTag"]
 
 [sub_resource type="BoxShape3D" id="Shape"]
 size = Vector3(2.13, 2.0, 1.0)
@@ -47,3 +48,19 @@ Capacity = 1
 [node name="Slot4" parent="." instance=ExtResource("CardSlot")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.1, -0.2)
 Capacity = 1
+
+[node name="Price1" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.36, -0.53)
+Slot = NodePath("../Slot1")
+
+[node name="Price2" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.36, -0.53)
+Slot = NodePath("../Slot2")
+
+[node name="Price3" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.26, -0.53)
+Slot = NodePath("../Slot3")
+
+[node name="Price4" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.26, -0.53)
+Slot = NodePath("../Slot4")
