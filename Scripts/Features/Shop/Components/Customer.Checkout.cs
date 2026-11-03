@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
@@ -25,7 +24,7 @@ public partial class Customer
         if (!Waiting)
             return;
 
-        StartWalk(Walk.ToQueue, OnMesh(new Vector3(spot.X, spot.Y, spot.Z)));
+        StartWalk(Walk.ToQueue, new Vector3(spot.X, spot.Y, spot.Z));
     }
 
     /// <summary>Ends the wait: the customer walks out. Does nothing once it has left.</summary>
@@ -40,13 +39,13 @@ public partial class Customer
         if (Handoff is null)
         {
             ILog.Error($"{Name} has no checkout handoff; it returns what it carries.");
-            ReturnCarried();
+            _carried.ReturnToSlots();
             StartLeaving();
             return;
         }
 
-        Basket = new CheckoutBasket(_carried.Select(item => item.Offer).ToList());
-        FreeCarried();
+        Basket = new CheckoutBasket(_carried.Offers());
+        _carried.Free();
         State = CustomerState.Queued;
         Handoff.Checkout(this);
     }
