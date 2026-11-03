@@ -41,6 +41,8 @@ public class ShopHudTest
         public int Debt { get; set; }
         public int Takings { get; set; }
         public int MinutesOfDay { get; set; } = 480;
+        public int OpeningMinute { get; set; } = 480;
+        public int ClosingMinute { get; set; } = 1080;
 
         public event Action? Opened;
         public event Action<DayReport>? Closed;

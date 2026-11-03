@@ -23,6 +23,12 @@ public interface IShopDayService
     /// <summary>Whole minutes of the clock face.</summary>
     int MinutesOfDay { get; }
 
+    /// <summary>The clock face's opening minute.</summary>
+    int OpeningMinute { get; }
+
+    /// <summary>The clock face's closing minute.</summary>
+    int ClosingMinute { get; }
+
     /// <summary>Raised when the shop opens.</summary>
     event Action Opened;
 
@@ -32,7 +38,9 @@ public interface IShopDayService
     /// <summary>Raised when a saved day is restored.</summary>
     event Action Restored;
 
-    /// <summary>Raised with (day, minutesOfDay) when the clock face moves to a new minute.</summary>
+    /// <summary>
+    ///     Raised with (day, minutesOfDay) when the clock face moves on.
+    /// </summary>
     event Action<int, int> TimeChanged;
 
     /// <summary>Opens the shop. Does nothing when it is already open.</summary>

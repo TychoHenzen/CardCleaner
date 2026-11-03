@@ -32,6 +32,25 @@ public class ShopDayServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void OpeningAndClosingMinutesAreTheExportsAsWholeMinutes()
+    {
+        var service = AutoFree(new ShopDayService
+        {
+            OpeningMinutes = 600,
+            ClosingMinutes = 660,
+            DayLengthSeconds = 60
+        });
+
+        AssertThat(service.OpeningMinute).IsEqual(600);
+        AssertThat(service.ClosingMinute).IsEqual(660);
+
+        var defaults = AutoFree(new ShopDayService());
+        AssertThat(defaults.OpeningMinute).IsEqual(480);
+        AssertThat(defaults.ClosingMinute).IsEqual(1080);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void CloseChargesRentOnceAndAdvancesDay()
     {
         var service = NewService(500);
