@@ -86,10 +86,15 @@ public partial class CustomerSpawner : Node, IDependent
             return;
         }
 
-        _services.Get<IShopDayService>(service => DayService ??= service);
-        _services.Get<IComplaintLog>(log => Complaints ??= log);
-        _services.Get<ICheckoutHandoff>(handoff => Handoff ??= handoff);
-        _services.Get<IRandom>(rng => Rng ??= rng);
+        ResolveServices(_services);
+    }
+
+    private void ResolveServices(IServiceResolver services)
+    {
+        services.Get<IShopDayService>(service => DayService ??= service);
+        services.Get<IComplaintLog>(log => Complaints ??= log);
+        services.Get<ICheckoutHandoff>(handoff => Handoff ??= handoff);
+        services.Get<IRandom>(rng => Rng ??= rng);
     }
 
     public override void _EnterTree()

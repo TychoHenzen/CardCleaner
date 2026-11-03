@@ -38,7 +38,9 @@ public interface IShopDayService
     /// <summary>Raised when a saved day is restored.</summary>
     event Action Restored;
 
-    /// <summary>Raised with (day, minutesOfDay) when the clock face moves to a new minute.</summary>
+    /// <summary>
+    ///     Raised with (day, minutesOfDay) when the clock face moves on.
+    /// </summary>
     event Action<int, int> TimeChanged;
 
     /// <summary>Opens the shop. Does nothing when it is already open.</summary>

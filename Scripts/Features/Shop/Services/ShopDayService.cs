@@ -194,12 +194,17 @@ public partial class ShopDayService : Node, IShopDayService, IComplaintLog, IDep
         _tally.Clear();
         _takings = 0;
         Clock.StartNextDay();
-        // The save serializes the whole tree, so it must run after TrySpend, the debt update and StartNextDay.
-        if (SaveCommand?.ManualSave() != true)
-            ILog.Warning("Day-close save failed or unavailable; the day is not rolled back");
+        SaveDayClose();
         _lastRaisedMinute = MinutesOfDay;
         Closed?.Invoke(report);
         TimeChanged?.Invoke(Day, _lastRaisedMinute);
+    }
+
+    // The save serializes the whole tree, so it must run after TrySpend, the debt update and StartNextDay.
+    private void SaveDayClose()
+    {
+        if (SaveCommand?.ManualSave() != true)
+            ILog.Warning("Day-close save failed or unavailable; the day is not rolled back");
     }
 
     /// <summary>

@@ -75,7 +75,9 @@ public partial class Customer : CharacterBody3D
         RaiseFinished();
     }
 
-    /// <summary>Starts the visit: walk the picks in order, then the counter when carrying, then the despawn point.</summary>
+    /// <summary>
+    ///     Starts the visit: walk the picks in order, then the counter when carrying, then the despawn point.
+    /// </summary>
     public void Begin(IReadOnlyList<PlannedPick> plan, ShelfOfferIndex offers, Vector3 counter, Vector3 despawn)
     {
         _plan = plan;
