@@ -31,7 +31,8 @@ public class OrderTerminalTest
         var marker = new DeliveryMarker();
         _world.AddChild(marker);
         _money = new MoneyService { StartingBalance = StartingBalance };
-        _ordering = new OrderingService { DeliveryPoint = marker, SpawnRoot = _world, Money = _money };
+        _ordering = new OrderingService
+            { DeliveryPoint = marker, SpawnRoot = _world, Money = _money, Progression = new OpenProgression() };
         _ui = new OrderTerminalUi();
         _terminal = new OrderTerminal { Catalog = MakeCatalog(("cheap", CheapPrice), ("dear", DearPrice)), Ui = _ui };
         _cursor = new CursorOwner();

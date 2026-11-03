@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/OrderTerminal.cs" id="OrderTerminal"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Ui/OrderTerminalUi.cs" id="OrderTerminalUi"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/MoneyService.cs" id="MoneyService"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Services/ShopProgression.cs" id="ShopProgression"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/OrderingService.cs" id="OrderingService"]
 [ext_resource type="Script" path="res://Scripts/Features/Card/Services/SaveGame/GameSaveService.cs" id="GameSaveService"]
 [ext_resource type="Script" path="res://Scripts/Features/Pause/Controllers/PauseController.cs" id="PauseController"]
@@ -1526,6 +1527,9 @@ script = ExtResource("GameSettings")
 
 [node name="MoneyService" type="Node" parent="Services"]
 script = ExtResource("MoneyService")
+
+[node name="ShopProgression" type="Node" parent="Services"]
+script = ExtResource("ShopProgression")
 
 [node name="CursorOwner" type="Node" parent="Services"]
 script = ExtResource("CursorOwner")

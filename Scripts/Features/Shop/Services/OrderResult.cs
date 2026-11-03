@@ -6,7 +6,8 @@ public enum OrderStatus
     InsufficientFunds,
     InvalidItem,
     NoDeliveryPoint,
-    DeliveryFull
+    DeliveryFull,
+    Locked
 }
 
 /// <summary>Outcome of an order. <see cref="Spawned" /> is only set on success.</summary>

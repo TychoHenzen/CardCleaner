@@ -21,6 +21,8 @@ public static class ShopSceneServices
         TestServices.Reset();
         TestServices.Container.RegisterSingleton<IGameSettings>(shop.GetNode<GameSettings>("Services/GameSettings"));
         TestServices.Container.RegisterSingleton<IMoneyService>(shop.GetNode<MoneyService>("Services/MoneyService"));
+        TestServices.Container.RegisterSingleton<IShopProgression>(
+            shop.GetNode<ShopProgression>("Services/ShopProgression"));
         TestServices.Container.RegisterSingleton<IOrderingService>(
             shop.GetNode<OrderingService>("Services/OrderingService"));
         TestServices.Container.RegisterSingleton(RandomSources.Create(seed));

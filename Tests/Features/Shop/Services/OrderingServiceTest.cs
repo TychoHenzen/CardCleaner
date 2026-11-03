@@ -46,7 +46,8 @@ public class OrderingServiceTest
         AddNode(_world);
 
         _money = new MoneyService { StartingBalance = StartingBalance };
-        _ordering = new OrderingService { DeliveryPoint = marker, SpawnRoot = _world, Money = _money };
+        _ordering = new OrderingService
+            { DeliveryPoint = marker, SpawnRoot = _world, Money = _money, Progression = new OpenProgression() };
         _world.AddChild(_money);
         _world.AddChild(_ordering);
 
