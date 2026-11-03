@@ -1,14 +1,14 @@
 using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Services;
 
 /// <summary>
-///     Sells one card: pays <see cref="CardPricing" /> into the money service and removes the card
-///     from the world. Something that cannot be sold is left exactly where it is.
+///     Sells one card: pays its price into the money service and removes the card from the world. The price is the
+///     slot's asking price when one is given, otherwise the card's <see cref="StockMarketValue" />. Only a signed
+///     card is sellable. Something that cannot be sold is left exactly where it is.
 /// </summary>
 public static class CardSale
 {
@@ -17,9 +17,11 @@ public static class CardSale
     /// <summary>
     ///     Sells <paramref name="card" />. <paramref name="release" /> detaches the card from wherever it is
     ///     held (a shelf slot or the player's hand) and runs only once the sale is certain. It returns
-    ///     false when the card could not be detached, which aborts the sale unpaid.
+    ///     false when the card could not be detached, which aborts the sale unpaid. <paramref name="askingPrice" />
+    ///     is the price a shelf slot asks for the card; null pays the card's market value.
     /// </summary>
-    public static SaleResult TrySell(RigidBody3D? card, IMoneyService money, Func<RigidBody3D, bool>? release = null)
+    public static SaleResult TrySell(RigidBody3D? card, IMoneyService money, Func<RigidBody3D, bool>? release = null,
+        int? askingPrice = null)
     {
         if (card == null || !GodotObject.IsInstanceValid(card))
             return new SaleResult(SaleStatus.NothingToSell);
@@ -27,8 +29,10 @@ public static class CardSale
         if (card.IsQueuedForDeletion() || card.HasMeta(SoldMeta))
             return new SaleResult(SaleStatus.AlreadySold);
 
-        var cardController = card as CardController;
-        var price = CardPricing.GetPrice(cardController?.HasSignature == true ? cardController.Signature : null);
+        if (card is not CardController { HasSignature: true } cardController)
+            return new SaleResult(SaleStatus.NotSellable);
+
+        var price = askingPrice ?? StockMarketValue.ForCard(cardController);
         if (price <= 0)
             return new SaleResult(SaleStatus.NotSellable);
 

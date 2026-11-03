@@ -84,17 +84,17 @@ public class SaleRegisterTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task InteractingSellsAShelfCardForTheFixedPrice()
+    public async Task InteractingSellsAShelfCardForItsMarketValue()
     {
         var card = await Stock(new CardSignature());
 
         _register.Interact();
 
-        AssertThat(_money.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
+        AssertThat(_money.Balance).IsEqual(StartingBalance + CardValue.MinimumCardPrice);
         AssertBool(card.IsQueuedForDeletion()).IsTrue();
         AssertThat(_shelf.StockedCount).IsEqual(0);
         AssertThat(_label.Text).Contains($"Balance: {_money.Balance}");
-        AssertThat(_label.Text).Contains($"Sold for {CardPricing.FixedCardPrice}");
+        AssertThat(_label.Text).Contains($"Sold for {CardValue.MinimumCardPrice}");
     }
 
     [TestCase]
@@ -106,7 +106,7 @@ public class SaleRegisterTest
 
         _register.Interact();
 
-        AssertThat(_money.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
+        AssertThat(_money.Balance).IsEqual(StartingBalance + CardValue.MinimumCardPrice);
         AssertBool(card.IsQueuedForDeletion()).IsTrue();
         AssertThat(_holder.HeldCount).IsEqual(0);
     }
@@ -124,14 +124,59 @@ public class SaleRegisterTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task ASpecialShelfCardSellsForTheSameFixedPrice()
+    public async Task ASpecialShelfCardSellsForItsMarketValue()
     {
-        await Stock(new CardSignature().With(Element.Lumines, 0.4f));
+        var card = await Stock(new CardSignature().With(Element.Lumines, 0.4f));
 
         var result = _register.Sell();
 
-        AssertThat(result.Price).IsEqual(CardPricing.FixedCardPrice);
-        AssertThat(_money.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
+        AssertThat(result.Price).IsEqual(StockMarketValue.ForCard(card));
+        AssertBool(result.Price >= CardValue.SpecialMultiplier * CardValue.MinimumCardPrice).IsTrue();
+        AssertThat(_money.Balance).IsEqual(StartingBalance + result.Price);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task SellingAShelfCardPaysTheAskingPrice()
+    {
+        var card = await Stock(new CardSignature().With(Element.Lumines, 0.4f));
+        var market = StockMarketValue.ForCard(card);
+        _shelf.PricingFor(_shelf.Slots.First())!.SetMarkup(50);
+        var asking = AskingPrice.For(market, 50);
+
+        var result = _register.Sell();
+
+        AssertThat(result.Status).IsEqual(SaleStatus.Sold);
+        AssertThat(result.Price).IsEqual(asking);
+        AssertBool(asking != market).IsTrue();
+        AssertThat(_money.Balance).IsEqual(StartingBalance + asking);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void SellingAHeldCardPaysTheMarketValueNotTheShelfMarkup()
+    {
+        _shelf.PricingFor(_shelf.Slots.First())!.SetMarkup(50);
+        var card = MakeCard(new CardSignature().With(Element.Lumines, 0.4f));
+        _holder.AddCard(card);
+
+        _register.Interact();
+
+        AssertThat(_money.Balance).IsEqual(StartingBalance + StockMarketValue.ForCard(card));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ASlotWithNoTagFallsBackToTheMarketValue()
+    {
+        _shelf.PricingFor(_shelf.Slots.First())!.QueueFree();
+        await ISceneRunner.SyncPhysicsFrame;
+        var card = await Stock(new CardSignature().With(Element.Lumines, 0.4f));
+
+        var result = _register.Sell();
+
+        AssertThat(result.Status).IsEqual(SaleStatus.Sold);
+        AssertThat(result.Price).IsEqual(StockMarketValue.ForCard(card));
     }
 
     [TestCase]
@@ -158,7 +203,7 @@ public class SaleRegisterTest
 
         _register.Interact();
 
-        AssertThat(_money.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
+        AssertThat(_money.Balance).IsEqual(StartingBalance + CardValue.MinimumCardPrice);
         AssertThat(_shelf.StockedCount).IsEqual(1);
     }
 
@@ -227,7 +272,7 @@ public class SaleRegisterTest
         var result = _register.Sell();
 
         AssertThat(result.Status).IsEqual(SaleStatus.Sold);
-        AssertThat(result.Price).IsEqual(CardPricing.FixedCardPrice);
+        AssertThat(result.Price).IsEqual(CardValue.MinimumCardPrice);
         AssertBool(shelf.StockedCards.Contains(booster)).IsTrue();
     }
 

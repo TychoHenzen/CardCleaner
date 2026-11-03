@@ -8,7 +8,8 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     The checkout counter. Interacting sells one card: the card the player is holding, otherwise the
-///     first sellable card on the nearest shelf. The price goes straight into <see cref="IMoneyService" />.
+///     first sellable card on the nearest shelf. A held card sells for its market value, a shelf card for its
+///     slot's asking price. The price goes straight into <see cref="IMoneyService" />.
 ///     A label above the counter shows the balance and the result of the last sale.
 /// </summary>
 public partial class SaleRegister : StaticBody3D, IInteractable, IDependent
@@ -123,7 +124,7 @@ public partial class SaleRegister : StaticBody3D, IInteractable, IDependent
             foreach (var card in shelf.StockedCards.ToArray())
             {
                 // Something that cannot be sold stays on the shelf, so try the next one.
-                var attempt = CardSale.TrySell(card, money, shelf.Release);
+                var attempt = CardSale.TrySell(card, money, shelf.Release, shelf.AskingPriceFor(card));
                 if (attempt.Succeeded)
                     return attempt;
                 result = attempt;

@@ -1,5 +1,6 @@
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Core.Enumeration;
@@ -36,9 +37,9 @@ public class CardSaleTest
         var result = CardSale.TrySell(card, _money);
 
         AssertThat(result.Status).IsEqual(SaleStatus.Sold);
-        AssertThat(result.Price).IsEqual(CardPricing.FixedCardPrice);
-        AssertThat(result.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
-        AssertThat(_money.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
+        AssertThat(result.Price).IsEqual(CardValue.MinimumCardPrice);
+        AssertThat(result.Balance).IsEqual(StartingBalance + CardValue.MinimumCardPrice);
+        AssertThat(_money.Balance).IsEqual(StartingBalance + CardValue.MinimumCardPrice);
         AssertBool(card.IsQueuedForDeletion()).IsTrue();
     }
 
@@ -64,7 +65,7 @@ public class CardSaleTest
         AssertBool(cardAliveDuringRelease).IsTrue();
         AssertThat(balanceDuringRelease).IsEqual(StartingBalance);
         AssertBool(card.IsQueuedForDeletion()).IsTrue();
-        AssertThat(_money.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
+        AssertThat(_money.Balance).IsEqual(StartingBalance + CardValue.MinimumCardPrice);
     }
 
     [TestCase]
@@ -78,7 +79,7 @@ public class CardSaleTest
 
         AssertThat(refused.Status).IsEqual(SaleStatus.NothingToSell);
         AssertThat(retry.Status).IsEqual(SaleStatus.Sold);
-        AssertThat(_money.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
+        AssertThat(_money.Balance).IsEqual(StartingBalance + CardValue.MinimumCardPrice);
     }
 
     [TestCase]
@@ -106,14 +107,28 @@ public class CardSaleTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void AnySignatureSellsForTheSameFixedPrice()
+    public void ADeeperSignatureSellsForItsMarketValue()
     {
         var card = MakeCard(new CardSignature().With(Element.Febris, 0.7f));
 
         var result = CardSale.TrySell(card, _money);
 
         AssertThat(result.Status).IsEqual(SaleStatus.Sold);
-        AssertThat(result.Price).IsEqual(CardPricing.FixedCardPrice);
+        AssertThat(result.Price).IsEqual(StockMarketValue.ForCard(card));
+        AssertBool(result.Price >= CardValue.SpecialMultiplier * CardValue.MinimumCardPrice).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TrySell_WithAnAskingPrice_PaysThatPrice()
+    {
+        var card = MakeCard(new CardSignature());
+
+        var result = CardSale.TrySell(card, _money, askingPrice: 25);
+
+        AssertThat(result.Status).IsEqual(SaleStatus.Sold);
+        AssertThat(result.Price).IsEqual(25);
+        AssertThat(_money.Balance).IsEqual(StartingBalance + 25);
     }
 
     [TestCase]
@@ -134,6 +149,52 @@ public class CardSaleTest
         AssertThat(_money.Balance).IsEqual(StartingBalance);
         AssertThat(released).IsEqual(0);
         AssertBool(card.IsQueuedForDeletion()).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ACardWithoutASignatureIsNotSellableEvenWithAnAskingPrice()
+    {
+        var card = new CardController { Name = "Card1" };
+        AddNode(card);
+        var released = 0;
+
+        var result = CardSale.TrySell(card, _money, _ =>
+        {
+            released++;
+            return true;
+        }, askingPrice: 25);
+
+        AssertThat(result.Status).IsEqual(SaleStatus.NotSellable);
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
+        AssertThat(released).IsEqual(0);
+        AssertBool(card.IsQueuedForDeletion()).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AContainerIsNotSellableEvenWithAnAskingPrice()
+    {
+        var container = GD.Load<PackedScene>("res://Scenes/Shop/Items/Booster.tscn").Instantiate<CardContainer>();
+        AddNode(container);
+
+        var result = CardSale.TrySell(container, _money, askingPrice: 25);
+
+        AssertThat(result.Status).IsEqual(SaleStatus.NotSellable);
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
+        AssertBool(container.IsQueuedForDeletion()).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AZeroAskingPriceIsNotSellable()
+    {
+        var card = MakeCard(new CardSignature());
+
+        var result = CardSale.TrySell(card, _money, askingPrice: 0);
+
+        AssertThat(result.Status).IsEqual(SaleStatus.NotSellable);
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
     }
 
     [TestCase]
@@ -160,7 +221,7 @@ public class CardSaleTest
         var retry = CardSale.TrySell(card, _money);
 
         AssertThat(retry.Status).IsEqual(SaleStatus.Sold);
-        AssertThat(_money.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
+        AssertThat(_money.Balance).IsEqual(StartingBalance + CardValue.MinimumCardPrice);
     }
 
     [TestCase]
@@ -174,7 +235,7 @@ public class CardSaleTest
 
         AssertThat(first.Status).IsEqual(SaleStatus.Sold);
         AssertThat(second.Status).IsEqual(SaleStatus.AlreadySold);
-        AssertThat(_money.Balance).IsEqual(StartingBalance + CardPricing.FixedCardPrice);
+        AssertThat(_money.Balance).IsEqual(StartingBalance + CardValue.MinimumCardPrice);
     }
 
     private static CardController MakeCard(CardSignature signature)

@@ -94,4 +94,14 @@ public partial class CardShelf : RigidBody3D, IUnpackTarget
     {
         return Slots.Any(slot => slot.ReleaseCard(card));
     }
+
+    /// <summary>
+    ///     The asking price of the slot tag that prices <paramref name="card" />, or null when no tag holds the card
+    ///     or its asking value is not above zero, so the sale falls back to the card's market value.
+    /// </summary>
+    public int? AskingPriceFor(RigidBody3D card)
+    {
+        var value = Pricings.FirstOrDefault(pricing => pricing.Holds(card))?.AskingValue ?? 0;
+        return value > 0 ? value : null;
+    }
 }
