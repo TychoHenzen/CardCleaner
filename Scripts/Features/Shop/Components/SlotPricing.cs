@@ -47,7 +47,7 @@ public partial class SlotPricing : StaticBody3D, IInteractable, ISaveable
     public int MarkupPercent { get; private set; } = AskingPrice.DefaultMarkupPercent;
 
     /// <summary>Derived from the current stock on every read, never cached.</summary>
-    public int MarketValue => StockMarketValue.For(Slot?.Cards.FirstOrDefault());
+    public int MarketValue => StockMarketValue.For(Slot is { Cards.Count: > 0 } slot ? slot.Cards[0] : null);
 
     public int AskingValue => MarketValue <= 0 ? 0 : AskingPrice.For(MarketValue, MarkupPercent);
 
@@ -110,7 +110,9 @@ public partial class SlotPricing : StaticBody3D, IInteractable, ISaveable
             HighlightMesh.Visible = false;
     }
 
-    /// <summary>Repaints the label from the current stock. Empty when the slot has nothing with a market price.</summary>
+    /// <summary>
+    ///     Repaints the label from the current stock. Empty when the slot has nothing with a market price.
+    /// </summary>
     public void Refresh()
     {
         if (TagLabel != null)

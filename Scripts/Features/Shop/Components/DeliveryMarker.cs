@@ -28,9 +28,7 @@ public partial class DeliveryMarker : Marker3D
     public const string FootprintGroup = "delivery_footprint";
 
     /// <summary>
-    ///     Group of a node whose shapes never count toward an item's footprint, whatever their kind (a price tag
-    ///     on a shelf: it is solid so the interaction ray can hit it, but a stack must rest on the shelf, not on it).
-    ///     Wins over <see cref="FootprintGroup" />.
+    ///     Group of a node whose shapes never take footprint, such as a shelf's solid price tag. Beats FootprintGroup.
     /// </summary>
     public const string NoFootprintGroup = "delivery_no_footprint";
 
