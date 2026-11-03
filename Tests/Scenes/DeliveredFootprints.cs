@@ -7,7 +7,8 @@ namespace CardCleaner.Tests.Scenes;
 /// <summary>
 /// The top-down footprints of delivered items: the world bounds of each enabled collision shape, so a scene test can
 /// assert that two items never share ground seen from above. The oracle is deliberately stricter than
-/// <c>DeliveryMarker</c>: every enabled shape counts, triggers included whatever their group, and heights are ignored.
+/// <c>DeliveryMarker</c>: every enabled shape counts, triggers included whatever their group, and shapes in
+/// DeliveryMarker.NoFootprintGroup, and heights are ignored.
 /// </summary>
 internal static class DeliveredFootprints
 {

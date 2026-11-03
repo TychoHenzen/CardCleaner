@@ -16,7 +16,7 @@ emission_energy_multiplier = 0.4
 material = SubResource("HighlightMaterial")
 size = Vector3(0.34, 0.14, 0.08)
 
-[node name="PriceTag" type="StaticBody3D" node_paths=PackedStringArray("TagLabel", "HighlightMesh")]
+[node name="PriceTag" type="StaticBody3D" node_paths=PackedStringArray("TagLabel", "HighlightMesh") groups=["delivery_no_footprint"]]
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("SlotPricing")

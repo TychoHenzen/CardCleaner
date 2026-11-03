@@ -11,7 +11,8 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     <see cref="FloorClearance" /> (when one is set) and overlap no shape of an item in the same height range. It
 ///     goes on the first free ground slot it fits, otherwise on the lowest stack it fits that keeps it under
 ///     <see cref="MaxStackHeight" />, and is refused when there is none. The footprint is the solid shapes plus the
-///     triggers under a node in <see cref="FootprintGroup" />; other triggers take no space.
+///     triggers under a node in <see cref="FootprintGroup" />, less every shape under a node in
+///     <see cref="NoFootprintGroup" />; other triggers take no space.
 /// </summary>
 public partial class DeliveryMarker : Marker3D
 {
@@ -25,6 +26,13 @@ public partial class DeliveryMarker : Marker3D
     ///     Group of a node whose trigger areas count toward an item's footprint. Triggers take up no space otherwise.
     /// </summary>
     public const string FootprintGroup = "delivery_footprint";
+
+    /// <summary>
+    ///     Group of a node whose shapes never count toward an item's footprint, whatever their kind (a price tag
+    ///     on a shelf: it is solid so the interaction ray can hit it, but a stack must rest on the shelf, not on it).
+    ///     Wins over <see cref="FootprintGroup" />.
+    /// </summary>
+    public const string NoFootprintGroup = "delivery_no_footprint";
 
     // Overlaps and height gaps shorter than this are touching, not overlapping, so a shared face refuses nothing.
     private const float OverlapEpsilon = 0.001f;
@@ -120,7 +128,8 @@ public partial class DeliveryMarker : Marker3D
             return null;
 
         // ASSUMPTION: the occupant's height range is taken from its footprint shapes only, so a trigger that does not
-        // count toward the footprint does not raise the item for the height check either.
+        // count toward the footprint, or a shape in NoFootprintGroup, does not raise the item for the height check
+        // either.
         var lowest = ItemBottom(shapes, occupant.GlobalPosition.Y) - GlobalPosition.Y;
         var highest = shapes.Max(box => box.End.Y) - GlobalPosition.Y;
         return new Occupant(shapes, lowest, highest);
@@ -235,19 +244,25 @@ public partial class DeliveryMarker : Marker3D
         return toItem;
     }
 
-    // Every enabled shape except an Area3D's: a trigger takes up no space, unless a node between it and the item is in
-    // FootprintGroup (a holder the player must see as belonging to this item, such as an arcade cabinet's).
+    // Every enabled shape except an Area3D's, which takes up no space, and except any shape under a node in
+    // NoFootprintGroup. A trigger under a node in FootprintGroup counts after all (a holder the player must see as
+    // belonging to this item, such as an arcade cabinet's).
     private static IEnumerable<CollisionShape3D> FootprintShapes(Node3D item) =>
         item.FindChildren("*", nameof(CollisionShape3D), true, false)
             .OfType<CollisionShape3D>()
             .Where(collider => collider is { Disabled: false, Shape: not null }
-                               && (collider.GetParent() is not Area3D || CountsAsFootprint(collider, item)));
+                               && !IsUnder(collider, item, NoFootprintGroup)
+                               && (collider.GetParent() is not Area3D || IsUnder(collider, item, FootprintGroup)));
 
-    private static bool CountsAsFootprint(Node collider, Node item)
+    /// <summary>
+    ///     Whether a node between <paramref name="collider" /> and <paramref name="item" /> is in
+    ///     <paramref name="group" />. The collider's own body counts; the item root does not.
+    /// </summary>
+    private static bool IsUnder(Node collider, Node item, string group)
     {
         for (var step = collider.GetParent(); step != null && step != item; step = step.GetParent())
         {
-            if (step.IsInGroup(FootprintGroup))
+            if (step.IsInGroup(group))
                 return true;
         }
 
