@@ -427,7 +427,7 @@ function Invoke-Build {
     $arguments = @('build', 'CardCleaner.csproj', '--configuration', 'Debug', '--no-restore')
     # Not -Wait: that also waits for every process the build leaves running, such as an MSBuild node kept for reuse,
     # until its idle timeout. Only dotnet itself is waited on, as Invoke-GodotWatched waits on Godot.
-    $build = Start-Process -FilePath $dotnet -ArgumentList $arguments -WorkingDirectory $RepositoryRoot -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
+    $build = Start-Process -WindowStyle Hidden -FilePath $dotnet -ArgumentList $arguments -WorkingDirectory $RepositoryRoot -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
     $null = $build.Handle # keeps ExitCode readable after exit
     $build.WaitForExit()
     if ($build.ExitCode -ne 0) {
