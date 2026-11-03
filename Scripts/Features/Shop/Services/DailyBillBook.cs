@@ -10,7 +10,7 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 ///     more constructor parameter here, registered under its own type. This class is built once, on its first resolve.
 /// </summary>
 [Service(typeof(IDailyBillBook))]
-public sealed class DailyBillBook : IDailyBillBook
+internal sealed class DailyBillBook : IDailyBillBook
 {
     private readonly IReadOnlyList<IDailyBillSource> _sources;
 
@@ -23,7 +23,9 @@ public sealed class DailyBillBook : IDailyBillBook
         _sources = sources;
     }
 
-    /// <summary>The lines of every source for <paramref name="day"/>, in constructor order, non-positive lines dropped.</summary>
+    /// <summary>
+    ///     The lines of every source for <paramref name="day"/>, in constructor order, non-positive lines dropped.
+    /// </summary>
     public IReadOnlyList<BillLine> LinesFor(int day) =>
         _sources
             .SelectMany(source => source.GetBillLines(day))

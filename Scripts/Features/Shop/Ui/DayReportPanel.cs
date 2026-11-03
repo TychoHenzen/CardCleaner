@@ -73,7 +73,9 @@ public partial class DayReportPanel : Control, IDependent
             ReleaseReport();
     }
 
-    /// <summary>Fills the report with the day's figures, shows it, and takes the cursor and the player's controls.</summary>
+    /// <summary>
+    ///     Fills the report with the day's figures, shows it, and takes the cursor and the player's controls.
+    /// </summary>
     public void ShowReport(DayReport report)
     {
         if (ReportLabel == null)
@@ -86,7 +88,8 @@ public partial class DayReportPanel : Control, IDependent
         if (IsInsideTree())
         {
             // ASSUMPTION (Low): if the PC order screen is open at closing time, closing that screen re-enables
-            // player control while this report is still up. The report's cursor claim keeps the button usable; not handled.
+            // player control while this report is still up. The report's cursor claim keeps the button usable;
+            // not handled.
             _player = GetTree().GetFirstNodeInGroup(PlayerGroup) as PlayerController;
             if (_player != null)
                 _player.ControlEnabled = false;

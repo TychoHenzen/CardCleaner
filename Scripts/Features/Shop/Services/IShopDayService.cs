@@ -38,6 +38,8 @@ public interface IShopDayService
     /// <summary>Opens the shop. Does nothing when it is already open.</summary>
     void OpenShop();
 
-    /// <summary>Closes the shop, charges the day's bills and starts the next day. Does nothing when it is closed.</summary>
+    /// <summary>
+    ///     Closes the shop, charges the day's bills and starts the next day. Does nothing when it is closed.
+    /// </summary>
     void CloseShop();
 }

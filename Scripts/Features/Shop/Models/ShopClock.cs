@@ -4,7 +4,8 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>
 ///     The shop's day clock. Time only moves while the shop is open; the day runs from open to close over
-///     <see cref="DayLengthSeconds" /> of simulated time, and <see cref="MinutesOfDay" /> maps that onto the clock face.
+///     <see cref="DayLengthSeconds" /> of simulated time, and <see cref="MinutesOfDay" /> maps that onto the
+///     clock face.
 /// </summary>
 public sealed class ShopClock
 {

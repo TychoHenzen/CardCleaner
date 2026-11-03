@@ -96,17 +96,37 @@ public partial class ShopDayService : Node, IShopDayService, IComplaintLog, IDep
     {
         if (_services == null)
         {
-            if (Money == null || Bills == null)
-                ILog.Error($"{Name} was not injected");
+            LogIfNotInjected();
             return;
         }
 
+        ResolveMoney(_services);
+        ResolveBills(_services);
+        ResolveSaveCommand(_services);
+    }
+
+    private void LogIfNotInjected()
+    {
+        if (Money == null || Bills == null)
+            ILog.Error($"{Name} was not injected");
+    }
+
+    private void ResolveMoney(IServiceResolver services)
+    {
         if (Money == null)
-            _services.Get<IMoneyService>(money => Money ??= money);
+            services.Get<IMoneyService>(money => Money ??= money);
+    }
+
+    private void ResolveBills(IServiceResolver services)
+    {
         if (Bills == null)
-            _services.Get<IDailyBillBook>(bills => Bills ??= bills);
+            services.Get<IDailyBillBook>(bills => Bills ??= bills);
+    }
+
+    private void ResolveSaveCommand(IServiceResolver services)
+    {
         if (SaveCommand == null)
-            _services.Get<ISaveGameCommand>(saveCommand => SaveCommand ??= saveCommand);
+            services.Get<ISaveGameCommand>(saveCommand => SaveCommand ??= saveCommand);
     }
 
     public override void _EnterTree()
@@ -178,10 +198,14 @@ public partial class ShopDayService : Node, IShopDayService, IComplaintLog, IDep
         TimeChanged?.Invoke(Day, _lastRaisedMinute);
     }
 
-    /// <summary>Records one complaint for the current day. A complaint counts whether or not the shop is open.</summary>
+    /// <summary>
+    ///     Records one complaint for the current day. A complaint counts whether or not the shop is open.
+    /// </summary>
     public void Add(string reason) => _tally.Add(reason);
 
-    /// <summary>Restores a saved day: the shop is closed, the debt and complaints are set back, takings are zero.</summary>
+    /// <summary>
+    ///     Restores a saved day: the shop is closed, the debt and complaints are set back, takings are zero.
+    /// </summary>
     public void Restore(int day, int debt)
     {
         Clock.Restore(day);
