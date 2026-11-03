@@ -3,23 +3,6 @@ using CardCleaner.Scripts.Features.Packs.Models;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
-/// <summary>The kinds of shelf a shop slot can sit on.</summary>
-public enum ShelfKind
-{
-    CardShelf,
-    ProductShelf,
-    StorageRack
-}
-
-/// <summary>What a slot can be stocked with: a loose card, or a container of the three container kinds.</summary>
-public enum StockKind
-{
-    Card,
-    Booster,
-    Pack,
-    Box
-}
-
 /// <summary>
 ///     Which stock each shelf kind takes. A card shelf takes cards, a product shelf boosters and packs, and a
 ///     storage rack boxes, packs and boosters. Pure rules, so the table is tested without a scene.

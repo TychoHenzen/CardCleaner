@@ -69,7 +69,7 @@ public class ShopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TerminalCatalogHasShelfPackingStationAndCardboardBox()
+    public void TerminalCatalogOffersFiveItems()
     {
         AssertThat(_terminal.Catalog!.Items.Select(i => i.Id).ToArray()).IsEqual(ExpectedItems);
         AssertThat(_ui.ItemRowCount).IsEqual(ExpectedItems.Length);
