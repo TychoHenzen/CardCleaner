@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Tests.Features.Shop;
 
 namespace CardCleaner.Tests.Features.Shop.Services;
 
@@ -10,8 +11,6 @@ namespace CardCleaner.Tests.Features.Shop.Services;
 [RequireGodotRuntime]
 public class InstantCheckoutTest
 {
-    private static ShelfOffer Offer(string id, int asking, int market) => new(id, asking, market);
-
     [TestCase]
     [TestCategory("Unit")]
     public static void BasketOf30And12AddsFortyTwoOnce()
@@ -19,7 +18,7 @@ public class InstantCheckoutTest
         var fake = new FakeMoney();
         var checkout = new InstantCheckout(fake);
 
-        checkout.Checkout(new CheckoutBasket(new[] { Offer("a", 30, 30), Offer("b", 12, 12) }));
+        checkout.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card, 30, 12));
 
         AssertThat(fake.Added.SequenceEqual(new[] { 42 })).IsTrue();
     }
@@ -31,7 +30,7 @@ public class InstantCheckoutTest
         var fake = new FakeMoney();
         var checkout = new InstantCheckout(fake);
 
-        checkout.Checkout(new CheckoutBasket(Array.Empty<ShelfOffer>()));
+        checkout.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card));
 
         AssertThat(fake.Added.Count).IsEqual(0);
     }
@@ -43,18 +42,36 @@ public class InstantCheckoutTest
         var fake = new FakeMoney();
         var checkout = new InstantCheckout(fake);
 
-        checkout.Checkout(new CheckoutBasket(new[] { Offer("a", 0, 4) }));
+        checkout.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card, 0));
 
         AssertThat(fake.Added.Count).IsEqual(0);
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void NullBasketThrows()
+    public static void NullCustomerThrows()
     {
         var checkout = new InstantCheckout(new FakeMoney());
 
         AssertThrown(() => checkout.Checkout(null!)).IsInstanceOf<ArgumentNullException>();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void EveryCustomerIsToldToLeaveOnce()
+    {
+        var checkout = new InstantCheckout(new FakeMoney());
+        var withItems = new FakeCheckoutCustomer(PaymentMethod.Card, 30, 12);
+        var empty = new FakeCheckoutCustomer(PaymentMethod.Cash);
+        var zeroPriced = new FakeCheckoutCustomer(PaymentMethod.Cash, 0);
+
+        checkout.Checkout(withItems);
+        checkout.Checkout(empty);
+        checkout.Checkout(zeroPriced);
+
+        AssertThat(withItems.LeaveCount).IsEqual(1);
+        AssertThat(empty.LeaveCount).IsEqual(1);
+        AssertThat(zeroPriced.LeaveCount).IsEqual(1);
     }
 
     private sealed class FakeMoney : IMoneyService

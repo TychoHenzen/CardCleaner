@@ -6,5 +6,6 @@ public enum CustomerState
     Entering,
     Browsing,
     ToCounter,
+    Queued,
     Leaving,
 }

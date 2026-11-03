@@ -10,10 +10,11 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     A shop customer. It walks its planned picks on the baked navigation mesh, takes or refuses each one, pays
-///     at the counter through <see cref="Handoff" />, walks to the despawn point and frees itself.
+///     A shop customer. It walks its planned picks on the baked navigation mesh, takes or refuses each one, hands
+///     its basket to the checkout through <see cref="Handoff" />, waits in line, walks to the despawn point and
+///     frees itself.
 /// </summary>
-public partial class Customer : CharacterBody3D
+public partial class Customer : CharacterBody3D, ICheckoutCustomer
 {
     private const float DefaultSpeed = 1.6f;
     private const float DefaultStuckSeconds = 8f;
@@ -41,6 +42,7 @@ public partial class Customer : CharacterBody3D
         None,
         ToPick,
         ToCounter,
+        ToQueue,
         ToDespawn,
     }
 
@@ -190,8 +192,9 @@ public partial class Customer : CharacterBody3D
                 WalkToNextPick();
                 break;
             case Walk.ToCounter:
-                Pay();
-                StartLeaving();
+                HandOverBasket();
+                break;
+            case Walk.ToQueue:
                 break;
             case Walk.ToDespawn:
                 Finish();
@@ -219,20 +222,6 @@ public partial class Customer : CharacterBody3D
         // Out of the tree, the body has no physics presence, so the slot's Area cannot claim it again.
         body.GetParent()?.RemoveChild(body);
         _carried.Add(new Carried(body, slot, pick.Offer));
-    }
-
-    private void Pay()
-    {
-        if (Handoff is null)
-        {
-            ILog.Error($"{Name} has no checkout handoff; it returns what it carries.");
-            ReturnCarried();
-            return;
-        }
-
-        var basket = new CheckoutBasket(_carried.Select(item => item.Offer).ToList());
-        FreeCarried();
-        Handoff.Checkout(basket);
     }
 
     private void ReturnCarried()
