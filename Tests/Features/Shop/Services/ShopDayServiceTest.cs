@@ -16,7 +16,12 @@ public class ShopDayServiceTest
     [TestCategory("Unit")]
     public void ClockBuildsFromExportsWithoutATree()
     {
-        var service = AutoFree(new ShopDayService { OpeningMinutes = 600, ClosingMinutes = 660, DayLengthSeconds = 60 });
+        var service = AutoFree(new ShopDayService
+        {
+            OpeningMinutes = 600,
+            ClosingMinutes = 660,
+            DayLengthSeconds = 60
+        });
 
         service.OpenShop();
         AssertThat(service.MinutesOfDay).IsEqual(600);
