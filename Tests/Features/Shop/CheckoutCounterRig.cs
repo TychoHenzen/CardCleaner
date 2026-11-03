@@ -21,15 +21,22 @@ public sealed class CheckoutCounterRig
     private const float ItemSpotX = 0.4f;
     private const float ItemSpotY = 1.15f;
 
-    private CheckoutCounterRig(MoneyService money, CheckoutCounter counter, Marker3D[] slots, Marker3D[] itemSpots)
+    private CheckoutCounterRig(
+        MoneyService money,
+        OpenProgression progression,
+        CheckoutCounter counter,
+        Marker3D[] slots,
+        Marker3D[] itemSpots)
     {
         Money = money;
+        Progression = progression;
         Counter = counter;
         Slots = slots;
         ItemSpots = itemSpots;
     }
 
     public MoneyService Money { get; }
+    public OpenProgression Progression { get; }
     public CheckoutCounter Counter { get; }
     public Marker3D[] Slots { get; }
     public Marker3D[] ItemSpots { get; }
@@ -67,8 +74,10 @@ public sealed class CheckoutCounterRig
         world.AddChild(money);
         world.AddChild(counter);
         AddNode(world);
+        var progression = new OpenProgression();
         counter.Money = money;
+        counter.Progression = progression;
         await ISceneRunner.SyncPhysicsFrame;
-        return new CheckoutCounterRig(money, counter, slots, itemSpots);
+        return new CheckoutCounterRig(money, progression, counter, slots, itemSpots);
     }
 }
