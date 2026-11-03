@@ -90,6 +90,8 @@ public class ShopSignTest
         public int Debt { get; set; }
         public int Takings { get; set; }
         public int MinutesOfDay { get; set; } = 480;
+        public int OpeningMinute { get; set; } = 480;
+        public int ClosingMinute { get; set; } = 1080;
         public int OpenCalls { get; private set; }
         public int CloseCalls { get; private set; }
 

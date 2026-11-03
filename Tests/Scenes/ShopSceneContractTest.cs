@@ -19,7 +19,7 @@ public class ShopSceneContractTest
     private static readonly string[] AreaNames =
         ["Storefront", "Storage", "Backoffice", "RightStorage", "ExpansionLot"];
     private static readonly string[] ShopMarkerNames =
-        ["PcLocation", "SeamLocation", "DeliveryPoint", "ShelfSlotsArea", "ExpansionLot1"];
+        ["PcLocation", "SeamLocation", "DeliveryPoint", "ShelfSlotsArea", "ExpansionLot1", "CustomerCounter"];
     private static readonly string[] StreetMarkerNames = ["CustomerSpawn", "CustomerDespawn"];
     private const float RoadDoorX = 18.05f;
     private const string BackofficeCatalogPath = "res://Data/Shop/BackofficeCatalog.tres";
@@ -285,6 +285,26 @@ public class ShopSceneContractTest
             AssertThat(item).IsNotNull();
             AssertThat(item!.Scene).IsNotNull();
         }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CustomerSpawnerIsWiredUnderServices()
+    {
+        var spawner = _shop.GetNode<CustomerSpawner>("Services/CustomerSpawner");
+
+        AssertThat(spawner.CustomerScene).IsNotNull();
+        AssertThat(spawner.CustomersPerDay).IsEqual(6);
+        AssertThat(spawner.SpawnRoot).IsSame(_shop.GetNode("World"));
+        AssertThat(spawner.SpawnMarker).IsSame(_shop.GetNode("World/Markers/CustomerSpawn"));
+        AssertThat(spawner.DespawnMarker).IsSame(_shop.GetNode("World/Markers/CustomerDespawn"));
+        AssertThat(spawner.CounterMarker).IsSame(_shop.GetNode("World/Markers/CustomerCounter"));
+
+        var customer = spawner.CustomerScene!.Instantiate<Customer>();
+        AssertThat(customer.GetNode("Agent")).IsInstanceOf<NavigationAgent3D>();
+        AssertThat(customer.CollisionLayer).IsEqual(0u);
+        AssertThat(customer.CollisionMask).IsEqual(0u);
+        customer.Free();
     }
 
     private static System.Collections.Generic.IEnumerable<Node> Descendants(Node root)

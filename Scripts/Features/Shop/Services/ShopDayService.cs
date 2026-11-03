@@ -78,6 +78,10 @@ public partial class ShopDayService : Node, IShopDayService, IComplaintLog, IDep
 
     public int MinutesOfDay => (int)Clock.MinutesOfDay;
 
+    public int OpeningMinute => (int)OpeningMinutes;
+
+    public int ClosingMinute => (int)ClosingMinutes;
+
     public event Action? Opened;
 
     public event Action<DayReport>? Closed;

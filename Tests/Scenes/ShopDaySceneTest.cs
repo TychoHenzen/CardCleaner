@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
@@ -37,6 +38,7 @@ public class ShopDaySceneTest
         TestServices.Container.RegisterSingleton<IShopDayService>(_service);
         TestServices.Container.RegisterSingleton<IComplaintLog>(_service);
         TestServices.Container.RegisterSingleton<IDailyBillBook>(new DailyBillBook(new RentBillSource()));
+        TestServices.Container.RegisterSingleton(RandomSources.Create(400UL));
 
         _sign = _shop.GetNode<ShopSign>("World/Storefront/ShopSign");
         _interaction = _shop.GetNode<InteractionSystem>("Player/Head/Camera3D/InteractionSystem");

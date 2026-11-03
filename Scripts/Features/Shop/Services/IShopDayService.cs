@@ -23,6 +23,12 @@ public interface IShopDayService
     /// <summary>Whole minutes of the clock face.</summary>
     int MinutesOfDay { get; }
 
+    /// <summary>The clock face's opening minute.</summary>
+    int OpeningMinute { get; }
+
+    /// <summary>The clock face's closing minute.</summary>
+    int ClosingMinute { get; }
+
     /// <summary>Raised when the shop opens.</summary>
     event Action Opened;
 

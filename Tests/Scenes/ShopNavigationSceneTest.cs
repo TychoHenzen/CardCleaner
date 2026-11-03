@@ -29,7 +29,6 @@ public class ShopNavigationSceneTest
     private const float RearDoorEastX = 14.05f;
     private const float AgentStep = 0.1f;
     private const int AgentMaxFrames = 600;
-    private const int SyncMaxFrames = 60;
 
     private Node3D _shop = null!;
     private ShopNavigationRegion _region = null!;
@@ -100,6 +99,20 @@ public class ShopNavigationSceneTest
     public void ShelfToDespawnHasAPath()
     {
         AssertBool(_region.Reaches(_shelf, _despawn)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void StreetToCounterHasAPath()
+    {
+        AssertBool(_region.Reaches(_spawn, Marker("CustomerCounter"))).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CounterToDespawnHasAPath()
+    {
+        AssertBool(_region.Reaches(Marker("CustomerCounter"), _despawn)).IsTrue();
     }
 
     [TestCase]
@@ -183,38 +196,7 @@ public class ShopNavigationSceneTest
         await WaitForBakeSync(regionBefore);
     }
 
-    /// <summary>
-    /// Waits for the server to apply a bake: first the region's iteration id leaves <paramref name="regionBefore" />
-    /// (the map id seen on that frame is kept), then the map id passes the kept value on a later frame. The map id
-    /// alone is not enough: it can move on the frame the region changes while the map still holds no polygons.
-    /// </summary>
-    private async Task WaitForBakeSync(uint regionBefore)
-    {
-        var region = _region.GetRid();
-        bool regionChanged = false;
-        uint mapAtRegion = 0;
-        for (int frame = 0; frame < SyncMaxFrames; frame++)
-        {
-            uint mapNow = NavigationServer3D.MapGetIterationId(_map);
-            if (regionChanged && mapNow > mapAtRegion)
-            {
-                return;
-            }
-
-            if (!regionChanged && NavigationServer3D.RegionGetIterationId(region) != regionBefore)
-            {
-                regionChanged = true;
-                mapAtRegion = mapNow;
-            }
-
-            await ISceneRunner.SyncPhysicsFrame;
-        }
-
-        throw new InvalidOperationException(
-            $"navigation did not sync after {SyncMaxFrames} physics frames: region id "
-            + $"{NavigationServer3D.RegionGetIterationId(region)} (before {regionBefore}), map id "
-            + $"{NavigationServer3D.MapGetIterationId(_map)} (at region change {mapAtRegion})");
-    }
+    private Task WaitForBakeSync(uint regionBefore) => ShopNavigationRig.WaitForBakeSync(_region, regionBefore);
 
     /// <summary>
     /// X of every point where the path crosses the plane at the given z (a segment end on it counts).
@@ -242,19 +224,8 @@ public class ShopNavigationSceneTest
     private static bool CrossesNear(Vector3[] path, float z, float x) =>
         CrossingXs(path, z).Any(crossing => MathF.Abs(crossing - x) <= DoorPassDistance);
 
-    /// <summary>A solid box across a street-wall door opening (3 m wide, 2 m high, 0.5 m deep at z=12).</summary>
-    private StaticBody3D AddDoorBlocker(string name, float doorX)
-    {
-        var blocker = new StaticBody3D { Name = name, Position = new Vector3(doorX, 1f, StreetDoorZ) };
-        blocker.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = new Vector3(3f, 2f, 0.5f) } });
-        _shop.GetNode("World/Walls").AddChild(blocker);
-        return blocker;
-    }
+    private StaticBody3D AddDoorBlocker(string name, float doorX) =>
+        ShopNavigationRig.AddDoorBlocker(_shop, name, doorX);
 
-    /// <summary>Removes and frees at once (not QueueFree), so the next bake cannot still see the blocker.</summary>
-    private static void RemoveBlocker(StaticBody3D blocker)
-    {
-        blocker.GetParent().RemoveChild(blocker);
-        blocker.Free();
-    }
+    private static void RemoveBlocker(StaticBody3D blocker) => ShopNavigationRig.RemoveBlocker(blocker);
 }
