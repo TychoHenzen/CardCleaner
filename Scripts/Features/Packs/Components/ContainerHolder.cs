@@ -40,6 +40,10 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
     private uint _savedLayer;
     private uint _savedMask;
 
+    // The unpack target found by the last physics frame while a container was held, or null. OpenHeld reads it, so Q
+    // never queries physics space from its input callback, where Godot rejects the query.
+    private IUnpackTarget? _unpackTarget;
+
     public override bool _PropertyCanRevert(StringName property)
     {
         return property.ToString() switch
@@ -67,7 +71,16 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
 
     public void Inject(IServiceResolver services) => _services = services;
 
-    public override void _EnterTree() => AddToGroup(GroupName);
+    public override void _EnterTree()
+    {
+        AddToGroup(GroupName);
+        SetPhysicsProcess(true);
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        _unpackTarget = HeldContainer() != null ? FindUnpackTarget() : null;
+    }
 
     public override void _Ready()
     {
@@ -147,9 +160,11 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         var container = HeldContainer();
         if (container == null) return false;
 
-        // The target is looked for from the hand before the drop, and the drop comes first because a held container
-        // cannot be opened (CanInteract is false while held).
-        var target = FindUnpackTarget();
+        // The target is the one the last physics frame cached while the container was held. It is cleared here so a
+        // later Q never reuses it. The drop comes first because a held container cannot be opened (CanInteract is
+        // false while held).
+        var target = _unpackTarget;
+        _unpackTarget = null;
         Drop();
         return target?.TryUnpack(container) == true || container.Open();
     }

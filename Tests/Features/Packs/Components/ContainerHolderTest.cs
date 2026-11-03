@@ -34,7 +34,7 @@ public partial class ContainerHolderTest
     }
 
     [BeforeTest]
-    public async Task Setup()
+    public void Setup()
     {
         _world = Assertions.AddNode(new Node3D());
         // The hand anchor is the camera in the game (CardHighlighter passes it), so a held container's parent is a
@@ -55,10 +55,6 @@ public partial class ContainerHolderTest
         _holder = TestServices.Inject(new ContainerHolder());
         _world.AddChild(_holder);
         _holder.SetReferences(_hand);
-
-        // The hand's world has no physics space to query until one physics frame has run, so the unpack ray
-        // (FindUnpackTarget) needs this frame before a cast.
-        await ISceneRunner.SyncPhysicsFrame;
     }
 
     [AfterTest]
@@ -353,6 +349,7 @@ public partial class ContainerHolderTest
         var box = Make(BoxScene);
         _holder.TryPickUp(box);
         await ISceneRunner.SyncPhysicsFrame;
+        await ISceneRunner.SyncPhysicsFrame;
 
         AssertBool(_holder.OpenHeld()).IsTrue();
 
@@ -368,6 +365,7 @@ public partial class ContainerHolderTest
         var target = MakeTarget(accepts: false);
         var box = Make(BoxScene);
         _holder.TryPickUp(box);
+        await ISceneRunner.SyncPhysicsFrame;
         await ISceneRunner.SyncPhysicsFrame;
 
         AssertBool(_holder.OpenHeld()).IsTrue();

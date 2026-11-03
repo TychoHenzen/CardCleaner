@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Components;
@@ -163,6 +164,46 @@ public class ShelfUnpackTest
         await Frames(OpenFrames);
 
         AssertThat(rack.StockedCount).IsEqual(4);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ABoxDroppedOnACardShelfSlotIsNotLocked()
+    {
+        var shelf = AddShelf(CardShelfScene);
+        var slot = shelf.Slots.First();
+        var box = MakeContainer(BoxScene, Seed);
+        box.Freeze = false;
+
+        slot.Area.EmitSignal(Area3D.SignalName.BodyEntered, box);
+        await Frames(2);
+
+        AssertBool(box.Freeze).IsFalse();
+        AssertThat(box.GetParent()).IsNotEqual(slot);
+        AssertThat(shelf.StockedCount).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void OpenOntoAShelfWithZeroFreeSlotsPlacesNothingAndSpillsEight()
+    {
+        var box = MakeContainer(BoxScene, Seed);
+
+        AssertBool(box.OpenOnto(Array.Empty<DeckSlot>())).IsTrue();
+        AssertThat(box.PlacedCount).IsEqual(0);
+        AssertThat(box.PendingCount).IsEqual(8);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void OpenOntoAShelfWithThreeFreeSlotsPlacesThreeAndSpillsFive()
+    {
+        var shelf = AddShelf();
+        var box = MakeContainer(BoxScene, Seed);
+
+        AssertBool(box.OpenOnto(FreeSlots(shelf))).IsTrue();
+        AssertThat(box.PlacedCount).IsEqual(3);
+        AssertThat(box.PendingCount).IsEqual(5);
     }
 
     private CardShelf AddShelf(string scenePath = ProductShelfScene)

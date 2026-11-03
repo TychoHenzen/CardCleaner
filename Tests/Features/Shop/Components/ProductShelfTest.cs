@@ -87,6 +87,25 @@ public class ProductShelfTest
         AssertThat(_shelf.StockedCount).IsEqual(0);
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ABoosterDroppedOnAFullProductSlotIsEjected()
+    {
+        var slot = _shelf.Slots.First();
+        var stocked = MakeContainer(BoosterScene);
+        await Drop(slot, stocked);
+        var extra = MakeContainer(BoosterScene);
+        extra.Freeze = false;
+
+        await Drop(slot, extra);
+
+        AssertBool(GodotObject.IsInstanceValid(extra)).IsTrue();
+        AssertBool(extra.Freeze).IsFalse();
+        AssertBool(slot.Cards.Contains(extra)).IsFalse();
+        AssertThat(slot.Cards.Count).IsEqual(1);
+        AssertThat(_shelf.StockedCount).IsEqual(1);
+    }
+
     private static CardContainer MakeContainer(string scenePath)
     {
         return AddNode(GD.Load<PackedScene>(scenePath).Instantiate<CardContainer>());

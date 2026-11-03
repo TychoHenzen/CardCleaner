@@ -1206,15 +1206,14 @@ ArtScale = 80
 Placeholder = NodePath("Placeholder")
 
 [node name="Placeholder" type="MeshInstance3D" parent="World/Walls/LotOuterLeft/Panel_4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
+mesh = SubResource("WallBoxMesh")
 
 [node name="ProductShelf" parent="World/Storefront" instance=ExtResource("ProductShelf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 10.5)
 
 [node name="StorageRack" parent="World/RightStorage" instance=ExtResource("StorageRack")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, -6.5)
-
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
-mesh = SubResource("WallBoxMesh")
 
 [node name="LotBack" type="StaticBody3D" parent="World/Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -8)
