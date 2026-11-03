@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using Godot;
+using Saveable;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
@@ -12,10 +13,11 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     interaction. The tag sits on the interaction layer and collides with nothing, so a ray hits it separately
 ///     from the card in front of it.
 /// </summary>
-public partial class SlotPricing : StaticBody3D, IInteractable
+public partial class SlotPricing : StaticBody3D, IInteractable, ISaveable
 {
     private const uint InteractableLayerBit = 4;
     private const float DefaultInteractionRange = 3.0f;
+    private const string MarkupKey = "markup";
 
     private DeckSlot? _slot;
 
@@ -71,6 +73,22 @@ public partial class SlotPricing : StaticBody3D, IInteractable
     }
 
     public override void _ExitTree() => Unsubscribe();
+
+    // The id is built from the node path, so each tag keeps its own id across a restart. Outside the tree the
+    // path does not exist yet, so the name stands in; the tree walk only visits nodes that are in the tree.
+    public StringName UniqueID => IsInsideTree() ? $"slot_price:{GetPath()}" : $"slot_price:{Name}";
+
+    public void Save(NodeSave save) => save.SetOrAddProperty(MarkupKey, MarkupPercent);
+
+    public void Load(NodeSave save)
+    {
+        // Read as object: a typed read of a corrupt value throws, and that would stop the rest of the tree load.
+        var percent = AskingPrice.DefaultMarkupPercent;
+        if (save.TryGetProperty<object>(MarkupKey, out var raw) && raw is long value
+            && value >= int.MinValue && value <= int.MaxValue)
+            percent = (int)value;
+        SetMarkup(percent);
+    }
 
     public void Interact() => SetMarkup(AskingPrice.NextMarkup(MarkupPercent));
 
