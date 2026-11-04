@@ -38,6 +38,8 @@ public sealed class UnlockCatalog
     {
         // ASSUMPTION: level 1 for the seven ids that are open today keeps today's behavior; the levels are data.
         new UnlockEntry("shelf", UnlockKind.Furniture, 1),
+        // ASSUMPTION (Low): level 1 like the raw shelf; retune in data.
+        new UnlockEntry("shelf_unit", UnlockKind.Furniture, 1),
         new UnlockEntry("cardboard_box", UnlockKind.Product, 1),
         // ASSUMPTION: bulk_packing_station is the one row at level 2, per the issue's C2 rule; retune in data.
         new UnlockEntry("bulk_packing_station", UnlockKind.Furniture, 2),

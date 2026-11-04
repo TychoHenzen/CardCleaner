@@ -20,7 +20,7 @@ public class UnlockCatalogTest
         AssertThat(catalog.RequiredLevel("bulk_packing_station")).IsEqual(2);
         foreach (var id in new[]
                  {
-                     "shelf", "cardboard_box", "product_shelf", "storage_rack",
+                     "shelf", "shelf_unit", "cardboard_box", "product_shelf", "storage_rack",
                      "conveyor", "arcade_cabinet", "wiring",
                  })
         {
