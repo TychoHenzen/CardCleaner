@@ -242,19 +242,25 @@ public class ShopCarryingPoseSceneTest
     }
 
     // A press and a release through the input pipeline, with a physics frame between them so the press
-    // is not held down into the next click.
+    // is not held down into the next click. Input buffers a parsed event until the next process frame, and a
+    // slow frame runs several physics steps in one iteration, so the test would read its result before the
+    // press arrived; each event is therefore flushed to the nodes as it is sent.
     private static async Task ClickAsync(MouseButton button)
     {
         Input.ParseInputEvent(new InputEventMouseButton { ButtonIndex = button, Pressed = true });
+        Input.FlushBufferedEvents();
         await ISceneRunner.SyncPhysicsFrame;
         Input.ParseInputEvent(new InputEventMouseButton { ButtonIndex = button, Pressed = false });
+        Input.FlushBufferedEvents();
     }
 
     private static async Task PressKeyAsync(Key key)
     {
         Input.ParseInputEvent(new InputEventKey { Keycode = key, Pressed = true });
+        Input.FlushBufferedEvents();
         await ISceneRunner.SyncPhysicsFrame;
         Input.ParseInputEvent(new InputEventKey { Keycode = key, Pressed = false });
+        Input.FlushBufferedEvents();
     }
 
     private static async Task PhysicsFrames(int count)

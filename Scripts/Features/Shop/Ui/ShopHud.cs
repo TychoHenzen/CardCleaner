@@ -6,7 +6,8 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Ui;
 
 /// <summary>
-///     The shop's corner HUD: the balance, the day number and the clock face. It never takes mouse input.
+///     The shop's corner HUD: the balance, the day number, the clock face and the shop level bar. It never takes
+///     mouse input.
 /// </summary>
 public partial class ShopHud : Control, IDependent
 {
@@ -21,6 +22,8 @@ public partial class ShopHud : Control, IDependent
     public Label? DayLabel { get; private set; }
 
     public Label? TimeLabel { get; private set; }
+
+    public LevelBar? LevelBar { get; private set; }
 
     /// <summary>Resolved through the injected service resolver at startup; assignable directly in tests.</summary>
     public IShopDayService? DayService
@@ -67,11 +70,15 @@ public partial class ShopHud : Control, IDependent
         box.AddChild(MoneyLabel);
         box.AddChild(DayLabel);
         box.AddChild(TimeLabel);
+        var levelBar = new LevelBar { Name = "LevelBar" };
+        LevelBar = levelBar;
+        box.AddChild(levelBar);
 
         if (_services != null)
         {
             _services.Get<IShopDayService>(service => DayService ??= service);
             _services.Get<IMoneyService>(money => Money ??= money);
+            _services.Get<IShopProgression>(progression => levelBar.Progression ??= progression);
         }
 
         RefreshMoney();

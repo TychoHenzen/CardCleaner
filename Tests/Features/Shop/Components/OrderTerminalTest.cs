@@ -16,6 +16,8 @@ public class OrderTerminalTest
     private const int StartingBalance = 150;
     private const int CheapPrice = 100;
     private const int DearPrice = 400;
+    private const int LockedPrice = 10;
+    private const string LockedId = "locked";
 
     private Node3D _world = null!;
     private MoneyService _money = null!;
@@ -31,9 +33,13 @@ public class OrderTerminalTest
         var marker = new DeliveryMarker();
         _world.AddChild(marker);
         _money = new MoneyService { StartingBalance = StartingBalance };
-        _ordering = new OrderingService { DeliveryPoint = marker, SpawnRoot = _world, Money = _money };
+        _ordering = new OrderingService
+            { DeliveryPoint = marker, SpawnRoot = _world, Money = _money, Progression = new OpenProgression(LockedId) };
         _ui = new OrderTerminalUi();
-        _terminal = new OrderTerminal { Catalog = MakeCatalog(("cheap", CheapPrice), ("dear", DearPrice)), Ui = _ui };
+        _terminal = new OrderTerminal
+        {
+            Catalog = MakeCatalog(("cheap", CheapPrice), ("dear", DearPrice), (LockedId, LockedPrice)), Ui = _ui
+        };
         _cursor = new CursorOwner();
         _world.AddChild(_money);
         _world.AddChild(_ordering);
@@ -59,7 +65,7 @@ public class OrderTerminalTest
     [TestCategory("Unit")]
     public void UiRowsAreBuiltFromTheCatalogExport()
     {
-        AssertThat(_ui.ItemRowCount).IsEqual(2);
+        AssertThat(_ui.ItemRowCount).IsEqual(3);
 
         _ui.Populate(MakeCatalog(("a", 1), ("b", 2), ("c", 3)));
 
@@ -79,7 +85,7 @@ public class OrderTerminalTest
         workshopUi.PressItem(0);
 
         AssertThat(workshopUi.ItemRowCount).IsEqual(1);
-        AssertThat(_ui.ItemRowCount).IsEqual(2);
+        AssertThat(_ui.ItemRowCount).IsEqual(3);
         AssertThat(_money.Balance).IsEqual(StartingBalance - 30);
         AssertThat(_ordering.DeliveredCount).IsEqual(1);
     }
@@ -147,6 +153,21 @@ public class OrderTerminalTest
         AssertThat(_money.Balance).IsEqual(StartingBalance);
         AssertThat(_ordering.DeliveredCount).IsEqual(0);
         AssertBool(_ui.MessageText.Contains("Not enough money")).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void PressingALockedItemShowsTheLockMessageAndChangesNothing()
+    {
+        _terminal.Interact();
+
+        _ui.PressItem(2);
+
+        AssertThat(_terminal.LastOrder?.Status).IsEqual(OrderStatus.Locked);
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
+        AssertThat(_ordering.DeliveredCount).IsEqual(0);
+        AssertThat(_ui.MessageText).IsEqual("locked is locked. Reach a higher shop level to order it.");
+        AssertBool(_ui.MessageText.Contains("cannot be ordered right now")).IsFalse();
     }
 
     [TestCase]
@@ -287,7 +308,10 @@ public class OrderTerminalTest
 
         var items = new OrderItem[entries.Length];
         for (var i = 0; i < entries.Length; i++)
-            items[i] = new OrderItem { Id = entries[i].Id, DisplayName = entries[i].Id, Price = entries[i].Price, Scene = packed };
+            items[i] = new OrderItem
+            {
+                Id = entries[i].Id, DisplayName = entries[i].Id, Price = entries[i].Price, Scene = packed
+            };
         return new OrderCatalog { Items = items };
     }
 }

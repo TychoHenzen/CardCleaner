@@ -12,7 +12,8 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 /// <summary>
 ///     The checkout counter. Customers queue in front of it and hand over their baskets. The front customer's
 ///     items are laid on the counter, the player scans each one, then takes payment by card or cash. Payment adds
-///     the basket total to <see cref="IMoneyService" /> once, then the next customer comes forward.
+///     the basket total to <see cref="IMoneyService" /> once and awards shop XP for it once, then the next customer
+///     comes forward.
 /// </summary>
 [Service(typeof(ICheckoutHandoff))]
 public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, ICheckoutHandoff
@@ -23,8 +24,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     private const string ItemPrefix = "ItemSpot";
     private const string UnavailableMessage = "The register is unavailable right now.";
 
-    private readonly List<ICheckoutCustomer> _queue = new();
-    private readonly Dictionary<ICheckoutCustomer, int> _slotOf = new();
+    private readonly CheckoutQueue _queue = new();
     private List<CheckoutItemProp> _props = new();
     private IServiceResolver? _services;
     private IMoneyService? _money;
@@ -42,7 +42,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     public float InteractionRange { get; set; } = DefaultInteractionRange;
 
     /// <summary>The customer at the front of the queue, or null when nobody is waiting.</summary>
-    public ICheckoutCustomer? Front => _queue.Count > 0 ? _queue[0] : null;
+    public ICheckoutCustomer? Front => _queue.Front;
 
     /// <summary>The sale in progress for the front customer, or null when there is none.</summary>
     public CheckoutSession? Session { get; private set; }
@@ -70,6 +70,9 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
 
     public Node3D InteractionBody => this;
 
+    /// <summary>Injected at startup through the service resolver; assignable directly in tests.</summary>
+    public IShopProgression? Progression { get; set; }
+
     public void Inject(IServiceResolver services) => _services = services;
 
     public override void _Ready()
@@ -81,9 +84,14 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         if (_queueSpots.Length == 0)
             ILog.Error($"{Name} has no {QueuePrefix} markers; customers cannot queue.");
         if (_services == null)
+        {
             ILog.Error($"{Name} was not injected");
+        }
         else
+        {
             _services.Get<IMoneyService>(money => Money = money);
+            _services.Get<IShopProgression>(progression => Progression ??= progression);
+        }
         UpdateLabel();
     }
 
@@ -107,11 +115,8 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     public void Checkout(ICheckoutCustomer customer)
     {
         ArgumentNullException.ThrowIfNull(customer);
-        if (_queue.Contains(customer))
-            return;
-
-        _queue.Add(customer);
-        Refresh();
+        if (_queue.Add(customer))
+            Refresh();
     }
 
     /// <summary>Marks an item of the current basket scanned. False for an unknown, repeated or finished item.</summary>
@@ -191,8 +196,9 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
 
         var total = Session.Total;
         _money.Add(total);
+        Progression?.AwardCheckout(total);
         customer.Leave();
-        Dequeue(customer);
+        _queue.Remove(customer);
         CloseSession($"Paid {total}");
         Refresh();
         return true;
@@ -204,24 +210,13 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         if (Front is { } front && !front.Waiting && Session != null)
             CloseSession("The customer left before paying");
 
-        foreach (var customer in _queue.Where(customer => !customer.Waiting).ToList())
-            Dequeue(customer);
+        _queue.RemoveDeparted();
     }
 
     // Gives each queued customer its spot (extras share the last one), then starts a session for the front one.
     private void Refresh()
     {
-        for (var i = 0; i < _queue.Count && _queueSpots.Length > 0; i++)
-        {
-            var customer = _queue[i];
-            var spot = Math.Min(i, _queueSpots.Length - 1);
-            if (_slotOf.TryGetValue(customer, out var slot) && slot == spot)
-                continue;
-
-            _slotOf[customer] = spot;
-            var position = _queueSpots[spot].GlobalPosition;
-            customer.QueueAt(new QueueSpot(position.X, position.Y, position.Z));
-        }
+        _queue.AssignSpots(_queueSpots.Length, SpotPosition);
 
         if (Session == null && Front is { } front)
             StartSession(front);
@@ -242,7 +237,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         {
             ILog.Warning($"{Name} sent a basket that cannot be checked out: {ex.Message}");
             customer.Leave();
-            Dequeue(customer);
+            _queue.Remove(customer);
             Refresh();
             return;
         }
@@ -265,10 +260,10 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         _props.Clear();
     }
 
-    private void Dequeue(ICheckoutCustomer customer)
+    private QueueSpot SpotPosition(int spot)
     {
-        _queue.Remove(customer);
-        _slotOf.Remove(customer);
+        var position = _queueSpots[spot].GlobalPosition;
+        return new QueueSpot(position.X, position.Y, position.Z);
     }
 
     private void Subscribe()

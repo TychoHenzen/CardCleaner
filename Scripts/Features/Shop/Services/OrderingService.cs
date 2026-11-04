@@ -12,6 +12,8 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 ///     stacks on the lowest stack. It skips a slot where the item would leave its floor clearance or overlap an
 ///     occupant, and refuses the order when no slot is left under its ceiling clearance. Each marker keeps its own
 ///     slots, so two terminals with different markers never share a grid.
+///     An item is refused as <see cref="OrderStatus.Locked" /> before anything is charged when the shop level is below
+///     its unlock level, its id has no unlock row, or no progression service is present.
 /// </summary>
 [Service(typeof(IOrderingService))]
 public partial class OrderingService : Node, IOrderingService, IDependent
@@ -45,6 +47,9 @@ public partial class OrderingService : Node, IOrderingService, IDependent
     /// <summary>Resolved through the injected service resolver at startup; assignable directly in tests.</summary>
     public IMoneyService? Money { get; set; }
 
+    /// <summary>Resolved through the injected service resolver at startup; assignable directly in tests.</summary>
+    public IShopProgression? Progression { get; set; }
+
     /// <summary>How many items this service has delivered so far, across every delivery point.</summary>
     public int DeliveredCount { get; private set; }
 
@@ -59,12 +64,22 @@ public partial class OrderingService : Node, IOrderingService, IDependent
         }
 
         _services.Get<IMoneyService>(money => Money = money);
+        _services.Get<IShopProgression>(progression => Progression ??= progression);
     }
 
     public OrderResult Order(OrderItem item, DeliveryMarker? deliveryPoint = null)
     {
         if (item.Scene == null || item.Price <= 0)
             return Fail(item, OrderStatus.InvalidItem);
+
+        if (Progression == null)
+        {
+            ILog.Warning($"{Name} has no progression service; {item.Id} is refused.");
+            return Fail(item, OrderStatus.Locked);
+        }
+
+        if (!Progression.IsUnlocked(item.Id))
+            return Fail(item, OrderStatus.Locked);
 
         var point = deliveryPoint ?? DeliveryPoint;
         var parent = ParentFor(point);

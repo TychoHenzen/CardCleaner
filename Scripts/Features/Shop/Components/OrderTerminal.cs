@@ -186,6 +186,7 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
             OrderStatus.Success => $"Ordered {item.DisplayName}. It is at the delivery point.",
             OrderStatus.InsufficientFunds => $"Not enough money for {item.DisplayName}.",
             OrderStatus.DeliveryFull => "The delivery area is full. There is no room left for another item.",
+            OrderStatus.Locked => $"{item.DisplayName} is locked. Reach a higher shop level to order it.",
             _ => $"{item.DisplayName} cannot be ordered right now."
         });
     }

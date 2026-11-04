@@ -25,9 +25,13 @@ public sealed class ShopCheckoutRig
         Money = shop.GetNode<MoneyService>("Services/MoneyService");
         Cursor = shop.GetNode<CursorOwner>("Services/CursorOwner");
         Ui = shop.GetNode<CheckoutPaymentUi>("CheckoutUi");
+        Progression = shop.GetNode<ShopProgression>("Services/ShopProgression");
+        Hud = shop.GetNode<ShopHud>("DayUi/Hud");
     }
 
     public Node3D Shop { get; }
+    public ShopProgression Progression { get; }
+    public ShopHud Hud { get; }
     public CheckoutCounter Counter { get; }
     public MoneyService Money { get; }
     public CursorOwner Cursor { get; }

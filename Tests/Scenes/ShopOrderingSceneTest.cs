@@ -36,6 +36,7 @@ public class ShopOrderingSceneTest
     private OrderTerminal _terminal = null!;
     private OrderTerminalUi _ui = null!;
     private MoneyService _money = null!;
+    private ShopProgression _progression = null!;
     private CursorOwner _cursor = null!;
 
     [BeforeTest]
@@ -46,6 +47,7 @@ public class ShopOrderingSceneTest
         _terminal = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
         _ui = _shop.GetNode<OrderTerminalUi>("OrderUi");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
+        _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
         _cursor = _shop.GetNode<CursorOwner>("Services/CursorOwner");
         var ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
 
@@ -53,6 +55,7 @@ public class ShopOrderingSceneTest
         TestServices.Reset();
         TestServices.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
         TestServices.Container.RegisterSingleton<IMoneyService>(_money);
+        TestServices.Container.RegisterSingleton<IShopProgression>(_progression);
         TestServices.Container.RegisterSingleton<IOrderingService>(ordering);
         TestServices.Container.RegisterSingleton<ICursorOwner>(_cursor);
 
@@ -191,6 +194,7 @@ public class ShopOrderingSceneTest
     [TestCategory("Unit")]
     public void OrderingEachItemChargesTheBalanceAndDeliversItToTheDeliveryPoint()
     {
+        _progression.AwardCheckout(500); // level 2 unlocks bulk_packing_station
         var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
         var balance = _money.Balance;
         _terminal.Interact();
