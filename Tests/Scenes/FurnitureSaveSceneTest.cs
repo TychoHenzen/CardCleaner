@@ -88,6 +88,10 @@ public class FurnitureSaveSceneTest
         await ShopNavigationRig.WaitForBakeSync(_region, before);
 
         AssertInt(_region.RebakeCount).IsEqual(count + 1);
+        // The restored shelf is an obstacle again: the route between the two points goes around its rect.
+        var route = NavigationServer3D.MapGetPath(
+            _region.GetNavigationMap(), ShopFurnitureRig.RouteA, ShopFurnitureRig.RouteB, true);
+        AssertBool(ShopFurnitureRig.CrossesShelf(route)).IsFalse();
     }
 
     // Fallback: a whole-slot round trip through GameSaveService to disk needs a world the shop scene does not
