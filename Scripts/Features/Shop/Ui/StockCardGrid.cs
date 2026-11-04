@@ -17,9 +17,12 @@ internal sealed class StockCardGrid
     private const int CardWidth = 170;
     private const int TileHeight = 96;
 
-    private readonly GridContainer _grid = new() { Columns = CardColumns };
     private readonly List<CardView> _cards = [];
-    private readonly Label _empty = new() { Visible = false };
+
+    // The controls are made in AddTo, not here: a StockApp that is instanced but never enters the tree would
+    // otherwise keep these parentless nodes as orphans.
+    private GridContainer _grid = null!;
+    private Label _empty = null!;
 
     internal int Count => _cards.Count;
 
@@ -29,6 +32,8 @@ internal sealed class StockCardGrid
     /// <summary>Adds the scrolling grid to <paramref name="column" />.</summary>
     public void AddTo(VBoxContainer column)
     {
+        _grid = new GridContainer { Columns = CardColumns };
+        _empty = new Label { Visible = false };
         var scroll = new ScrollContainer
         {
             SizeFlagsVertical = Control.SizeFlags.ExpandFill,

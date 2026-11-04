@@ -14,16 +14,20 @@ internal sealed class StockCartPanel
     private readonly OrderCart _cart;
     private readonly Func<int> _level;
     private readonly Dictionary<string, Button> _minusButtons = new();
-    private readonly VBoxContainer _rows = new();
-    private readonly Label _total = new() { Text = "Total: 0" };
-    private readonly Label _message = new() { AutowrapMode = TextServer.AutowrapMode.WordSmart };
-    private readonly Button _checkout = new() { Text = "Checkout", Disabled = true };
+    private readonly Action _onCheckout;
+
+    // The controls are made in AddTo, not here: a StockApp that is instanced but never enters the tree would
+    // otherwise keep these parentless nodes as orphans.
+    private VBoxContainer _rows = null!;
+    private Label _total = null!;
+    private Label _message = null!;
+    private Button _checkout = null!;
 
     public StockCartPanel(OrderCart cart, Func<int> level, Action onCheckout)
     {
         _cart = cart;
         _level = level;
-        _checkout.Pressed += onCheckout;
+        _onCheckout = onCheckout;
     }
 
     internal int LineCount => _cart.Lines.Count;
@@ -37,6 +41,11 @@ internal sealed class StockCartPanel
     /// <summary>Adds the panel's controls to <paramref name="column" />.</summary>
     public void AddTo(VBoxContainer column)
     {
+        _rows = new VBoxContainer();
+        _total = new Label { Text = "Total: 0" };
+        _message = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart };
+        _checkout = new Button { Text = "Checkout", Disabled = true };
+        _checkout.Pressed += _onCheckout;
         column.AddChild(_rows);
         column.AddChild(_total);
         column.AddChild(_message);
