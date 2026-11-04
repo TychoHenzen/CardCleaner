@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Services.SaveGame;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
@@ -80,7 +81,7 @@ public class FurnitureSlotSaveSceneTest
     [TestCategory("Unit")]
     public async Task APlacedShelfComesBackFromTheSlotFile()
     {
-        var placed = await PlaceShelf(8f, 6f);
+        var placed = await PlaceShelf(4f, 8f);
         AssertBool(_saves.ManualSave()).IsTrue();
         _furnitureRoot.RemoveChild(placed);
         placed.Free();
@@ -91,7 +92,7 @@ public class FurnitureSlotSaveSceneTest
         AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
         var restored = (PlacedFurniture)_furnitureRoot.GetChild(0);
         AssertString(restored.Item!.Id).IsEqual("shelf_unit");
-        AssertBool(restored.Pose.X == 8f && restored.Pose.Z == 6f && restored.Pose.QuarterTurns == 0).IsTrue();
+        AssertBool(restored.Pose.X == 4f && restored.Pose.Z == 8f && restored.Pose.QuarterTurns == 0).IsTrue();
     }
 
     [TestCase]
@@ -116,7 +117,7 @@ public class FurnitureSlotSaveSceneTest
     [TestCategory("Unit")]
     public async Task ASaveDuringAMoveComesBackAsOneShelfAtItsOldPose()
     {
-        var placed = await PlaceShelf(8f, 6f);
+        var placed = await PlaceShelf(4f, 8f);
         AssertBool(_controller.BeginMove(placed)).IsTrue();
         _controller.AimAt(4f, 6f);
         AssertBool(_saves.ManualSave()).IsTrue();
@@ -129,7 +130,46 @@ public class FurnitureSlotSaveSceneTest
         AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
         var restored = (PlacedFurniture)_furnitureRoot.GetChild(0);
         AssertBool(restored.IsCarried).IsFalse();
-        AssertBool(restored.Pose.X == 8f && restored.Pose.Z == 6f).IsTrue();
+        AssertBool(restored.Pose.X == 4f && restored.Pose.Z == 8f).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ARestoredShelfKeepsThePriceMarkupOfItsTags()
+    {
+        var placed = await PlaceShelf(4f, 8f);
+        var tag = TagOf(placed);
+        tag.SetMarkup(30);
+        AssertBool(_saves.ManualSave()).IsTrue();
+        tag.SetMarkup(0);
+
+        _saves.LoadGame();
+        await Settle();
+
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
+        AssertInt(TagOf((PlacedFurniture)_furnitureRoot.GetChild(0)).MarkupPercent).IsEqual(30);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ARestoredShelfKeepsItsMarkupAfterTheOriginalIsGone()
+    {
+        var placed = await PlaceShelf(4f, 8f);
+        TagOf(placed).SetMarkup(40);
+        AssertBool(_saves.ManualSave()).IsTrue();
+        _furnitureRoot.RemoveChild(placed);
+        placed.Free();
+
+        _saves.LoadGame();
+        await Settle();
+
+        AssertInt(TagOf((PlacedFurniture)_furnitureRoot.GetChild(0)).MarkupPercent).IsEqual(40);
+    }
+
+    private static SlotPricing TagOf(PlacedFurniture placed)
+    {
+        var shelf = placed.GetNode<CardShelf>(PlacedFurniture.ContentName);
+        return shelf.PricingFor(shelf.GetNode<DeckSlot>("Slot1"))!;
     }
 
     private async Task<PlacedFurniture> PlaceShelf(float x, float z)

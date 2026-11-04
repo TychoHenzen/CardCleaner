@@ -58,7 +58,18 @@ public partial class FurniturePlacementController
         }
 
         AimedFurniture = null;
-        var blocked = _item != null && FurnitureProbe.IsBlocked(GetViewport().World3D, _item, CurrentPose);
+        ProbePhysics();
+    }
+
+    /// <summary>
+    ///     Queries the physics space for the pose as it is now, so a rotate or aim that arrived after the last
+    ///     physics tick is judged on its own clearance and not on the previous pose's.
+    /// </summary>
+    private void ProbePhysics()
+    {
+        // A viewport with no 3D world has nothing to collide with.
+        var blocked = _item != null && IsInsideTree() && GetViewport()?.World3D is { } world
+                      && FurnitureProbe.IsBlocked(world, _item, CurrentPose);
         if (blocked == _physicsBlocked)
             return;
         _physicsBlocked = blocked;

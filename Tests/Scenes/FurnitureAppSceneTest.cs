@@ -138,7 +138,7 @@ public class FurnitureAppSceneTest
         AssertBool(box.CanInteract).IsTrue();
         box.Interact();
         AssertBool(_controller.IsActive).IsTrue();
-        _controller.AimAt(8f, 6f);
+        _controller.AimAt(4f, 8f);
         AssertBool(_controller.Confirm()).IsTrue();
 
         AssertThat(furniture.GetChildCount()).IsEqual(1);

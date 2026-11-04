@@ -87,7 +87,7 @@ public partial class FurnitureSaveService
             return;
         }
 
-        FurnitureRoot!.AddChild(placed);
+        placed.StandUnder(FurnitureRoot!);
         placedRects.Add(placed.Rect);
     }
 
@@ -108,5 +108,7 @@ public partial class FurnitureSaveService
 
         BoxRoot!.AddChild(box);
         box.GlobalPosition = new Vector3(record.X, BoxHeight, record.Z);
+        // Only OrderingService tracked a box when it was delivered; a restored one must count as an occupant too.
+        DeliveryPoint?.Track(box);
     }
 }

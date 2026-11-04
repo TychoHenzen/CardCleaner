@@ -227,11 +227,23 @@ public static class SaveSystem
         if (treeSave == null)
             return;
 
+        // Nodes that build other nodes while loading go first, so the nodes they make are loaded in the second pass.
         RunInChildrenRecursive(root, (ISaveable obj) =>
         {
-            if (treeSave.TryGetCollection(obj.UniqueID, out NodeSave? nodeSave))
-                obj.Load(nodeSave!);
+            if (obj is ILoadsFirst)
+                LoadNode(treeSave, obj);
         });
+        RunInChildrenRecursive(root, (ISaveable obj) =>
+        {
+            if (obj is not ILoadsFirst)
+                LoadNode(treeSave, obj);
+        });
+    }
+
+    private static void LoadNode(TreeSave treeSave, ISaveable obj)
+    {
+        if (treeSave.TryGetCollection(obj.UniqueID, out NodeSave? nodeSave))
+            obj.Load(nodeSave!);
     }
 
     private static void SaveFile(

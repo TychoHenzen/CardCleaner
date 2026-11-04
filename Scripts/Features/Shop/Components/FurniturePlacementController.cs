@@ -23,8 +23,7 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     private IInputService? _input;
     private FurnitureGhost? _ghost;
     private FurnitureBox? _box;
-    private PlacedFurniture? _moving;
-    private FurniturePose _oldPose;
+    private CarriedFurniture? _carried;
     private FurnitureItem? _item;
     private bool _physicsBlocked;
 
@@ -60,7 +59,7 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
         }
 
         _box = box;
-        _moving = null;
+        _carried = null;
         _physicsBlocked = false;
         CurrentPose = new FurniturePose(StartX, StartZ, 0);
         StartSession(item);
@@ -85,15 +84,11 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
             return false;
         }
 
-        _oldPose = furniture.Pose;
-        _moving = furniture;
+        _carried = new CarriedFurniture(furniture);
         _box = null;
         _physicsBlocked = false;
-        // The piece stays in the tree, hidden and off the collision layer, so a save or a quit during the move
-        // still finds it at its old pose.
-        furniture.SetCarried(true);
         Navigation?.Rebake();
-        CurrentPose = _oldPose;
+        CurrentPose = _carried.OldPose;
         StartSession(item);
         Refresh();
         return true;
@@ -123,27 +118,30 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     public bool Confirm()
     {
         var root = FurnitureRoot;
-        if (!IsActive || !CurrentValid || root == null || _item == null)
+        if (!IsActive || root == null || _item == null)
             return false;
 
-        if (_moving != null)
+        // Rotate and aim only refresh the floor check; the physics check runs on the next tick. Judge the exact
+        // pose being committed, so a confirm that follows a rotate within one tick cannot use the old clearance.
+        ProbePhysics();
+        if (!CurrentValid)
+            return false;
+
+        if (_carried != null)
         {
-            if (!GodotObject.IsInstanceValid(_moving))
+            if (!_carried.PutDownAt(CurrentPose))
             {
                 // A load freed the piece while it was carried; there is nothing left to put down.
                 EndSession();
                 return false;
             }
-
-            _moving.Place(CurrentPose);
-            _moving.SetCarried(false);
         }
         else
         {
             var placed = PlacedFurniture.Create(_item, CurrentPose);
             if (placed == null)
                 return false;
-            root.AddChild(placed);
+            placed.StandUnder(root);
             _box?.QueueFree();
         }
 
@@ -166,14 +164,7 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     ///     Puts a carried piece back down at the pose it was picked up from. False when nothing was carried, or
     ///     when a load freed the piece meanwhile.
     /// </summary>
-    private bool ReleaseCarried()
-    {
-        if (_moving == null || !GodotObject.IsInstanceValid(_moving))
-            return false;
-        _moving.Place(_oldPose);
-        _moving.SetCarried(false);
-        return true;
-    }
+    private bool ReleaseCarried() => _carried?.PutBack() == true;
 
     private void StartSession(FurnitureItem item)
     {
@@ -198,7 +189,7 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
         IsActive = false;
         CurrentValid = false;
         _box = null;
-        _moving = null;
+        _carried = null;
         _item = null;
         _physicsBlocked = false;
         if (_ghost != null)

@@ -61,7 +61,7 @@ public class ShopFurnitureMoveSceneTest
     [TestCategory("Unit")]
     public async Task PickUpThenConfirmMovesTheSameShelf()
     {
-        var placed = await PlaceShelf(8f, 6f);
+        var placed = await PlaceShelf(4f, 8f);
         int count = _region.RebakeCount;
 
         AssertBool(_controller.BeginMove(placed)).IsTrue();
@@ -88,7 +88,7 @@ public class ShopFurnitureMoveSceneTest
     public async Task CancelOfAMoveRestoresThePose()
     {
         _controller.Begin(NewBox());
-        _controller.AimAt(8f, 6f);
+        _controller.AimAt(4f, 8f);
         _controller.Rotate();
         AssertBool(_controller.Confirm()).IsTrue();
         await ISceneRunner.SyncPhysicsFrame;
@@ -100,7 +100,7 @@ public class ShopFurnitureMoveSceneTest
         _controller.Cancel();
 
         AssertBool(ReferenceEquals(_furnitureRoot.GetChild(0), placed)).IsTrue();
-        AssertBool(placed.Position.IsEqualApprox(new Vector3(8f, 0f, 6f))).IsTrue();
+        AssertBool(placed.Position.IsEqualApprox(new Vector3(4f, 0f, 8f))).IsTrue();
         AssertInt(placed.QuarterTurns).IsEqual(1);
         AssertInt(_region.RebakeCount).IsEqual(before + 2);
     }
@@ -109,7 +109,7 @@ public class ShopFurnitureMoveSceneTest
     [TestCategory("Unit")]
     public async Task PickUpIsRefusedWhileTheShelfHoldsStock()
     {
-        var placed = await PlaceShelf(8f, 6f);
+        var placed = await PlaceShelf(4f, 8f);
         var slot = placed.GetNode<CardShelf>(PlacedFurniture.ContentName).Slots.First();
         var card = ShopTestCards.Create(new CardSignature());
         _shop.GetNode("World").AddChild(card);
@@ -131,7 +131,7 @@ public class ShopFurnitureMoveSceneTest
     [TestCategory("Unit")]
     public async Task ASaveDuringAMoveKeepsTheShelfAtItsOldPose()
     {
-        var placed = await PlaceShelf(8f, 6f);
+        var placed = await PlaceShelf(4f, 8f);
         AssertBool(_controller.BeginMove(placed)).IsTrue();
         _controller.AimAt(4f, 6f);
         var save = new NodeSave();
@@ -140,14 +140,14 @@ public class ShopFurnitureMoveSceneTest
         AssertBool(save.TryGetProperty<string>(FurnitureSaveService.RecordsKey, out var json)).IsTrue();
         var records = FurnitureSaveCodec.Decode(json);
         AssertInt(records.Count).IsEqual(1);
-        AssertBool(records[0].X == 8f && records[0].Z == 6f && !records[0].IsBox).IsTrue();
+        AssertBool(records[0].X == 4f && records[0].Z == 8f && !records[0].IsBox).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public async Task AControllerLeavingTheTreeMidMoveReturnsTheShelf()
     {
-        var placed = await PlaceShelf(8f, 6f);
+        var placed = await PlaceShelf(4f, 8f);
         AssertBool(_controller.BeginMove(placed)).IsTrue();
 
         var parent = _controller.GetParent();
@@ -163,7 +163,7 @@ public class ShopFurnitureMoveSceneTest
     [TestCategory("Unit")]
     public async Task NavigationGoesAroundThePlacedShelf()
     {
-        await PlaceShelf(8f, 6f);
+        await PlaceShelf(4f, 8f);
 
         AssertBool(_region.Reaches(RouteA, RouteB)).IsTrue();
         var route = NavigationServer3D.MapGetPath(_region.GetNavigationMap(), RouteA, RouteB, true);
@@ -175,7 +175,7 @@ public class ShopFurnitureMoveSceneTest
     [TestCategory("Unit")]
     public async Task PickUpFreesTheWayAgain()
     {
-        var placed = await PlaceShelf(8f, 6f);
+        var placed = await PlaceShelf(4f, 8f);
         uint before = NavigationServer3D.RegionGetIterationId(_region.GetRid());
         AssertBool(_controller.BeginMove(placed)).IsTrue();
         await ShopNavigationRig.WaitForBakeSync(_region, before);

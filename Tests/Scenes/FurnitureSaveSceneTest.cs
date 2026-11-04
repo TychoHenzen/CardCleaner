@@ -59,7 +59,7 @@ public class FurnitureSaveSceneTest
     [TestCategory("Unit")]
     public async Task PlacedShelvesSurviveASave()
     {
-        var placed = await PlaceShelf(8f, 6f);
+        var placed = await PlaceShelf(4f, 8f);
         var save = new NodeSave();
         _save.Save(save);
         _furnitureRoot.RemoveChild(placed);
@@ -71,14 +71,14 @@ public class FurnitureSaveSceneTest
         AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
         var restored = (PlacedFurniture)_furnitureRoot.GetChild(0);
         AssertString(restored.Item!.Id).IsEqual("shelf_unit");
-        AssertBool(restored.Pose.X == 8f && restored.Pose.Z == 6f && restored.Pose.QuarterTurns == 0).IsTrue();
+        AssertBool(restored.Pose.X == 4f && restored.Pose.Z == 8f && restored.Pose.QuarterTurns == 0).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public async Task LoadRebakesTheNavigationOnce()
     {
-        await PlaceShelf(8f, 6f);
+        await PlaceShelf(4f, 8f);
         var save = new NodeSave();
         _save.Save(save);
         int count = _region.RebakeCount;
@@ -100,7 +100,7 @@ public class FurnitureSaveSceneTest
     [TestCategory("Unit")]
     public async Task ReloadingTheStoredRecordsKeepsTheShelf()
     {
-        var placed = await PlaceShelf(8f, 6f);
+        var placed = await PlaceShelf(4f, 8f);
         var save = new NodeSave();
         _save.Save(save);
         AssertBool(save.TryGetProperty<string>(FurnitureSaveService.RecordsKey, out var json)).IsTrue();
@@ -113,7 +113,7 @@ public class FurnitureSaveSceneTest
 
         AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
         var restored = (PlacedFurniture)_furnitureRoot.GetChild(0);
-        AssertBool(restored.Pose.X == 8f && restored.Pose.Z == 6f).IsTrue();
+        AssertBool(restored.Pose.X == 4f && restored.Pose.Z == 8f).IsTrue();
     }
 
     /// <summary>

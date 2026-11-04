@@ -106,13 +106,13 @@ public class ShopFurniturePlacementSceneTest
         var box = NewBox();
         _controller.Begin(box);
         int rebakes = _region.RebakeCount;
-        _controller.AimAt(8f, 6f);
+        _controller.AimAt(4f, 8f);
 
         AssertBool(_controller.Confirm()).IsTrue();
         AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
         var placed = (PlacedFurniture)_furnitureRoot.GetChild(0);
         AssertString(placed.Item!.Id).IsEqual("shelf_unit");
-        AssertBool(placed.Position.IsEqualApprox(new Vector3(8f, 0f, 6f))).IsTrue();
+        AssertBool(placed.Position.IsEqualApprox(new Vector3(4f, 0f, 8f))).IsTrue();
 
         await ISceneRunner.SyncPhysicsFrame;
         AssertBool(GodotObject.IsInstanceValid(box)).IsFalse();
@@ -141,12 +141,12 @@ public class ShopFurniturePlacementSceneTest
     [TestCategory("Unit")]
     public async Task PlacedFurnitureBlocksAnOverlappingPose()
     {
-        await PlaceShelf(8f, 6f);
+        await PlaceShelf(4f, 8f);
 
         _controller.Begin(NewBox());
-        _controller.AimAt(8f, 6.5f);
+        _controller.AimAt(4f, 8.5f);
         AssertBool(_controller.CurrentValid).IsFalse();
-        _controller.AimAt(8f, 7f);
+        _controller.AimAt(4f, 9f);
         AssertBool(_controller.CurrentValid).IsTrue();
     }
 
@@ -174,12 +174,36 @@ public class ShopFurniturePlacementSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public async Task ConfirmRightAfterARotateJudgesTheRotatedPose()
+    {
+        // The 2 x 2 blocker clears the shelf at (4, 8) as it stands, but not once it is turned a quarter.
+        var body = new StaticBody3D { Name = "Blocker", Position = new Vector3(4f, 1f, 6f) };
+        body.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = new Vector3(2f, 2f, 2f) } });
+        _shop.GetNode("World").AddChild(body);
+        _controller.Begin(NewBox());
+        await ISceneRunner.SyncPhysicsFrame;
+        _controller.AimAt(4f, 8f);
+        await ISceneRunner.SyncPhysicsFrame;
+        await ISceneRunner.SyncPhysicsFrame;
+        AssertBool(_controller.CurrentValid).IsTrue();
+
+        _controller.Rotate();
+        var confirmed = _controller.Confirm();
+
+        AssertBool(confirmed).IsFalse();
+        AssertBool(_controller.CurrentValid).IsFalse();
+        AssertBool(_controller.IsActive).IsTrue();
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void CancelKeepsTheBox()
     {
         var box = NewBox();
         _controller.Begin(box);
         int rebakes = _region.RebakeCount;
-        _controller.AimAt(8f, 6f);
+        _controller.AimAt(4f, 8f);
 
         _controller.Cancel();
 

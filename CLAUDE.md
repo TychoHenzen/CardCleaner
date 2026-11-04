@@ -417,7 +417,10 @@ Save slots (`Scripts/Features/SaveSlots`) live under `user://saves/<slot>/save.j
 Furniture saves under UniqueID `furniture` (`FurnitureSaveService`) as one JSON string of `FurnitureRecord` entries: placed
 shelves with their pose and unopened boxes with their position. A load replaces all furniture (never adds) and rebakes the
 navigation mesh once; a save without the key leaves the scene as authored, and a record with an unknown id, a non-finite
-coordinate or an invalid pose is skipped with an error. Cards stocked on a placed shelf are saved by `GameSaveService` as
+coordinate or an invalid pose is skipped with an error. `FurnitureSaveService` is an `ILoadsFirst` (`addons/saveable`), so `SaveSystem` loads it before the rest of the tree and the
+restored shelves are in the tree when their price tags and cards load; a placed piece is named `Furniture<n>` by its
+position under `World/Furniture` (`PlacedFurniture.StandUnder`), which keeps those node-path save ids stable, and restored
+boxes are tracked by the `DeliveryMarker` so a new order avoids them. Cards stocked on a placed shelf are saved by `GameSaveService` as
 cards and are not part of the furniture record (ASSUMPTION Medium: they re-seat as they do on a scene-placed shelf).
 
 ### Feature Organization

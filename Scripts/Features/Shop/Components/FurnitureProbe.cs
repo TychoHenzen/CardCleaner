@@ -35,7 +35,8 @@ internal static class FurnitureProbe
             Transform = new Transform3D(Basis.Identity, centre),
             CollisionMask = FurnitureLayerMask
         };
-        return world.DirectSpaceState.IntersectShape(query, 1).Count > 0;
+        // The space has no state before its first physics frame, so nothing can be blocking yet.
+        return world.DirectSpaceState?.IntersectShape(query, 1).Count > 0;
     }
 
     public static PlacedFurniture? Aimed(World3D world, Camera3D camera)

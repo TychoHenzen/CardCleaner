@@ -24,6 +24,7 @@ public class FurnitureSaveServiceTest
     private Node3D _furnitureRoot = null!;
     private Node3D _boxRoot = null!;
     private FurnitureSaveService _service = null!;
+    private DeliveryMarker _delivery = null!;
 
     [BeforeTest]
     public void Setup()
@@ -33,8 +34,11 @@ public class FurnitureSaveServiceTest
         _boxRoot = new Node3D { Name = "Boxes" };
         _parent.AddChild(_furnitureRoot);
         _parent.AddChild(_boxRoot);
+        _delivery = new DeliveryMarker { Name = "Delivery" };
+        _parent.AddChild(_delivery);
         _service = new FurnitureSaveService
         {
+            DeliveryPoint = _delivery,
             Furniture = GD.Load<FurnitureCatalog>(CatalogPath),
             Boxes = GD.Load<OrderCatalog>(OrderCatalogPath),
             FurnitureRoot = _furnitureRoot,
@@ -166,6 +170,27 @@ public class FurnitureSaveServiceTest
         AssertString(boxes[0].Item!.Id).IsEqual("shelf_unit");
         AssertBool(Mathf.Abs(boxes[0].GlobalPosition.X - 6f) < 0.01f).IsTrue();
         AssertBool(Mathf.Abs(boxes[0].GlobalPosition.Z - 2f) < 0.01f).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ARestoredBoxCountsAsAnOccupantOfTheDeliveryArea()
+    {
+        // Slot 0 of the delivery grid is centred on this offset from the marker, which stands at the origin.
+        var slotZero = OrderingService.SlotOffset(0);
+        var save = SaveWith(new FurnitureRecord("shelf_unit", slotZero.X, slotZero.Z, 0, true));
+        _service.Load(save);
+        var incoming = GD.Load<PackedScene>(BoxScenePath).Instantiate<Node3D>();
+
+        var placement = _delivery.FindPlacement(
+            6,
+            OrderingService.SlotOffset,
+            new Vector2(OrderingService.SlotSpacingX, OrderingService.SlotSpacingZ),
+            incoming);
+        incoming.Free();
+
+        AssertBool(placement.HasValue).IsTrue();
+        AssertBool(placement!.Value.Slot == 0 && placement.Value.Lift == 0f).IsFalse();
     }
 
     [TestCase]

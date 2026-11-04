@@ -75,6 +75,16 @@ public partial class PlacedFurniture : StaticBody3D
         return placed;
     }
 
+    /// <summary>
+    ///     Adds the piece under <paramref name="root" /> with a name made from its position among the children, so its
+    ///     node path, and with it the save id of every price tag on it, is the same after a reload.
+    /// </summary>
+    public void StandUnder(Node root)
+    {
+        Name = $"Furniture{root.GetChildCount()}";
+        root.AddChild(this);
+    }
+
     /// <summary>The floor rects of the pieces standing under <paramref name="root" />, not the carried one.</summary>
     public static List<FurnitureRect> StandingRects(Node? root) =>
         root == null

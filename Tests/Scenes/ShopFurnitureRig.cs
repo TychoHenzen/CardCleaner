@@ -4,18 +4,19 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 ///     The shelf rect and the route the furniture scene tests check against, shared by the placement, move and save
-///     cases. The shelf is the unrotated pose at centre (8, 6).
+///     cases. The shelf is the unrotated pose at centre (4, 8), a spot clear of solid shop furniture such as the
+///     checkout counter.
 /// </summary>
 internal static class ShopFurnitureRig
 {
-    public const float ShelfMinX = 6.935f;
-    public const float ShelfMaxX = 9.065f;
-    public const float ShelfMinZ = 5.5f;
-    public const float ShelfMaxZ = 6.5f;
+    public const float ShelfMinX = 2.935f;
+    public const float ShelfMaxX = 5.065f;
+    public const float ShelfMinZ = 7.5f;
+    public const float ShelfMaxZ = 8.5f;
     public const int RouteSamplesPerSegment = 20;
 
-    public static readonly Vector3 RouteA = new(8f, 0f, 4f);
-    public static readonly Vector3 RouteB = new(8f, 0f, 8f);
+    public static readonly Vector3 RouteA = new(4f, 0f, 6f);
+    public static readonly Vector3 RouteB = new(4f, 0f, 10f);
 
     /// <summary>True when any sampled point of the route lies inside the shelf rect (XZ plane).</summary>
     public static bool CrossesShelf(Vector3[] route)

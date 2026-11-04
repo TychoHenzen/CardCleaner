@@ -12,7 +12,7 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 ///     The save half lives here; <c>FurnitureSaveService.Restore.cs</c> holds the load half. It is an ISaveable node in
 ///     the shop's Services provider and carries no [Service] attribute, because nothing resolves it by type.
 /// </summary>
-public partial class FurnitureSaveService : Node, ISaveable
+public partial class FurnitureSaveService : Node, ILoadsFirst
 {
     public const string RecordsKey = "records";
 
@@ -25,6 +25,9 @@ public partial class FurnitureSaveService : Node, ISaveable
     [Export] public Node3D? BoxRoot { get; set; }
 
     [Export] public ShopNavigationRegion? Navigation { get; set; }
+
+    /// <summary>The delivery area that restored boxes count against, so a new order avoids them.</summary>
+    [Export] public DeliveryMarker? DeliveryPoint { get; set; }
 
     public StringName UniqueID => "furniture";
 
