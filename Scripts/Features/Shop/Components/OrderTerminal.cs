@@ -27,7 +27,9 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
     private ICursorOwner? _cursor;
     private IServiceResolver? _services;
 
-    /// <summary>Items this terminal sells. Assign a different catalog for a different terminal.</summary>
+    /// <summary>
+    ///     Items this terminal sells. Assign another catalog to sell others.
+    /// </summary>
     [Export]
     public OrderCatalog? Catalog { get; set; }
 
@@ -60,7 +62,9 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
 
     public bool IsOpen { get; private set; }
 
-    /// <summary>Outcome of the latest order request, or null when that request was not placed.</summary>
+    /// <summary>
+    ///     Outcome of the latest order, or null when none was placed.
+    /// </summary>
     public OrderResult? LastOrder { get; private set; }
 
     public bool CanInteract => !IsOpen && Catalog != null && Ui != null;
