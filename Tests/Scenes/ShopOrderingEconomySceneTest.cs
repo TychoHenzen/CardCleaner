@@ -31,7 +31,7 @@ public class ShopOrderingEconomySceneTest
         _shop = ShopOrderingRig.LoadShopWithServices();
         _pc = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
         _workshop = _shop.GetNode<OrderTerminal>("World/Workshop/OrderingRoom/OrderTerminal");
-        _pcUi = _shop.GetNode<OrderTerminalUi>("OrderUi");
+        _pcUi = _shop.GetNode<OrderTerminalUi>("PcDesktopViewport/OrderUi");
         _workshopUi = _shop.GetNode<OrderTerminalUi>("World/Workshop/OrderUi");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
 

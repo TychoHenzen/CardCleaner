@@ -35,6 +35,7 @@ public class ShopOrderingSceneTest
     private PlayerController _player = null!;
     private OrderTerminal _terminal = null!;
     private OrderTerminalUi _ui = null!;
+    private PcDesktop _desktop = null!;
     private MoneyService _money = null!;
     private ShopProgression _progression = null!;
     private CursorOwner _cursor = null!;
@@ -45,7 +46,8 @@ public class ShopOrderingSceneTest
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _player = _shop.GetNode<PlayerController>("Player");
         _terminal = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
-        _ui = _shop.GetNode<OrderTerminalUi>("OrderUi");
+        _desktop = _shop.GetNode<PcDesktop>("PcDesktopViewport/PcDesktop");
+        _ui = _shop.GetNode<OrderTerminalUi>("PcDesktopViewport/OrderUi");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
         _cursor = _shop.GetNode<CursorOwner>("Services/CursorOwner");
@@ -125,11 +127,14 @@ public class ShopOrderingSceneTest
     {
         _terminal.Interact();
 
-        AssertBool(_ui.Visible).IsTrue();
+        // The PC opens on its desktop; the ordering app only shows after the Stock icon is pressed.
+        AssertBool(_desktop.Visible).IsTrue();
+        AssertBool(_ui.Visible).IsFalse();
         AssertBool(_player.ControlEnabled).IsFalse();
 
         _terminal.Close();
 
+        AssertBool(_desktop.Visible).IsFalse();
         AssertBool(_ui.Visible).IsFalse();
         AssertBool(_player.ControlEnabled).IsTrue();
     }

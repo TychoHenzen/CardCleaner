@@ -69,7 +69,7 @@ public class ShopWorkshopOrderingSceneTest
     public void WorkshopTerminalIsADifferentNodeWithItsOwnUiFromTheShopPc()
     {
         var pc = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
-        var pcUi = _shop.GetNode<OrderTerminalUi>("OrderUi");
+        var pcUi = _shop.GetNode<OrderTerminalUi>("PcDesktopViewport/OrderUi");
 
         AssertBool(ReferenceEquals(pc, _terminal)).IsFalse();
         AssertBool(ReferenceEquals(pcUi, _ui)).IsFalse();
@@ -131,7 +131,7 @@ public class ShopWorkshopOrderingSceneTest
         _terminal.Interact();
 
         AssertBool(_ui.Visible).IsTrue();
-        AssertBool(_shop.GetNode<OrderTerminalUi>("OrderUi").Visible).IsFalse();
+        AssertBool(_shop.GetNode<OrderTerminalUi>("PcDesktopViewport/OrderUi").Visible).IsFalse();
         AssertThat(_ui.BalanceText).IsEqual($"Balance: {_money.Balance}");
         AssertBool(_player.ControlEnabled).IsFalse();
 

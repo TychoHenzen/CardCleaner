@@ -35,7 +35,7 @@ public class ShopProgressionSceneTest
     {
         _shop = ShopOrderingRig.LoadShopWithServices();
         _terminal = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
-        _ui = _shop.GetNode<OrderTerminalUi>("OrderUi");
+        _ui = _shop.GetNode<OrderTerminalUi>("PcDesktopViewport/OrderUi");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");

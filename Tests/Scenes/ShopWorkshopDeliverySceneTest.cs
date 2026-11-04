@@ -54,7 +54,7 @@ public class ShopWorkshopDeliverySceneTest
         _workshop = _shop.GetNode<Node3D>("World/Workshop");
         _pc = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
         _terminal = _workshop.GetNode<OrderTerminal>("OrderingRoom/OrderTerminal");
-        _pcUi = _shop.GetNode<OrderTerminalUi>("OrderUi");
+        _pcUi = _shop.GetNode<OrderTerminalUi>("PcDesktopViewport/OrderUi");
         _ui = _workshop.GetNode<OrderTerminalUi>("OrderUi");
         _delivery = _workshop.GetNode<DeliveryMarker>("DeliveryPoint");
         _shopDelivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint");
