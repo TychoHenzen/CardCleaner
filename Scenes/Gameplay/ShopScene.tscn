@@ -49,6 +49,9 @@
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Neighbourhood.tscn" id="Neighbourhood"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/ProductShelf.tscn" id="ProductShelf"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/StorageRack.tscn" id="StorageRack"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/PcScreenPointer.cs" id="PcScreenPointer"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/PcDesktopLink.cs" id="PcDesktopLink"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/PcDesktop.tscn" id="PcDesktop"]
 
 [sub_resource type="StandardMaterial3D" id="GrayMaterial"]
 albedo_color = Color(0.62, 0.62, 0.65, 1)
@@ -188,6 +191,17 @@ size = Vector3(0.1, 1.2, 0.8)
 [sub_resource type="BoxMesh" id="ShopSignHighlightMesh"]
 material = SubResource("PcHighlightMaterial")
 size = Vector3(0.2, 1.3, 0.9)
+
+[sub_resource type="ViewportTexture" id="PcScreenTexture"]
+viewport_path = NodePath("PcDesktopViewport")
+
+[sub_resource type="StandardMaterial3D" id="PcScreenMaterial"]
+shading_mode = 0
+albedo_texture = SubResource("PcScreenTexture")
+
+[sub_resource type="QuadMesh" id="PcScreenQuadMesh"]
+material = SubResource("PcScreenMaterial")
+size = Vector2(0.5, 0.3)
 
 [node name="Root" type="Node3D"]
 
@@ -1436,7 +1450,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 6)
 collision_layer = 5
 script = ExtResource("OrderTerminal")
 Catalog = ExtResource("BackofficeCatalog")
-Ui = NodePath("../../../../OrderUi")
+Ui = NodePath("../../../../PcDesktopViewport/OrderUi")
 HighlightMesh = NodePath("Highlight")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="World/Markers/PcLocation/PcTerminal"]
@@ -1479,6 +1493,25 @@ mesh = SubResource("PcKeyboardMesh")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 visible = false
 mesh = SubResource("PcHighlightMesh")
+
+[node name="ScreenQuad" type="MeshInstance3D" parent="World/Markers/PcLocation/PcTerminal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -0.065)
+mesh = SubResource("PcScreenQuadMesh")
+
+[node name="ScreenCamera" type="Camera3D" parent="World/Markers/PcLocation/PcTerminal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0.9)
+
+[node name="PcScreenPointer" type="Node" parent="World/Markers/PcLocation/PcTerminal" node_paths=PackedStringArray("ScreenCamera", "ScreenQuad", "Viewport")]
+script = ExtResource("PcScreenPointer")
+ScreenCamera = NodePath("../ScreenCamera")
+ScreenQuad = NodePath("../ScreenQuad")
+Viewport = NodePath("../../../../../PcDesktopViewport")
+
+[node name="PcDesktopLink" type="Node" parent="World/Markers/PcLocation/PcTerminal" node_paths=PackedStringArray("Desktop", "ScreenCamera", "ScreenPointer")]
+script = ExtResource("PcDesktopLink")
+Desktop = NodePath("../../../../../PcDesktopViewport/PcDesktop")
+ScreenCamera = NodePath("../ScreenCamera")
+ScreenPointer = NodePath("../PcScreenPointer")
 
 [node name="Player" parent="." instance=ExtResource("Player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 9)
@@ -1547,7 +1580,14 @@ script = ExtResource("GameSaveService")
 AutoSaveInterval = 30.0
 AutoLoadOnStart = true
 
-[node name="OrderUi" type="CanvasLayer" parent="."]
+[node name="PcDesktopViewport" type="SubViewport" parent="."]
+size = Vector2i(1280, 720)
+render_target_update_mode = 4
+
+[node name="PcDesktop" parent="PcDesktopViewport" node_paths=PackedStringArray("StockApp") instance=ExtResource("PcDesktop")]
+StockApp = NodePath("../OrderUi")
+
+[node name="OrderUi" type="CanvasLayer" parent="PcDesktopViewport"]
 script = ExtResource("OrderTerminalUi")
 
 [node name="Pause" type="Node" parent="." node_paths=PackedStringArray("PauseMenuLayer")]

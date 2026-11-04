@@ -10,7 +10,7 @@ public class ShopHudLevelTest
 {
     [TestCase]
     [TestCategory("Unit")]
-    public void HudCarriesTheLevelBarInItsStackAndFollowsProgression()
+    public static void HudCarriesTheLevelBarInItsStackAndFollowsProgression()
     {
         var hud = new ShopHud();
         AddNode(hud);
@@ -27,7 +27,7 @@ public class ShopHudLevelTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void LevelBarNeverTakesMouseInput()
+    public static void LevelBarNeverTakesMouseInput()
     {
         var hud = new ShopHud();
         AddNode(hud);

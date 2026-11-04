@@ -1,0 +1,62 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Ui/PcDesktop.cs" id="1_desktop"]
+
+[node name="PcDesktop" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_desktop")
+
+[node name="Wallpaper" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.24, 0.32, 1)
+
+[node name="Icons" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 176.0
+offset_bottom = 336.0
+
+[node name="StockIcon" type="Button" parent="Icons"]
+layout_mode = 2
+text = "Stock"
+
+[node name="FurnitureIcon" type="Button" parent="Icons"]
+layout_mode = 2
+text = "Furniture"
+
+[node name="ExpansionsIcon" type="Button" parent="Icons"]
+layout_mode = 2
+text = "Expansions"
+
+[node name="StaffIcon" type="Button" parent="Icons"]
+layout_mode = 2
+text = "Staff"
+
+[node name="BillsIcon" type="Button" parent="Icons"]
+layout_mode = 2
+text = "Bills"
+
+[node name="Taskbar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -48.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="CloseButton" type="Button" parent="Taskbar"]
+layout_mode = 2
+text = "Close"

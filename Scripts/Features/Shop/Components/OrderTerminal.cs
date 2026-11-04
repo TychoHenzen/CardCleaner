@@ -1,3 +1,4 @@
+using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
@@ -17,7 +18,9 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
 {
     private const float DefaultInteractionRange = 4.5f;
-    private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
+    // Layer 3, in the InteractionSystem mask
+    private const uint InteractableLayerBit = 4;
+    private const string CloseAction = "ui_cancel";
 
     private PlayerController? _player;
     private IMoneyService? _money;
@@ -25,12 +28,15 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
     private ICursorOwner? _cursor;
     private IServiceResolver? _services;
 
-    /// <summary>Items this terminal sells. Assign a different catalog for a different terminal.</summary>
+    /// <summary>
+    ///     Items this terminal sells. Assign another catalog to sell others.
+    /// </summary>
     [Export]
     public OrderCatalog? Catalog { get; set; }
 
     /// <summary>
-    ///     Where this terminal's orders appear. Null falls back to the ordering service's own delivery point.
+    ///     Where this terminal's orders appear. Null falls back to the
+    ///     ordering service's own delivery point.
     /// </summary>
     [Export]
     public DeliveryMarker? DeliveryPoint { get; set; }
@@ -44,9 +50,27 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
     [Export]
     public float InteractionRange { get; set; } = DefaultInteractionRange;
 
+    /// <summary>
+    ///     Shows <see cref="Ui" /> as an overlay while open. A PC whose
+    ///     screen shows the ordering screen (PcDesktopLink) turns this off.
+    /// </summary>
+    public bool OverlayUi { get; set; } = true;
+
+    /// <summary>
+    ///     Raised when the terminal opens, before the cursor is claimed.
+    /// </summary>
+    public event Action? Opened;
+
+    /// <summary>
+    ///     Raised when the terminal closes, before the cursor is released.
+    /// </summary>
+    public event Action? Closed;
+
     public bool IsOpen { get; private set; }
 
-    /// <summary>Outcome of the latest order request, or null when that request was not placed.</summary>
+    /// <summary>
+    ///     Outcome of the latest order, or null when none was placed.
+    /// </summary>
     public OrderResult? LastOrder { get; private set; }
 
     public bool CanInteract => !IsOpen && Catalog != null && Ui != null;
@@ -103,8 +127,8 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         });
     }
 
-    // _Ready runs once, but a terminal can leave and re-enter the tree, so the subscriptions that
-    // _ExitTree drops are restored on every entry.
+    // _Ready runs once, but a terminal can leave and re-enter the tree, so the
+    // subscriptions that _ExitTree drops are restored on every entry.
     public override void _EnterTree() => Subscribe();
 
     public override void _ExitTree()
@@ -112,6 +136,18 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         if (IsOpen)
             Close();
         Unsubscribe();
+    }
+
+    // Escape must close the PC even while the desktop is open: the desktop
+    // sits in a SubViewport, which does not receive the key, so the terminal
+    // in the main tree handles it itself.
+    public override void _UnhandledInput(InputEvent @event)
+    {
+        if (!IsOpen || !@event.IsActionPressed(CloseAction))
+            return;
+
+        GetViewport().SetInputAsHandled();
+        Close();
     }
 
     public void Open()
@@ -124,7 +160,10 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         if (_money != null)
             Ui.SetBalance(_money.Balance);
         Ui.ShowMessage(string.Empty);
-        Ui.Visible = true;
+
+        if (OverlayUi)
+            Ui.Visible = true;
+        Opened?.Invoke();
 
         _cursor?.Claim(this);
         _player = GetTree().GetFirstNodeInGroup("player") as PlayerController;
@@ -140,6 +179,7 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         IsOpen = false;
         if (Ui != null)
             Ui.Visible = false;
+        Closed?.Invoke();
 
         _cursor?.Release(this);
         if (_player != null && GodotObject.IsInstanceValid(_player))
@@ -183,10 +223,16 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         LastOrder = result;
         Ui.ShowMessage(result.Status switch
         {
-            OrderStatus.Success => $"Ordered {item.DisplayName}. It is at the delivery point.",
-            OrderStatus.InsufficientFunds => $"Not enough money for {item.DisplayName}.",
-            OrderStatus.DeliveryFull => "The delivery area is full. There is no room left for another item.",
-            OrderStatus.Locked => $"{item.DisplayName} is locked. Reach a higher shop level to order it.",
+            OrderStatus.Success =>
+                $"Ordered {item.DisplayName}. It is at the delivery point.",
+            OrderStatus.InsufficientFunds =>
+                $"Not enough money for {item.DisplayName}.",
+            OrderStatus.DeliveryFull =>
+                "The delivery area is full. There is no room left for another "
+                + "item.",
+            OrderStatus.Locked =>
+                $"{item.DisplayName} is locked. Reach a higher shop level "
+                + "to order it.",
             _ => $"{item.DisplayName} cannot be ordered right now."
         });
     }

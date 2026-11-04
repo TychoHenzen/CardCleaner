@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Pause.Components;
 using CardCleaner.Scripts.Features.Pause.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Ui;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -20,7 +19,6 @@ public class ShopPausePcTest
     private PauseController _pause = null!;
     private CursorOwner _cursor = null!;
     private OrderTerminal _terminal = null!;
-    private OrderTerminalUi _ui = null!;
 
     [BeforeTest]
     public async Task Setup()
@@ -30,7 +28,6 @@ public class ShopPausePcTest
         _cursor = _shop.GetNode<CursorOwner>("Services/CursorOwner");
         _terminal = _shop.GetNode<OrderTerminal>(
             "World/Markers/PcLocation/PcTerminal");
-        _ui = _shop.GetNode<OrderTerminalUi>("OrderUi");
 
         AddNode(_shop);
         await ShopPauseRig.SettleAsync();
@@ -62,7 +59,8 @@ public class ShopPausePcTest
         AssertBool(_shop.GetTree().Paused).IsFalse();
         AssertBool(_terminal.IsOpen).IsTrue();
 
-        _ui._UnhandledInput(ShopPauseRig.EscapeEvent());
+        // With a desktop attached, the terminal owns Escape: it closes the PC and its desktop together.
+        _terminal._UnhandledInput(ShopPauseRig.EscapeEvent());
 
         AssertBool(_terminal.IsOpen).IsFalse();
         AssertBool(_shop.GetTree().Paused).IsFalse();

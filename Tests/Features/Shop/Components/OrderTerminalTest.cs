@@ -1,58 +1,25 @@
-using CardCleaner.Scripts.Features.Pause.Components;
-using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
 
+/// <summary>Ordering through the terminal: charging, delivery, refusals and tree changes.</summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class OrderTerminalTest
 {
-    private const int StartingBalance = 150;
-    private const int CheapPrice = 100;
-    private const int DearPrice = 400;
-    private const int LockedPrice = 10;
-    private const string LockedId = "locked";
+    private const int StartingBalance = OrderTerminalFixture.StartingBalance;
+    private const int CheapPrice = OrderTerminalFixture.CheapPrice;
 
-    private Node3D _world = null!;
-    private MoneyService _money = null!;
-    private OrderingService _ordering = null!;
-    private OrderTerminalUi _ui = null!;
-    private OrderTerminal _terminal = null!;
-    private CursorOwner _cursor = null!;
+    private OrderTerminalFixture _f = null!;
 
     [BeforeTest]
     public void Setup()
     {
-        _world = new Node3D();
-        var marker = new DeliveryMarker();
-        _world.AddChild(marker);
-        _money = new MoneyService { StartingBalance = StartingBalance };
-        _ordering = new OrderingService
-            { DeliveryPoint = marker, SpawnRoot = _world, Money = _money, Progression = new OpenProgression(LockedId) };
-        _ui = new OrderTerminalUi();
-        _terminal = new OrderTerminal
-        {
-            Catalog = MakeCatalog(("cheap", CheapPrice), ("dear", DearPrice), (LockedId, LockedPrice)), Ui = _ui
-        };
-        _cursor = new CursorOwner();
-        _world.AddChild(_money);
-        _world.AddChild(_ordering);
-        _world.AddChild(_ui);
-        _world.AddChild(_cursor);
-
-        TestServices.Reset();
-        TestServices.Container.RegisterSingleton<IMoneyService>(_money);
-        TestServices.Container.RegisterSingleton<IOrderingService>(_ordering);
-        TestServices.Container.RegisterSingleton<ICursorOwner>(_cursor);
-
-        _world.AddChild(_terminal);
-        AddNode(_world);
+        _f = new OrderTerminalFixture();
+        AddNode(_f.World);
     }
 
     [AfterTest]
@@ -65,11 +32,11 @@ public class OrderTerminalTest
     [TestCategory("Unit")]
     public void UiRowsAreBuiltFromTheCatalogExport()
     {
-        AssertThat(_ui.ItemRowCount).IsEqual(3);
+        AssertThat(_f.Ui.ItemRowCount).IsEqual(3);
 
-        _ui.Populate(MakeCatalog(("a", 1), ("b", 2), ("c", 3)));
+        _f.Ui.Populate(OrderTerminalFixture.MakeCatalog(("a", 1), ("b", 2), ("c", 3)));
 
-        AssertThat(_ui.ItemRowCount).IsEqual(3);
+        AssertThat(_f.Ui.ItemRowCount).IsEqual(3);
     }
 
     [TestCase]
@@ -77,241 +44,100 @@ public class OrderTerminalTest
     public void SecondTerminalWithItsOwnCatalogOrdersItsOwnItemsWithoutCodeChanges()
     {
         var workshopUi = new OrderTerminalUi();
-        var workshop = new OrderTerminal { Catalog = MakeCatalog(("tool", 30)), Ui = workshopUi };
-        _world.AddChild(workshopUi);
-        _world.AddChild(workshop);
+        var workshop = new OrderTerminal { Catalog = OrderTerminalFixture.MakeCatalog(("tool", 30)), Ui = workshopUi };
+        _f.World.AddChild(workshopUi);
+        _f.World.AddChild(workshop);
 
         workshop.Interact();
         workshopUi.PressItem(0);
 
         AssertThat(workshopUi.ItemRowCount).IsEqual(1);
-        AssertThat(_ui.ItemRowCount).IsEqual(3);
-        AssertThat(_money.Balance).IsEqual(StartingBalance - 30);
-        AssertThat(_ordering.DeliveredCount).IsEqual(1);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void InteractOpensTheUiWithTheCurrentBalanceAndBlocksFurtherInteraction()
-    {
-        AssertBool(_terminal.CanInteract).IsTrue();
-
-        _terminal.Interact();
-
-        AssertBool(_ui.Visible).IsTrue();
-        AssertBool(_terminal.IsOpen).IsTrue();
-        AssertBool(_terminal.CanInteract).IsFalse();
-        AssertThat(_ui.BalanceText).IsEqual($"Balance: {StartingBalance}");
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void CloseHidesTheUiAndAllowsInteractionAgain()
-    {
-        _terminal.Interact();
-
-        _terminal.Close();
-
-        AssertBool(_ui.Visible).IsFalse();
-        AssertBool(_terminal.IsOpen).IsFalse();
-        AssertBool(_terminal.CanInteract).IsTrue();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void CloseButtonClosesTheTerminal()
-    {
-        _terminal.Interact();
-
-        _ui.PressClose();
-
-        AssertBool(_terminal.IsOpen).IsFalse();
+        AssertThat(_f.Ui.ItemRowCount).IsEqual(3);
+        AssertThat(_f.Money.Balance).IsEqual(StartingBalance - 30);
+        AssertThat(_f.Ordering.DeliveredCount).IsEqual(1);
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void PressingAnAffordableItemChargesSpawnsAndUpdatesTheBalanceDisplay()
     {
-        _terminal.Interact();
+        _f.Terminal.Interact();
 
-        _ui.PressItem(0);
+        _f.Ui.PressItem(0);
 
-        AssertThat(_money.Balance).IsEqual(StartingBalance - CheapPrice);
-        AssertThat(_ui.BalanceText).IsEqual($"Balance: {StartingBalance - CheapPrice}");
-        AssertThat(_ordering.DeliveredCount).IsEqual(1);
-        AssertBool(_ui.MessageText.Contains("Ordered")).IsTrue();
+        AssertThat(_f.Money.Balance).IsEqual(StartingBalance - CheapPrice);
+        AssertThat(_f.Ui.BalanceText).IsEqual($"Balance: {StartingBalance - CheapPrice}");
+        AssertThat(_f.Ordering.DeliveredCount).IsEqual(1);
+        AssertBool(_f.Ui.MessageText.Contains("Ordered")).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void PressingAnUnaffordableItemShowsAMessageAndChangesNothing()
     {
-        _terminal.Interact();
+        _f.Terminal.Interact();
 
-        _ui.PressItem(1);
+        _f.Ui.PressItem(1);
 
-        AssertThat(_money.Balance).IsEqual(StartingBalance);
-        AssertThat(_ordering.DeliveredCount).IsEqual(0);
-        AssertBool(_ui.MessageText.Contains("Not enough money")).IsTrue();
+        AssertThat(_f.Money.Balance).IsEqual(StartingBalance);
+        AssertThat(_f.Ordering.DeliveredCount).IsEqual(0);
+        AssertBool(_f.Ui.MessageText.Contains("Not enough money")).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void PressingALockedItemShowsTheLockMessageAndChangesNothing()
     {
-        _terminal.Interact();
+        _f.Terminal.Interact();
 
-        _ui.PressItem(2);
+        _f.Ui.PressItem(2);
 
-        AssertThat(_terminal.LastOrder?.Status).IsEqual(OrderStatus.Locked);
-        AssertThat(_money.Balance).IsEqual(StartingBalance);
-        AssertThat(_ordering.DeliveredCount).IsEqual(0);
-        AssertThat(_ui.MessageText).IsEqual("locked is locked. Reach a higher shop level to order it.");
-        AssertBool(_ui.MessageText.Contains("cannot be ordered right now")).IsFalse();
+        AssertThat(_f.Terminal.LastOrder?.Status).IsEqual(OrderStatus.Locked);
+        AssertThat(_f.Money.Balance).IsEqual(StartingBalance);
+        AssertThat(_f.Ordering.DeliveredCount).IsEqual(0);
+        AssertThat(_f.Ui.MessageText).IsEqual("locked is locked. Reach a higher shop level to order it.");
+        AssertBool(_f.Ui.MessageText.Contains("cannot be ordered right now")).IsFalse();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void RapidDoubleOrderChargesAndSpawnsExactlyTwice()
     {
-        _money.Add(500);
-        _terminal.Interact();
+        _f.Money.Add(500);
+        _f.Terminal.Interact();
 
-        _ui.PressItem(0);
-        _ui.PressItem(0);
+        _f.Ui.PressItem(0);
+        _f.Ui.PressItem(0);
 
-        AssertThat(_money.Balance).IsEqual(StartingBalance + 500 - 2 * CheapPrice);
-        AssertThat(_ordering.DeliveredCount).IsEqual(2);
+        AssertThat(_f.Money.Balance).IsEqual(StartingBalance + 500 - 2 * CheapPrice);
+        AssertThat(_f.Ordering.DeliveredCount).IsEqual(2);
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void TerminalThatLeavesAndReentersTheTreeStillOrdersExactlyOncePerClick()
     {
-        _world.RemoveChild(_terminal);
-        _world.AddChild(_terminal);
-        _money.Add(500);
-        _terminal.Interact();
+        _f.World.RemoveChild(_f.Terminal);
+        _f.World.AddChild(_f.Terminal);
+        _f.Money.Add(500);
+        _f.Terminal.Interact();
 
-        _ui.PressItem(0);
+        _f.Ui.PressItem(0);
 
-        AssertThat(_money.Balance).IsEqual(StartingBalance + 500 - CheapPrice);
-        AssertThat(_ordering.DeliveredCount).IsEqual(1);
+        AssertThat(_f.Money.Balance).IsEqual(StartingBalance + 500 - CheapPrice);
+        AssertThat(_f.Ordering.DeliveredCount).IsEqual(1);
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void RemovedTerminalNoLongerReactsToTheUi()
     {
-        _world.RemoveChild(_terminal);
+        _f.World.RemoveChild(_f.Terminal);
 
-        _ui.PressItem(0);
+        _f.Ui.PressItem(0);
 
-        AssertThat(_ordering.DeliveredCount).IsEqual(0);
-        AssertThat(_money.Balance).IsEqual(StartingBalance);
-        _terminal.Free();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void OpenThenClose_LeavesCursorCaptured()
-    {
-        _terminal.Interact();
-
-        AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Visible);
-        AssertBool(_cursor.Claims.HasClaims).IsTrue();
-
-        _terminal.Close();
-
-        AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Captured);
-        AssertBool(_cursor.Claims.HasClaims).IsFalse();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void CloseTwiceAndOpenTwice_ClaimsAndReleasesOnce()
-    {
-        _terminal.Open();
-        _terminal.Open();
-        _terminal.Close();
-
-        AssertBool(_cursor.Claims.HasClaims).IsFalse();
-
-        _terminal.Close();
-
-        AssertBool(_cursor.Claims.HasClaims).IsFalse();
-        AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Captured);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void FreedWhileOpen_ReleasesClaim()
-    {
-        _terminal.Interact();
-
-        _terminal.Free();
-
-        AssertBool(_cursor.Claims.HasClaims).IsFalse();
-        AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Captured);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void EscapeClosesTheOpenTerminal()
-    {
-        _terminal.Interact();
-
-        _ui._UnhandledInput(new InputEventAction { Action = "ui_cancel", Pressed = true });
-
-        AssertBool(_terminal.IsOpen).IsFalse();
-        AssertBool(_ui.Visible).IsFalse();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void EscapeDoesNothingWhileTheTerminalIsClosed()
-    {
-        _ui._UnhandledInput(new InputEventAction { Action = "ui_cancel", Pressed = true });
-
-        AssertBool(_terminal.IsOpen).IsFalse();
-        AssertBool(_terminal.CanInteract).IsTrue();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void HighlightShowsAndClearsTheHighlightMesh()
-    {
-        var mesh = new MeshInstance3D { Visible = false };
-        _terminal.AddChild(mesh);
-        _terminal.HighlightMesh = mesh;
-
-        _terminal.Highlight();
-        AssertBool(mesh.Visible).IsTrue();
-
-        _terminal.ClearHighlight();
-        AssertBool(mesh.Visible).IsFalse();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void TerminalSitsOnTheInteractableLayerSeenByThePlayerRay()
-    {
-        AssertBool((_terminal.CollisionLayer & 4) != 0).IsTrue();
-    }
-
-    private static OrderCatalog MakeCatalog(params (string Id, int Price)[] entries)
-    {
-        var root = new Node3D();
-        var packed = new PackedScene();
-        packed.Pack(root);
-        root.Free();
-
-        var items = new OrderItem[entries.Length];
-        for (var i = 0; i < entries.Length; i++)
-            items[i] = new OrderItem
-            {
-                Id = entries[i].Id, DisplayName = entries[i].Id, Price = entries[i].Price, Scene = packed
-            };
-        return new OrderCatalog { Items = items };
+        AssertThat(_f.Ordering.DeliveredCount).IsEqual(0);
+        AssertThat(_f.Money.Balance).IsEqual(StartingBalance);
+        _f.Terminal.Free();
     }
 }
