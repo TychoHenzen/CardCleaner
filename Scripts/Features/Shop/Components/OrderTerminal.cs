@@ -18,7 +18,8 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
 {
     private const float DefaultInteractionRange = 4.5f;
-    private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
+    // Layer 3, in the InteractionSystem mask
+    private const uint InteractableLayerBit = 4;
     private const string CloseAction = "ui_cancel";
 
     private PlayerController? _player;
@@ -34,7 +35,8 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
     public OrderCatalog? Catalog { get; set; }
 
     /// <summary>
-    ///     Where this terminal's orders appear. Null falls back to the ordering service's own delivery point.
+    ///     Where this terminal's orders appear. Null falls back to the
+    ///     ordering service's own delivery point.
     /// </summary>
     [Export]
     public DeliveryMarker? DeliveryPoint { get; set; }
@@ -49,15 +51,19 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
     public float InteractionRange { get; set; } = DefaultInteractionRange;
 
     /// <summary>
-    ///     Whether <see cref="Ui" /> is shown as an overlay while the terminal is open. A PC whose screen
-    ///     shows the ordering screen itself (see PcDesktopLink) turns this off.
+    ///     Shows <see cref="Ui" /> as an overlay while open. A PC whose
+    ///     screen shows the ordering screen (PcDesktopLink) turns this off.
     /// </summary>
     public bool OverlayUi { get; set; } = true;
 
-    /// <summary>Raised when the terminal opens, before the cursor is claimed.</summary>
+    /// <summary>
+    ///     Raised when the terminal opens, before the cursor is claimed.
+    /// </summary>
     public event Action? Opened;
 
-    /// <summary>Raised when the terminal closes, before the cursor is released.</summary>
+    /// <summary>
+    ///     Raised when the terminal closes, before the cursor is released.
+    /// </summary>
     public event Action? Closed;
 
     public bool IsOpen { get; private set; }
@@ -217,10 +223,16 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         LastOrder = result;
         Ui.ShowMessage(result.Status switch
         {
-            OrderStatus.Success => $"Ordered {item.DisplayName}. It is at the delivery point.",
-            OrderStatus.InsufficientFunds => $"Not enough money for {item.DisplayName}.",
-            OrderStatus.DeliveryFull => "The delivery area is full. There is no room left for another item.",
-            OrderStatus.Locked => $"{item.DisplayName} is locked. Reach a higher shop level to order it.",
+            OrderStatus.Success =>
+                $"Ordered {item.DisplayName}. It is at the delivery point.",
+            OrderStatus.InsufficientFunds =>
+                $"Not enough money for {item.DisplayName}.",
+            OrderStatus.DeliveryFull =>
+                "The delivery area is full. There is no room left for another "
+                + "item.",
+            OrderStatus.Locked =>
+                $"{item.DisplayName} is locked. Reach a higher shop level "
+                + "to order it.",
             _ => $"{item.DisplayName} cannot be ordered right now."
         });
     }

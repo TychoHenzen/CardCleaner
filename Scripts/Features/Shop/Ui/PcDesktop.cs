@@ -4,9 +4,11 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Ui;
 
 /// <summary>
-///     The desktop on the backoffice PC screen. Only the Stock icon opens an app (the ordering screen in
-///     <see cref="StockApp" />); the other icons are shown disabled because their apps are not installed yet.
-///     The taskbar Close button raises <see cref="CloseRequested" />. The nodes live in the scene.
+///     The desktop on the backoffice PC screen. Only the Stock icon opens an
+///     app (the ordering screen in <see cref="StockApp" />); the other icons
+///     are shown disabled because their apps are not installed yet.
+///     The taskbar Close button raises <see cref="CloseRequested" />.
+///     The nodes live in the scene.
 /// </summary>
 public partial class PcDesktop : Control
 {
@@ -23,7 +25,10 @@ public partial class PcDesktop : Control
     private Button _stockIcon = null!;
     private Button _closeButton = null!;
 
-    /// <summary>The ordering app the Stock icon shows (an <see cref="OrderTerminalUi" />).</summary>
+    /// <summary>
+    ///     The ordering app the Stock icon shows
+    ///     (an <see cref="OrderTerminalUi" />).
+    /// </summary>
     [Export]
     public CanvasLayer? StockApp { get; set; }
 
@@ -46,7 +51,9 @@ public partial class PcDesktop : Control
         _closeButton.Pressed += () => CloseRequested?.Invoke();
     }
 
-    /// <summary>Hides any open app and returns the screen to the desktop.</summary>
+    /// <summary>
+    ///     Hides any open app and returns the screen to the desktop.
+    /// </summary>
     public void ResetToDesktop()
     {
         if (StockApp != null)

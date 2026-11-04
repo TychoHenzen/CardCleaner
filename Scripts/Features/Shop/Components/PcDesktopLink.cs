@@ -5,9 +5,11 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     Puts an <see cref="OrderTerminal" /> on the backoffice PC screen. Only the shop PC has this node, as a
-///     child of its terminal. While the terminal is open the screen camera looks at <see cref="Desktop" />, the
-///     pointer forwards the mouse to the screen, and the desktop's Close button closes the terminal.
+///     Puts an <see cref="OrderTerminal" /> on the backoffice PC screen.
+///     Only the shop PC has this node, as a child of its terminal.
+///     While the terminal is open the screen camera looks at
+///     <see cref="Desktop" />, the pointer forwards the mouse to the screen,
+///     and the desktop's Close button closes the terminal.
 ///     A terminal without this node shows its ordering screen as an overlay.
 /// </summary>
 public partial class PcDesktopLink : Node
@@ -16,15 +18,22 @@ public partial class PcDesktopLink : Node
     private PcDesktop? _desktop;
     private Camera3D? _previousCamera;
 
-    /// <summary>The desktop on the PC screen. Shows the ordering app, and is hidden while the PC is closed.</summary>
+    /// <summary>
+    ///     The desktop on the PC screen. Shows the ordering app, and is
+    ///     hidden while the PC is closed.
+    /// </summary>
     [Export]
     public PcDesktop? Desktop { get; set; }
 
-    /// <summary>Camera that looks at the PC screen while the desktop is open.</summary>
+    /// <summary>
+    ///     Camera that looks at the PC screen while the desktop is open.
+    /// </summary>
     [Export]
     public Camera3D? ScreenCamera { get; set; }
 
-    /// <summary>Forwards the mouse to the PC screen while the desktop is open.</summary>
+    /// <summary>
+    ///     Forwards the mouse to the PC screen while the desktop is open.
+    /// </summary>
     [Export]
     public PcScreenPointer? ScreenPointer { get; set; }
 
@@ -34,7 +43,9 @@ public partial class PcDesktopLink : Node
         _desktop = Desktop;
         if (_terminal == null || _desktop == null)
         {
-            ILog.Error($"{Name} must be a child of an OrderTerminal and needs a Desktop");
+            ILog.Error(
+                $"{Name} must be a child of an OrderTerminal "
+                + "and needs a Desktop");
             return;
         }
 
@@ -44,8 +55,10 @@ public partial class PcDesktopLink : Node
         _desktop.CloseRequested += RequestTerminalClose;
     }
 
-    // No _ExitTree handler: the terminal's own exit runs Close after this node's exit, and that Close must still
-    // restore the player camera. Both nodes leave the tree together, so the subscriptions never outlive the PC.
+    // No _ExitTree handler: the terminal's own exit runs Close after this
+    // node's exit, and that Close must still restore the player camera.
+    // Both nodes leave the tree together, so the subscriptions never
+    // outlive the PC.
     private void OnTerminalOpened()
     {
         if (_desktop == null)
@@ -69,7 +82,8 @@ public partial class PcDesktopLink : Node
             ScreenPointer.Active = false;
         if (ScreenCamera != null)
             ScreenCamera.Current = false;
-        if (_previousCamera != null && GodotObject.IsInstanceValid(_previousCamera))
+        if (_previousCamera != null
+            && GodotObject.IsInstanceValid(_previousCamera))
             _previousCamera.Current = true;
         _previousCamera = null;
         _desktop.ResetToDesktop();
