@@ -18,6 +18,7 @@ public class OrderTerminalTest
     private const int DearPrice = 400;
     private const int LockedPrice = 10;
     private const string LockedId = "locked";
+    private const string DesktopScene = "res://Scenes/Shop/PcDesktop.tscn";
 
     private Node3D _world = null!;
     private MoneyService _money = null!;
@@ -297,6 +298,126 @@ public class OrderTerminalTest
     public void TerminalSitsOnTheInteractableLayerSeenByThePlayerRay()
     {
         AssertBool((_terminal.CollisionLayer & 4) != 0).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void OpenWithDesktopMakesScreenCameraCurrentAndRestoresOnClose()
+    {
+        var playerCamera = AddPlayerCamera();
+        var (terminal, desktop, screenCamera, pointer) = MakeDesktopTerminal();
+
+        terminal.Interact();
+
+        AssertBool(screenCamera.Current).IsTrue();
+        AssertBool(playerCamera.Current).IsFalse();
+        AssertBool(pointer.Active).IsTrue();
+        AssertBool(desktop.Visible).IsTrue();
+        AssertBool(_ui.Visible).IsFalse();
+        AssertBool(_cursor.Claims.HasClaims).IsTrue();
+
+        terminal.Close();
+
+        AssertBool(playerCamera.Current).IsTrue();
+        AssertBool(screenCamera.Current).IsFalse();
+        AssertBool(pointer.Active).IsFalse();
+        AssertBool(desktop.Visible).IsFalse();
+        AssertBool(_cursor.Claims.HasClaims).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void EscapeClosesTheDesktop()
+    {
+        var playerCamera = AddPlayerCamera();
+        var (terminal, desktop, _, _) = MakeDesktopTerminal();
+        terminal.Interact();
+
+        terminal._UnhandledInput(new InputEventAction { Action = "ui_cancel", Pressed = true });
+
+        AssertBool(terminal.IsOpen).IsFalse();
+        AssertBool(desktop.Visible).IsFalse();
+        AssertBool(playerCamera.Current).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void FreeingTheTerminalWhileOpenRestoresTheCamera()
+    {
+        var playerCamera = AddPlayerCamera();
+        var (terminal, _, screenCamera, _) = MakeDesktopTerminal();
+        terminal.Interact();
+
+        terminal.Free();
+
+        AssertBool(playerCamera.Current).IsTrue();
+        AssertBool(screenCamera.Current).IsFalse();
+        AssertBool(_cursor.Claims.HasClaims).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void DoubleOpenAndDoubleCloseActOnce()
+    {
+        var playerCamera = AddPlayerCamera();
+        var (terminal, _, screenCamera, _) = MakeDesktopTerminal();
+
+        terminal.Open();
+        terminal.Open();
+
+        AssertBool(screenCamera.Current).IsTrue();
+        AssertBool(_cursor.Claims.HasClaims).IsTrue();
+
+        terminal.Close();
+        terminal.Close();
+
+        AssertBool(playerCamera.Current).IsTrue();
+        AssertBool(_cursor.Claims.HasClaims).IsFalse();
+        AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Captured);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TerminalWithoutDesktopKeepsTheOverlayBehaviour()
+    {
+        var playerCamera = AddPlayerCamera();
+
+        _terminal.Interact();
+
+        AssertBool(_terminal.Desktop == null).IsTrue();
+        AssertBool(_ui.Visible).IsTrue();
+        AssertBool(playerCamera.Current).IsTrue();
+    }
+
+    private Camera3D AddPlayerCamera()
+    {
+        var camera = new Camera3D();
+        _world.AddChild(camera);
+        camera.Current = true;
+        return camera;
+    }
+
+    // A PC built the way the shop scene builds it: a desktop from its scene, a screen camera and a pointer.
+    private (OrderTerminal Terminal, PcDesktop Desktop, Camera3D ScreenCamera, PcScreenPointer Pointer)
+        MakeDesktopTerminal()
+    {
+        var ui = new OrderTerminalUi();
+        var desktop = GD.Load<PackedScene>(DesktopScene).Instantiate<PcDesktop>();
+        desktop.StockApp = ui;
+        desktop.Visible = false;
+        var screenCamera = new Camera3D();
+        var pointer = new PcScreenPointer();
+        var terminal = new OrderTerminal
+        {
+            Catalog = _terminal.Catalog, Ui = ui, Desktop = desktop, ScreenCamera = screenCamera, Pointer = pointer
+        };
+
+        _world.AddChild(ui);
+        _world.AddChild(desktop);
+        _world.AddChild(screenCamera);
+        _world.AddChild(pointer);
+        _world.AddChild(terminal);
+        return (terminal, desktop, screenCamera, pointer);
     }
 
     private static OrderCatalog MakeCatalog(params (string Id, int Price)[] entries)

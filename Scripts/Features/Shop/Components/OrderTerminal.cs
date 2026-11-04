@@ -18,12 +18,14 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
 {
     private const float DefaultInteractionRange = 4.5f;
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
+    private const string CloseAction = "ui_cancel";
 
     private PlayerController? _player;
     private IMoneyService? _money;
     private IOrderingService? _ordering;
     private ICursorOwner? _cursor;
     private IServiceResolver? _services;
+    private Camera3D? _previousCamera;
 
     /// <summary>Items this terminal sells. Assign a different catalog for a different terminal.</summary>
     [Export]
@@ -43,6 +45,20 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
 
     [Export]
     public float InteractionRange { get; set; } = DefaultInteractionRange;
+
+    /// <summary>
+    ///     The desktop shown on the PC screen. When null the terminal opens <see cref="Ui" /> as an overlay instead.
+    /// </summary>
+    [Export]
+    public PcDesktop? Desktop { get; set; }
+
+    /// <summary>Camera that looks at the PC screen while the desktop is open.</summary>
+    [Export]
+    public Camera3D? ScreenCamera { get; set; }
+
+    /// <summary>Forwards the mouse to the PC screen while the desktop is open.</summary>
+    [Export]
+    public PcScreenPointer? Pointer { get; set; }
 
     public bool IsOpen { get; private set; }
 
@@ -114,6 +130,17 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         Unsubscribe();
     }
 
+    // Escape must close the PC even when the desktop is open: the desktop sits in a SubViewport,
+    // which does not receive the key, so the terminal in the main tree handles it itself.
+    public override void _UnhandledInput(InputEvent @event)
+    {
+        if (!IsOpen || !@event.IsActionPressed(CloseAction))
+            return;
+
+        GetViewport().SetInputAsHandled();
+        Close();
+    }
+
     public void Open()
     {
         if (IsOpen || Ui == null)
@@ -124,7 +151,11 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         if (_money != null)
             Ui.SetBalance(_money.Balance);
         Ui.ShowMessage(string.Empty);
-        Ui.Visible = true;
+
+        if (Desktop != null)
+            OpenOnDesktop(Desktop);
+        else
+            Ui.Visible = true;
 
         _cursor?.Claim(this);
         _player = GetTree().GetFirstNodeInGroup("player") as PlayerController;
@@ -140,11 +171,37 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         IsOpen = false;
         if (Ui != null)
             Ui.Visible = false;
+        if (Desktop != null)
+            CloseOnDesktop(Desktop);
 
         _cursor?.Release(this);
         if (_player != null && GodotObject.IsInstanceValid(_player))
             _player.ControlEnabled = true;
         _player = null;
+    }
+
+    private void OpenOnDesktop(PcDesktop desktop)
+    {
+        _previousCamera = GetViewport().GetCamera3D();
+        if (ScreenCamera != null)
+            ScreenCamera.Current = true;
+        if (Pointer != null)
+            Pointer.Active = true;
+        desktop.ResetToDesktop();
+        desktop.Visible = true;
+    }
+
+    private void CloseOnDesktop(PcDesktop desktop)
+    {
+        if (Pointer != null)
+            Pointer.Active = false;
+        if (ScreenCamera != null)
+            ScreenCamera.Current = false;
+        if (_previousCamera != null && GodotObject.IsInstanceValid(_previousCamera))
+            _previousCamera.Current = true;
+        _previousCamera = null;
+        desktop.ResetToDesktop();
+        desktop.Visible = false;
     }
 
     private void Subscribe()
@@ -155,6 +212,8 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         Unsubscribe();
         Ui.OrderRequested += OnOrderRequested;
         Ui.CloseRequested += Close;
+        if (Desktop != null)
+            Desktop.CloseRequested += Close;
         if (_money != null)
             _money.BalanceChanged += Ui.SetBalance;
     }
@@ -166,6 +225,8 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
 
         Ui.OrderRequested -= OnOrderRequested;
         Ui.CloseRequested -= Close;
+        if (Desktop != null)
+            Desktop.CloseRequested -= Close;
         if (_money != null)
             _money.BalanceChanged -= Ui.SetBalance;
     }
