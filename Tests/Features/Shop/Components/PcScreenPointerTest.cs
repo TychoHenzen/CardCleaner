@@ -74,6 +74,17 @@ public class PcScreenPointerTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public static void RayHittingTheBackFaceMapsToNone()
+    {
+        bool hit = PcScreenPointer.TryMapToPixel(
+            new Vector3(0f, 0f, -2f), new Vector3(0f, 0f, 1f),
+            Transform3D.Identity, QuadSize, Viewport, out _);
+
+        AssertThat(hit).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static void ParallelRayMapsToNone()
     {
         bool hit = PcScreenPointer.TryMapToPixel(

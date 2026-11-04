@@ -148,7 +148,7 @@ public class PcDesktopLinkTest
 
     // A PC built the way the shop scene builds it: the desktop from its scene (showing the terminal's ordering
     // screen), a screen camera and a pointer, all wired by a PcDesktopLink child of the terminal.
-    private (PcDesktop Desktop, Camera3D ScreenCamera, PcScreenPointer Pointer) BuildDesktopPc()
+    private DesktopPc BuildDesktopPc()
     {
         var desktop = GD.Load<PackedScene>(DesktopScene).Instantiate<PcDesktop>();
         desktop.StockApp = _ui;
@@ -161,6 +161,8 @@ public class PcDesktopLinkTest
         _world.AddChild(screenCamera);
         _world.AddChild(pointer);
         _terminal.AddChild(link);
-        return (desktop, screenCamera, pointer);
+        return new DesktopPc(desktop, screenCamera, pointer);
     }
+
+    private sealed record DesktopPc(PcDesktop Desktop, Camera3D ScreenCamera, PcScreenPointer Pointer);
 }

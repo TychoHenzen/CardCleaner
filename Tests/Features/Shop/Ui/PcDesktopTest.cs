@@ -164,7 +164,7 @@ public class PcDesktopTest
         }
     }
 
-    /// <summary>Maps a SubViewport pixel back to the quad point showing it, then projects that point to the screen.</summary>
+    /// <summary>Maps a SubViewport pixel to the quad point showing it, then projects it to the screen.</summary>
     private static Vector2 ScreenPositionOf(Camera3D camera, Vector2 pixel)
     {
         var quadPoint = new Vector3(pixel.X / ScreenSize.X - 0.5f, 0.5f - pixel.Y / ScreenSize.Y, 0f);
