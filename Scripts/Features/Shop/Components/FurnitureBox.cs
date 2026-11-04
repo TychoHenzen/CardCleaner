@@ -13,7 +13,9 @@ public partial class FurnitureBox : RigidBody3D, IInteractable, IDependent
 {
     private const float DefaultInteractionRange = 4.5f;
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
-    private const string GroupName = "furniture_boxes";
+
+    /// <summary>Scene-tree group of every furniture box, for code that lists the unopened boxes.</summary>
+    public const string GroupName = "furniture_boxes";
 
     private IServiceResolver? _services;
     private IFurniturePlacement? _placement;

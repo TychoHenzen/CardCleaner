@@ -94,12 +94,11 @@ public class FurnitureSaveSceneTest
         AssertBool(ShopFurnitureRig.CrossesShelf(route)).IsFalse();
     }
 
-    // Fallback: a whole-slot round trip through GameSaveService to disk needs a world the shop scene does not
-    // provide, so this case proves the same thing at NodeSave level. The stored records are copied into a fresh
-    // save and loaded into a shop with the shelf removed, and the shelf must come back.
+    // NodeSave level only: the stored records are copied into a fresh save and loaded into a shop with the shelf
+    // removed. The slot file round trip is FurnitureSlotSaveSceneTest.
     [TestCase]
     [TestCategory("Unit")]
-    public async Task AFullSlotRoundTripKeepsTheShelf()
+    public async Task ReloadingTheStoredRecordsKeepsTheShelf()
     {
         var placed = await PlaceShelf(8f, 6f);
         var save = new NodeSave();

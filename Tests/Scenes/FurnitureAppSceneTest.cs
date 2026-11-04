@@ -21,7 +21,6 @@ public class FurnitureAppSceneTest
     private const string ShelfUnitName = "Shelf unit";
     private const string ShelfUnitId = "shelf_unit";
     private const string RawShelfId = "shelf";
-    private const string FurnitureBoxGroup = "furniture_boxes";
     private const int UnaffordableBalance = 50;
     private static readonly Vector2I RootWindowSize = new(1280, 720);
 
@@ -90,7 +89,7 @@ public class FurnitureAppSceneTest
         AssertThat(world.GetChildCount()).IsEqual(before + 1);
         var delivered = world.GetChild(before) as FurnitureBox;
         AssertBool(delivered != null).IsTrue();
-        AssertBool(delivered!.IsInGroup(FurnitureBoxGroup)).IsTrue();
+        AssertBool(delivered!.IsInGroup(FurnitureBox.GroupName)).IsTrue();
         AssertString(delivered.Item!.Id).IsEqual(ShelfUnitId);
         AssertDeliveredInSlots(world, before, delivery);
         // The cart rows of the app are queued for deletion; the last frame lets those frees run before the test ends.

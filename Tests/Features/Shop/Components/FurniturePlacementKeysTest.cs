@@ -40,7 +40,7 @@ public class FurniturePlacementKeysTest
     [AfterTest]
     public void TearDown()
     {
-        // A move in progress holds its piece outside the tree; cancelling puts it back so the runner frees it.
+        // Cancelling a move in progress puts the carried piece back down before the runner frees the nodes.
         _controller.Cancel();
         TestServices.Reset();
         // The nodes are freed by the test runner; drop the references so no case reads a freed node.
@@ -81,22 +81,6 @@ public class FurniturePlacementKeysTest
         AssertBool(_controller.IsActive).IsFalse();
         AssertInt(_root.GetChildCount()).IsEqual(1);
         AssertBool(GodotObject.IsInstanceValid(second)).IsTrue();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void PickUpKeyStartsAMove()
-    {
-        AssertBool(_controller.Begin(NewBox())).IsTrue();
-        _controller.AimAt(8f, 6f);
-        AssertBool(_controller.Confirm()).IsTrue();
-        var placed = (PlacedFurniture)_root.GetChild(0);
-        _controller.AimedFurniture = placed;
-
-        Press(Key.G);
-
-        AssertBool(_controller.IsActive).IsTrue();
-        AssertInt(_root.GetChildCount()).IsEqual(0);
     }
 
     [TestCase]

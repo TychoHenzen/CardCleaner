@@ -16,11 +16,6 @@ public partial class FurnitureSaveService : Node, ISaveable
 {
     public const string RecordsKey = "records";
 
-    /// <summary>
-    ///     The group <see cref="FurnitureBox" /> joins; its own constant is private, so it is repeated here.
-    /// </summary>
-    private const string BoxGroup = "furniture_boxes";
-
     [Export] public FurnitureCatalog? Furniture { get; set; }
 
     [Export] public OrderCatalog? Boxes { get; set; }
@@ -61,6 +56,6 @@ public partial class FurnitureSaveService : Node, ISaveable
     /// <summary>Every furniture box in the group while this node is in the tree; none outside it.</summary>
     private IEnumerable<FurnitureBox> FurnitureBoxes() =>
         IsInsideTree()
-            ? GetTree().GetNodesInGroup(BoxGroup).OfType<FurnitureBox>()
+            ? GetTree().GetNodesInGroup(FurnitureBox.GroupName).OfType<FurnitureBox>()
             : Enumerable.Empty<FurnitureBox>();
 }

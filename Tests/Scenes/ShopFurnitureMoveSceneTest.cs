@@ -1,8 +1,13 @@
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
+using Saveable;
 using static CardCleaner.Tests.Scenes.ShopFurnitureRig;
 
 namespace CardCleaner.Tests.Scenes;
@@ -45,7 +50,7 @@ public class ShopFurnitureMoveSceneTest
     [AfterTest]
     public void Teardown()
     {
-        // A move in progress holds its piece outside the tree; cancelling puts it back so the shop frees it.
+        // Cancelling a move in progress puts the carried piece back down before the shop is freed.
         _controller.Cancel();
         TestServices.Reset();
         _root.RemoveChild(_shop);
@@ -60,13 +65,20 @@ public class ShopFurnitureMoveSceneTest
         int count = _region.RebakeCount;
 
         AssertBool(_controller.BeginMove(placed)).IsTrue();
-        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(0);
+        // The piece stays in the tree while carried, hidden and off the collision layer.
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
+        AssertBool(placed.IsCarried).IsTrue();
+        AssertBool(placed.Visible).IsFalse();
+        AssertInt((int)placed.CollisionLayer).IsEqual(0);
         AssertBool(_controller.IsActive).IsTrue();
         AssertInt(_region.RebakeCount).IsEqual(count + 1);
 
         _controller.AimAt(4f, 6f);
         AssertBool(_controller.Confirm()).IsTrue();
         AssertBool(ReferenceEquals(_furnitureRoot.GetChild(0), placed)).IsTrue();
+        AssertBool(placed.IsCarried).IsFalse();
+        AssertBool(placed.Visible).IsTrue();
+        AssertInt((int)placed.CollisionLayer).IsEqual(1);
         AssertBool(placed.Position.IsEqualApprox(new Vector3(4f, 0f, 6f))).IsTrue();
         AssertInt(_region.RebakeCount).IsEqual(count + 2);
     }
@@ -98,13 +110,53 @@ public class ShopFurnitureMoveSceneTest
     public async Task PickUpIsRefusedWhileTheShelfHoldsStock()
     {
         var placed = await PlaceShelf(8f, 6f);
-        placed.HoldsStockOverride = () => true;
+        var slot = placed.GetNode<CardShelf>(PlacedFurniture.ContentName).Slots.First();
+        var card = ShopTestCards.Create(new CardSignature());
+        _shop.GetNode("World").AddChild(card);
+        AssertBool(slot.TryLock(card)).IsTrue();
+        AssertBool(placed.HoldsStock).IsTrue();
         int count = _region.RebakeCount;
 
         AssertBool(_controller.BeginMove(placed)).IsFalse();
         AssertBool(ReferenceEquals(_furnitureRoot.GetChild(0), placed)).IsTrue();
         AssertBool(_controller.IsActive).IsFalse();
         AssertInt(_region.RebakeCount).IsEqual(count);
+
+        // Taking the card back off the shelf lets the same shelf be picked up again.
+        slot.ReleaseCard(card);
+        AssertBool(_controller.BeginMove(placed)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ASaveDuringAMoveKeepsTheShelfAtItsOldPose()
+    {
+        var placed = await PlaceShelf(8f, 6f);
+        AssertBool(_controller.BeginMove(placed)).IsTrue();
+        _controller.AimAt(4f, 6f);
+        var save = new NodeSave();
+        _shop.GetNode<FurnitureSaveService>("Services/FurnitureSave").Save(save);
+
+        AssertBool(save.TryGetProperty<string>(FurnitureSaveService.RecordsKey, out var json)).IsTrue();
+        var records = FurnitureSaveCodec.Decode(json);
+        AssertInt(records.Count).IsEqual(1);
+        AssertBool(records[0].X == 8f && records[0].Z == 6f && !records[0].IsBox).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task AControllerLeavingTheTreeMidMoveReturnsTheShelf()
+    {
+        var placed = await PlaceShelf(8f, 6f);
+        AssertBool(_controller.BeginMove(placed)).IsTrue();
+
+        var parent = _controller.GetParent();
+        parent.RemoveChild(_controller);
+
+        AssertBool(placed.IsCarried).IsFalse();
+        AssertBool(placed.Visible).IsTrue();
+        AssertBool(ReferenceEquals(placed.GetParent(), _furnitureRoot)).IsTrue();
+        parent.AddChild(_controller);
     }
 
     [TestCase]

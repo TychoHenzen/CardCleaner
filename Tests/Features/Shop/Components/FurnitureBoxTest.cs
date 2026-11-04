@@ -69,7 +69,7 @@ public class FurnitureBoxTest
     {
         var box = BuildBox(ShelfBoxPath);
 
-        AssertBool(box.IsInGroup("furniture_boxes")).IsTrue();
+        AssertBool(box.IsInGroup(FurnitureBox.GroupName)).IsTrue();
         AssertBool((box.CollisionLayer & InteractableLayerBit) == InteractableLayerBit).IsTrue();
     }
 

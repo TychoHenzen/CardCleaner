@@ -27,7 +27,12 @@ public partial class FurniturePlacementController
         });
     }
 
-    public override void _ExitTree() => _input?.UnregisterAllActions(this);
+    public override void _ExitTree()
+    {
+        _input?.UnregisterAllActions(this);
+        // A controller leaving the tree mid-move puts the carried piece back, so it is never left hidden.
+        ReleaseCarried();
+    }
 
     public override void _PhysicsProcess(double delta)
     {

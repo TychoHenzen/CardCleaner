@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
@@ -87,7 +88,28 @@ public class PlacedFurnitureTest
 
         AssertBool(placed!.CanPickUp).IsTrue();
 
-        placed.HoldsStockOverride = () => true;
+        var slot = placed.GetNode<CardShelf>(PlacedFurniture.ContentName).Slots.First();
+        var card = AddNode(ShopTestCards.Create(new CardSignature()));
+        AssertBool(slot.TryLock(card)).IsTrue();
         AssertBool(placed.CanPickUp).IsFalse();
+
+        slot.ReleaseCard(card);
+        AssertBool(placed.CanPickUp).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void SetCarried_HidesThePieceAndLeavesTheCollisionLayer()
+    {
+        var placed = PlacedFurniture.Create(_shelf, Pose);
+        AddNode(placed!);
+
+        placed!.SetCarried(true);
+        AssertBool(placed.IsCarried && !placed.Visible).IsTrue();
+        AssertInt((int)placed.CollisionLayer).IsEqual(0);
+
+        placed.SetCarried(false);
+        AssertBool(!placed.IsCarried && placed.Visible).IsTrue();
+        AssertInt((int)placed.CollisionLayer).IsEqual(1);
     }
 }

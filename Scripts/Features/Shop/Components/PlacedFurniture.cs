@@ -1,4 +1,3 @@
-using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
@@ -16,9 +15,6 @@ public partial class PlacedFurniture : StaticBody3D
 
     private const uint FloorCollisionLayer = 1;
 
-    /// <summary>Test seam: replaces the shelf's stock check when set.</summary>
-    internal Func<bool>? HoldsStockOverride { get; set; }
-
     public FurnitureItem? Item { get; private set; }
 
     public int QuarterTurns { get; private set; }
@@ -28,10 +24,23 @@ public partial class PlacedFurniture : StaticBody3D
     public FurnitureRect Rect => FurniturePlacementModel.RectOf(Item!.Footprint, Pose);
 
     /// <summary>True when the piece is a shelf that still holds stock; such a piece cannot be picked up.</summary>
-    public bool HoldsStock =>
-        HoldsStockOverride?.Invoke() ?? (GetNodeOrNull<CardShelf>(ContentName) is { StockedCount: > 0 });
+    public bool HoldsStock => GetNodeOrNull<CardShelf>(ContentName) is { StockedCount: > 0 };
 
     public bool CanPickUp => !HoldsStock;
+
+    /// <summary>True while a placement session carries the piece.</summary>
+    public bool IsCarried { get; private set; }
+
+    /// <summary>
+    ///     Marks the piece as carried or put down. A carried piece is hidden and leaves the collision layer, so the
+    ///     navigation bake and the physics probes ignore it, yet it stays in the tree and in the saved furniture.
+    /// </summary>
+    public void SetCarried(bool carried)
+    {
+        IsCarried = carried;
+        Visible = !carried;
+        CollisionLayer = carried ? 0 : FloorCollisionLayer;
+    }
 
     /// <summary>
     ///     Builds the wrapper for an item at a pose. Returns null when the item has no scene that is a Node3D.

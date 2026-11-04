@@ -44,7 +44,7 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     internal bool AimOverride { get; set; }
 
     /// <summary>The placed furniture under the camera's aim while no session is active, or null.</summary>
-    internal PlacedFurniture? AimedFurniture { get; set; }
+    internal PlacedFurniture? AimedFurniture { get; private set; }
 
     public void Inject(IServiceResolver services) => _services = services;
 
@@ -89,7 +89,9 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
         _moving = furniture;
         _box = null;
         _physicsBlocked = false;
-        FurnitureRoot.RemoveChild(furniture);
+        // The piece stays in the tree, hidden and off the collision layer, so a save or a quit during the move
+        // still finds it at its old pose.
+        furniture.SetCarried(true);
         Navigation?.Rebake();
         CurrentPose = _oldPose;
         StartSession(item);
@@ -126,8 +128,15 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
 
         if (_moving != null)
         {
+            if (!GodotObject.IsInstanceValid(_moving))
+            {
+                // A load freed the piece while it was carried; there is nothing left to put down.
+                EndSession();
+                return false;
+            }
+
             _moving.Place(CurrentPose);
-            root.AddChild(_moving);
+            _moving.SetCarried(false);
         }
         else
         {
@@ -147,14 +156,23 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     {
         if (!IsActive)
             return;
-        if (_moving != null)
-        {
-            _moving.Place(_oldPose);
-            FurnitureRoot?.AddChild(_moving);
+        if (ReleaseCarried())
             Navigation?.Rebake();
-        }
 
         EndSession();
+    }
+
+    /// <summary>
+    ///     Puts a carried piece back down at the pose it was picked up from. False when nothing was carried, or
+    ///     when a load freed the piece meanwhile.
+    /// </summary>
+    private bool ReleaseCarried()
+    {
+        if (_moving == null || !GodotObject.IsInstanceValid(_moving))
+            return false;
+        _moving.Place(_oldPose);
+        _moving.SetCarried(false);
+        return true;
     }
 
     private void StartSession(FurnitureItem item)
@@ -206,7 +224,7 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
             return rects;
         foreach (var child in FurnitureRoot.GetChildren())
         {
-            if (child is PlacedFurniture { Item: not null } placed)
+            if (child is PlacedFurniture { Item: not null, IsCarried: false } placed)
                 rects.Add(placed.Rect);
         }
 
