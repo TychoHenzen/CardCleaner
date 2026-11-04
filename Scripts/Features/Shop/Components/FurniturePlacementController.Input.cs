@@ -1,5 +1,4 @@
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
@@ -10,12 +9,6 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 /// </summary>
 public partial class FurniturePlacementController
 {
-    /// <summary>How far in front of the camera the pick-up probe reaches, in metres.</summary>
-    private const float PickUpReach = 4.5f;
-
-    /// <summary>The collision layer that placed furniture and the shop walls sit on.</summary>
-    private const uint FurnitureLayerMask = 1;
-
     public override void _Ready()
     {
         if (_services == null)
@@ -60,50 +53,16 @@ public partial class FurniturePlacementController
         }
 
         AimedFurniture = null;
-        var blocked = IsPhysicallyBlocked();
+        var blocked = _item != null && FurnitureProbe.IsBlocked(GetViewport().World3D, _item, CurrentPose);
         if (blocked == _physicsBlocked)
             return;
         _physicsBlocked = blocked;
         Refresh();
     }
 
-    private bool IsPhysicallyBlocked()
-    {
-        if (_item == null)
-            return false;
-
-        var rect = FurniturePlacementModel.RectOf(_item.Footprint, CurrentPose);
-        var width = rect.MaxX - rect.MinX - 0.1f;
-        var depth = rect.MaxZ - rect.MinZ - 0.1f;
-        var height = _item.Height - 0.1f;
-        var shape = new BoxShape3D { Size = new Vector3(width, height, depth) };
-        var query = new PhysicsShapeQueryParameters3D
-        {
-            Shape = shape,
-            Transform = new Transform3D(Basis.Identity, new Vector3(CurrentPose.X, 0.05f + height / 2f, CurrentPose.Z)),
-            CollisionMask = FurnitureLayerMask
-        };
-        var hits = GetViewport().World3D.DirectSpaceState.IntersectShape(query, 1);
-        return hits.Count > 0;
-    }
-
     private void UpdateAimedFurniture()
     {
-        AimedFurniture = null;
         var camera = GetViewport().GetCamera3D();
-        if (camera == null)
-            return;
-
-        var from = camera.GlobalPosition;
-        var to = from - camera.GlobalBasis.Z * PickUpReach;
-        var result = GetViewport().World3D.DirectSpaceState.IntersectRay(
-            PhysicsRayQueryParameters3D.Create(from, to, FurnitureLayerMask));
-        if (result.Count == 0 || result["collider"].Obj is not Node3D hit)
-            return;
-
-        Node? node = hit;
-        while (node != null && node is not PlacedFurniture)
-            node = node.GetParent();
-        AimedFurniture = node as PlacedFurniture;
+        AimedFurniture = camera == null ? null : FurnitureProbe.Aimed(GetViewport().World3D, camera);
     }
 }

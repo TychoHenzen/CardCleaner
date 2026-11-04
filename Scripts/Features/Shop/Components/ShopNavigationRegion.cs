@@ -4,10 +4,13 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     Bakes the shop's navigation mesh from the static colliders of the "shop_navigation" group when the scene
-///     loads, and again on <see cref="Rebake" /> (for example after a wall, door or furniture changes). The scene's
-///     own NavigationMesh holds the bake settings only; the baked mesh is a copy, so no polygons are ever stored in
-///     the scene file. <see cref="RebakeCount" /> counts every bake, the first one in _Ready included.
+///     Bakes the shop's navigation mesh from the static colliders of the
+///     "shop_navigation" group when the scene loads, and again on
+///     <see cref="Rebake" /> (for example after a wall, door or furniture
+///     changes). The scene's own NavigationMesh holds the bake settings only;
+///     the baked mesh is a copy, so no polygons are ever stored in the scene
+///     file. <see cref="RebakeCount" /> counts every bake, the first one in
+///     _Ready included.
 /// </summary>
 public partial class ShopNavigationRegion : NavigationRegion3D
 {
