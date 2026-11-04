@@ -73,6 +73,7 @@ public class DailyBillBookTest
     public static void ScanBuildsTheBookWithRent()
     {
         var container = new ServiceContainer();
+        container.RegisterSingleton(typeof(IShopExpansion), new NoLotsExpansion());
         TestServices.RegisterGameServiceClasses(container);
 
         var book = container.Resolve<IDailyBillBook>();
@@ -82,6 +83,23 @@ public class DailyBillBookTest
         AssertThat(lines[0].Name).IsEqual("Rent");
         AssertThat(lines[0].Amount).IsEqual(RentAmount);
         AssertThat(book.TotalFor(1)).IsEqual(RentAmount);
+    }
+
+    private sealed class NoLotsExpansion : IShopExpansion
+    {
+        public ExpansionPlan Plan { get; } = new([], new HashSet<string>());
+
+        public event System.Action<string>? Opened
+        {
+            add { }
+            remove { }
+        }
+
+        public int DailyRent => 0;
+
+        public int ExtraCustomersPerDay => 0;
+
+        public PurchaseOutcome TryBuy(string lotId) => PurchaseOutcome.Unknown;
     }
 
     private sealed class FakeSource : IDailyBillSource

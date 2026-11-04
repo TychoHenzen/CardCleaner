@@ -3,7 +3,7 @@ using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
 
-/// <summary>Opening, closing and cursor claims of the terminal, its escape key, highlight and interaction layer.</summary>
+/// <summary>Opening, closing and cursor claims of the terminal, its escape key, highlight and layer.</summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class OrderTerminalOpenCloseTest

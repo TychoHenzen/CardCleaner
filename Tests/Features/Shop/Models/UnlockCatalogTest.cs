@@ -18,6 +18,7 @@ public class UnlockCatalogTest
         var catalog = UnlockCatalog.Default;
 
         AssertThat(catalog.RequiredLevel("bulk_packing_station")).IsEqual(2);
+        AssertThat(catalog.RequiredLevel("expansion_side_wing_1")).IsEqual(2);
         foreach (var id in new[]
                  {
                      "shelf", "shelf_unit", "cardboard_box", "product_shelf", "storage_rack",

@@ -53,7 +53,8 @@ public sealed class ShopCustomerRig
         TestServices.Container.RegisterSingleton(RandomSources.Create(400UL));
         TestServices.Container.RegisterSingleton<IShopDayService>(rig.Day);
         TestServices.Container.RegisterSingleton<IComplaintLog>(rig.Complaints);
-        TestServices.Container.RegisterSingleton<IDailyBillBook>(new DailyBillBook(new RentBillSource()));
+        TestServices.Container.RegisterSingleton<IDailyBillBook>(
+            new DailyBillBook(new IDailyBillSource[] { new RentBillSource() }));
         TestServices.Container.RegisterSingleton<ICheckoutHandoff>(new InstantCheckout(rig.Money));
         rig.Day.SaveCommand = new FakeSaveGame();
         rig.Spawner.CustomerSpeed = FastSpeed;

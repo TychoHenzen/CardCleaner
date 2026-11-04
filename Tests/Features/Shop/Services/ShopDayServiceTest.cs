@@ -253,6 +253,6 @@ public class ShopDayServiceTest
         AutoFree(new ShopDayService
         {
             Money = AutoFree(new MoneyService { StartingBalance = startingBalance }),
-            Bills = new DailyBillBook(new RentBillSource()),
+            Bills = new DailyBillBook(new IDailyBillSource[] { new RentBillSource() }),
         });
 }

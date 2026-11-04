@@ -230,7 +230,7 @@ public class ShopDayServiceSaveTest
         AutoFree(new ShopDayService
         {
             Money = AutoFree(new MoneyService { StartingBalance = startingBalance }),
-            Bills = new DailyBillBook(new RentBillSource()),
+            Bills = new DailyBillBook(new IDailyBillSource[] { new RentBillSource() }),
         });
 
     // Records each day-close save and runs the given check inside the save, as the slot writer would.
