@@ -3,7 +3,8 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>
-///     One orderable item: what the player sees in a catalog and what is spawned when it is bought.
+///     One orderable item: what the player sees in a catalog
+///     and what is spawned when it is bought.
 /// </summary>
 [GlobalClass]
 public partial class OrderItem : Resource
@@ -20,11 +21,11 @@ public partial class OrderItem : Resource
     [Export]
     public int Price { get; set; }
 
-    /// <summary>Scene instanced at the delivery point when the item is ordered.</summary>
+    /// <summary>Scene instanced at the delivery point on order.</summary>
     [Export]
     public PackedScene? Scene { get; set; }
 
-    /// <summary>Picture shown on the Stock app card. Null shows a generated placeholder tile.</summary>
+    /// <summary>Picture on the Stock app card. Null shows a placeholder tile.</summary>
     [Export]
     public Texture2D? Thumbnail { get; set; }
 }

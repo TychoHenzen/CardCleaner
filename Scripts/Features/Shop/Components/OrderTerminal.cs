@@ -1,7 +1,4 @@
-using System;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Pause.Models;
-using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
@@ -10,23 +7,14 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     A PC the player looks at and clicks to open an ordering screen
-///     for <see cref="Catalog" />. While the screen is open the player
-///     cannot move or look, and the mouse cursor is released through
-///     ICursorOwner; closing it restores both.
+///     A <see cref="ScreenTerminal" /> whose screen is an ordering overlay
+///     (<see cref="Ui" />) for <see cref="Catalog" />. Opening and closing,
+///     the player lock, the cursor claim and Escape come from the base.
 /// </summary>
-public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
+public partial class OrderTerminal : ScreenTerminal
 {
-    private const float DefaultInteractionRange = 4.5f;
-    // Layer 3, in the InteractionSystem mask
-    private const uint InteractableLayerBit = 4;
-    private const string CloseAction = "ui_cancel";
-
-    private PlayerController? _player;
     private IMoneyService? _money;
     private IOrderingService? _ordering;
-    private ICursorOwner? _cursor;
-    private IServiceResolver? _services;
 
     /// <summary>
     ///     Items this terminal sells. Assign another catalog to sell others.
@@ -44,63 +32,18 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
     [Export]
     public OrderTerminalUi? Ui { get; set; }
 
-    [Export]
-    public Node3D? HighlightMesh { get; set; }
-
-    [Export]
-    public float InteractionRange { get; set; } = DefaultInteractionRange;
-
-    /// <summary>
-    ///     Shows <see cref="Ui" /> as an overlay while open. A PC whose
-    ///     screen shows the ordering screen (PcDesktopLink) turns this off.
-    /// </summary>
-    public bool OverlayUi { get; set; } = true;
-
-    /// <summary>
-    ///     Raised when the terminal opens, before the cursor is claimed.
-    /// </summary>
-    public event Action? Opened;
-
-    /// <summary>
-    ///     Raised when the terminal closes, before the cursor is released.
-    /// </summary>
-    public event Action? Closed;
-
-    public bool IsOpen { get; private set; }
-
     /// <summary>
     ///     Outcome of the latest order, or null when none was placed.
     /// </summary>
     public OrderResult? LastOrder { get; private set; }
 
-    public bool CanInteract => !IsOpen && Catalog != null && Ui != null;
+    public override bool CanInteract => !IsOpen && Catalog != null && Ui != null;
 
-    public Node3D InteractionBody => this;
-
-    public void Inject(IServiceResolver services) => _services = services;
-
-    public void Interact()
-    {
-        if (CanInteract)
-            Open();
-    }
-
-    public void Highlight()
-    {
-        if (HighlightMesh != null)
-            HighlightMesh.Visible = true;
-    }
-
-    public void ClearHighlight()
-    {
-        if (HighlightMesh != null)
-            HighlightMesh.Visible = false;
-    }
+    protected override bool CanOpen => Ui != null;
 
     public override void _Ready()
     {
-        CollisionLayer |= InteractableLayerBit;
-        ClearHighlight();
+        base._Ready();
 
         if (Catalog == null || Ui == null)
         {
@@ -111,15 +54,12 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         Ui.Populate(Catalog);
         Subscribe();
 
-        if (_services == null)
-        {
-            ILog.Error($"{Name} was not injected");
+        var services = Services;
+        if (services == null)
             return;
-        }
 
-        _services.Get<IOrderingService>(ordering => _ordering = ordering);
-        _services.Get<ICursorOwner>(cursor => _cursor = cursor);
-        _services.Get<IMoneyService>(money =>
+        services.Get<IOrderingService>(ordering => _ordering = ordering);
+        services.Get<IMoneyService>(money =>
         {
             _money = money;
             Subscribe();
@@ -133,58 +73,25 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
 
     public override void _ExitTree()
     {
-        if (IsOpen)
-            Close();
+        base._ExitTree();
         Unsubscribe();
     }
 
-    // Escape must close the PC even while the desktop is open: the desktop
-    // sits in a SubViewport, which does not receive the key, so the terminal
-    // in the main tree handles it itself.
-    public override void _UnhandledInput(InputEvent @event)
+    protected override void OnOpening()
     {
-        if (!IsOpen || !@event.IsActionPressed(CloseAction))
+        if (Ui == null)
             return;
 
-        GetViewport().SetInputAsHandled();
-        Close();
-    }
-
-    public void Open()
-    {
-        if (IsOpen || Ui == null)
-            return;
-
-        IsOpen = true;
-        ClearHighlight();
         if (_money != null)
             Ui.SetBalance(_money.Balance);
         Ui.ShowMessage(string.Empty);
-
-        if (OverlayUi)
-            Ui.Visible = true;
-        Opened?.Invoke();
-
-        _cursor?.Claim(this);
-        _player = GetTree().GetFirstNodeInGroup("player") as PlayerController;
-        if (_player != null)
-            _player.ControlEnabled = false;
+        Ui.Visible = true;
     }
 
-    public void Close()
+    protected override void OnClosing()
     {
-        if (!IsOpen)
-            return;
-
-        IsOpen = false;
         if (Ui != null)
             Ui.Visible = false;
-        Closed?.Invoke();
-
-        _cursor?.Release(this);
-        if (_player != null && GodotObject.IsInstanceValid(_player))
-            _player.ControlEnabled = true;
-        _player = null;
     }
 
     private void Subscribe()

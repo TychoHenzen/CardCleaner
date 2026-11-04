@@ -57,6 +57,10 @@ offset_top = -48.0
 grow_horizontal = 2
 grow_vertical = 0
 
+[node name="HomeButton" type="Button" parent="Taskbar"]
+layout_mode = 2
+text = "Home"
+
 [node name="CloseButton" type="Button" parent="Taskbar"]
 layout_mode = 2
 text = "Close"

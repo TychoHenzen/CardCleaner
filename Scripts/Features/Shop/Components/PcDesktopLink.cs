@@ -5,16 +5,15 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     Puts an <see cref="OrderTerminal" /> on the backoffice PC screen.
+///     Puts a <see cref="ScreenTerminal" /> on the backoffice PC screen.
 ///     Only the shop PC has this node, as a child of its terminal.
 ///     While the terminal is open the screen camera looks at
 ///     <see cref="Desktop" />, the pointer forwards the mouse to the screen,
 ///     and the desktop's Close button closes the terminal.
-///     A terminal without this node shows its ordering screen as an overlay.
 /// </summary>
 public partial class PcDesktopLink : Node
 {
-    private OrderTerminal? _terminal;
+    private ScreenTerminal? _terminal;
     private PcDesktop? _desktop;
     private Camera3D? _previousCamera;
 
@@ -39,17 +38,16 @@ public partial class PcDesktopLink : Node
 
     public override void _Ready()
     {
-        _terminal = GetParent() as OrderTerminal;
+        _terminal = GetParent() as ScreenTerminal;
         _desktop = Desktop;
         if (_terminal == null || _desktop == null)
         {
             ILog.Error(
-                $"{Name} must be a child of an OrderTerminal "
+                $"{Name} must be a child of a ScreenTerminal "
                 + "and needs a Desktop");
             return;
         }
 
-        _terminal.OverlayUi = false;
         _terminal.Opened += OnTerminalOpened;
         _terminal.Closed += OnTerminalClosed;
         _desktop.CloseRequested += RequestTerminalClose;

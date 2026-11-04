@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
@@ -16,7 +15,8 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 ///     End to end in the shop scene: interacting with the backoffice PC opens its desktop on the screen, the mouse is
-///     forwarded to the desktop as real input, and clicking Stock and then an item orders it.
+///     forwarded to the desktop as real input, and the Stock icon opens the Stock app on that screen. Ordering through
+///     the app is covered by ShopStockAppClickPathSceneTest.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -27,14 +27,13 @@ public class ShopPcDesktopSceneTest
 
     private Node3D _shop = null!;
     private PlayerController _player = null!;
-    private OrderTerminal _terminal = null!;
-    private OrderTerminalUi _ui = null!;
+    private ScreenTerminal _terminal = null!;
+    private StockApp _stockApp = null!;
     private PcDesktop _desktop = null!;
     private Button _stockIcon = null!;
     private SubViewport _desktopViewport = null!;
     private MeshInstance3D _screenQuad = null!;
     private Camera3D _screenCamera = null!;
-    private MoneyService _money = null!;
     private CursorOwner _cursor = null!;
     private Window _root = null!;
     private Vector2I _originalRootSize;
@@ -44,21 +43,21 @@ public class ShopPcDesktopSceneTest
     {
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _player = _shop.GetNode<PlayerController>("Player");
-        _terminal = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
-        _ui = _shop.GetNode<OrderTerminalUi>($"{DesktopViewportPath}/OrderUi");
+        _terminal = _shop.GetNode<ScreenTerminal>("World/Markers/PcLocation/PcTerminal");
+        _stockApp = _shop.GetNode<StockApp>($"{DesktopViewportPath}/StockApp");
         _desktop = _shop.GetNode<PcDesktop>($"{DesktopViewportPath}/PcDesktop");
         _stockIcon = _shop.GetNode<Button>($"{DesktopViewportPath}/PcDesktop/Icons/StockIcon");
         _desktopViewport = _shop.GetNode<SubViewport>(DesktopViewportPath);
         _screenQuad = _shop.GetNode<MeshInstance3D>("World/Markers/PcLocation/PcTerminal/ScreenQuad");
         _screenCamera = _shop.GetNode<Camera3D>("World/Markers/PcLocation/PcTerminal/ScreenCamera");
-        _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _cursor = _shop.GetNode<CursorOwner>("Services/CursorOwner");
+        var money = _shop.GetNode<MoneyService>("Services/MoneyService");
         var ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
 
         // The test scene is not the current scene, so hand the scene-owned services over directly.
         TestServices.Reset();
         TestServices.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
-        TestServices.Container.RegisterSingleton<IMoneyService>(_money);
+        TestServices.Container.RegisterSingleton<IMoneyService>(money);
         var progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
         TestServices.Container.RegisterSingleton<IShopProgression>(progression);
         TestServices.Container.RegisterSingleton<IOrderingService>(ordering);
@@ -123,41 +122,17 @@ public class ShopPcDesktopSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task ReopenShowsDesktopWithOrderingListClosed()
+    public async Task ReopenShowsDesktopWithStockAppClosed()
     {
         _terminal.Interact();
         await ClickAt(ScreenPositionOf(_stockIcon));
-        AssertBool(_ui.Visible).IsTrue();
+        AssertBool(_stockApp.Visible).IsTrue();
 
         await PressEscape();
         _terminal.Interact();
 
         AssertBool(_desktop.Visible).IsTrue();
-        AssertBool(_ui.Visible).IsFalse();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task ClickThroughForwardingOrdersAnItem()
-    {
-        var item = _terminal.Catalog!.Items[0];
-        var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
-        _money.Add(item.Price);
-        var balance = _money.Balance;
-        var before = _shop.GetNode("World").GetChildCount();
-
-        _terminal.Interact();
-        await ClickAt(ScreenPositionOf(_stockIcon));
-        var row = FindButton(_ui, item.Id);
-        AssertBool(row != null).IsTrue();
-        await ClickAt(ScreenPositionOf(row!));
-
-        AssertThat(_money.Balance).IsEqual(balance - item.Price);
-        AssertThat(_shop.GetNode("World").GetChildCount()).IsEqual(before + 1);
-        var spawned = (Node3D)_shop.GetNode("World").GetChildren().Last();
-        // Placed through a float32 transform, so the delivered position differs from the expected one by rounding
-        // (about 5e-5 m observed); the 1 cm tolerance matches ShopCarryingSceneTest.
-        AssertBool(spawned.GlobalPosition.DistanceTo(delivery + OrderingService.SlotOffset(0)) < 0.01f).IsTrue();
+        AssertBool(_stockApp.Visible).IsFalse();
     }
 
     // Maps a control on the desktop viewport to the window pixel where the mouse must click to hit it. The control's
@@ -203,18 +178,5 @@ public class ShopPcDesktopSceneTest
     {
         Input.ParseInputEvent(input);
         Input.FlushBufferedEvents();
-    }
-
-    private static Button? FindButton(Node root, string tooltip)
-    {
-        foreach (var child in root.GetChildren())
-        {
-            if (child is Button button && button.TooltipText == tooltip)
-                return button;
-            var found = FindButton(child, tooltip);
-            if (found != null)
-                return found;
-        }
-        return null;
     }
 }
