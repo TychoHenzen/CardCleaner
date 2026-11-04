@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Services;
-using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
@@ -22,15 +20,11 @@ public class ShopCheckoutXpSceneTest
     private const int LevelTwoXp = 50;
 
     private ShopCheckoutRig _rig = null!;
-    private ShopProgression _progression = null!;
-    private ShopHud _hud = null!;
 
     [BeforeTest]
     public async Task Setup()
     {
         _rig = await ShopCheckoutRig.Create();
-        _progression = _rig.Shop.GetNode<ShopProgression>("Services/ShopProgression");
-        _hud = _rig.Shop.GetNode<ShopHud>("DayUi/Hud");
     }
 
     [AfterTest]
@@ -43,9 +37,9 @@ public class ShopCheckoutXpSceneTest
     [TestCategory("Unit")]
     public void HudBarIsWiredToTheSceneProgressionAndStartsAtLevelOne()
     {
-        var bar = _hud.LevelBar!;
+        var bar = _rig.Hud.LevelBar!;
 
-        AssertThat(ReferenceEquals(bar.Progression, _progression)).IsTrue();
+        AssertThat(ReferenceEquals(bar.Progression, _rig.Progression)).IsTrue();
         AssertThat(bar.LevelLabel!.Text).IsEqual("Level 1");
         AssertThat(Mathf.IsEqualApprox(bar.Bar!.Value, 0.0)).IsTrue();
     }
@@ -60,9 +54,10 @@ public class ShopCheckoutXpSceneTest
         AssertThat(_rig.Counter.PayCard(FirstBasketTotal)).IsTrue();
 
         var expected = CheckoutXp.For(FirstBasketTotal);
-        AssertThat(_progression.Xp).IsEqual(expected);
-        AssertThat(Mathf.IsEqualApprox(_hud.LevelBar!.Bar!.Value, expected / (double)LevelTwoXp)).IsTrue();
-        AssertThat(_hud.LevelBar.LevelLabel!.Text).IsEqual("Level 1");
+        var bar = _rig.Hud.LevelBar!;
+        AssertThat(_rig.Progression.Xp).IsEqual(expected);
+        AssertThat(Mathf.IsEqualApprox(bar.Bar!.Value, expected / (double)LevelTwoXp)).IsTrue();
+        AssertThat(bar.LevelLabel!.Text).IsEqual("Level 1");
 
         // Let the first basket's props finish freeing before the next basket is scanned.
         await ISceneRunner.SyncProcessFrame;
@@ -71,8 +66,8 @@ public class ShopCheckoutXpSceneTest
 
         AssertThat(_rig.Counter.PayCard(SecondBasketTotal)).IsTrue();
 
-        AssertThat(_progression.Xp).IsEqual(LevelTwoXp);
-        AssertThat(_hud.LevelBar.LevelLabel!.Text).IsEqual("Level 2");
+        AssertThat(_rig.Progression.Xp).IsEqual(LevelTwoXp);
+        AssertThat(bar.LevelLabel!.Text).IsEqual("Level 2");
     }
 
     [TestCase]
@@ -84,17 +79,18 @@ public class ShopCheckoutXpSceneTest
 
         AssertThat(_rig.Counter.PayCard(FirstBasketTotal + 1)).IsFalse();
 
-        AssertThat(_progression.Xp).IsEqual(0);
-        AssertThat(_hud.LevelBar!.LevelLabel!.Text).IsEqual("Level 1");
+        AssertThat(_rig.Progression.Xp).IsEqual(0);
+        AssertThat(_rig.Hud.LevelBar!.LevelLabel!.Text).IsEqual("Level 1");
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void TopLevelShowsMax()
     {
-        _progression.AwardCheckout(MaxLevelAmount);
+        _rig.Progression.AwardCheckout(MaxLevelAmount);
 
-        AssertThat(_hud.LevelBar!.LevelLabel!.Text).IsEqual("Level 5 (max)");
-        AssertThat(Mathf.IsEqualApprox(_hud.LevelBar.Bar!.Value, 1.0)).IsTrue();
+        var bar = _rig.Hud.LevelBar!;
+        AssertThat(bar.LevelLabel!.Text).IsEqual("Level 5 (max)");
+        AssertThat(Mathf.IsEqualApprox(bar.Bar!.Value, 1.0)).IsTrue();
     }
 }
