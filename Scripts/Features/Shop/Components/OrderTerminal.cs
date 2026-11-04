@@ -128,9 +128,9 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         Unsubscribe();
     }
 
-    // Escape must close the PC even when the desktop is open: the desktop sits in a
-    // SubViewport, which does not receive the key, so the terminal in the main tree
-    // handles it itself.
+    // Escape must close the PC even while the desktop is open: the desktop
+    // sits in a SubViewport, which does not receive the key, so the terminal
+    // in the main tree handles it itself.
     public override void _UnhandledInput(InputEvent @event)
     {
         if (!IsOpen || !@event.IsActionPressed(CloseAction))
