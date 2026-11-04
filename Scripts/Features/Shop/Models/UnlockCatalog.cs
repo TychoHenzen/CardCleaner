@@ -4,8 +4,9 @@ using System.Collections.Generic;
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>
-///     The rows that say which shop level unlocks which item id. Pure rules, no engine types. An id with no row
-///     has no unlock level, so the shop treats it as locked.
+///     The rows that say which shop level unlocks which item id.
+///     Pure rules, no engine types. An id with no row has no unlock
+///     level, so the shop treats it as locked.
 /// </summary>
 public sealed class UnlockCatalog
 {
