@@ -1,9 +1,4 @@
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Pause.Components;
-using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
@@ -31,19 +26,7 @@ public class ShopStockAppSceneTest
     [BeforeTest]
     public async Task Setup()
     {
-        _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
-        var cursor = _shop.GetNode<CursorOwner>("Services/CursorOwner");
-
-        // The test scene is not the current scene, so hand the scene-owned services over directly.
-        TestServices.Reset();
-        TestServices.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
-        TestServices.Container.RegisterSingleton<IMoneyService>(_shop.GetNode<MoneyService>("Services/MoneyService"));
-        var progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
-        TestServices.Container.RegisterSingleton<IShopProgression>(progression);
-        var ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
-        TestServices.Container.RegisterSingleton<IOrderingService>(ordering);
-        TestServices.Container.RegisterSingleton<ICursorOwner>(cursor);
-
+        _shop = ShopOrderingRig.LoadShopWithServices();
         AddNode(_shop);
         _root = _shop.GetTree().Root;
         _originalRootSize = _root.Size;

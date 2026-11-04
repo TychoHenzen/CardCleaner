@@ -233,12 +233,14 @@ public class PcDesktopTest
     }
 
     /// <summary>Adds a desktop built from its scene to the test root, with its two apps assigned.</summary>
-    private static (PcDesktop Desktop, Control StockApp, Control BillsApp) BuildDesktop(bool assignBills = true)
+    private static DesktopParts BuildDesktop(bool assignBills = true)
     {
         var desktop = InstantiateDesktop(out var stockApp, out var billsApp, assignBills);
         AddNode(desktop);
-        return (desktop, stockApp, billsApp);
+        return new DesktopParts(desktop, stockApp, billsApp);
     }
+
+    private readonly record struct DesktopParts(PcDesktop Desktop, Control StockApp, Control BillsApp);
 
     private static Button Icon(PcDesktop desktop, string name) => desktop.GetNode<Button>($"Icons/{name}");
 }

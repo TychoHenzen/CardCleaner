@@ -1,10 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Pause.Components;
-using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
@@ -40,7 +35,7 @@ public class ShopStockAppClickPathSceneTest
     [BeforeTest]
     public async Task Setup()
     {
-        _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
+        _shop = ShopOrderingRig.LoadShopWithServices();
         _terminal = _shop.GetNode<ScreenTerminal>("World/Markers/PcLocation/PcTerminal");
         _stockApp = _shop.GetNode<StockApp>($"{DesktopViewportPath}/StockApp");
         _stockIcon = _shop.GetNode<Button>($"{DesktopViewportPath}/PcDesktop/Icons/StockIcon");
@@ -49,17 +44,6 @@ public class ShopStockAppClickPathSceneTest
         _screenCamera = _shop.GetNode<Camera3D>("World/Markers/PcLocation/PcTerminal/ScreenCamera");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
-        var cursor = _shop.GetNode<CursorOwner>("Services/CursorOwner");
-        var ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
-
-        // The test scene is not the current scene, so hand the scene-owned services over directly.
-        TestServices.Reset();
-        TestServices.Container.RegisterSingleton<IGameSettings>(_shop.GetNode<GameSettings>("Services/GameSettings"));
-        TestServices.Container.RegisterSingleton<IMoneyService>(_money);
-        TestServices.Container.RegisterSingleton<IShopProgression>(_progression);
-        TestServices.Container.RegisterSingleton<IOrderingService>(ordering);
-        TestServices.Container.RegisterSingleton<ICursorOwner>(cursor);
-
         AddNode(_shop);
         _root = _shop.GetTree().Root;
         _originalRootSize = _root.Size;
