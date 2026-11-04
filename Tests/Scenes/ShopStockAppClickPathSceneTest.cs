@@ -92,6 +92,35 @@ public class ShopStockAppClickPathSceneTest
         await ISceneRunner.SyncPhysicsFrame;
     }
 
+    // Review thread 4469813403: a full-viewport app that stops the mouse over the taskbar made Home and Close
+    // unreachable by a real click while an app was open. Both apps are opened here and both buttons are clicked.
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task TaskbarStaysClickableWhileAnAppIsOpen()
+    {
+        var desktop = _shop.GetNode<PcDesktop>($"{DesktopViewportPath}/PcDesktop");
+        var billsApp = _shop.GetNode<Control>($"{DesktopViewportPath}/BillsApp");
+        var home = desktop.GetNode<Button>("Taskbar/HomeButton");
+        var close = desktop.GetNode<Button>("Taskbar/CloseButton");
+        var closeRequests = 0;
+        desktop.CloseRequested += () => closeRequests++;
+        _terminal.Interact();
+
+        await _screen.Click(_stockIcon);
+        AssertBool(_stockApp.Visible).IsTrue();
+        await _screen.Click(home);
+        AssertBool(_stockApp.Visible).IsFalse();
+
+        await _screen.Click(desktop.GetNode<Button>("Icons/BillsIcon"));
+        AssertBool(billsApp.Visible).IsTrue();
+        await _screen.Click(home);
+        AssertBool(billsApp.Visible).IsFalse();
+
+        await _screen.Click(_stockIcon);
+        await _screen.Click(close);
+        AssertThat(closeRequests).IsEqual(1);
+    }
+
     // Each box lands in its own delivery slot. Placed through a float32 transform, so the position differs from
     // the expected one by rounding; the 1 cm tolerance matches ShopCarryingSceneTest.
     private static void AssertDeliveredInSlots(Node world, int before, Vector3 delivery)
