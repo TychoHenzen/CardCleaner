@@ -50,6 +50,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/ProductShelf.tscn" id="ProductShelf"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/StorageRack.tscn" id="StorageRack"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/PcScreenPointer.cs" id="PcScreenPointer"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/PcDesktopLink.cs" id="PcDesktopLink"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/PcDesktop.tscn" id="PcDesktop"]
 
 [sub_resource type="StandardMaterial3D" id="GrayMaterial"]
@@ -1445,15 +1446,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 7.4)
 [node name="ExpansionLot1" type="Marker3D" parent="World/Markers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 6)
 
-[node name="PcTerminal" type="StaticBody3D" parent="World/Markers/PcLocation" node_paths=PackedStringArray("Ui", "HighlightMesh", "Desktop", "ScreenCamera", "Pointer")]
+[node name="PcTerminal" type="StaticBody3D" parent="World/Markers/PcLocation" node_paths=PackedStringArray("Ui", "HighlightMesh")]
 collision_layer = 5
 script = ExtResource("OrderTerminal")
 Catalog = ExtResource("BackofficeCatalog")
 Ui = NodePath("../../../../PcDesktopViewport/OrderUi")
 HighlightMesh = NodePath("Highlight")
-Desktop = NodePath("../../../../PcDesktopViewport/PcDesktop")
-ScreenCamera = NodePath("ScreenCamera")
-Pointer = NodePath("PcScreenPointer")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="World/Markers/PcLocation/PcTerminal"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
@@ -1508,6 +1506,12 @@ script = ExtResource("PcScreenPointer")
 ScreenCamera = NodePath("../ScreenCamera")
 ScreenQuad = NodePath("../ScreenQuad")
 Viewport = NodePath("../../../../../PcDesktopViewport")
+
+[node name="PcDesktopLink" type="Node" parent="World/Markers/PcLocation/PcTerminal" node_paths=PackedStringArray("Desktop", "ScreenCamera", "ScreenPointer")]
+script = ExtResource("PcDesktopLink")
+Desktop = NodePath("../../../../../PcDesktopViewport/PcDesktop")
+ScreenCamera = NodePath("../ScreenCamera")
+ScreenPointer = NodePath("../PcScreenPointer")
 
 [node name="Player" parent="." instance=ExtResource("Player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 9)

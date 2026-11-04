@@ -115,7 +115,7 @@ public class PcDesktopTest
     ///     (one item named "widget"), and a camera 2 m in front of a 1 x 1 m quad that shows that SubViewport,
     ///     wired to a <see cref="PcScreenPointer" />. Waits until the containers have laid the controls out.
     /// </summary>
-    private async Task<(PcDesktop Desktop, OrderTerminalUi Terminal, PcScreenPointer Pointer, Camera3D Camera)>
+    private static async Task<(PcDesktop Desktop, OrderTerminalUi Terminal, PcScreenPointer Pointer, Camera3D Camera)>
         BuildForwardedDesktop()
     {
         Node3D world = AddNode(new Node3D());

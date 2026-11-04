@@ -17,7 +17,7 @@ public class PcScreenPointerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void CentreMapsToViewportCentre()
+    public static void CentreMapsToViewportCentre()
     {
         bool hit = PcScreenPointer.TryMapToPixel(
             new Vector3(0f, 0f, 2f), new Vector3(0f, 0f, -1f),
@@ -29,7 +29,7 @@ public class PcScreenPointerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void FourCornersMapToViewportCorners()
+    public static void FourCornersMapToViewportCorners()
     {
         var back = new Vector3(0f, 0f, -1f);
         var corners = new[]
@@ -52,7 +52,7 @@ public class PcScreenPointerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void RayBesideQuadMapsToNone()
+    public static void RayBesideQuadMapsToNone()
     {
         bool hit = PcScreenPointer.TryMapToPixel(
             new Vector3(0.75f, 0f, 2f), new Vector3(0f, 0f, -1f),
@@ -63,7 +63,7 @@ public class PcScreenPointerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void RayFromBehindMapsToNone()
+    public static void RayFromBehindMapsToNone()
     {
         bool hit = PcScreenPointer.TryMapToPixel(
             new Vector3(0f, 0f, -2f), new Vector3(0f, 0f, -1f),
@@ -74,7 +74,7 @@ public class PcScreenPointerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ParallelRayMapsToNone()
+    public static void ParallelRayMapsToNone()
     {
         bool hit = PcScreenPointer.TryMapToPixel(
             new Vector3(0f, 0f, 2f), new Vector3(1f, 0f, 0f),
@@ -85,7 +85,7 @@ public class PcScreenPointerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void RotatedAndTranslatedQuadStillMapsCentre()
+    public static void RotatedAndTranslatedQuadStillMapsCentre()
     {
         var basis = Basis.Identity.Rotated(Vector3.Up, Mathf.DegToRad(30f));
         var quad = new Transform3D(basis, new Vector3(1f, 2f, 3f));
@@ -101,7 +101,7 @@ public class PcScreenPointerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void MotionOverTheQuadIsForwardedAndHandled()
+    public static void MotionOverTheQuadIsForwardedAndHandled()
     {
         PcScreenPointer pointer = BuildScreen(out _);
         pointer.Active = true;
@@ -115,7 +115,7 @@ public class PcScreenPointerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void MotionOutsideTheQuadIsNotForwardedNorHandled()
+    public static void MotionOutsideTheQuadIsNotForwardedNorHandled()
     {
         PcScreenPointer pointer = BuildScreen(out _);
         pointer.Active = true;
@@ -128,7 +128,7 @@ public class PcScreenPointerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void PressAndReleaseOnAButtonInsideTheSubViewportFiresPressed()
+    public static void PressAndReleaseOnAButtonInsideTheSubViewportFiresPressed()
     {
         PcScreenPointer pointer = BuildScreen(out Button button);
         pointer.Active = true;
@@ -143,7 +143,7 @@ public class PcScreenPointerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void WheelPressAndReleaseAreForwarded()
+    public static void WheelPressAndReleaseAreForwarded()
     {
         PcScreenPointer pointer = BuildScreen(out _);
         pointer.Active = true;
@@ -165,7 +165,7 @@ public class PcScreenPointerTest
     ///     that shows it, and a pointer wired to both. The pointer sits in its own host viewport so that the
     ///     "input handled" flag it sets is private to this test. Returns the pointer; the Button is the one inside.
     /// </summary>
-    private PcScreenPointer BuildScreen(out Button button)
+    private static PcScreenPointer BuildScreen(out Button button)
     {
         Node3D world = AddNode(new Node3D());
         world.GetTree().Root.Size = new Vector2I(1280, 720);

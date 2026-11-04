@@ -1,3 +1,4 @@
+using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
@@ -25,7 +26,6 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
     private IOrderingService? _ordering;
     private ICursorOwner? _cursor;
     private IServiceResolver? _services;
-    private Camera3D? _previousCamera;
 
     /// <summary>Items this terminal sells. Assign a different catalog for a different terminal.</summary>
     [Export]
@@ -47,18 +47,16 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
     public float InteractionRange { get; set; } = DefaultInteractionRange;
 
     /// <summary>
-    ///     The desktop shown on the PC screen. When null the terminal opens <see cref="Ui" /> as an overlay instead.
+    ///     Whether <see cref="Ui" /> is shown as an overlay while the terminal is open. A PC whose screen
+    ///     shows the ordering screen itself (see PcDesktopLink) turns this off.
     /// </summary>
-    [Export]
-    public PcDesktop? Desktop { get; set; }
+    public bool OverlayUi { get; set; } = true;
 
-    /// <summary>Camera that looks at the PC screen while the desktop is open.</summary>
-    [Export]
-    public Camera3D? ScreenCamera { get; set; }
+    /// <summary>Raised when the terminal opens, before the cursor is claimed.</summary>
+    public event Action? Opened;
 
-    /// <summary>Forwards the mouse to the PC screen while the desktop is open.</summary>
-    [Export]
-    public PcScreenPointer? Pointer { get; set; }
+    /// <summary>Raised when the terminal closes, before the cursor is released.</summary>
+    public event Action? Closed;
 
     public bool IsOpen { get; private set; }
 
@@ -152,10 +150,9 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
             Ui.SetBalance(_money.Balance);
         Ui.ShowMessage(string.Empty);
 
-        if (Desktop != null)
-            OpenOnDesktop(Desktop);
-        else
+        if (OverlayUi)
             Ui.Visible = true;
+        Opened?.Invoke();
 
         _cursor?.Claim(this);
         _player = GetTree().GetFirstNodeInGroup("player") as PlayerController;
@@ -171,37 +168,12 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         IsOpen = false;
         if (Ui != null)
             Ui.Visible = false;
-        if (Desktop != null)
-            CloseOnDesktop(Desktop);
+        Closed?.Invoke();
 
         _cursor?.Release(this);
         if (_player != null && GodotObject.IsInstanceValid(_player))
             _player.ControlEnabled = true;
         _player = null;
-    }
-
-    private void OpenOnDesktop(PcDesktop desktop)
-    {
-        _previousCamera = GetViewport().GetCamera3D();
-        if (ScreenCamera != null)
-            ScreenCamera.Current = true;
-        if (Pointer != null)
-            Pointer.Active = true;
-        desktop.ResetToDesktop();
-        desktop.Visible = true;
-    }
-
-    private void CloseOnDesktop(PcDesktop desktop)
-    {
-        if (Pointer != null)
-            Pointer.Active = false;
-        if (ScreenCamera != null)
-            ScreenCamera.Current = false;
-        if (_previousCamera != null && GodotObject.IsInstanceValid(_previousCamera))
-            _previousCamera.Current = true;
-        _previousCamera = null;
-        desktop.ResetToDesktop();
-        desktop.Visible = false;
     }
 
     private void Subscribe()
@@ -212,8 +184,6 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         Unsubscribe();
         Ui.OrderRequested += OnOrderRequested;
         Ui.CloseRequested += Close;
-        if (Desktop != null)
-            Desktop.CloseRequested += Close;
         if (_money != null)
             _money.BalanceChanged += Ui.SetBalance;
     }
@@ -225,8 +195,6 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
 
         Ui.OrderRequested -= OnOrderRequested;
         Ui.CloseRequested -= Close;
-        if (Desktop != null)
-            Desktop.CloseRequested -= Close;
         if (_money != null)
             _money.BalanceChanged -= Ui.SetBalance;
     }
