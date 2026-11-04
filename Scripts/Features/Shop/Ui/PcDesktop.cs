@@ -4,51 +4,52 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Ui;
 
 /// <summary>
-///     The desktop on the backoffice PC screen. Only the Stock icon opens an
-///     app (the ordering screen in <see cref="StockApp" />); the other icons
-///     are shown disabled because their apps are not installed yet.
-///     The taskbar Close button raises <see cref="CloseRequested" />.
-///     The nodes live in the scene.
+///     The desktop on the backoffice PC screen. The Stock and Bills icons open
+///     the apps assigned to <see cref="StockApp" /> and <see cref="BillsApp" />.
+///     The other icons stay disabled until their app slot exists. The Home
+///     button returns to the desktop, and the taskbar Close button raises
+///     <see cref="CloseRequested" />. The nodes live in the scene.
 /// </summary>
 public partial class PcDesktop : Control
 {
     private const string NotInstalledTooltip = "Not installed";
 
-    private static readonly string[] NotInstalledIconPaths =
-    {
-        "Icons/FurnitureIcon",
-        "Icons/ExpansionsIcon",
-        "Icons/StaffIcon",
-        "Icons/BillsIcon"
-    };
-
-    private Button _stockIcon = null!;
     private Button _closeButton = null!;
 
     /// <summary>
-    ///     The ordering app the Stock icon shows
-    ///     (an <see cref="OrderTerminalUi" />).
+    ///     The app the Stock icon opens. Unassigned keeps that icon disabled.
     /// </summary>
     [Export]
-    public CanvasLayer? StockApp { get; set; }
+    public Control? StockApp { get; set; }
+
+    /// <summary>
+    ///     The app the Bills icon opens. Unassigned keeps that icon disabled.
+    /// </summary>
+    [Export]
+    public Control? BillsApp { get; set; }
 
     /// <summary>Raised when the player presses Close on the taskbar.</summary>
     public event Action? CloseRequested;
 
     public override void _Ready()
     {
-        _stockIcon = GetNode<Button>("Icons/StockIcon");
         _closeButton = GetNode<Button>("Taskbar/CloseButton");
 
-        foreach (var path in NotInstalledIconPaths)
+        foreach (var (path, app) in IconRows())
         {
             var icon = GetNode<Button>(path);
-            icon.Disabled = true;
-            icon.TooltipText = NotInstalledTooltip;
+            if (app == null)
+            {
+                icon.Disabled = true;
+                icon.TooltipText = NotInstalledTooltip;
+                continue;
+            }
+
+            icon.Pressed += () => ShowApp(app);
         }
 
-        _stockIcon.Pressed += OnStockIconPressed;
         _closeButton.Pressed += () => CloseRequested?.Invoke();
+        GetNode<Button>("Taskbar/HomeButton").Pressed += ResetToDesktop;
     }
 
     /// <summary>
@@ -56,13 +57,27 @@ public partial class PcDesktop : Control
     /// </summary>
     public void ResetToDesktop()
     {
-        if (StockApp != null)
-            StockApp.Visible = false;
+        foreach (var (_, app) in IconRows())
+        {
+            if (app != null)
+                app.Visible = false;
+        }
     }
 
-    private void OnStockIconPressed()
+    // The one place each app is named next to its icon. A new app is one
+    // export and one row here; ResetToDesktop reads the same rows.
+    private (string Path, Control? App)[] IconRows() =>
+    [
+        ("Icons/StockIcon", StockApp),
+        ("Icons/BillsIcon", BillsApp),
+        ("Icons/FurnitureIcon", null),
+        ("Icons/ExpansionsIcon", null),
+        ("Icons/StaffIcon", null)
+    ];
+
+    private void ShowApp(Control app)
     {
-        if (StockApp != null)
-            StockApp.Visible = true;
+        ResetToDesktop();
+        app.Visible = true;
     }
 }

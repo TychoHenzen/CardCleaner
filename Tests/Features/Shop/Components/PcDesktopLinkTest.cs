@@ -1,8 +1,6 @@
 using CardCleaner.Scripts.Features.Pause.Components;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
@@ -16,24 +14,18 @@ public class PcDesktopLinkTest
     private const string DesktopScene = "res://Scenes/Shop/PcDesktop.tscn";
 
     private Node3D _world = null!;
-    private OrderTerminal _terminal = null!;
-    private OrderTerminalUi _ui = null!;
+    private ScreenTerminal _terminal = null!;
     private CursorOwner _cursor = null!;
 
     [BeforeTest]
     public void Setup()
     {
         _world = new Node3D();
-        var money = new MoneyService { StartingBalance = 0 };
-        _ui = new OrderTerminalUi();
-        _terminal = new OrderTerminal { Catalog = new OrderCatalog(), Ui = _ui };
+        _terminal = new ScreenTerminal();
         _cursor = new CursorOwner();
-        _world.AddChild(money);
-        _world.AddChild(_ui);
         _world.AddChild(_cursor);
 
         TestServices.Reset();
-        TestServices.Container.RegisterSingleton<IMoneyService>(money);
         TestServices.Container.RegisterSingleton<ICursorOwner>(_cursor);
 
         _world.AddChild(_terminal);
@@ -59,7 +51,9 @@ public class PcDesktopLinkTest
         AssertBool(playerCamera.Current).IsFalse();
         AssertBool(pointer.Active).IsTrue();
         AssertBool(desktop.Visible).IsTrue();
-        AssertBool(_ui.Visible).IsFalse();
+        AssertBool(_terminal.IsOpen).IsTrue();
+        // ASSUMPTION: this fixture is a bare ScreenTerminal with no Ui, so opening it raised no overlay.
+        AssertBool(_terminal is OrderTerminal).IsFalse();
         AssertBool(_cursor.Claims.HasClaims).IsTrue();
 
         _terminal.Close();
@@ -146,12 +140,14 @@ public class PcDesktopLinkTest
         return camera;
     }
 
-    // A PC built the way the shop scene builds it: the desktop from its scene (showing the terminal's ordering
-    // screen), a screen camera and a pointer, all wired by a PcDesktopLink child of the terminal.
+    // A PC built the way the shop scene builds it: the desktop from its scene, a plain Control as its stock app,
+    // a screen camera and a pointer, all wired by a PcDesktopLink child of the terminal.
     private DesktopPc BuildDesktopPc()
     {
         var desktop = GD.Load<PackedScene>(DesktopScene).Instantiate<PcDesktop>();
-        desktop.StockApp = _ui;
+        var stockApp = new Control { Name = "StockApp", Visible = false };
+        desktop.AddChild(stockApp);
+        desktop.StockApp = stockApp;
         desktop.Visible = false;
         var screenCamera = new Camera3D();
         var pointer = new PcScreenPointer();

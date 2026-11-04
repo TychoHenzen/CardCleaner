@@ -68,8 +68,8 @@ public class ShopWorkshopOrderingSceneTest
     [TestCategory("Unit")]
     public void WorkshopTerminalIsADifferentNodeWithItsOwnUiFromTheShopPc()
     {
-        var pc = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
-        var pcUi = _shop.GetNode<OrderTerminalUi>("PcDesktopViewport/OrderUi");
+        var pc = _shop.GetNode<ScreenTerminal>("World/Markers/PcLocation/PcTerminal");
+        var pcUi = _shop.GetNode<StockApp>("PcDesktopViewport/StockApp");
 
         AssertBool(ReferenceEquals(pc, _terminal)).IsFalse();
         AssertBool(ReferenceEquals(pcUi, _ui)).IsFalse();
@@ -84,7 +84,8 @@ public class ShopWorkshopOrderingSceneTest
         var office = _workshop.GetNode<Node3D>("WorkshopGrid/Sections/OrderOffice").GlobalPosition;
 
         AssertBool(_terminal.GlobalPosition.X < cabinet.GlobalPosition.X).IsTrue();
-        AssertBool(new Vector2(_terminal.GlobalPosition.X - office.X, _terminal.GlobalPosition.Z - office.Z).Length() < OfficeReach).IsTrue();
+        var offset = new Vector2(_terminal.GlobalPosition.X - office.X, _terminal.GlobalPosition.Z - office.Z);
+        AssertBool(offset.Length() < OfficeReach).IsTrue();
     }
 
     [TestCase]
@@ -131,7 +132,7 @@ public class ShopWorkshopOrderingSceneTest
         _terminal.Interact();
 
         AssertBool(_ui.Visible).IsTrue();
-        AssertBool(_shop.GetNode<OrderTerminalUi>("PcDesktopViewport/OrderUi").Visible).IsFalse();
+        AssertBool(_shop.GetNode<StockApp>("PcDesktopViewport/StockApp").Visible).IsFalse();
         AssertThat(_ui.BalanceText).IsEqual($"Balance: {_money.Balance}");
         AssertBool(_player.ControlEnabled).IsFalse();
 

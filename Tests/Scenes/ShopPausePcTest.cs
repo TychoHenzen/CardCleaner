@@ -18,7 +18,7 @@ public class ShopPausePcTest
     private Node3D _shop = null!;
     private PauseController _pause = null!;
     private CursorOwner _cursor = null!;
-    private OrderTerminal _terminal = null!;
+    private ScreenTerminal _terminal = null!;
 
     [BeforeTest]
     public async Task Setup()
@@ -26,7 +26,7 @@ public class ShopPausePcTest
         _shop = ShopOrderingRig.LoadShopWithServices();
         _pause = _shop.GetNode<PauseController>("Pause");
         _cursor = _shop.GetNode<CursorOwner>("Services/CursorOwner");
-        _terminal = _shop.GetNode<OrderTerminal>(
+        _terminal = _shop.GetNode<ScreenTerminal>(
             "World/Markers/PcLocation/PcTerminal");
 
         AddNode(_shop);

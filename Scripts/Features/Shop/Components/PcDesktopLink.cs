@@ -5,22 +5,21 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     Puts an <see cref="OrderTerminal" /> on the backoffice PC screen.
+///     Puts a <see cref="ScreenTerminal" /> on the backoffice PC screen.
 ///     Only the shop PC has this node, as a child of its terminal.
 ///     While the terminal is open the screen camera looks at
 ///     <see cref="Desktop" />, the pointer forwards the mouse to the screen,
 ///     and the desktop's Close button closes the terminal.
-///     A terminal without this node shows its ordering screen as an overlay.
 /// </summary>
 public partial class PcDesktopLink : Node
 {
-    private OrderTerminal? _terminal;
+    private ScreenTerminal? _terminal;
     private PcDesktop? _desktop;
     private Camera3D? _previousCamera;
 
     /// <summary>
-    ///     The desktop on the PC screen. Shows the ordering app, and is
-    ///     hidden while the PC is closed.
+    ///     The desktop on the PC screen. It is shown, reset to its icons,
+    ///     while the PC is open, and hidden while the PC is closed.
     /// </summary>
     [Export]
     public PcDesktop? Desktop { get; set; }
@@ -39,17 +38,16 @@ public partial class PcDesktopLink : Node
 
     public override void _Ready()
     {
-        _terminal = GetParent() as OrderTerminal;
+        _terminal = GetParent() as ScreenTerminal;
         _desktop = Desktop;
         if (_terminal == null || _desktop == null)
         {
             ILog.Error(
-                $"{Name} must be a child of an OrderTerminal "
+                $"{Name} must be a child of a ScreenTerminal "
                 + "and needs a Desktop");
             return;
         }
 
-        _terminal.OverlayUi = false;
         _terminal.Opened += OnTerminalOpened;
         _terminal.Closed += OnTerminalClosed;
         _desktop.CloseRequested += RequestTerminalClose;
@@ -65,10 +63,7 @@ public partial class PcDesktopLink : Node
             return;
 
         _previousCamera = GetViewport().GetCamera3D();
-        if (ScreenCamera != null)
-            ScreenCamera.Current = true;
-        if (ScreenPointer != null)
-            ScreenPointer.Active = true;
+        SetScreenActive(true);
         _desktop.ResetToDesktop();
         _desktop.Visible = true;
     }
@@ -78,16 +73,26 @@ public partial class PcDesktopLink : Node
         if (_desktop == null)
             return;
 
-        if (ScreenPointer != null)
-            ScreenPointer.Active = false;
+        SetScreenActive(false);
+        RestorePreviousCamera();
+        _desktop.ResetToDesktop();
+        _desktop.Visible = false;
+    }
+
+    private void SetScreenActive(bool active)
+    {
         if (ScreenCamera != null)
-            ScreenCamera.Current = false;
+            ScreenCamera.Current = active;
+        if (ScreenPointer != null)
+            ScreenPointer.Active = active;
+    }
+
+    private void RestorePreviousCamera()
+    {
         if (_previousCamera != null
             && GodotObject.IsInstanceValid(_previousCamera))
             _previousCamera.Current = true;
         _previousCamera = null;
-        _desktop.ResetToDesktop();
-        _desktop.Visible = false;
     }
 
     private void RequestTerminalClose() => _terminal?.Close();

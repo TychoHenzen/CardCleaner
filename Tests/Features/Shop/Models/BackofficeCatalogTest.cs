@@ -49,6 +49,16 @@ public class BackofficeCatalogTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void ItemsHaveNoThumbnailYet()
+    {
+        foreach (var item in _catalog.Items)
+        {
+            AssertThat(item.Thumbnail).IsNull();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void EveryItemSceneIsAPhysicalBodyWithCollisionAndAnArtSlot()
     {
         foreach (var item in _catalog.Items)

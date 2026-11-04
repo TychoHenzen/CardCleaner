@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Core.Randomness;
@@ -144,7 +145,7 @@ public class ShopPackOpeningSceneTest
     }
 
     private OrderCatalog Catalog() =>
-        _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal").Catalog!;
+        _shop.GetNode<StockApp>("PcDesktopViewport/StockApp").Catalog!;
 
     private CardContainer[] Containers(CardContainerKind kind) =>
         _world.GetChildren().OfType<CardContainer>().Where(c => c.Kind == kind && !c.IsOpened).ToArray();
