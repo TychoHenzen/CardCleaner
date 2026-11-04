@@ -18,6 +18,7 @@
 [ext_resource type="Script" path="res://Scripts/Features/Pause/Components/CursorOwner.cs" id="CursorOwner"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/PauseMenu.tscn" id="PauseMenuScene"]
 [ext_resource type="Resource" path="res://Data/Shop/BackofficeCatalog.tres" id="BackofficeCatalog"]
+[ext_resource type="Resource" path="res://Data/Shop/FurnitureOrderCatalog.tres" id="FurnitureOrderCatalog"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/ShopDayService.cs" id="ShopDayService"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/CustomerSpawner.cs" id="CustomerSpawner"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Customer.tscn" id="CustomerScene"]
@@ -1591,9 +1592,10 @@ AutoLoadOnStart = true
 size = Vector2i(1280, 720)
 render_target_update_mode = 4
 
-[node name="PcDesktop" parent="PcDesktopViewport" node_paths=PackedStringArray("StockApp", "BillsApp") instance=ExtResource("PcDesktop")]
+[node name="PcDesktop" parent="PcDesktopViewport" node_paths=PackedStringArray("StockApp", "BillsApp", "FurnitureApp") instance=ExtResource("PcDesktop")]
 StockApp = NodePath("../StockApp")
 BillsApp = NodePath("../BillsApp")
+FurnitureApp = NodePath("../FurnitureApp")
 
 [node name="StockApp" type="Control" parent="PcDesktopViewport"]
 layout_mode = 3
@@ -1615,6 +1617,18 @@ offset_bottom = -48.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("BillsApp")
+
+[node name="FurnitureApp" type="Control" parent="PcDesktopViewport"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -48.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("StockApp")
+Catalog = ExtResource("FurnitureOrderCatalog")
+Title = "Furniture"
 
 [node name="Pause" type="Node" parent="." node_paths=PackedStringArray("PauseMenuLayer")]
 script = ExtResource("PauseController")

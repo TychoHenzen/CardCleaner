@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 
@@ -106,4 +107,45 @@ public class StockAppTest
         AssertBool(_f.App.CardGrid.IsLocked(2)).IsFalse();
         AssertThat(_f.App.CardGrid.ButtonText(2)).IsEqual("Add");
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TitleDefaultsToStock()
+    {
+        var app = new StockApp();
+        try
+        {
+            _ = app.CardGrid;
+
+            AssertThat(TitleLabelText(app)).IsEqual("Stock");
+        }
+        finally
+        {
+            app.Free();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TitleExportRelabelsTheApp()
+    {
+        var app = new StockApp { Title = "Furniture" };
+        try
+        {
+            // Set before the layout exists: the label is built with the title.
+            _ = app.CardGrid;
+            AssertThat(TitleLabelText(app)).IsEqual("Furniture");
+
+            // Set again after the layout exists: the label follows the setter.
+            app.Title = "Furniture";
+            AssertThat(TitleLabelText(app)).IsEqual("Furniture");
+        }
+        finally
+        {
+            app.Free();
+        }
+    }
+
+    // The title is the first label of the app's column; the caller builds the layout first.
+    private static string TitleLabelText(StockApp app) => ((Label)app.GetChild(0).GetChild(0)).Text;
 }

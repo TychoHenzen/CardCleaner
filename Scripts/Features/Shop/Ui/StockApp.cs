@@ -24,6 +24,8 @@ public partial class StockApp : Control, IDependent
     private IOrderingService? _ordering;
     private IShopProgression? _progression;
     private OrderCatalog? _catalog;
+    private string _title = "Stock";
+    private Label _titleLabel = null!;
     private Label _balanceLabel = null!;
     private bool _layoutBuilt;
 
@@ -34,6 +36,21 @@ public partial class StockApp : Control, IDependent
     /// </summary>
     [Export]
     public OrderCatalog? Catalog { get; set; }
+
+    /// <summary>
+    ///     The heading shown above the balance. The default is "Stock"; the Furniture app sets "Furniture".
+    /// </summary>
+    [Export]
+    public string Title
+    {
+        get => _title;
+        set
+        {
+            _title = value;
+            if (_layoutBuilt)
+                _titleLabel.Text = value;
+        }
+    }
 
     // ASSUMPTION: until IShopProgression resolves, the shop level reads as 0 and no unlock rows are known, so
     // every card shows Unavailable and the grid rebuilds once the progression arrives (Medium risk).
@@ -231,7 +248,8 @@ public partial class StockApp : Control, IDependent
         var column = new VBoxContainer();
         column.SetAnchorsPreset(LayoutPreset.FullRect);
         AddChild(column);
-        column.AddChild(new Label { Text = "Stock" });
+        _titleLabel = new Label { Text = _title };
+        column.AddChild(_titleLabel);
         _balanceLabel = new Label();
         column.AddChild(_balanceLabel);
         _cards.AddTo(column);

@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Shop.Ui;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -240,6 +241,21 @@ public class ShopSceneContractTest
 
         AssertThat(MarkerPosition("CustomerSpawn")).IsEqual(new Vector3(-14f, 0f, 14f));
         AssertThat(MarkerPosition("CustomerDespawn")).IsEqual(new Vector3(22f, 0f, 14f));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void FurnitureAppIsWiredToTheDesktop()
+    {
+        var desktop = _shop.GetNode<PcDesktop>("PcDesktopViewport/PcDesktop");
+        var furnitureApp = _shop.GetNode<StockApp>("PcDesktopViewport/FurnitureApp");
+        AssertThat(desktop.FurnitureApp).IsEqual(furnitureApp);
+        AssertThat(furnitureApp.Title).IsEqual("Furniture");
+        AssertBool(furnitureApp.Catalog!.Items.Any(item => item.Id == "shelf_unit")).IsTrue();
+
+        // The raw shelf stays on the Stock app: the Furniture app does not replace it (D3).
+        var stockApp = _shop.GetNode<StockApp>("PcDesktopViewport/StockApp");
+        AssertBool(stockApp.Catalog!.Items.Any(item => item.Id == "shelf")).IsTrue();
     }
 
     private Vector3 MarkerPosition(string marker) =>

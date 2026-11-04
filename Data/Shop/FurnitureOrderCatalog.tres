@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="OrderCatalog" format=3]
+
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/ShelfBox.tscn" id="ShelfBox"]
+[ext_resource type="Script" uid="uid://ddvfbixqpsql6" path="res://Scripts/Features/Shop/Models/OrderCatalog.cs" id="OrderCatalogScript"]
+[ext_resource type="Script" uid="uid://d144tmal3smw7" path="res://Scripts/Features/Shop/Models/OrderItem.cs" id="OrderItemScript"]
+
+[sub_resource type="Resource" id="ShelfUnitItem"]
+script = ExtResource("OrderItemScript")
+Id = "shelf_unit"
+DisplayName = "Shelf unit"
+Price = 120
+Scene = ExtResource("ShelfBox")
+
+[resource]
+script = ExtResource("OrderCatalogScript")
+Items = [SubResource("ShelfUnitItem")]
