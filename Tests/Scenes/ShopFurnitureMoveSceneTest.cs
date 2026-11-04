@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
+using static CardCleaner.Tests.Scenes.ShopFurnitureRig;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -15,16 +16,6 @@ public class ShopFurnitureMoveSceneTest
     private const string ControllerPath = "Services/FurniturePlacement";
     private const string FurnitureRootPath = "World/Furniture";
     private const string BoxScenePath = "res://Scenes/Shop/Items/ShelfBox.tscn";
-
-    // The shelf pose used by the route cases: centre (8, 6), unrotated.
-    private const float ShelfMinX = 6.935f;
-    private const float ShelfMaxX = 9.065f;
-    private const float ShelfMinZ = 5.5f;
-    private const float ShelfMaxZ = 6.5f;
-    private const int RouteSamplesPerSegment = 20;
-
-    private static readonly Vector3 RouteA = new(8f, 0f, 4f);
-    private static readonly Vector3 RouteB = new(8f, 0f, 8f);
 
     private Node3D _shop = null!;
     private ShopNavigationRegion _region = null!;
@@ -162,19 +153,4 @@ public class ShopFurnitureMoveSceneTest
         return box;
     }
 
-    /// <summary>True when any sampled point of the route lies inside the shelf rect (XZ plane).</summary>
-    private static bool CrossesShelf(Vector3[] route)
-    {
-        for (int i = 0; i + 1 < route.Length; i++)
-        {
-            for (int s = 0; s <= RouteSamplesPerSegment; s++)
-            {
-                var p = route[i].Lerp(route[i + 1], s / (float)RouteSamplesPerSegment);
-                if (p.X >= ShelfMinX && p.X <= ShelfMaxX && p.Z >= ShelfMinZ && p.Z <= ShelfMaxZ)
-                    return true;
-            }
-        }
-
-        return false;
-    }
 }

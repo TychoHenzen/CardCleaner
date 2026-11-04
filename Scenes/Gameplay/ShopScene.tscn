@@ -55,6 +55,8 @@
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/PcDesktopLink.cs" id="PcDesktopLink"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/PcDesktop.tscn" id="PcDesktop"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/FurniturePlacementController.cs" id="FurniturePlacementController"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Services/FurnitureSaveService.cs" id="FurnitureSaveService"]
+[ext_resource type="Resource" path="res://Data/Shop/Furniture/FurnitureItems.tres" id="FurnitureItems"]
 
 [sub_resource type="StandardMaterial3D" id="GrayMaterial"]
 albedo_color = Color(0.62, 0.62, 0.65, 1)
@@ -1561,6 +1563,14 @@ script = ExtResource("AutoServiceProvider")
 [node name="FurniturePlacement" type="Node" parent="Services" node_paths=PackedStringArray("FurnitureRoot", "Navigation")]
 script = ExtResource("FurniturePlacementController")
 FurnitureRoot = NodePath("../../World/Furniture")
+Navigation = NodePath("../../World/Navigation")
+
+[node name="FurnitureSave" type="Node" parent="Services" node_paths=PackedStringArray("FurnitureRoot", "BoxRoot", "Navigation")]
+script = ExtResource("FurnitureSaveService")
+Furniture = ExtResource("FurnitureItems")
+Boxes = ExtResource("FurnitureOrderCatalog")
+FurnitureRoot = NodePath("../../World/Furniture")
+BoxRoot = NodePath("../../World")
 Navigation = NodePath("../../World/Navigation")
 
 [node name="GameSettings" type="Node" parent="Services"]
