@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Shop.Ui;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -215,6 +216,19 @@ public class ShopSceneContractTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void FurnitureRootJoinsTheNavigationGroup()
+    {
+        AssertBool(_shop.GetNode("World/Furniture").IsInGroup("shop_navigation")).IsTrue();
+
+        var placement = _shop.GetNodeOrNull<CardCleaner.Scripts.Features.Shop.Components.FurniturePlacementController>(
+            "Services/FurniturePlacement");
+        AssertThat(placement).IsNotNull();
+        AssertThat(placement!.FurnitureRoot).IsNotNull();
+        AssertThat(placement.Navigation).IsNotNull();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void SpawnAndDespawnMarkersAreOnTheStreet()
     {
         foreach (var marker in StreetMarkerNames)
@@ -229,6 +243,21 @@ public class ShopSceneContractTest
         AssertThat(MarkerPosition("CustomerDespawn")).IsEqual(new Vector3(22f, 0f, 14f));
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void FurnitureAppIsWiredToTheDesktop()
+    {
+        var desktop = _shop.GetNode<PcDesktop>("PcDesktopViewport/PcDesktop");
+        var furnitureApp = _shop.GetNode<StockApp>("PcDesktopViewport/FurnitureApp");
+        AssertThat(desktop.FurnitureApp).IsEqual(furnitureApp);
+        AssertThat(furnitureApp.Title).IsEqual("Furniture");
+        AssertBool(furnitureApp.Catalog!.Items.Any(item => item.Id == "shelf_unit")).IsTrue();
+
+        // The raw shelf stays on the Stock app: the Furniture app does not replace it (D3).
+        var stockApp = _shop.GetNode<StockApp>("PcDesktopViewport/StockApp");
+        AssertBool(stockApp.Catalog!.Items.Any(item => item.Id == "shelf")).IsTrue();
+    }
+
     private Vector3 MarkerPosition(string marker) =>
         _shop.GetNode<Marker3D>($"World/Markers/{marker}").GlobalPosition;
 
@@ -240,7 +269,7 @@ public class ShopSceneContractTest
 
     private bool IsInsideArea(string area, Vector3 position)
     {
-        var floor = FloorShape(area)!;
+        var floor = _shop.GetNode<CollisionShape3D>($"World/{area}/Floor/CollisionShape3D");
         var half = ((BoxShape3D)floor.Shape).Size / 2f;
         var center = floor.GlobalPosition;
         return System.Math.Abs(position.X - center.X) <= half.X && System.Math.Abs(position.Z - center.Z) <= half.Z;

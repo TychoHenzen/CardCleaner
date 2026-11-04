@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="FurnitureCatalog" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Models/FurnitureCatalog.cs" id="FurnitureCatalogScript"]
+[ext_resource type="Resource" path="res://Data/Shop/Furniture/ShelfFurniture.tres" id="ShelfFurniture"]
+
+[resource]
+script = ExtResource("FurnitureCatalogScript")
+Items = [ExtResource("ShelfFurniture")]

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="FurnitureItem" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Models/FurnitureItem.cs" id="FurnitureItemScript"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Shelf.tscn" id="Shelf"]
+
+[resource]
+script = ExtResource("FurnitureItemScript")
+Id = "shelf_unit"
+DisplayName = "Shelf unit"
+Scene = ExtResource("Shelf")
+Width = 2.13
+Depth = 1.0
+Height = 1.07

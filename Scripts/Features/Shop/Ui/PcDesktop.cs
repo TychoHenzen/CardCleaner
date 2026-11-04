@@ -4,8 +4,8 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Ui;
 
 /// <summary>
-///     The desktop on the backoffice PC screen. The Stock and Bills icons open
-///     the apps assigned to <see cref="StockApp" /> and <see cref="BillsApp" />.
+///     The desktop on the backoffice PC screen. The Stock, Furniture and Bills icons open
+///     the apps assigned to <see cref="StockApp" />, <see cref="FurnitureApp" /> and <see cref="BillsApp" />.
 ///     The other icons stay disabled until their app slot exists. The Home
 ///     button returns to the desktop, and the taskbar Close button raises
 ///     <see cref="CloseRequested" />. The nodes live in the scene.
@@ -21,6 +21,12 @@ public partial class PcDesktop : Control
     /// </summary>
     [Export]
     public Control? StockApp { get; set; }
+
+    /// <summary>
+    ///     The app the Furniture icon opens. Unassigned keeps that icon disabled.
+    /// </summary>
+    [Export]
+    public Control? FurnitureApp { get; set; }
 
     /// <summary>
     ///     The app the Bills icon opens. Unassigned keeps that icon disabled.
@@ -70,7 +76,7 @@ public partial class PcDesktop : Control
     [
         ("Icons/StockIcon", StockApp),
         ("Icons/BillsIcon", BillsApp),
-        ("Icons/FurnitureIcon", null),
+        ("Icons/FurnitureIcon", FurnitureApp),
         ("Icons/ExpansionsIcon", null),
         ("Icons/StaffIcon", null)
     ];
