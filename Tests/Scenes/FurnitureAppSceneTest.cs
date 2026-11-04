@@ -33,6 +33,8 @@ public class FurnitureAppSceneTest
     private PcScreen _screen = null!;
     private MoneyService _money = null!;
     private Window _root = null!;
+    private FurniturePlacementController _controller = null!;
+    private TreeInjection _injection = null!;
     private Vector2I _originalRootSize;
 
     [BeforeTest]
@@ -45,8 +47,14 @@ public class FurnitureAppSceneTest
         _furnitureIcon = _shop.GetNode<Button>($"{DesktopViewportPath}/PcDesktop/Icons/FurnitureIcon");
         _screen = PcScreen.From(_shop);
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
+        // In the game the autoload injects the controller and registers it as the placement service.
+        _controller = _shop.GetNode<FurniturePlacementController>("Services/FurniturePlacement");
+        TestServices.Inject(_controller);
+        TestServices.Container.RegisterSingleton<IFurniturePlacement>(_controller);
         AddNode(_shop);
         _root = _shop.GetTree().Root;
+        // And it injects every dependent that enters the tree later, such as a delivered box.
+        _injection = new TreeInjection(_root.GetTree());
         _originalRootSize = _root.Size;
         // A headless window is 64 x 64, which would collapse the desktop layout; mouse positions need the real size.
         _root.Size = RootWindowSize;
@@ -58,6 +66,8 @@ public class FurnitureAppSceneTest
     public void Teardown()
     {
         _root.Size = _originalRootSize;
+        _injection.Dispose();
+        _controller.Cancel();
         TestServices.Reset();
         _root.RemoveChild(_shop);
         _shop.Free();
@@ -117,19 +127,20 @@ public class FurnitureAppSceneTest
     {
         var world = _shop.GetNode("World");
         var furniture = _shop.GetNode<Node3D>("World/Furniture");
-        var controller = _shop.GetNode<FurniturePlacementController>("Services/FurniturePlacement");
         // The camera aim is not driven headless, so the pose is set with AimAt.
-        controller.AimOverride = true;
+        _controller.AimOverride = true;
         var before = world.GetChildCount();
 
         await OpenFurnitureApp();
         await AddAndCheckOutShelfUnit();
 
         var box = (FurnitureBox)world.GetChild(before);
-        // Interact is proven in FurnitureBoxTest; the test rig does not tree-inject a delivered box, so begin directly.
-        AssertBool(controller.Begin(box)).IsTrue();
-        controller.AimAt(8f, 6f);
-        AssertBool(controller.Confirm()).IsTrue();
+        // The player's real path: the injected box hands itself to the placement service.
+        AssertBool(box.CanInteract).IsTrue();
+        box.Interact();
+        AssertBool(_controller.IsActive).IsTrue();
+        _controller.AimAt(8f, 6f);
+        AssertBool(_controller.Confirm()).IsTrue();
 
         AssertThat(furniture.GetChildCount()).IsEqual(1);
         var placed = (PlacedFurniture)furniture.GetChild(0);

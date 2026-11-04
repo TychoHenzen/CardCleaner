@@ -414,6 +414,12 @@ Uses the Saveable addon (`addons/saveable/`) with Newtonsoft.Json. Implement `IS
 
 Save slots (`Scripts/Features/SaveSlots`) live under `user://saves/<slot>/save.json` (`SaveSlotLayout`). Each file is a `SaveEnvelope` at version 1. `SlotStore` writes `save.json.tmp` first and renames it into place, so a crash leaves the previous save intact. `SlotStore` also implements `ISaveSlotCatalog`, and a slot without a readable `save.json` is listed as unreadable. Slot names (`SaveSlotName`) are 1 to 32 characters of letters, digits, spaces, `-` and `_`, and cannot be `con`, `prn`, `aux` or `nul` (compared without case). `ActiveSaveSlot` starts on the `default` slot until one is selected. `LegacySaveImporter` copies the old single-file `user://game_save.json` into a slot named `imported`, and runs only when no slot exists yet and that file holds a JSON object. A first save that fails removes the slot it started. A `CardContainer` draws a content seed only when a save asks for one (`SeedForSave`); the seed is saved with the slot, so the same seed opens the same cards after a reload, and an unseeded box opens from the shared random source as before. Each later stateful slice adds its own saved state to the envelope and a round-trip test that saves, reloads and compares it. Each shelf slot's `SlotPricing` saves its markup under the id `slot_price:<node path>`; scene-placed shelves keep it across a reload, and an ordered shelf is not restored.
 
+Furniture saves under UniqueID `furniture` (`FurnitureSaveService`) as one JSON string of `FurnitureRecord` entries: placed
+shelves with their pose and unopened boxes with their position. A load replaces all furniture (never adds) and rebakes the
+navigation mesh once; a save without the key leaves the scene as authored, and a record with an unknown id, a non-finite
+coordinate or an invalid pose is skipped with an error. Cards stocked on a placed shelf are saved by `GameSaveService` as
+cards and are not part of the furniture record (ASSUMPTION Medium: they re-seat as they do on a scene-placed shelf).
+
 ### Feature Organization
 
 Code is organized by feature under `Scripts/Features/`:
@@ -459,6 +465,13 @@ All art and models live in the private repo `TychoHenzen/cardcleaner-assets`, a 
 - `ShopArtSlot` nodes load a pack mesh at runtime and hide their graybox placeholder. Without the import the scene still loads and shows the placeholders. The script is a `[Tool]`, so the editor viewport shows the real art too; the placeholder is restored around every editor save (`NotificationEditorPreSave` / `PostSave`) so no scene ever stores it hidden, and the loaded `Art` child has no owner and is never saved. Changing `ArtPath` or `ArtScale` in the inspector reloads the preview. The pack FBX files have no usable texture and are single-sided, so a slot applies its pack's colour atlas on a double-sided material (`PackMaterialCatalog` maps pack folder to atlas; add a new pack there). Collision is hand-authored and independent of the art.
 
 **Street and neighbourhood.** `Scenes/Shop/Neighbourhood.tscn` is visual only: it has no collision. Its `ShopArtSlot` nodes load the POLYGON Mini City pack from `Assets/Synty/PolygonMiniCity`, and each slot keeps a `BoxMesh` placeholder that shows only while the pack file is missing, so the scene loads and the layout holds without the pack. The kerb is the one box primitive that is not a slot (the sky is set in `ShopScene.tscn`). The road, kerb, far sidewalk and facades lie across the road from the storefront, a neighbour flanks each side, and the scenery sits outside the street bounds and the workshop footprint. `NeighbourhoodSceneTest`, `NeighbourhoodArtSceneTest` and `NeighbourhoodScenerySceneTest` enforce this.
+
+**Furniture.** The PC desktop's Furniture app (a second `StockApp` titled Furniture, catalog
+`Data/Shop/FurnitureOrderCatalog.tres`) sells `shelf_unit`, which is delivered as a `FurnitureBox` (`ShelfBox.tscn`, group
+`furniture_boxes`). Interacting with a box hands it to `FurniturePlacementController`, which shows a `FurnitureGhost`, and
+the keys T (turn), E (confirm), C (cancel) and G (pick a placed piece up again) place, move and cancel; a confirmed piece
+becomes a `PlacedFurniture` under `World/Furniture`, and `FurnitureProbe` holds its physics checks. Each change rebakes
+`ShopNavigationRegion`. The raw Stock-app `shelf` row stays.
 
 ### Backoffice PC Ordering
 
