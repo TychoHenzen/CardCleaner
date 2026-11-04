@@ -19,7 +19,10 @@ public interface IShopProgression
     /// <summary>Raised after every change to the XP total, including a load.</summary>
     event Action? ProgressChanged;
 
-    /// <summary>Adds the XP a checkout of <paramref name="amountPaid" /> earns. A non-positive amount earns nothing.</summary>
+    /// <summary>
+    ///     Adds the XP a checkout of <paramref name="amountPaid" /> earns.
+    ///     A non-positive amount earns nothing.
+    /// </summary>
     void AwardCheckout(int amountPaid);
 
     /// <summary>True when the id has an unlock row and the shop is at or above that row's level.</summary>

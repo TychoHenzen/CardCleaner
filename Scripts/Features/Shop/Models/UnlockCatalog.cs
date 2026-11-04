@@ -3,18 +3,6 @@ using System.Collections.Generic;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
-/// <summary>What an unlock adds to the shop once its level is reached.</summary>
-public enum UnlockKind
-{
-    Product,
-    Furniture,
-    Expansion,
-    Staff,
-}
-
-/// <summary>One unlockable thing: its catalog id, what it is, and the shop level that unlocks it.</summary>
-public sealed record UnlockEntry(string Id, UnlockKind Kind, int RequiredLevel);
-
 /// <summary>
 ///     The rows that say which shop level unlocks which item id. Pure rules, no engine types. An id with no row
 ///     has no unlock level, so the shop treats it as locked.
