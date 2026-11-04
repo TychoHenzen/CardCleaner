@@ -269,7 +269,7 @@ public class ShopSceneContractTest
 
     private bool IsInsideArea(string area, Vector3 position)
     {
-        var floor = FloorShape(area)!;
+        var floor = _shop.GetNode<CollisionShape3D>($"World/{area}/Floor/CollisionShape3D");
         var half = ((BoxShape3D)floor.Shape).Size / 2f;
         var center = floor.GlobalPosition;
         return System.Math.Abs(position.X - center.X) <= half.X && System.Math.Abs(position.Z - center.Z) <= half.Z;
