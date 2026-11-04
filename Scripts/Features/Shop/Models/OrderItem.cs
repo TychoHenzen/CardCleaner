@@ -23,4 +23,8 @@ public partial class OrderItem : Resource
     /// <summary>Scene instanced at the delivery point when the item is ordered.</summary>
     [Export]
     public PackedScene? Scene { get; set; }
+
+    /// <summary>Picture shown on the Stock app card. Null shows a generated placeholder tile.</summary>
+    [Export]
+    public Texture2D? Thumbnail { get; set; }
 }
