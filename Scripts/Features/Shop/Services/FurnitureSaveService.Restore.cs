@@ -74,7 +74,8 @@ public partial class FurnitureSaveService
         }
 
         var pose = new FurniturePose(record.X, record.Z, record.QuarterTurns);
-        if (!FurniturePlacementModel.IsValid(item.Footprint, pose, placedRects, FurnitureFloor.Shop))
+        var floor = Expansion is { } expansion ? FurnitureFloor.For(expansion.Plan) : FurnitureFloor.Shop;
+        if (!FurniturePlacementModel.IsValid(item.Footprint, pose, placedRects, floor))
         {
             ILog.Error($"Furniture record '{record.Id}' no longer fits the shop floor; skipped");
             return;

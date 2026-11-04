@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Shop.Services;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
@@ -17,6 +18,7 @@ public partial class FurniturePlacementController
             return;
         }
 
+        _services.Get<IShopExpansion>(expansion => Expansion ??= expansion);
         _services.Get<IInputService>(input =>
         {
             _input = input;

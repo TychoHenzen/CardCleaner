@@ -52,6 +52,13 @@ public partial class CustomerSpawner : Node, IDependent
 
     public IComplaintLog? Complaints { get; set; }
 
+    /// <summary>Resolved through the injected service resolver at startup; assignable directly in tests.</summary>
+    public IShopExpansion? Expansion { get; set; }
+
+    /// <summary>The customers a day brings: the export plus what the owned expansion lots add.</summary>
+    public int EffectiveCustomersPerDay =>
+        Math.Max(0, CustomersPerDay) + Math.Max(0, Expansion?.ExtraCustomersPerDay ?? 0);
+
     public ICheckoutHandoff? Handoff { get; set; }
 
     /// <summary>Resolved through the injected service resolver at startup; assignable directly in tests.</summary>
@@ -95,6 +102,7 @@ public partial class CustomerSpawner : Node, IDependent
         services.Get<IComplaintLog>(log => Complaints ??= log);
         services.Get<ICheckoutHandoff>(handoff => Handoff ??= handoff);
         services.Get<IRandom>(rng => Rng ??= rng);
+        services.Get<IShopExpansion>(expansion => Expansion ??= expansion);
     }
 
     public override void _EnterTree()
@@ -159,7 +167,7 @@ public partial class CustomerSpawner : Node, IDependent
         }
 
         _schedule = ArrivalSchedule.Build(
-            service.OpeningMinute, service.ClosingMinute, Math.Max(0, CustomersPerDay), RandomSource);
+            service.OpeningMinute, service.ClosingMinute, EffectiveCustomersPerDay, RandomSource);
     }
 
     // ASSUMPTION (Low risk): the composition root registers IRandom, as CardSpawningService already relies on;

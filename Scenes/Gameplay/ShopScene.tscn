@@ -56,6 +56,9 @@
 [ext_resource type="PackedScene" path="res://Scenes/Shop/PcDesktop.tscn" id="PcDesktop"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/FurniturePlacementController.cs" id="FurniturePlacementController"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/FurnitureSaveService.cs" id="FurnitureSaveService"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Services/ShopExpansionService.cs" id="ShopExpansionService"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ExpansionLotView.cs" id="ExpansionLotView"]
+[ext_resource type="Resource" path="res://Data/Shop/ExpansionLots.tres" id="ExpansionLots"]
 [ext_resource type="Resource" path="res://Data/Shop/Furniture/FurnitureItems.tres" id="FurnitureItems"]
 
 [sub_resource type="StandardMaterial3D" id="GrayMaterial"]
@@ -548,7 +551,11 @@ Placeholder = NodePath("Placeholder")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
 mesh = SubResource("FloorBoxMesh")
 
-[node name="ExpansionLot" type="Node3D" parent="World" groups=["shop_navigation"]]
+[node name="ExpansionLot" type="Node3D" parent="World" node_paths=PackedStringArray("SealingWall", "Sign", "Navigation") groups=["shop_navigation"]]
+script = ExtResource("ExpansionLotView")
+SealingWall = NodePath("../Walls/LeftWall")
+Sign = NodePath("Sign")
+Navigation = NodePath("../Navigation")
 
 [node name="Sign" type="Label3D" parent="World/ExpansionLot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, 2)
@@ -1560,15 +1567,20 @@ navigation_mesh = SubResource("ShopNavigationMesh")
 [node name="Services" type="Node" parent="."]
 script = ExtResource("AutoServiceProvider")
 
+[node name="ShopExpansion" type="Node" parent="Services"]
+script = ExtResource("ShopExpansionService")
+Catalog = ExtResource("ExpansionLots")
+
 [node name="FurniturePlacement" type="Node" parent="Services" node_paths=PackedStringArray("FurnitureRoot", "Navigation")]
 script = ExtResource("FurniturePlacementController")
 FurnitureRoot = NodePath("../../World/Furniture")
 Navigation = NodePath("../../World/Navigation")
 
-[node name="FurnitureSave" type="Node" parent="Services" node_paths=PackedStringArray("FurnitureRoot", "BoxRoot", "Navigation", "DeliveryPoint")]
+[node name="FurnitureSave" type="Node" parent="Services" node_paths=PackedStringArray("Expansion", "FurnitureRoot", "BoxRoot", "Navigation", "DeliveryPoint")]
 script = ExtResource("FurnitureSaveService")
 Furniture = ExtResource("FurnitureItems")
 Boxes = ExtResource("FurnitureOrderCatalog")
+Expansion = NodePath("../ShopExpansion")
 FurnitureRoot = NodePath("../../World/Furniture")
 BoxRoot = NodePath("../../World")
 Navigation = NodePath("../../World/Navigation")

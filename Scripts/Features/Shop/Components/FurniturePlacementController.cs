@@ -33,6 +33,9 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     [Export]
     public ShopNavigationRegion? Navigation { get; set; }
 
+    /// <summary>Resolved through the injected service resolver at startup; assignable directly in tests.</summary>
+    public IShopExpansion? Expansion { get; set; }
+
     public bool IsActive { get; private set; }
 
     public FurniturePose CurrentPose { get; private set; }
@@ -204,7 +207,7 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
             _item.Footprint,
             CurrentPose,
             PlacedRects(),
-            FurnitureFloor.Shop);
+            Expansion is { } expansion ? FurnitureFloor.For(expansion.Plan) : FurnitureFloor.Shop);
         _ghost?.Show(CurrentPose, CurrentValid);
     }
 

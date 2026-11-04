@@ -26,6 +26,12 @@ public partial class FurnitureSaveService : Node, ILoadsFirst
 
     [Export] public ShopNavigationRegion? Navigation { get; set; }
 
+    /// <summary>
+    ///     The expansion service whose owned lots widen the floor a record may stand on. It must come before this node
+    ///     in the Services provider, so its own load has run when the furniture is restored.
+    /// </summary>
+    [Export] public ShopExpansionService? Expansion { get; set; }
+
     /// <summary>The delivery area that restored boxes count against, so a new order avoids them.</summary>
     [Export] public DeliveryMarker? DeliveryPoint { get; set; }
 

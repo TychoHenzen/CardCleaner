@@ -25,6 +25,8 @@ public static class ShopOrderingRig
         TestServices.Container.RegisterSingleton<IMoneyService>(shop.GetNode<MoneyService>("Services/MoneyService"));
         TestServices.Container.RegisterSingleton<IShopProgression>(
             shop.GetNode<ShopProgression>("Services/ShopProgression"));
+        TestServices.Container.RegisterSingleton<IShopExpansion>(
+            shop.GetNode<ShopExpansionService>("Services/ShopExpansion"));
         TestServices.Container.RegisterSingleton<ICursorOwner>(shop.GetNode<CursorOwner>("Services/CursorOwner"));
         TestServices.Container.RegisterSingleton<IOrderingService>(
             shop.GetNode<OrderingService>("Services/OrderingService"));
