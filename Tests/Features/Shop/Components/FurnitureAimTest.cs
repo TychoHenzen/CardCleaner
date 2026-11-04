@@ -12,7 +12,7 @@ public class FurnitureAimTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void StraightDownHitsTheOriginColumn()
+    public static void StraightDownHitsTheOriginColumn()
     {
         bool hit = FurnitureAim.TryFloorPoint(new Vector3(8f, 2f, 2f), new Vector3(0f, -1f, 0f), out float x,
             out float z);
@@ -24,7 +24,7 @@ public class FurnitureAimTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void DiagonalDownHitsTheSlantedFloorPoint()
+    public static void DiagonalDownHitsTheSlantedFloorPoint()
     {
         var direction = new Vector3(0f, -1f, -1f).Normalized();
 
@@ -37,7 +37,7 @@ public class FurnitureAimTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void LevelRayMeetsNoFloor()
+    public static void LevelRayMeetsNoFloor()
     {
         bool hit = FurnitureAim.TryFloorPoint(new Vector3(8f, 2f, 2f), new Vector3(0f, 0f, -1f), out _, out _);
 
@@ -46,7 +46,7 @@ public class FurnitureAimTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void FloorBeyondMaxReachIsRefused()
+    public static void FloorBeyondMaxReachIsRefused()
     {
         var direction = new Vector3(0f, -0.1f, -1f).Normalized();
 
@@ -57,7 +57,7 @@ public class FurnitureAimTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void UpwardRayMeetsNoFloor()
+    public static void UpwardRayMeetsNoFloor()
     {
         bool hit = FurnitureAim.TryFloorPoint(new Vector3(8f, 2f, 2f), new Vector3(0f, 1f, 0f), out _, out _);
 

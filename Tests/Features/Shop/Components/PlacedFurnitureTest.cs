@@ -68,7 +68,7 @@ public class PlacedFurnitureTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void Create_ReturnsNullWithoutAScene()
+    public static void Create_ReturnsNullWithoutAScene()
     {
         var item = new FurnitureItem { Id = "no_scene", Width = 1f, Depth = 1f, Height = 1f, Scene = null };
 

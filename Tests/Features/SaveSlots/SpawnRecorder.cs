@@ -11,6 +11,9 @@ namespace CardCleaner.Tests.Features.SaveSlots;
 /// </summary>
 internal sealed class SpawnRecorder(bool addToTree = true) : ICardSpawningService
 {
+    // Cards kept out of the tree have no parent to free them, so the recorder frees them in FreeDetached.
+    private readonly List<CardController> _detached = [];
+
     public List<Spawn> Spawned { get; } = [];
 
     public Node3D? SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent) =>
@@ -21,8 +24,22 @@ internal sealed class SpawnRecorder(bool addToTree = true) : ICardSpawningServic
         var card = new CardController { Signature = signature };
         if (addToTree)
             parent.AddChild(card);
+        else
+            _detached.Add(card);
         Spawned.Add(new Spawn(signature, spawnTransform, card, lookSeed));
         return card;
+    }
+
+    /// <summary>Frees every card this recorder kept out of the tree that nothing else has parented or freed.</summary>
+    public void FreeDetached()
+    {
+        foreach (var card in _detached)
+        {
+            if (GodotObject.IsInstanceValid(card) && card.GetParent() == null)
+                card.Free();
+        }
+
+        _detached.Clear();
     }
 
     public Node3D? SpawnRandomCard(Transform3D spawnTransform, Node3D parent) => null;

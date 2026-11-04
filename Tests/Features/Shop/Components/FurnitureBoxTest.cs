@@ -25,7 +25,7 @@ public class FurnitureBoxTest
     }
 
     [AfterTest]
-    public void TearDown() => TestServices.Reset();
+    public static void TearDown() => TestServices.Reset();
 
     [TestCase]
     [TestCategory("Unit")]
@@ -55,7 +55,7 @@ public class FurnitureBoxTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void CanInteract_IsFalseWithoutAnItem()
+    public static void CanInteract_IsFalseWithoutAnItem()
     {
         var box = BuildBox(BareBoxPath);
 
@@ -65,7 +65,7 @@ public class FurnitureBoxTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void BoxJoinsTheFurnitureBoxesGroupAndTheInteractableLayer()
+    public static void BoxJoinsTheFurnitureBoxesGroupAndTheInteractableLayer()
     {
         var box = BuildBox(ShelfBoxPath);
 
@@ -73,7 +73,7 @@ public class FurnitureBoxTest
         AssertBool((box.CollisionLayer & InteractableLayerBit) == InteractableLayerBit).IsTrue();
     }
 
-    private FurnitureBox BuildBox(string scenePath)
+    private static FurnitureBox BuildBox(string scenePath)
     {
         var box = ResourceLoader.Load<PackedScene>(scenePath).Instantiate<FurnitureBox>();
         TestServices.Inject(box);

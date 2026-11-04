@@ -81,6 +81,7 @@ internal sealed class SaveWorld : IDisposable
         }
 
         World.Free();
+        Spawner.FreeDetached();
         Tree.CurrentScene = _previousScene;
         TestServices.Reset();
     }
