@@ -2,15 +2,6 @@ using System.Linq;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
-/// <summary>Why a checkout is refused. <see cref="None"/> means the checkout may go ahead.</summary>
-public enum CheckoutRefusal
-{
-    None,
-    EmptyCart,
-    LockedItem,
-    InsufficientFunds,
-}
-
 /// <summary>
 ///     The outcome of trying to check out a cart: the refusal, the total, how far the balance falls short and,
 ///     for a locked item, the id of the first locked line. Shortfall is 0 for every result except

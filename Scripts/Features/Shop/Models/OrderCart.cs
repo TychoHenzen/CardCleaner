@@ -3,9 +3,6 @@ using System.Linq;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
-/// <summary>One cart line: an item and how many of it the player has chosen.</summary>
-public sealed record CartLine(StockEntry Entry, int Quantity);
-
 /// <summary>
 ///     The Stock app cart: one line per item id, merged on add and capped per line. Pure rules, no engine types.
 /// </summary>
