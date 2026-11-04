@@ -117,8 +117,8 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         });
     }
 
-    // _Ready runs once, but a terminal can leave and re-enter the tree, so the subscriptions that
-    // _ExitTree drops are restored on every entry.
+    // _Ready runs once, but a terminal can leave and re-enter the tree, so the
+    // subscriptions that _ExitTree drops are restored on every entry.
     public override void _EnterTree() => Subscribe();
 
     public override void _ExitTree()
@@ -128,8 +128,9 @@ public partial class OrderTerminal : StaticBody3D, IInteractable, IDependent
         Unsubscribe();
     }
 
-    // Escape must close the PC even when the desktop is open: the desktop sits in a SubViewport,
-    // which does not receive the key, so the terminal in the main tree handles it itself.
+    // Escape must close the PC even when the desktop is open: the desktop sits in a
+    // SubViewport, which does not receive the key, so the terminal in the main tree
+    // handles it itself.
     public override void _UnhandledInput(InputEvent @event)
     {
         if (!IsOpen || !@event.IsActionPressed(CloseAction))
