@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
@@ -72,6 +74,15 @@ public partial class PlacedFurniture : StaticBody3D
         placed.Place(pose);
         return placed;
     }
+
+    /// <summary>The floor rects of the pieces standing under <paramref name="root" />, not the carried one.</summary>
+    public static List<FurnitureRect> StandingRects(Node? root) =>
+        root == null
+            ? []
+            : root.GetChildren().OfType<PlacedFurniture>()
+                .Where(placed => placed is { Item: not null, IsCarried: false })
+                .Select(placed => placed.Rect)
+                .ToList();
 
     /// <summary>Puts the piece at a pose: its floor position and its yaw in quarter turns.</summary>
     public void Place(FurniturePose pose)

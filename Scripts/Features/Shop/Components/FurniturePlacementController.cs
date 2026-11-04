@@ -217,17 +217,5 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
         _ghost?.Show(CurrentPose, CurrentValid);
     }
 
-    private List<FurnitureRect> PlacedRects()
-    {
-        var rects = new List<FurnitureRect>();
-        if (FurnitureRoot == null)
-            return rects;
-        foreach (var child in FurnitureRoot.GetChildren())
-        {
-            if (child is PlacedFurniture { Item: not null, IsCarried: false } placed)
-                rects.Add(placed.Rect);
-        }
-
-        return rects;
-    }
+    private List<FurnitureRect> PlacedRects() => PlacedFurniture.StandingRects(FurnitureRoot);
 }
