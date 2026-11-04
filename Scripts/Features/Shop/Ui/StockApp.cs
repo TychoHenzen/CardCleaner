@@ -70,6 +70,8 @@ public partial class StockApp : Control, IDependent
 
         if (Catalog != null)
             Populate(Catalog);
+        else
+            RebuildCards();
     }
 
     // _Ready runs once, but the app can leave and re-enter the tree, so its subscriptions are restored
@@ -209,6 +211,10 @@ public partial class StockApp : Control, IDependent
     internal bool CheckoutDisabled => _cartPanel.CheckoutDisabled;
 
     internal string MessageText => _cartPanel.MessageText;
+
+    internal string EmptyText => _cards.EmptyText;
+
+    internal string BalanceText => _balanceLabel.Text;
 
     // The desktop can populate or query this app before its own _Ready has run, so every entry point builds
     // the layout on first use.

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
@@ -18,8 +19,12 @@ internal sealed class StockCardGrid
 
     private readonly GridContainer _grid = new() { Columns = CardColumns };
     private readonly List<CardView> _cards = [];
+    private readonly Label _empty = new() { Visible = false };
 
     internal int Count => _cards.Count;
+
+    /// <summary>The line shown in place of the cards while there is nothing to order, or empty.</summary>
+    internal string EmptyText => _empty.Text;
 
     /// <summary>Adds the scrolling grid to <paramref name="column" />.</summary>
     public void AddTo(VBoxContainer column)
@@ -29,7 +34,10 @@ internal sealed class StockCardGrid
             SizeFlagsVertical = Control.SizeFlags.ExpandFill,
             HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled
         };
-        scroll.AddChild(_grid);
+        var content = new VBoxContainer();
+        content.AddChild(_empty);
+        content.AddChild(_grid);
+        scroll.AddChild(content);
         column.AddChild(scroll);
     }
 
@@ -45,8 +53,15 @@ internal sealed class StockCardGrid
             card.Panel.Free();
         _cards.Clear();
 
+        var any = false;
         foreach (var item in items)
+        {
             AddCard(item, entryFor(item), level, onAdd);
+            any = true;
+        }
+
+        _empty.Text = any ? string.Empty : "Nothing to order.";
+        _empty.Visible = !any;
     }
 
     /// <summary>Presses the n-th card's button, as a click would.</summary>
@@ -66,15 +81,21 @@ internal sealed class StockCardGrid
         column.AddChild(BuildThumbnail(item));
         column.AddChild(new Label { Text = item.DisplayName });
         column.AddChild(new Label { Text = $"{item.Price}" });
-        var button = BuildButton(entry, level, onAdd);
+        var button = BuildButton(item, entry, level, onAdd);
         column.AddChild(button);
 
         _grid.AddChild(panel);
         _cards.Add(new CardView(panel, button, item.Thumbnail == null));
     }
 
-    private static Button BuildButton(StockEntry entry, int level, Action<StockEntry> onAdd)
+    private static Button BuildButton(OrderItem item, StockEntry entry, int level, Action<StockEntry> onAdd)
     {
+        if (!IsSellable(item))
+        {
+            ILog.Warning($"Stock item '{item.Id}' has no scene or no positive price and is shown unavailable.");
+            return new Button { Text = LockLabel(null), Disabled = true };
+        }
+
         if (entry.IsLocked(level))
             return new Button { Text = LockLabel(entry.RequiredLevel), Disabled = true };
 
@@ -82,6 +103,8 @@ internal sealed class StockCardGrid
         button.Pressed += () => onAdd(entry);
         return button;
     }
+
+    private static bool IsSellable(OrderItem item) => item.Scene != null && item.Price > 0;
 
     private static string LockLabel(int? requiredLevel) =>
         requiredLevel is { } level ? $"Level {level}" : "Unavailable";
