@@ -12,7 +12,7 @@ public class ShopHudTest
 {
     [TestCase]
     [TestCategory("Unit")]
-    public void ShowsMoneyDayAndTime()
+    public static void ShowsMoneyDayAndTime()
     {
         var days = new FakeShopDayService { Day = 4, MinutesOfDay = 480 };
         var money = AutoFree(new MoneyService { StartingBalance = 500 });
