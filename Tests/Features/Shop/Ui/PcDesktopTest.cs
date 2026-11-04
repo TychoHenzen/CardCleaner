@@ -281,14 +281,16 @@ public class PcDesktopTest
     }
 
     /// <summary>Adds a desktop with its Stock app and a hidden Furniture app; the Bills slot stays empty.</summary>
-    private static (PcDesktop Desktop, Control StockApp, Control FurnitureApp) BuildDesktopWithFurniture()
+    private static FurnitureDesktopParts BuildDesktopWithFurniture()
     {
         var (desktop, stockApp, _) = InstantiateDesktop(assignBills: false);
         var furnitureApp = NewApp("FurnitureApp", desktop);
         desktop.FurnitureApp = furnitureApp;
         AddNode(desktop);
-        return (desktop, stockApp, furnitureApp);
+        return new FurnitureDesktopParts(desktop, stockApp, furnitureApp);
     }
+
+    private readonly record struct FurnitureDesktopParts(PcDesktop Desktop, Control StockApp, Control FurnitureApp);
 
     private readonly record struct DesktopParts(PcDesktop Desktop, Control StockApp, Control BillsApp);
 

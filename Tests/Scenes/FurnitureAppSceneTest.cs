@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
+using static CardCleaner.Scripts.Features.Shop.Services.OrderingService;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
@@ -160,7 +161,7 @@ public class FurnitureAppSceneTest
     {
         var delivered = world.GetChildren().Skip(before).Cast<Node3D>().ToList();
         for (var slot = 0; slot < delivered.Count; slot++)
-            AssertBool(delivered[slot].GlobalPosition.DistanceTo(delivery + OrderingService.SlotOffset(slot)) < 0.01f)
+            AssertBool(delivered[slot].GlobalPosition.DistanceTo(delivery + SlotOffset(slot)) < 0.01f)
                 .IsTrue();
     }
 
