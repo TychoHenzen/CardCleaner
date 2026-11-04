@@ -215,6 +215,19 @@ public class ShopSceneContractTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void FurnitureRootJoinsTheNavigationGroup()
+    {
+        AssertBool(_shop.GetNode("World/Furniture").IsInGroup("shop_navigation")).IsTrue();
+
+        var placement = _shop.GetNodeOrNull<CardCleaner.Scripts.Features.Shop.Components.FurniturePlacementController>(
+            "Services/FurniturePlacement");
+        AssertThat(placement).IsNotNull();
+        AssertThat(placement!.FurnitureRoot).IsNotNull();
+        AssertThat(placement.Navigation).IsNotNull();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void SpawnAndDespawnMarkersAreOnTheStreet()
     {
         foreach (var marker in StreetMarkerNames)

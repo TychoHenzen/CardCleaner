@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/FurnitureBox.tscn" id="FurnitureBox"]
+[ext_resource type="Resource" path="res://Data/Shop/Furniture/ShelfFurniture.tres" id="ShelfFurniture"]
+
+[node name="FurnitureBox" instance=ExtResource("FurnitureBox")]
+Item = ExtResource("ShelfFurniture")

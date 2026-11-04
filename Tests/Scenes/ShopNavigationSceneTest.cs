@@ -72,6 +72,22 @@ public class ShopNavigationSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void BakeOnLoadCountsOnce()
+    {
+        AssertInt(_region.RebakeCount).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RebakeCountRisesByOnePerRebake()
+    {
+        int before = _region.RebakeCount;
+        _region.Rebake();
+        AssertInt(_region.RebakeCount).IsEqual(before + 1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static void CommittedSceneStoresNoBakedMesh()
     {
         // Never added to the tree, so no _Ready ran: this is the sub-resource exactly as the scene file stores it.
