@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
@@ -205,7 +206,7 @@ public class ShopCarryingPoseSceneTest
     }
 
     private OrderCatalog Catalog() =>
-        _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal").Catalog!;
+        _shop.GetNode<StockApp>("PcDesktopViewport/StockApp").Catalog!;
 
     private ContainerHolder Holder() => _player.GetNode<ContainerHolder>("CardInteraction/ContainerHolder");
 

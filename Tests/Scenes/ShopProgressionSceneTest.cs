@@ -23,23 +23,24 @@ public class ShopProgressionSceneTest
     private const int LevelTwoXp = 500; // a 500 checkout earns 50 XP, which is level 2
 
     private Node3D _shop = null!;
-    private OrderTerminal _terminal = null!;
-    private OrderTerminalUi _ui = null!;
+    private ScreenTerminal _terminal = null!;
+    private StockApp _stock = null!;
     private MoneyService _money = null!;
     private ShopProgression _progression = null!;
     private OrderingService _ordering = null!;
-    private TerminalPresses _presses = null!;
+    private StockPresses _presses = null!;
 
     [BeforeTest]
     public async Task Setup()
     {
         _shop = ShopOrderingRig.LoadShopWithServices();
-        _terminal = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
-        _ui = _shop.GetNode<OrderTerminalUi>("PcDesktopViewport/OrderUi");
+        _terminal = _shop.GetNode<ScreenTerminal>("World/Markers/PcLocation/PcTerminal");
+        _stock = _shop.GetNode<StockApp>("PcDesktopViewport/StockApp");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
-        _presses = new TerminalPresses(_ordering, OrderingService.SlotColumns * OrderingService.SlotRows);
+        _presses = new StockPresses(_stock, _ordering, _shop.GetNode("World"),
+            OrderingService.SlotColumns * OrderingService.SlotRows);
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
@@ -88,10 +89,10 @@ public class ShopProgressionSceneTest
         var balance = _money.Balance;
         _terminal.Interact();
 
-        _presses.PressForRefusal(_terminal, index, OrderStatus.Locked);
-
-        AssertBool(_ui.MessageText.Contains("is locked")).IsTrue();
-        AssertBool(_ui.MessageText.Contains("shop level")).IsTrue();
+        // The Stock app shows a level-locked item as a disabled card naming the level, so it never reaches the cart.
+        AssertBool(_stock.CardIsLocked(index)).IsTrue();
+        AssertThat(_stock.CardLockText(index)).IsEqual("Level 2");
+        _presses.PressForRefusal(index, "cart is empty");
         AssertThat(_money.Balance).IsEqual(balance);
     }
 
@@ -100,13 +101,13 @@ public class ShopProgressionSceneTest
     public void ReachingLevelTwoDeliversThatItem()
     {
         var index = LockedIndex();
-        var price = _terminal.Catalog!.Items[index].Price;
+        var price = _stock.Catalog!.Items[index].Price;
         _progression.AwardCheckout(LevelTwoXp);
         _money.Add(price);
         var balance = _money.Balance;
         _terminal.Interact();
 
-        _presses.PressForDelivery(_terminal, index);
+        _presses.PressForDelivery(index);
 
         AssertThat(_money.Balance).IsEqual(balance - price);
     }
@@ -115,7 +116,7 @@ public class ShopProgressionSceneTest
     [TestCategory("Unit")]
     public void EveryOtherBackofficeItemOrdersAtLevelOne()
     {
-        var items = _terminal.Catalog!.Items;
+        var items = _stock.Catalog!.Items;
         _terminal.Interact();
 
         for (var i = 0; i < items.Length; i++)
@@ -124,7 +125,7 @@ public class ShopProgressionSceneTest
                 continue;
 
             _money.Add(items[i].Price);
-            _presses.PressForDelivery(_terminal, i);
+            _presses.PressForDelivery(i);
         }
 
         AssertThat(_ordering.DeliveredCount).IsEqual(items.Length - 1);
@@ -132,7 +133,7 @@ public class ShopProgressionSceneTest
 
     private int LockedIndex()
     {
-        var index = _terminal.Catalog!.Items.ToList().FindIndex(item => item.Id == LockedId);
+        var index = _stock.Catalog!.Items.ToList().FindIndex(item => item.Id == LockedId);
         AssertBool(index >= 0).OverrideFailureMessage($"catalog has no {LockedId} row").IsTrue();
         return index;
     }

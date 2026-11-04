@@ -33,8 +33,9 @@ public class ShopOrderingSceneTest
 
     private Node3D _shop = null!;
     private PlayerController _player = null!;
-    private OrderTerminal _terminal = null!;
-    private OrderTerminalUi _ui = null!;
+    private ScreenTerminal _terminal = null!;
+    private StockApp _stock = null!;
+    private StockPresses _presses = null!;
     private PcDesktop _desktop = null!;
     private MoneyService _money = null!;
     private ShopProgression _progression = null!;
@@ -45,9 +46,9 @@ public class ShopOrderingSceneTest
     {
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _player = _shop.GetNode<PlayerController>("Player");
-        _terminal = _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal");
+        _terminal = _shop.GetNode<ScreenTerminal>("World/Markers/PcLocation/PcTerminal");
         _desktop = _shop.GetNode<PcDesktop>("PcDesktopViewport/PcDesktop");
-        _ui = _shop.GetNode<OrderTerminalUi>("PcDesktopViewport/OrderUi");
+        _stock = _shop.GetNode<StockApp>("PcDesktopViewport/StockApp");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
         _cursor = _shop.GetNode<CursorOwner>("Services/CursorOwner");
@@ -60,6 +61,9 @@ public class ShopOrderingSceneTest
         TestServices.Container.RegisterSingleton<IShopProgression>(_progression);
         TestServices.Container.RegisterSingleton<IOrderingService>(ordering);
         TestServices.Container.RegisterSingleton<ICursorOwner>(_cursor);
+
+        // Shelves stack in layers, so more of them fit than one grid holds; the bound is the expected count.
+        _presses = new StockPresses(_stock, ordering, _shop.GetNode("World"), ShelvesUntilFull);
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
@@ -76,8 +80,8 @@ public class ShopOrderingSceneTest
     [TestCategory("Unit")]
     public void TerminalCatalogOffersFiveItems()
     {
-        AssertThat(_terminal.Catalog!.Items.Select(i => i.Id).ToArray()).IsEqual(ExpectedItems);
-        AssertThat(_ui.ItemRowCount).IsEqual(ExpectedItems.Length);
+        AssertThat(_stock.Catalog!.Items.Select(i => i.Id).ToArray()).IsEqual(ExpectedItems);
+        AssertThat(_stock.CardCount).IsEqual(ExpectedItems.Length);
     }
 
     [TestCase]
@@ -129,13 +133,13 @@ public class ShopOrderingSceneTest
 
         // The PC opens on its desktop; the ordering app only shows after the Stock icon is pressed.
         AssertBool(_desktop.Visible).IsTrue();
-        AssertBool(_ui.Visible).IsFalse();
+        AssertBool(_stock.Visible).IsFalse();
         AssertBool(_player.ControlEnabled).IsFalse();
 
         _terminal.Close();
 
         AssertBool(_desktop.Visible).IsFalse();
-        AssertBool(_ui.Visible).IsFalse();
+        AssertBool(_stock.Visible).IsFalse();
         AssertBool(_player.ControlEnabled).IsTrue();
     }
 
@@ -206,17 +210,14 @@ public class ShopOrderingSceneTest
 
         for (var i = 0; i < ExpectedItems.Length; i++)
         {
-            var item = _terminal.Catalog!.Items[i];
+            var item = _stock.Catalog!.Items[i];
             _money.Add(item.Price);
             balance = _money.Balance;
-            var before = _shop.GetNode("World").GetChildCount();
 
-            _ui.PressItem(i);
+            var spawned = _presses.PressForDelivery(i);
 
             AssertThat(_money.Balance).IsEqual(balance - item.Price);
-            AssertThat(_ui.BalanceText).IsEqual($"Balance: {_money.Balance}");
-            AssertThat(_shop.GetNode("World").GetChildCount()).IsEqual(before + 1);
-            var spawned = (Node3D)_shop.GetNode("World").GetChildren().Last();
+            AssertThat(_stock.BalanceText).IsEqual($"Balance: {_money.Balance}");
             AssertBool(spawned.GlobalPosition.IsEqualApprox(delivery + OrderingService.SlotOffset(i))).IsTrue();
         }
     }
@@ -245,21 +246,13 @@ public class ShopOrderingSceneTest
     public void ShelvesFillTheGridAndStackOnTheShelfBoxNotOnItsCardHolders()
     {
         var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
-        var shelf = _terminal.Catalog!.Items.ToList().FindIndex(item => item.Id == "shelf");
-        _money.Add(_terminal.Catalog.Items[shelf].Price * 2 * ShelvesUntilFull);
+        var shelf = _stock.Catalog!.Items.ToList().FindIndex(item => item.Id == "shelf");
+        _money.Add(_stock.Catalog.Items[shelf].Price * 2 * ShelvesUntilFull);
         _terminal.Interact();
 
-        // The bound only stops a grid that never fills from looping forever.
-        var delivered = new List<Node3D>();
-        for (var order = 0; order < 2 * ShelvesUntilFull; order++)
-        {
-            _ui.PressItem(shelf);
-            if (_terminal.LastOrder is not { Status: OrderStatus.Success, Spawned: { } spawned })
-                break;
-            delivered.Add(spawned);
-        }
+        var delivered = _presses.OrderUntilFull(shelf);
 
-        AssertThat(_terminal.LastOrder?.Status).IsEqual(OrderStatus.DeliveryFull);
+        AssertBool(_stock.MessageText.Contains("delivery area is full")).IsTrue();
         AssertThat(delivered.Count).IsEqual(ShelvesUntilFull);
         // The first shelf of the second layer rests on the shelf box below it. Its card holders' triggers reach above
         // the box, so a footprint that counted them would lift it higher.
@@ -276,10 +269,9 @@ public class ShopOrderingSceneTest
         _terminal.Interact();
         _money.TrySpend(_money.Balance);
 
-        _ui.PressItem(0);
+        _presses.PressForRefusal(0, "Not enough money");
 
         AssertThat(_money.Balance).IsEqual(0);
         AssertThat(_shop.GetNode("World").GetChildCount()).IsEqual(items);
-        AssertBool(_ui.MessageText.Contains("Not enough money")).IsTrue();
     }
 }

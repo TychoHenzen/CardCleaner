@@ -118,7 +118,7 @@ public class ShopWorkshopOrderFlowSceneTest
         _rig.Terminal.Close();
 
         _rig.Pc.Interact();
-        var spawned = _rig.Presses.PressForDelivery(_rig.Pc, 0);
+        var spawned = _rig.PcPresses.PressForDelivery(0);
         AssertBool(spawned.GlobalPosition.IsEqualApprox(_rig.ShopDelivery.GlobalPosition + OrderingService.SlotOffset(0)))
             .IsTrue();
     }
@@ -131,8 +131,8 @@ public class ShopWorkshopOrderFlowSceneTest
         var expected = _rig.Money.Balance;
         var wiringIndex = _rig.IndexOf("wiring");
         var wiringPrice = _rig.Terminal.Catalog!.Items[wiringIndex].Price;
-        var boxIndex = _rig.Pc.Catalog!.Items.ToList().FindIndex(i => i.Id == "cardboard_box");
-        var boxPrice = _rig.Pc.Catalog.Items[boxIndex].Price;
+        var boxIndex = _rig.PcStock.Catalog!.Items.ToList().FindIndex(i => i.Id == "cardboard_box");
+        var boxPrice = _rig.PcStock.Catalog.Items[boxIndex].Price;
 
         for (var round = 0; round < Rounds; round++)
         {
@@ -145,14 +145,14 @@ public class ShopWorkshopOrderFlowSceneTest
                 _rig.Delivery.GlobalPosition + OrderingService.SlotOffset(round))).IsTrue();
 
             _rig.Pc.Interact();
-            var shopItem = _rig.Presses.PressForDelivery(_rig.Pc, boxIndex);
+            var shopItem = _rig.PcPresses.PressForDelivery(boxIndex);
             _rig.Pc.Close();
             expected -= boxPrice;
             AssertThat(_rig.Money.Balance).IsEqual(expected);
             AssertBool(shopItem.GlobalPosition.IsEqualApprox(
                 _rig.ShopDelivery.GlobalPosition + OrderingService.SlotOffset(round))).IsTrue();
 
-            AssertThat(_rig.PcUi.BalanceText).IsEqual($"Balance: {expected}");
+            AssertThat(_rig.PcStock.BalanceText).IsEqual($"Balance: {expected}");
             AssertThat(_rig.Ui.BalanceText).IsEqual($"Balance: {expected}");
         }
     }

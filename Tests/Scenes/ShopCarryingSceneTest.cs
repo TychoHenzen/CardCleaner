@@ -14,6 +14,7 @@ using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using NSubstitute;
@@ -250,7 +251,7 @@ public class ShopCarryingSceneTest
     }
 
     private OrderCatalog Catalog() =>
-        _shop.GetNode<OrderTerminal>("World/Markers/PcLocation/PcTerminal").Catalog!;
+        _shop.GetNode<StockApp>("PcDesktopViewport/StockApp").Catalog!;
 
     private CardContainer[] Containers(CardContainerKind kind) =>
         AllContainers(_shop).Where(c => c.Kind == kind && !c.IsOpened).ToArray();
