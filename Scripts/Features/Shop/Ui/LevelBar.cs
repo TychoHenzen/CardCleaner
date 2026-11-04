@@ -11,10 +11,6 @@ public partial class LevelBar : HBoxContainer
 {
     private IShopProgression? _progression;
 
-    public LevelBar()
-    {
-    }
-
     public Label? LevelLabel { get; private set; }
 
     public ProgressBar? Bar { get; private set; }

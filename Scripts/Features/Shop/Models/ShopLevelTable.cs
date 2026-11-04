@@ -57,7 +57,7 @@ public sealed class ShopLevelTable
     }
 
     /// <summary>The span of the current level in XP, or null at the top level.</summary>
-    public int? XpForNextLevel(int xp)
+    public int? LevelSpan(int xp)
     {
         var index = LevelFor(xp) - 1;
         if (index == _thresholds.Length - 1)
@@ -68,7 +68,7 @@ public sealed class ShopLevelTable
     /// <summary>Fraction of the current level already earned, from 0 to 1. The top level reads as 1.</summary>
     public float Progress(int xp)
     {
-        var span = XpForNextLevel(xp);
+        var span = LevelSpan(xp);
         if (span is null)
             return 1.0f;
         return (float)XpIntoLevel(xp) / span.Value;

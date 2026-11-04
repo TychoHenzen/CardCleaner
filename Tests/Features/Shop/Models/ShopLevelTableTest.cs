@@ -28,7 +28,7 @@ public class ShopLevelTableTest
         var table = ShopLevelTable.Default;
 
         AssertThat(table.XpIntoLevel(70)).IsEqual(20);
-        AssertThat(table.XpForNextLevel(70)).IsEqual(100);
+        AssertThat(table.LevelSpan(70)).IsEqual(100);
     }
 
     [TestCase]
@@ -38,7 +38,7 @@ public class ShopLevelTableTest
         var table = ShopLevelTable.Default;
 
         AssertThat(table.MaxLevel).IsEqual(5);
-        AssertThat(table.XpForNextLevel(500)).IsNull();
+        AssertThat(table.LevelSpan(500)).IsNull();
         AssertThat(table.XpIntoLevel(100000)).IsEqual(0);
     }
 

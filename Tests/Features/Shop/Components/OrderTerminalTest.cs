@@ -288,7 +288,10 @@ public class OrderTerminalTest
 
         var items = new OrderItem[entries.Length];
         for (var i = 0; i < entries.Length; i++)
-            items[i] = new OrderItem { Id = entries[i].Id, DisplayName = entries[i].Id, Price = entries[i].Price, Scene = packed };
+            items[i] = new OrderItem
+            {
+                Id = entries[i].Id, DisplayName = entries[i].Id, Price = entries[i].Price, Scene = packed
+            };
         return new OrderCatalog { Items = items };
     }
 }

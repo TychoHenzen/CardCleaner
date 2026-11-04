@@ -24,10 +24,6 @@ public partial class ShopProgression : Node, IShopProgression, ISaveable
     private readonly UnlockCatalog _unlocks = UnlockCatalog.Default;
     private int _xp;
 
-    public ShopProgression()
-    {
-    }
-
     public StringName UniqueID => "shop_progression";
 
     public int Xp => _xp;
