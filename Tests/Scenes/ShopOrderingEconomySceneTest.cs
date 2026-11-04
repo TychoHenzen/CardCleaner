@@ -65,7 +65,7 @@ public class ShopOrderingEconomySceneTest
     [TestCategory("Unit")]
     public void EachUiListsOnlyItsOwnTerminalsCatalog()
     {
-        AssertThat(_pcUi.CardCount).IsEqual(_pcUi.Catalog!.Items.Length);
+        AssertThat(_pcUi.CardGrid.Count).IsEqual(_pcUi.Catalog!.Items.Length);
         AssertThat(_workshopUi.ItemRowCount).IsEqual(_workshop.Catalog!.Items.Length);
     }
 
@@ -102,7 +102,7 @@ public class ShopOrderingEconomySceneTest
         var expected = _money.Balance - item.Price;
         _pc.Interact();
 
-        _pcUi.PressAdd(0);
+        _pcUi.CardGrid.PressAdd(0);
         _pcUi.PressCheckout();
 
         AssertThat(_money.Balance).IsEqual(expected);

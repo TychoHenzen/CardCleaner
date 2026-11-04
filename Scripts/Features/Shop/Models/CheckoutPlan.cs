@@ -3,9 +3,8 @@ using System.Linq;
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>
-///     The outcome of trying to check out a cart: the refusal, the total, how far the balance falls short and,
-///     for a locked item, the id of the first locked line. Shortfall is 0 for every result except
-///     <see cref="CheckoutRefusal.InsufficientFunds"/>. Pure rules, no engine types.
+///     The outcome of checking out a cart. Shortfall is 0 unless the refusal is
+///     <see cref="CheckoutRefusal.InsufficientFunds"/>.
 /// </summary>
 public readonly record struct CheckoutPlan(CheckoutRefusal Refusal, int Total, int Shortfall, string? LockedId)
 {

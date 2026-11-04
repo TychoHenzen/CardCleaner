@@ -156,7 +156,7 @@ public class PcDesktopTest
         world.GetTree().Root.Size = ScreenSize;
 
         var screen = new SubViewport { Size = ScreenSize };
-        var desktop = InstantiateDesktop(out var stockApp, out _);
+        var (desktop, stockApp, _) = InstantiateDesktop();
         screen.AddChild(desktop);
         world.AddChild(screen);
 
@@ -214,15 +214,15 @@ public class PcDesktopTest
     ///     Instantiates the desktop scene and gives it two hidden plain Control apps, named StockApp and BillsApp.
     ///     Each app is a child of the desktop. Without <paramref name="assignBills" /> the Bills slot stays empty.
     /// </summary>
-    private static PcDesktop InstantiateDesktop(out Control stockApp, out Control billsApp, bool assignBills = true)
+    private static DesktopParts InstantiateDesktop(bool assignBills = true)
     {
         var desktop = GD.Load<PackedScene>(DesktopScene).Instantiate<PcDesktop>();
-        stockApp = NewApp("StockApp", desktop);
-        billsApp = NewApp("BillsApp", desktop);
+        var stockApp = NewApp("StockApp", desktop);
+        var billsApp = NewApp("BillsApp", desktop);
         desktop.StockApp = stockApp;
         if (assignBills)
             desktop.BillsApp = billsApp;
-        return desktop;
+        return new DesktopParts(desktop, stockApp, billsApp);
     }
 
     private static Control NewApp(string name, Node parent)
@@ -235,9 +235,9 @@ public class PcDesktopTest
     /// <summary>Adds a desktop built from its scene to the test root, with its two apps assigned.</summary>
     private static DesktopParts BuildDesktop(bool assignBills = true)
     {
-        var desktop = InstantiateDesktop(out var stockApp, out var billsApp, assignBills);
-        AddNode(desktop);
-        return new DesktopParts(desktop, stockApp, billsApp);
+        var parts = InstantiateDesktop(assignBills);
+        AddNode(parts.Desktop);
+        return parts;
     }
 
     private readonly record struct DesktopParts(PcDesktop Desktop, Control StockApp, Control BillsApp);

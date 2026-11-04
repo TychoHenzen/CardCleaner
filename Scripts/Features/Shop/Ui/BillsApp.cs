@@ -46,8 +46,7 @@ public partial class BillsApp : Control, IDependent
         });
     }
 
-    // _Ready runs once, but the app can leave and re-enter the tree, so its subscriptions are restored
-    // on every entry and dropped on every exit.
+    // Subscriptions follow the tree: restored on every entry, dropped on every exit (see StockApp).
     public override void _EnterTree() => Subscribe();
 
     public override void _ExitTree() => Unsubscribe();
@@ -156,8 +155,8 @@ public partial class BillsApp : Control, IDependent
         return row;
     }
 
-    // ASSUMPTION: the layout is built on first use, not only in _Ready, so the test hooks work on a node that
-    // has not entered the tree yet (Low risk).
+    // The desktop can populate or query this app before its own _Ready has run, so every entry point builds
+    // the layout on first use. This is a deliberate design, not a guess.
     private void EnsureLayout()
     {
         if (_layoutBuilt)

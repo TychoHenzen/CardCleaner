@@ -29,81 +29,81 @@ public class StockAppTest
     [TestCategory("Unit")]
     public void BuildsOneCardPerCatalogItem()
     {
-        AssertThat(_f.App.CardCount).IsEqual(4);
+        AssertThat(_f.App.CardGrid.Count).IsEqual(4);
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void LockedItemShowsRequiredLevelAndCannotBeAdded()
     {
-        AssertBool(_f.App.CardIsLocked(2)).IsTrue();
-        AssertThat(_f.App.CardLockText(2)).IsEqual("Level 4");
+        AssertBool(_f.App.CardGrid.IsLocked(2)).IsTrue();
+        AssertThat(_f.App.CardGrid.ButtonText(2)).IsEqual("Level 4");
 
-        _f.App.PressAdd(2);
+        _f.App.CardGrid.PressAdd(2);
 
-        AssertThat(_f.App.CartLineCount).IsEqual(0);
-        AssertThat(_f.App.CartTotalText).IsEqual("Total: 0");
+        AssertThat(_f.App.CartPanel.LineCount).IsEqual(0);
+        AssertThat(_f.App.CartPanel.TotalText).IsEqual("Total: 0");
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void ItemWithNoUnlockRowShowsUnavailable()
     {
-        AssertBool(_f.App.CardIsLocked(3)).IsTrue();
-        AssertThat(_f.App.CardLockText(3)).IsEqual("Unavailable");
+        AssertBool(_f.App.CardGrid.IsLocked(3)).IsTrue();
+        AssertThat(_f.App.CardGrid.ButtonText(3)).IsEqual("Unavailable");
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void AddingShowsLineAndTotal()
     {
-        _f.App.PressAdd(0);
+        _f.App.CardGrid.PressAdd(0);
 
-        AssertThat(_f.App.CartLineCount).IsEqual(1);
-        AssertThat(_f.App.CartTotalText).IsEqual("Total: 40");
+        AssertThat(_f.App.CartPanel.LineCount).IsEqual(1);
+        AssertThat(_f.App.CartPanel.TotalText).IsEqual("Total: 40");
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void RemoveOneUpdatesTotal()
     {
-        _f.App.PressAdd(0);
-        _f.App.PressAdd(1);
-        AssertThat(_f.App.CartTotalText).IsEqual("Total: 130");
+        _f.App.CardGrid.PressAdd(0);
+        _f.App.CardGrid.PressAdd(1);
+        AssertThat(_f.App.CartPanel.TotalText).IsEqual("Total: 130");
 
-        _f.App.PressRemoveOne("cheap");
+        _f.App.CartPanel.PressRemoveOne("cheap");
 
-        AssertThat(_f.App.CartTotalText).IsEqual("Total: 90");
+        AssertThat(_f.App.CartPanel.TotalText).IsEqual("Total: 90");
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void CheckoutDisabledWhileCartEmpty()
     {
-        AssertBool(_f.App.CheckoutDisabled).IsTrue();
+        AssertBool(_f.App.CartPanel.CheckoutDisabled).IsTrue();
 
-        _f.App.PressAdd(0);
+        _f.App.CardGrid.PressAdd(0);
 
-        AssertBool(_f.App.CheckoutDisabled).IsFalse();
+        AssertBool(_f.App.CartPanel.CheckoutDisabled).IsFalse();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void PlaceholderTileWhenThumbnailIsNull()
     {
-        AssertBool(_f.App.CardHasPlaceholder(0)).IsTrue();
+        AssertBool(_f.App.CardGrid.HasPlaceholder(0)).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public void CardsRefreshWhenProgressionChanges()
     {
-        AssertBool(_f.App.CardIsLocked(2)).IsTrue();
+        AssertBool(_f.App.CardGrid.IsLocked(2)).IsTrue();
 
         _f.Progression.Level = 4;
         _f.Progression.RaiseChanged();
 
-        AssertBool(_f.App.CardIsLocked(2)).IsFalse();
-        AssertThat(_f.App.CardLockText(2)).IsEqual("Add");
+        AssertBool(_f.App.CardGrid.IsLocked(2)).IsFalse();
+        AssertThat(_f.App.CardGrid.ButtonText(2)).IsEqual("Add");
     }
 }

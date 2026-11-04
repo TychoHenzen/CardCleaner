@@ -90,8 +90,8 @@ public class ShopProgressionSceneTest
         _terminal.Interact();
 
         // The Stock app shows a level-locked item as a disabled card naming the level, so it never reaches the cart.
-        AssertBool(_stock.CardIsLocked(index)).IsTrue();
-        AssertThat(_stock.CardLockText(index)).IsEqual("Level 2");
+        AssertBool(_stock.CardGrid.IsLocked(index)).IsTrue();
+        AssertThat(_stock.CardGrid.ButtonText(index)).IsEqual("Level 2");
         _presses.PressForRefusal(index, "cart is empty");
         AssertThat(_money.Balance).IsEqual(balance);
     }

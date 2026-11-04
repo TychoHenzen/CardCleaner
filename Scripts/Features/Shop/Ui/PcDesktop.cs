@@ -35,15 +35,7 @@ public partial class PcDesktop : Control
     {
         _closeButton = GetNode<Button>("Taskbar/CloseButton");
 
-        var icons = new (string Path, Control? App)[]
-        {
-            ("Icons/StockIcon", StockApp),
-            ("Icons/BillsIcon", BillsApp),
-            ("Icons/FurnitureIcon", null),
-            ("Icons/ExpansionsIcon", null),
-            ("Icons/StaffIcon", null)
-        };
-        foreach (var (path, app) in icons)
+        foreach (var (path, app) in IconRows())
         {
             var icon = GetNode<Button>(path);
             if (app == null)
@@ -53,8 +45,7 @@ public partial class PcDesktop : Control
                 continue;
             }
 
-            var target = app;
-            icon.Pressed += () => ShowApp(target);
+            icon.Pressed += () => ShowApp(app);
         }
 
         _closeButton.Pressed += () => CloseRequested?.Invoke();
@@ -66,11 +57,23 @@ public partial class PcDesktop : Control
     /// </summary>
     public void ResetToDesktop()
     {
-        if (StockApp != null)
-            StockApp.Visible = false;
-        if (BillsApp != null)
-            BillsApp.Visible = false;
+        foreach (var (_, app) in IconRows())
+        {
+            if (app != null)
+                app.Visible = false;
+        }
     }
+
+    // The one place each app is named next to its icon. A new app is one
+    // export and one row here; ResetToDesktop reads the same rows.
+    private (string Path, Control? App)[] IconRows() =>
+    [
+        ("Icons/StockIcon", StockApp),
+        ("Icons/BillsIcon", BillsApp),
+        ("Icons/FurnitureIcon", null),
+        ("Icons/ExpansionsIcon", null),
+        ("Icons/StaffIcon", null)
+    ];
 
     private void ShowApp(Control app)
     {

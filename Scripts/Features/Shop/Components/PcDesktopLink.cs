@@ -18,8 +18,8 @@ public partial class PcDesktopLink : Node
     private Camera3D? _previousCamera;
 
     /// <summary>
-    ///     The desktop on the PC screen. Shows the ordering app, and is
-    ///     hidden while the PC is closed.
+    ///     The desktop on the PC screen. It is shown, reset to its icons,
+    ///     while the PC is open, and hidden while the PC is closed.
     /// </summary>
     [Export]
     public PcDesktop? Desktop { get; set; }
@@ -63,10 +63,7 @@ public partial class PcDesktopLink : Node
             return;
 
         _previousCamera = GetViewport().GetCamera3D();
-        if (ScreenCamera != null)
-            ScreenCamera.Current = true;
-        if (ScreenPointer != null)
-            ScreenPointer.Active = true;
+        SetScreenActive(true);
         _desktop.ResetToDesktop();
         _desktop.Visible = true;
     }
@@ -76,16 +73,26 @@ public partial class PcDesktopLink : Node
         if (_desktop == null)
             return;
 
-        if (ScreenPointer != null)
-            ScreenPointer.Active = false;
+        SetScreenActive(false);
+        RestorePreviousCamera();
+        _desktop.ResetToDesktop();
+        _desktop.Visible = false;
+    }
+
+    private void SetScreenActive(bool active)
+    {
         if (ScreenCamera != null)
-            ScreenCamera.Current = false;
+            ScreenCamera.Current = active;
+        if (ScreenPointer != null)
+            ScreenPointer.Active = active;
+    }
+
+    private void RestorePreviousCamera()
+    {
         if (_previousCamera != null
             && GodotObject.IsInstanceValid(_previousCamera))
             _previousCamera.Current = true;
         _previousCamera = null;
-        _desktop.ResetToDesktop();
-        _desktop.Visible = false;
     }
 
     private void RequestTerminalClose() => _terminal?.Close();

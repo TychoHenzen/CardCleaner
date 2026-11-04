@@ -72,16 +72,7 @@ public class ShopCarryingSceneTest
         // The test scene is not the current scene, so hand the scene-owned services over directly.
         ShopSceneServices.RegisterWithCardSpawner(_shop, Seed);
 
-        // Captures the three callbacks the scene registers, so the test presses them the way the device would.
-        var input = Substitute.For<IInputService>();
-        TestServices.Container.RegisterSingleton(input);
-        input.When(x => x.RegisterAction(Arg.Any<object>(), "interact", MouseButton.Left, Arg.Any<Action<bool>>()))
-            .Do(ci => _leftClick = ci.Arg<Action<bool>>());
-        input.When(x => x.RegisterAction(Arg.Any<object>(), "card_drop_prepare", MouseButton.Right,
-                Arg.Any<Action<bool>>()))
-            .Do(ci => _rightPress = ci.Arg<Action<bool>>());
-        input.When(x => x.RegisterAction(Arg.Any<object>(), "container_open", Key.Q, Arg.Any<Action>()))
-            .Do(ci => _qPress = ci.Arg<Action>());
+        CaptureInputCallbacks();
 
         // A card on the floor for the card-click cases. It joins the Cards group in its _Ready, which runs before the
         // Player's CardHighlighter readies (World precedes Player in the shop), so the highlighter connects to it.
@@ -91,6 +82,20 @@ public class ShopCarryingSceneTest
 
         AddNode(_shop);
         await PhysicsFrames(AimFrames);
+    }
+
+    // Captures the three callbacks the scene registers, so the test presses them the way the device would.
+    private void CaptureInputCallbacks()
+    {
+        var input = Substitute.For<IInputService>();
+        TestServices.Container.RegisterSingleton(input);
+        input.When(x => x.RegisterAction(Arg.Any<object>(), "interact", MouseButton.Left, Arg.Any<Action<bool>>()))
+            .Do(ci => _leftClick = ci.Arg<Action<bool>>());
+        input.When(x => x.RegisterAction(Arg.Any<object>(), "card_drop_prepare", MouseButton.Right,
+                Arg.Any<Action<bool>>()))
+            .Do(ci => _rightPress = ci.Arg<Action<bool>>());
+        input.When(x => x.RegisterAction(Arg.Any<object>(), "container_open", Key.Q, Arg.Any<Action>()))
+            .Do(ci => _qPress = ci.Arg<Action>());
     }
 
     [AfterTest]

@@ -81,7 +81,7 @@ public class ShopOrderingSceneTest
     public void TerminalCatalogOffersFiveItems()
     {
         AssertThat(_stock.Catalog!.Items.Select(i => i.Id).ToArray()).IsEqual(ExpectedItems);
-        AssertThat(_stock.CardCount).IsEqual(ExpectedItems.Length);
+        AssertThat(_stock.CardGrid.Count).IsEqual(ExpectedItems.Length);
     }
 
     [TestCase]
@@ -252,7 +252,7 @@ public class ShopOrderingSceneTest
 
         var delivered = _presses.OrderUntilFull(shelf);
 
-        AssertBool(_stock.MessageText.Contains("delivery area is full")).IsTrue();
+        AssertBool(_stock.CartPanel.MessageText.Contains("delivery area is full")).IsTrue();
         AssertThat(delivered.Count).IsEqual(ShelvesUntilFull);
         // The first shelf of the second layer rests on the shelf box below it. Its card holders' triggers reach above
         // the box, so a footprint that counted them would lift it higher.

@@ -7,11 +7,8 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     A PC the player looks at and clicks to open its screen. While the
-///     screen is open the player cannot move or look, and the mouse cursor
-///     is released through ICursorOwner; closing it restores both.
-///     Derived terminals supply their screen through <see cref="OnOpening" />
-///     and <see cref="OnClosing" />.
+///     A PC the player clicks to open its screen. Open freezes the player and releases the cursor; close
+///     restores both. Derived terminals supply the screen in <see cref="OnOpening" /> and <see cref="OnClosing" />.
 /// </summary>
 public partial class ScreenTerminal : StaticBody3D, IInteractable, IDependent
 {

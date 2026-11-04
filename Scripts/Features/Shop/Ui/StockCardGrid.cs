@@ -74,7 +74,7 @@ internal sealed class StockCardGrid
 
     public bool IsLocked(int index) => _cards[index].Button.Disabled;
 
-    public string LockText(int index) => _cards[index].Button.Text;
+    public string ButtonText(int index) => _cards[index].Button.Text;
 
     public bool HasPlaceholder(int index) => _cards[index].Placeholder;
 

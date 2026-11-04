@@ -47,13 +47,21 @@ public partial class StockApp : Control, IDependent
         EnsureLayout();
         VisibilityChanged += RebuildCards;
 
-        var services = _services;
-        if (services == null)
+        if (_services == null)
         {
             ILog.Error($"{Name} was not injected");
             return;
         }
 
+        ResolveServices(_services);
+        if (Catalog != null)
+            Populate(Catalog);
+        else
+            RebuildCards();
+    }
+
+    private void ResolveServices(IServiceResolver services)
+    {
         services.Get<IOrderingService>(ordering => _ordering = ordering);
         services.Get<IMoneyService>(money =>
         {
@@ -67,11 +75,6 @@ public partial class StockApp : Control, IDependent
             Subscribe();
             RebuildCards();
         });
-
-        if (Catalog != null)
-            Populate(Catalog);
-        else
-            RebuildCards();
     }
 
     // _Ready runs once, but the app can leave and re-enter the tree, so its subscriptions are restored
@@ -119,8 +122,6 @@ public partial class StockApp : Control, IDependent
         _cards.Rebuild(_catalog?.Items ?? [], EntryFor, Level, TryAddToCart);
     }
 
-    // ASSUMPTION: an unresolved progression reports no unlock rows, so every card reads Unavailable until
-    // IShopProgression resolves (Medium risk, see Level).
     private StockEntry EntryFor(OrderItem item) =>
         new(item.Id, item.DisplayName, item.Price, _progression?.RequiredLevel(item.Id));
 
@@ -187,37 +188,40 @@ public partial class StockApp : Control, IDependent
         _balanceLabel.Text = $"Balance: {balance}";
     }
 
-    /// <summary>Presses the n-th card's button, as a click would.</summary>
-    internal void PressAdd(int index) => _cards.PressAdd(index);
+    /// <summary>The catalog half, for tests that read the real controls.</summary>
+    internal StockCardGrid CardGrid
+    {
+        get
+        {
+            EnsureLayout();
+            return _cards;
+        }
+    }
 
-    /// <summary>Presses the minus button of the cart line for the item, as a click would.</summary>
-    internal void PressRemoveOne(string id) => _cartPanel.PressRemoveOne(id);
+    /// <summary>The cart half, for tests that read the real controls.</summary>
+    internal StockCartPanel CartPanel
+    {
+        get
+        {
+            EnsureLayout();
+            return _cartPanel;
+        }
+    }
 
     /// <summary>Runs the checkout, as the Checkout button does.</summary>
     internal void PressCheckout() => Checkout();
 
-    internal int CardCount => _cards.Count;
-
-    internal bool CardIsLocked(int index) => _cards.IsLocked(index);
-
-    internal string CardLockText(int index) => _cards.LockText(index);
-
-    internal bool CardHasPlaceholder(int index) => _cards.HasPlaceholder(index);
-
-    internal int CartLineCount => _cartPanel.LineCount;
-
-    internal string CartTotalText => _cartPanel.TotalText;
-
-    internal bool CheckoutDisabled => _cartPanel.CheckoutDisabled;
-
-    internal string MessageText => _cartPanel.MessageText;
-
-    internal string EmptyText => _cards.EmptyText;
-
-    internal string BalanceText => _balanceLabel.Text;
+    internal string BalanceText
+    {
+        get
+        {
+            EnsureLayout();
+            return _balanceLabel.Text;
+        }
+    }
 
     // The desktop can populate or query this app before its own _Ready has run, so every entry point builds
-    // the layout on first use.
+    // the layout on first use. This is a deliberate design, not a guess.
     private void EnsureLayout()
     {
         if (_layoutBuilt)

@@ -84,7 +84,8 @@ public class ShopWorkshopOrderingSceneTest
         var office = _workshop.GetNode<Node3D>("WorkshopGrid/Sections/OrderOffice").GlobalPosition;
 
         AssertBool(_terminal.GlobalPosition.X < cabinet.GlobalPosition.X).IsTrue();
-        AssertBool(new Vector2(_terminal.GlobalPosition.X - office.X, _terminal.GlobalPosition.Z - office.Z).Length() < OfficeReach).IsTrue();
+        var offset = new Vector2(_terminal.GlobalPosition.X - office.X, _terminal.GlobalPosition.Z - office.Z);
+        AssertBool(offset.Length() < OfficeReach).IsTrue();
     }
 
     [TestCase]

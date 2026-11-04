@@ -100,19 +100,7 @@ public class ShopCarryingPoseSceneTest
         AssertBool(box.Transform.Origin.IsEqualApprox(holder.HoldOffset)).IsTrue();
         AssertBool(camera.IsPositionInFrustum(box.GlobalPosition)).IsTrue();
 
-        var shape = box.GetChildren().OfType<CollisionShape3D>().First();
-        var half = ((BoxShape3D)shape.Shape).Size / 2f;
-        var forward = -camera.GlobalBasis.Z;
-        var inFrustum = 0;
-        for (var sx = -1; sx <= 1; sx += 2)
-        for (var sy = -1; sy <= 1; sy += 2)
-        for (var sz = -1; sz <= 1; sz += 2)
-        {
-            var corner = shape.GlobalTransform * new Vector3(sx * half.X, sy * half.Y, sz * half.Z);
-            AssertBool((corner - camera.GlobalPosition).Dot(forward) > camera.Near).IsTrue();
-            if (camera.IsPositionInFrustum(corner))
-                inFrustum++;
-        }
+        var inFrustum = AssertCornersInFront(box, camera);
 
         GD.Print($"HeldBoxSitsInFrontOfTheCamera: {inFrustum} of 8 corners inside the frustum");
     }
@@ -147,20 +135,7 @@ public class ShopCarryingPoseSceneTest
 
         await ClickAsync(MouseButton.Right);
 
-        var camera = Camera();
-        var expected = camera.GlobalPosition + (-camera.GlobalBasis.Z * holder.DropDistance);
-        AssertBool(holder.Held == null).IsTrue();
-        AssertBool(ReferenceEquals(box.GetParent(), SpawnerNode())).IsTrue();
-        AssertBool(box.CollisionLayer == layer && box.CollisionMask == mask).IsTrue();
-        AssertBool(!box.Freeze).IsTrue();
-        AssertBool(box.GlobalPosition.DistanceTo(expected) <= DropTolerance)
-            .OverrideFailureMessage($"box dropped at {box.GlobalPosition}, expected {expected}")
-            .IsTrue();
-
-        await PhysicsFrames(SettleFrames);
-        AssertBool(box.GlobalPosition.Y > FallLimitY)
-            .OverrideFailureMessage($"box fell to y={box.GlobalPosition.Y}")
-            .IsTrue();
+        await AssertDroppedAhead(box, holder, layer, mask);
 
         await FaceBox(box);
         await ClickAsync(MouseButton.Left);
@@ -194,6 +169,43 @@ public class ShopCarryingPoseSceneTest
         var collider = hit.Count > 0 ? ((Node)hit["collider"].Obj!).Name.ToString() : "none";
         return $"camera={origin} box={box.GlobalPosition} layer={box.CollisionLayer} canInteract={box.CanInteract} " +
                $"held={box.IsHeld} parent={box.GetParent()?.Name} ray={collider} player={_player.GlobalPosition}";
+    }
+
+    // Returns how many of the box's eight corners are inside the frustum; all must be in front of the camera.
+    private static int AssertCornersInFront(CardContainer box, Camera3D camera)
+    {
+        var shape = box.GetChildren().OfType<CollisionShape3D>().First();
+        var half = ((BoxShape3D)shape.Shape).Size / 2f;
+        var forward = -camera.GlobalBasis.Z;
+        var inFrustum = 0;
+        for (var sx = -1; sx <= 1; sx += 2)
+        for (var sy = -1; sy <= 1; sy += 2)
+        for (var sz = -1; sz <= 1; sz += 2)
+        {
+            var corner = shape.GlobalTransform * new Vector3(sx * half.X, sy * half.Y, sz * half.Z);
+            AssertBool((corner - camera.GlobalPosition).Dot(forward) > camera.Near).IsTrue();
+            if (camera.IsPositionInFrustum(corner))
+                inFrustum++;
+        }
+        return inFrustum;
+    }
+
+    private async Task AssertDroppedAhead(CardContainer box, ContainerHolder holder, uint layer, uint mask)
+    {
+        var camera = Camera();
+        var expected = camera.GlobalPosition + (-camera.GlobalBasis.Z * holder.DropDistance);
+        AssertBool(holder.Held == null).IsTrue();
+        AssertBool(ReferenceEquals(box.GetParent(), SpawnerNode())).IsTrue();
+        AssertBool(box.CollisionLayer == layer && box.CollisionMask == mask).IsTrue();
+        AssertBool(!box.Freeze).IsTrue();
+        AssertBool(box.GlobalPosition.DistanceTo(expected) <= DropTolerance)
+            .OverrideFailureMessage($"box dropped at {box.GlobalPosition}, expected {expected}")
+            .IsTrue();
+
+        await PhysicsFrames(SettleFrames);
+        AssertBool(box.GlobalPosition.Y > FallLimitY)
+            .OverrideFailureMessage($"box fell to y={box.GlobalPosition.Y}")
+            .IsTrue();
     }
 
     private CardContainer OrderBox()

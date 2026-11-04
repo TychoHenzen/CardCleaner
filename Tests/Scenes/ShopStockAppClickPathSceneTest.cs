@@ -24,9 +24,7 @@ public class ShopStockAppClickPathSceneTest
     private ScreenTerminal _terminal = null!;
     private StockApp _stockApp = null!;
     private Button _stockIcon = null!;
-    private SubViewport _desktopViewport = null!;
-    private MeshInstance3D _screenQuad = null!;
-    private Camera3D _screenCamera = null!;
+    private PcScreen _screen = null!;
     private MoneyService _money = null!;
     private ShopProgression _progression = null!;
     private Window _root = null!;
@@ -39,9 +37,7 @@ public class ShopStockAppClickPathSceneTest
         _terminal = _shop.GetNode<ScreenTerminal>("World/Markers/PcLocation/PcTerminal");
         _stockApp = _shop.GetNode<StockApp>($"{DesktopViewportPath}/StockApp");
         _stockIcon = _shop.GetNode<Button>($"{DesktopViewportPath}/PcDesktop/Icons/StockIcon");
-        _desktopViewport = _shop.GetNode<SubViewport>(DesktopViewportPath);
-        _screenQuad = _shop.GetNode<MeshInstance3D>("World/Markers/PcLocation/PcTerminal/ScreenQuad");
-        _screenCamera = _shop.GetNode<Camera3D>("World/Markers/PcLocation/PcTerminal/ScreenCamera");
+        _screen = PcScreen.From(_shop);
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
         AddNode(_shop);
@@ -79,26 +75,31 @@ public class ShopStockAppClickPathSceneTest
         // PC is proven by ShopOrderingSceneTest.PlayerInteractionRayCanReachThePcFromInFrontOfTheDesk. Everything
         // after the open (the screen click, the icon, the cards, Checkout) is real mouse input.
         _terminal.Interact();
-        await ClickAt(ScreenPositionOf(_stockIcon));
+        await _screen.Click(_stockIcon);
         AssertBool(_stockApp.Visible).IsTrue();
 
-        await ClickAt(ScreenPositionOf(AddButtonFor(box.DisplayName)));
-        await ClickAt(ScreenPositionOf(AddButtonFor(box.DisplayName)));
+        await _screen.Click(AddButtonFor(box.DisplayName));
+        await _screen.Click(AddButtonFor(box.DisplayName));
         var checkout = FindButtonWithText(_stockApp, "Checkout");
         AssertBool(checkout != null && !checkout.Disabled).IsTrue();
-        await ClickAt(ScreenPositionOf(checkout!));
+        await _screen.Click(checkout!);
 
         AssertThat(_money.Balance).IsEqual(balance - 2 * box.Price);
         AssertThat(world.GetChildCount()).IsEqual(before + 2);
-        // Each box lands in its own delivery slot. Placed through a float32 transform, so the position differs from
-        // the expected one by rounding; the 1 cm tolerance matches ShopCarryingSceneTest.
+        AssertDeliveredInSlots(world, before, delivery);
+        AssertBool(FindButtonWithText(_stockApp, "Checkout")!.Disabled).IsTrue();
+        // The cart rows of the app are queued for deletion; the last frame lets those frees run before the test ends.
+        await ISceneRunner.SyncPhysicsFrame;
+    }
+
+    // Each box lands in its own delivery slot. Placed through a float32 transform, so the position differs from
+    // the expected one by rounding; the 1 cm tolerance matches ShopCarryingSceneTest.
+    private static void AssertDeliveredInSlots(Node world, int before, Vector3 delivery)
+    {
         var delivered = world.GetChildren().Skip(before).Cast<Node3D>().ToList();
         for (var slot = 0; slot < delivered.Count; slot++)
             AssertBool(delivered[slot].GlobalPosition.DistanceTo(delivery + OrderingService.SlotOffset(slot)) < 0.01f)
                 .IsTrue();
-        AssertBool(FindButtonWithText(_stockApp, "Checkout")!.Disabled).IsTrue();
-        // The cart rows of the app are queued for deletion; the last frame lets those frees run before the test ends.
-        await ISceneRunner.SyncPhysicsFrame;
     }
 
     // The Add button of the card whose title label reads displayName. Found again after every click, because a
@@ -114,42 +115,6 @@ public class ShopStockAppClickPathSceneTest
                 return add;
         }
         throw new System.InvalidOperationException($"No Add button for {displayName}");
-    }
-
-    // Maps a control on the desktop viewport to the window pixel where the mouse must click to hit it. The control's
-    // pixel becomes a point on the screen quad, and the screen camera projects that point back to the window.
-    private Vector2 ScreenPositionOf(Control control)
-    {
-        Vector2 pixel = control.GetGlobalRect().GetCenter();
-        Vector2 viewportSize = new(_desktopViewport.Size.X, _desktopViewport.Size.Y);
-        var quadSize = ((QuadMesh)_screenQuad.Mesh).Size;
-        var local = new Vector3(
-            (pixel.X / viewportSize.X - 0.5f) * quadSize.X,
-            (0.5f - pixel.Y / viewportSize.Y) * quadSize.Y,
-            0f);
-        return _screenCamera.UnprojectPosition(_screenQuad.GlobalTransform * local);
-    }
-
-    // Each injected event is flushed to the nodes as it is sent, and each click waits two frames so the queued
-    // rebuilds of the app's rows (QueueFree) run before the test reads the result.
-    private static async Task ClickAt(Vector2 position)
-    {
-        Send(new InputEventMouseButton
-        {
-            ButtonIndex = MouseButton.Left, Pressed = true, Position = position, GlobalPosition = position
-        });
-        await ISceneRunner.SyncPhysicsFrame;
-        Send(new InputEventMouseButton
-        {
-            ButtonIndex = MouseButton.Left, Pressed = false, Position = position, GlobalPosition = position
-        });
-        await ISceneRunner.SyncPhysicsFrame;
-    }
-
-    private static void Send(InputEvent input)
-    {
-        Input.ParseInputEvent(input);
-        Input.FlushBufferedEvents();
     }
 
     private static Button? FindButtonWithText(Node root, string text)

@@ -39,14 +39,14 @@ internal sealed class StockPresses
         var before = _ordering.DeliveredCount;
         var children = _world.GetChildCount();
 
-        _app.PressAdd(index);
+        _app.CardGrid.PressAdd(index);
         _app.PressCheckout();
         var delivered = _ordering.DeliveredCount - before;
         var spawned = delivered == 1 ? _world.GetChildren().LastOrDefault() as Node3D : null;
-        var result = new PressResult(delivered, spawned, _app.MessageText, _world.GetChildCount() - children);
+        var result = new PressResult(delivered, spawned, _app.CartPanel.MessageText, _world.GetChildCount() - children);
         // A refused unit stays in the cart; take it out so the next order starts from an empty cart.
-        while (_app.CartLineCount > 0)
-            _app.PressRemoveOne(id);
+        while (_app.CartPanel.LineCount > 0)
+            _app.CartPanel.PressRemoveOne(id);
         return result;
     }
 
