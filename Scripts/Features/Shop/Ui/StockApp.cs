@@ -159,7 +159,10 @@ public partial class StockApp : Control, IDependent
         }
 
         var plan = CheckoutPlan.Evaluate(_cart, money.Balance, Level);
-        _cartPanel.ShowMessage(plan.Refusal == CheckoutRefusal.None ? DeliverCart(ordering) : RefusalText(plan));
+        var message = plan.Refusal == CheckoutRefusal.None
+            ? DeliverCart(ordering)
+            : StockOutcomeText.Refusal(plan, NameOf(plan.LockedId));
+        _cartPanel.ShowMessage(message);
         _cartPanel.Refresh();
         RefreshBalance();
     }
@@ -187,8 +190,6 @@ public partial class StockApp : Control, IDependent
 
     private OrderStatus OrderOne(IOrderingService ordering, string id) =>
         _items.TryGetValue(id, out var item) ? ordering.Order(item).Status : OrderStatus.InvalidItem;
-
-    private string RefusalText(CheckoutPlan plan) => StockOutcomeText.Refusal(plan, NameOf(plan.LockedId));
 
     private string NameOf(string? id) =>
         _cart.Lines.FirstOrDefault(line => line.Entry.Id == id)?.Entry.Name ?? id ?? string.Empty;
