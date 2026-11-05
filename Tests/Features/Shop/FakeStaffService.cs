@@ -23,6 +23,13 @@ public sealed class FakeStaffService : IStaffService
 
     public event Action? Changed;
 
+    /// <summary>Swaps the role with the same id, as an edited catalog would. Raises nothing.</summary>
+    public void Replace(StaffRole role)
+    {
+        _roles.RemoveAll(existing => existing.Id == role.Id);
+        _roles.Add(role);
+    }
+
     public bool IsHired(string roleId) => HiredIds.Contains(roleId);
 
     public IReadOnlyList<StaffRole> HiredRoles => _roles.FindAll(role => HiredIds.Contains(role.Id));

@@ -1,9 +1,14 @@
-namespace CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Models;
 
-/// <summary>The staff roles the shop ships with, and the constants they are built from.</summary>
+namespace CardCleaner.Tests.Features.Shop;
+
+/// <summary>
+///     The cashier values that <c>Data/Shop/StaffCatalog.tres</c> ships, written out for tests. The catalog is the
+///     only source in the game; <c>StaffCatalogTest</c> fails when the shipped catalog and these values differ.
+/// </summary>
 public static class StaffDefaults
 {
-    public const string CashierId = "cashier";
+    public const string CashierId = StaffRoleIds.Cashier;
     public const string CashierUnlockId = "staff_cashier";
     public const string CashierName = "Cashier";
     public const int CashierHireFee = 200;

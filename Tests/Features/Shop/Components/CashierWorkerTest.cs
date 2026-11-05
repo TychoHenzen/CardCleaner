@@ -73,6 +73,23 @@ public class CashierWorkerTest
     }
 
     [TestCase]
+    public void Cashier_timings_come_from_the_staff_catalog_role()
+    {
+        const float Fast = 0.1f; // the StaffDefaults timings need about 80 steps; these need about 6
+        _staff.Replace(StaffDefaults.Cashier() with
+        {
+            SecondsPerScan = Fast, SecondsPerPayment = Fast, TakeOverDelay = Fast,
+        });
+        var customer = new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4);
+        _counter.Checkout(customer);
+
+        for (var i = 0; i < 20 && customer.LeaveCount == 0; i++)
+            _worker.Step(StepSeconds);
+
+        AssertThat(customer.LeaveCount).IsEqual(1);
+    }
+
+    [TestCase]
     public void Cashier_completes_cash_checkout()
     {
         var customer = new FakeCheckoutCustomer(PaymentMethod.Cash, 3, 4);

@@ -202,6 +202,31 @@ public class StaffServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void Load_with_a_non_string_hired_value_changes_nothing()
+    {
+        _staff.Hire(CashierId);
+        var log = new RecordingLog();
+        var previous = ILog.Sink;
+        ILog.Sink = log;
+        try
+        {
+            // A hand-edited save may hold the list itself, not the string that Save writes.
+            var save = new NodeSave();
+            save.SetOrAddProperty("hired", new List<string> { CashierId });
+
+            _staff.Load(save);
+
+            AssertBool(_staff.IsHired(CashierId)).IsTrue();
+            AssertThat(log.Warnings.Count).IsEqual(1);
+        }
+        finally
+        {
+            ILog.Sink = previous;
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void Null_catalog_hires_nothing()
     {
         var empty = AutoFree(new StaffService { Money = _money, Progression = new OpenProgression() });

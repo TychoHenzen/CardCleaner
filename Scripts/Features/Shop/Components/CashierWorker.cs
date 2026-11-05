@@ -1,3 +1,4 @@
+using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
@@ -8,12 +9,13 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     The hired cashier. While the shop is open and the cashier is hired, it claims the front waiting customer,
-///     scans each item and takes the payment by itself, one <see cref="CashierPlan" /> action at a time. The claim
-///     keeps the player out of that sale. A customer who leaves, or a shop that closes, ends the claim.
+///     scans each item and takes the payment by itself, one <see cref="CashierPlan" /> action at a time. The plan's
+///     timings are those of the hired cashier role in the staff catalog. The claim keeps the player out of that
+///     sale. A customer who leaves, or a shop that closes, ends the claim.
 /// </summary>
 public partial class CashierWorker : Node, IDependent
 {
-    private readonly CashierPlan _plan = new(StaffDefaults.Cashier());
+    private CashierPlan? _plan;
     private IServiceResolver? _services;
     private IStaffService? _staff;
     private IShopDayService? _day;
@@ -65,7 +67,8 @@ public partial class CashierWorker : Node, IDependent
         if (_customer == null && !TryStartClaim(counter))
             return;
 
-        DoAction(counter, _plan.Advance((float)delta));
+        if (_plan is { } plan)
+            DoAction(counter, plan, plan.Advance((float)delta));
     }
 
     private bool KeepClaim(CheckoutCounter counter)
@@ -78,7 +81,7 @@ public partial class CashierWorker : Node, IDependent
 
     private bool TryStartClaim(CheckoutCounter counter)
     {
-        if (_staff is null || !_staff.IsHired(StaffDefaults.CashierId) || _day is not { IsOpen: true })
+        if (HiredCashier() is not { } role || _day is not { IsOpen: true })
             return false;
         if (counter.Front is not { Waiting: true } front || front.Basket.Items.Count < 1)
             return false;
@@ -86,18 +89,23 @@ public partial class CashierWorker : Node, IDependent
             return false;
 
         _customer = front;
+        _plan = new CashierPlan(role);
         _plan.Begin(front.Basket.Items.Count);
         return true;
     }
 
-    private void DoAction(CheckoutCounter counter, CashierAction action)
+    // The hired cashier role as the staff catalog defines it, or null when the cashier is not hired.
+    private StaffRole? HiredCashier() =>
+        _staff?.HiredRoles.FirstOrDefault(role => role.Id == StaffRoleIds.Cashier);
+
+    private void DoAction(CheckoutCounter counter, CashierPlan plan, CashierAction action)
     {
         switch (action)
         {
             case CashierAction.Scan:
-                if (!counter.Scan(_plan.ScanIndex, this))
+                if (!counter.Scan(plan.ScanIndex, this))
                 {
-                    ILog.Error($"Cashier could not scan item {_plan.ScanIndex}");
+                    ILog.Error($"Cashier could not scan item {plan.ScanIndex}");
                     EndClaim(counter);
                 }
                 break;
@@ -127,13 +135,13 @@ public partial class CashierWorker : Node, IDependent
     private void EndClaim(CheckoutCounter counter)
     {
         counter.ReleaseClaim(this);
-        _plan.Reset();
+        _plan = null;
         _customer = null;
     }
 
     private void RefreshFigure()
     {
         if (Figure != null)
-            Figure.Visible = _staff?.IsHired(StaffDefaults.CashierId) ?? false;
+            Figure.Visible = _staff?.IsHired(StaffRoleIds.Cashier) ?? false;
     }
 }

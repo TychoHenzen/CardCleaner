@@ -107,19 +107,10 @@ public partial class StaffService : Node, IStaffService, IDependent, ISaveable
     /// </summary>
     public void Load(NodeSave save)
     {
-        if (!save.TryGetProperty<string>(HiredKey, out var json) || json is null)
+        if (!save.Properties.ContainsKey(HiredKey))
             return;
 
-        List<string>? saved;
-        try
-        {
-            saved = JsonSerializer.Deserialize<List<string>>(json);
-        }
-        catch (JsonException)
-        {
-            saved = null;
-        }
-
+        var saved = ReadSavedIds(save);
         if (saved is null)
         {
             ILog.Warning("Staff save is unreadable; the hired roles are unchanged");
@@ -132,6 +123,21 @@ public partial class StaffService : Node, IStaffService, IDependent, ISaveable
             ILog.Warning($"Staff save names {dropped} unknown or repeated role id(s); they are ignored");
 
         Changed?.Invoke();
+    }
+
+    // The saved id list, or null when the entry is not a string holding a JSON list (the save file is user data).
+    private static List<string>? ReadSavedIds(NodeSave save)
+    {
+        try
+        {
+            return save.TryGetProperty<string>(HiredKey, out var json) && json is not null
+                ? JsonSerializer.Deserialize<List<string>>(json)
+                : null;
+        }
+        catch (Exception ex) when (ex is JsonException or Newtonsoft.Json.JsonException)
+        {
+            return null;
+        }
     }
 
     private IReadOnlyDictionary<string, StaffRole> Catalogue() => Catalog?.ToRoles() ?? NoRoles;

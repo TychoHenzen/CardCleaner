@@ -20,24 +20,20 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
 {
     private const float DefaultInteractionRange = 4.5f;
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
-    private const string QueuePrefix = "QueueSlot";
-    private const string ItemPrefix = "ItemSpot";
-    private const string UnavailableMessage = "The register is unavailable right now.";
 
     private readonly CheckoutQueue _queue = new();
-    private List<CheckoutItemProp> _props = new();
+    private readonly CheckoutItemTray _tray;
+    private readonly CheckoutQueueSpots _queueSpots;
+    private readonly CheckoutClaim _claim = new();
+    private readonly CheckoutStatusLine _status = new();
     private IServiceResolver? _services;
-    private IMoneyService? _money;
-    private Marker3D[] _queueSpots = Array.Empty<Marker3D>();
-    private Marker3D[] _itemSpots = Array.Empty<Marker3D>();
-    private string _message = string.Empty;
-    private object? _claimant;
-
-    // A payable sale: the session, the front customer it belongs to, and the money service that takes the payment.
-    private readonly record struct Sale(CheckoutSession Session, ICheckoutCustomer Customer, IMoneyService Money);
 
     [Export]
-    public Label3D? StatusLabel { get; set; }
+    public Label3D? StatusLabel
+    {
+        get => _status.Label;
+        set => _status.Label = value;
+    }
 
     [Export]
     public Node3D? HighlightMesh { get; set; }
@@ -60,20 +56,14 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     /// <summary>Injected at startup through the service resolver; assignable directly in tests.</summary>
     public IMoneyService? Money
     {
-        get => _money;
-        set
-        {
-            Unsubscribe();
-            _money = value;
-            Subscribe();
-            UpdateLabel();
-        }
+        get => _status.Money;
+        set => _status.Link(value);
     }
 
     public bool CanInteract => Session is { State: CheckoutState.AwaitingPayment };
 
     /// <summary>True while an automated operator holds the front customer's sale.</summary>
-    public bool IsClaimed => _claimant != null;
+    public bool IsClaimed => _claim.IsHeld;
 
     public Node3D InteractionBody => this;
 
@@ -82,35 +72,26 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
 
     public void Inject(IServiceResolver services) => _services = services;
 
+    public CheckoutCounter()
+    {
+        _tray = new CheckoutItemTray(this);
+        _queueSpots = new CheckoutQueueSpots(this);
+    }
+
     public override void _Ready()
     {
         CollisionLayer |= InteractableLayerBit;
         ClearHighlight();
-        _queueSpots = CheckoutCounterLayout.MarkersNamed(this, QueuePrefix);
-        _itemSpots = CheckoutCounterLayout.MarkersNamed(this, ItemPrefix);
-        if (_queueSpots.Length == 0)
-            ILog.Error($"{Name} has no {QueuePrefix} markers; customers cannot queue.");
-        if (_services == null)
-        {
-            ILog.Error($"{Name} was not injected");
-        }
-        else
-        {
-            _services.Get<IMoneyService>(money => Money = money);
-            _services.Get<IShopProgression>(progression => Progression ??= progression);
-        }
-        UpdateLabel();
+        _queueSpots.Find();
+        _tray.FindSpots();
+        ResolveServices();
+        _status.Update();
     }
 
-    public override void _EnterTree()
-    {
-        // A counter that re-enters the tree listens again and shows the current balance.
-        Unsubscribe();
-        Subscribe();
-        UpdateLabel();
-    }
+    // A counter that re-enters the tree listens again and shows the current balance.
+    public override void _EnterTree() => _status.Relink();
 
-    public override void _ExitTree() => Unsubscribe();
+    public override void _ExitTree() => _status.Unlink();
 
     public override void _Process(double delta)
     {
@@ -133,41 +114,28 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     public bool TryClaim(object claimant)
     {
         ArgumentNullException.ThrowIfNull(claimant);
-        if (Session == null || Session.ScannedCount != 0 || _claimant != null || Front is not { Waiting: true })
-            return false;
-
-        _claimant = claimant;
-        return true;
+        var claimable = Session is { ScannedCount: 0 } && Front is { Waiting: true };
+        return claimable && _claim.TryTake(claimant);
     }
 
     /// <summary>Gives the claim back. A caller that does not hold the claim releases nothing.</summary>
     public void ReleaseClaim(object claimant)
     {
         ArgumentNullException.ThrowIfNull(claimant);
-        if (ReferenceEquals(claimant, _claimant))
-            _claimant = null;
+        _claim.Release(claimant);
     }
 
     /// <summary>Marks an item of the current basket scanned. False for an unknown, repeated or finished item.</summary>
     public bool Scan(int itemId, object? claimant = null)
     {
-        if (RefusedByClaim(claimant))
+        if (!CanOperate(claimant) || Session is not { } session || !session.Scan(itemId))
             return false;
 
-        if (_money == null)
-        {
-            SetMessage(UnavailableMessage);
-            return false;
-        }
+        _tray.MarkScanned(itemId);
+        if (session.State == CheckoutState.AwaitingPayment && !_claim.IsHeld)
+            PaymentReady?.Invoke(session);
 
-        if (Session == null || !Session.Scan(itemId))
-            return false;
-
-        _props.FirstOrDefault(prop => prop.ItemId == itemId)?.MarkScanned();
-        if (Session.State == CheckoutState.AwaitingPayment && _claimant == null)
-            PaymentReady?.Invoke(Session);
-
-        SetMessage(string.Empty);
+        _status.Say(string.Empty);
         return true;
     }
 
@@ -182,10 +150,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     public void Interact()
     {
         // A claimed sale is the cashier's to finish; opening the payment screen would take the player's cursor.
-        if (IsClaimed)
-            return;
-
-        if (Session is { State: CheckoutState.AwaitingPayment } session)
+        if (!IsClaimed && Session is { State: CheckoutState.AwaitingPayment } session)
             PaymentReady?.Invoke(session);
     }
 
@@ -201,23 +166,48 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
             HighlightMesh.Visible = false;
     }
 
-    private bool RefusedByClaim(object? claimant)
+    private void ResolveServices()
     {
-        if (_claimant == null || ReferenceEquals(claimant, _claimant))
+        if (_services == null)
+        {
+            ILog.Error($"{Name} was not injected");
+            return;
+        }
+
+        _services.Get<IMoneyService>(money => Money = money);
+        _services.Get<IShopProgression>(progression => Progression ??= progression);
+    }
+
+    // The caller may act on the sale: nobody else holds the claim, and there is a register to act through.
+    private bool CanOperate(object? claimant)
+    {
+        if (!ClaimAllows(claimant))
             return false;
 
-        SetMessage("The cashier is serving this customer");
-        return true;
+        if (Money != null)
+            return true;
+
+        _status.Say(CheckoutPaymentGuard.UnavailableMessage);
+        return false;
+    }
+
+    private bool ClaimAllows(object? claimant)
+    {
+        if (!_claim.Excludes(claimant))
+            return true;
+
+        _status.Say("The cashier is serving this customer");
+        return false;
     }
 
     private bool TryPay(Func<CheckoutSession, bool> pay, string wrongMessage, object? claimant)
     {
-        if (RefusedByClaim(claimant) || PayableSale() is not { } sale)
+        if (!ClaimAllows(claimant) || PayableSale() is not { } sale)
             return false;
 
         if (!pay(sale.Session))
         {
-            SetMessage(wrongMessage);
+            _status.Say(wrongMessage);
             return false;
         }
 
@@ -231,34 +221,32 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         return true;
     }
 
-    // The guards of a payment: a usable register, a session with a front customer, and every item scanned.
-    // A front customer who stopped waiting forfeits the session on the way.
-    private Sale? PayableSale()
+    // The sale a payment would settle, or null after saying why there is none. A front customer who stopped
+    // waiting forfeits the session on the way.
+    private CheckoutSale? PayableSale()
     {
-        if (_money == null)
-        {
-            SetMessage(UnavailableMessage);
-            return null;
-        }
+        var readiness = CheckoutPaymentGuard.Evaluate(Money != null, Session?.State, Front?.Waiting);
+        ReportUnready(readiness);
+        return readiness == PaymentReadiness.Ready ? CurrentSale() : null;
+    }
 
-        if (Session == null || Front is not { } customer)
-            return null;
-
-        if (!customer.Waiting)
+    private void ReportUnready(PaymentReadiness readiness)
+    {
+        if (readiness == PaymentReadiness.CustomerLeft)
         {
             DropDeparted();
             Refresh();
-            return null;
+            return;
         }
 
-        if (Session.State == CheckoutState.Scanning)
-        {
-            SetMessage("Scan every item first");
-            return null;
-        }
-
-        return new Sale(Session, customer, _money);
+        if (CheckoutPaymentGuard.MessageFor(readiness) is { } message)
+            _status.Say(message);
     }
+
+    private CheckoutSale? CurrentSale() =>
+        Session is { } session && Front is { } customer && Money is { } money
+            ? new CheckoutSale(session, customer, money)
+            : null;
 
     // A front customer who stopped waiting forfeits the session; any other who stopped leaves the line.
     private void DropDeparted()
@@ -272,19 +260,17 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     // Gives each queued customer its spot (extras share the last one), then starts a session for the front one.
     private void Refresh()
     {
-        _queue.AssignSpots(_queueSpots.Length, SpotPosition);
+        _queue.AssignSpots(_queueSpots.Count, _queueSpots.PositionOf);
 
         if (Session == null && Front is { } front)
             StartSession(front);
 
-        UpdateLabel();
+        _status.Update();
     }
 
     private void StartSession(ICheckoutCustomer customer)
     {
-        var items = customer.Basket.Items
-            .Select((offer, index) => new CheckoutItem(index, offer.AskingPrice))
-            .ToList();
+        var items = CheckoutCounterLayout.ItemsOf(customer);
         try
         {
             Session = new CheckoutSession(items, customer.Method);
@@ -298,54 +284,16 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
             return;
         }
 
-        _props = CheckoutCounterLayout.LayOutItems(this, _itemSpots, items, itemId => Scan(itemId));
+        _tray.Lay(items, itemId => Scan(itemId));
     }
 
     // Ends the session: its props are freed, then listeners hear it and the message is shown.
     private void CloseSession(string message)
     {
-        ClearItems();
+        _tray.Clear();
         Session = null;
-        _claimant = null;
+        _claim.Clear();
         SessionEnded?.Invoke();
-        SetMessage(message);
-    }
-
-    private void ClearItems()
-    {
-        _props.ForEach(prop => prop.QueueFree());
-        _props.Clear();
-    }
-
-    private QueueSpot SpotPosition(int spot)
-    {
-        var position = _queueSpots[spot].GlobalPosition;
-        return new QueueSpot(position.X, position.Y, position.Z);
-    }
-
-    private void Subscribe()
-    {
-        if (_money != null)
-            _money.BalanceChanged += OnBalanceChanged;
-    }
-
-    private void Unsubscribe()
-    {
-        if (_money != null)
-            _money.BalanceChanged -= OnBalanceChanged;
-    }
-
-    private void OnBalanceChanged(int balance) => UpdateLabel();
-
-    private void SetMessage(string message)
-    {
-        _message = message;
-        UpdateLabel();
-    }
-
-    private void UpdateLabel()
-    {
-        if (StatusLabel != null)
-            StatusLabel.Text = CheckoutCounterLayout.StatusText(_money, _message);
+        _status.Say(message);
     }
 }
