@@ -78,7 +78,8 @@ public class DailyBillBookTest
     public static void ScanBuildsTheBookWithRent()
     {
         var container = new ServiceContainer();
-        container.RegisterSingleton(typeof(IShopExpansion), new NoLotsExpansion());
+        var expansion = new NoLotsExpansion();
+        container.RegisterSingleton(typeof(IShopExpansion), expansion);
         container.RegisterSingleton(typeof(IStaffService), new FakeStaffService());
         TestServices.RegisterGameServiceClasses(container);
 
@@ -89,6 +90,7 @@ public class DailyBillBookTest
         AssertThat(lines[0].Name).IsEqual("Rent");
         AssertThat(lines[0].Amount).IsEqual(RentAmount);
         AssertThat(book.TotalFor(1)).IsEqual(RentAmount);
+        AssertThat(expansion.BuyRequests.Count).IsEqual(0);
     }
 
     [TestCase]
@@ -124,7 +126,13 @@ public class DailyBillBookTest
 
         public int ExtraCustomersPerDay => 0;
 
-        public PurchaseOutcome TryBuy(string lotId) => PurchaseOutcome.Unknown;
+        public List<string> BuyRequests { get; } = new();
+
+        public PurchaseOutcome TryBuy(string lotId)
+        {
+            BuyRequests.Add(lotId);
+            return PurchaseOutcome.Unknown;
+        }
     }
 
     private sealed class FakeSource : IDailyBillSource
