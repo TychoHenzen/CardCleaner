@@ -38,6 +38,20 @@ A direct `GdUnitCmdTool.gd` run that passes a relative `-rd` (as `Run-GdUnit.ps1
 also pass `-rc 100000`, or gdUnit's report cleanup doubles every delete path and floods the log with `ERROR: Delete`
 lines. A run without `-rd` uses gdUnit's absolute default report path, where cleanup works and needs no `-rc`.
 
+**Without PowerShell.** Start Godot from Bash through node, so no console window opens:
+
+```bash
+# One suite, the same arguments as Run-GdUnit.ps1 uses for a single suite (reports/<dir> is relative, so -rc is required)
+node -e "require('child_process').spawnSync('<godot console exe>',['--headless','--path','.','-s','res://addons/gdUnit4/bin/GdUnitCmdTool.gd','-c','--ignoreHeadlessMode','-rc','100000','-rd','reports/<dir>','-a','res://Tests/<path>Test.cs'],{stdio:'inherit',windowsHide:true})"
+
+# The .uid import (writes only the sidecars, see Godot .uid Sidecars)
+node -e "require('child_process').spawnSync('<godot console exe>',['--headless','--path','.','--import'],{stdio:'inherit',windowsHide:true})"
+```
+
+These give one suite and the .uid import when powershell.exe cannot start. They have no watchdog, no resume and no suite
+aggregation, so Run-GdUnit.ps1 stays the supported path for a full or -Fast run. A suite that stalls the whole process
+is the Jolt separate-thread symptom, whose owner decision is pending (issues 408 and 411).
+
 CI scope: pull requests and pushes to `master` run only the Unit suites (`-Fast`). The full suite runs on the weekly
 schedule (Sunday 03:00 UTC) and on a manual dispatch with `full=true`, for example `gh workflow run ci.yml --ref
 <branch> -f full=true`. PR CI also fails when the latest scheduled run on `master` is not green. So a green PR or merge
@@ -304,6 +318,13 @@ that was already in those files, so medium cleanups count toward the quota. Ever
 individual fix. Tighten the policy with the flags on the gate step (`--block-on=medium`,
 `--rule-block-on=<rule>:<severity>`, `--fix-medium-high`, `--fix-low`). After moving the dod-guard pin, check that
 `.github/quality-guard-godot.patch` still applies; the job's own patch step fails when it does not.
+
+Run the same gate locally with `node .github/quality-gate-local.mjs [--base=<sha>]` on the committed head before pushing a
+change under `Scripts/`. It reads the dod-guard pin, root and block-on setting from the `quality-guard` job in
+`.github/workflows/ci.yml`, keeps a clone of that pin in the system temp directory, applies
+`.github/quality-guard-godot.patch`, and writes `reports/quality-gate-report.md`. The gate diffs a base against HEAD, so
+the command refuses a dirty working tree: commit or revert first. `.github/quality-gate-local.test.mjs` pins the reading
+of `ci.yml` and runs in the `quality-guard` job.
 
 ### Card Signature System
 
