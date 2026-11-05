@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -166,8 +167,8 @@ public class CardShelfTest
 
     private static async Task Frames(int count)
     {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncPhysicsFrame;
+        var message = await BoundedWait.PhysicsFrames(count);
+        AssertThat(message).IsNull();
     }
 
     private static async Task Drop(DeckSlot slot, RigidBody3D card)
