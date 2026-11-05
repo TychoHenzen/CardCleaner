@@ -63,7 +63,7 @@ public class StaffAppTest
         var app = Build(new OpenProgression());
 
         app.FindChild("Hire", true, false)!.GetNode<Button>(".").EmitSignal(BaseButton.SignalName.Pressed);
-        await WaitForFrames(1);
+        await WaitUntil(() => _staff.IsHired(CashierId));
 
         AssertBool(_staff.IsHired(CashierId)).IsTrue();
         AssertThat(_money.Balance).IsEqual(StartingBalance - CashierFee);
@@ -79,7 +79,7 @@ public class StaffAppTest
         AssertBool(app.FindChild("Dismiss", true, false) != null).IsTrue();
 
         app.FindChild("Dismiss", true, false)!.GetNode<Button>(".").EmitSignal(BaseButton.SignalName.Pressed);
-        await WaitForFrames(1);
+        await WaitUntil(() => !_staff.IsHired(CashierId));
 
         AssertBool(_staff.IsHired(CashierId)).IsFalse();
         AssertThat(MessageOf(app)).IsEqual("Dismissed Cashier.");
@@ -92,7 +92,7 @@ public class StaffAppTest
         var app = Build(new OpenProgression(), balance: CashierFee - 1);
 
         app.FindChild("Hire", true, false)!.GetNode<Button>(".").EmitSignal(BaseButton.SignalName.Pressed);
-        await WaitForFrames(1);
+        await WaitUntil(() => MessageOf(app).Length > 0);
 
         AssertBool(_staff.IsHired(CashierId)).IsFalse();
         AssertThat(_money.Balance).IsEqual(CashierFee - 1);
@@ -179,9 +179,12 @@ public class StaffAppTest
             CollectLabels(child, texts);
     }
 
-    private static async Task WaitForFrames(int count)
+    // A button's action runs deferred, so the test waits frame by frame until its effect shows. A fixed single
+    // frame raced the deferred call on a loaded CI runner.
+    private static async Task WaitUntil(Func<bool> done)
     {
-        for (var index = 0; index < count; index++)
+        const int FrameLimit = 60;
+        for (var index = 0; index < FrameLimit && !done(); index++)
             await ISceneRunner.SyncProcessFrame;
     }
 
