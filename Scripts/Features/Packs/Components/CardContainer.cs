@@ -189,7 +189,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         if (!CanInteract || GetParent() is not Node3D parent)
             return false;
 
-        var origin = Hide();
+        var origin = HideForOpening();
 
         if (Kind == CardContainerKind.Booster)
             QueueCards(parent, origin);
@@ -211,7 +211,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         if (Kind == CardContainerKind.Booster || !CanInteract || GetParent() is not Node3D parent)
             return false;
 
-        var origin = Hide();
+        var origin = HideForOpening();
         var placeable = Math.Min(CardContainerLayout.ItemsPerContainer, freeSlots.Count);
         for (var i = 0; i < placeable; i++)
         {
@@ -228,7 +228,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     // Marks the container opened and hidden, and stops it colliding and falling. Returns the origin its contents
     // spawn above.
-    private Vector3 Hide()
+    private Vector3 HideForOpening()
     {
         IsOpened = true;
         var origin = GlobalPosition;

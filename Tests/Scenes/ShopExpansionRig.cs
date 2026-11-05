@@ -69,11 +69,17 @@ public sealed class ShopExpansionRig
 
     public Node3D FurnitureRoot { get; }
 
-    /// <summary>Loads the shop on the "expansion" slot of <paramref name="files" />, after its first bake.</summary>
-    public static async Task<ShopExpansionRig> StartAsync(InMemorySlotFileSystem files)
+    /// <summary>
+    ///     Loads the shop on the "expansion" slot of <paramref name="files" />, after its first bake. A
+    ///     <paramref name="catalog" /> replaces the shipped lot table before the shop enters the tree.
+    /// </summary>
+    public static async Task<ShopExpansionRig> StartAsync(InMemorySlotFileSystem files,
+        ExpansionLotCatalog? catalog = null)
     {
         var shop = ShopOrderingRig.LoadShopWithServices();
         var rig = new ShopExpansionRig(shop);
+        if (catalog != null)
+            rig.Expansion.Catalog = catalog;
         rig.RegisterSlot(files);
         // Inject before the shop enters the tree, so each node's _Ready finds its resolver.
         TestServices.Inject(rig.Expansion);

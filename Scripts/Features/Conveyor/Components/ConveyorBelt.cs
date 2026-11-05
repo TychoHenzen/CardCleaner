@@ -27,7 +27,13 @@ public partial class ConveyorBelt : Node3D
             NodeExports.ExportCheck(DestinationMarker, nameof(DestinationMarker), this))
             return;
 
-        var collision = DetectionArea.GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
+        var area = DetectionArea;
+        if (NodeExports.ExportCheck(area, nameof(DetectionArea), this) ||
+            NodeExports.ExportCheck(DestinationMarker, nameof(DestinationMarker), this) ||
+            area == null)
+            return;
+
+        var collision = area.GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
         _areaBox = collision?.Shape as BoxShape3D;
         if (_areaBox == null)
         {
@@ -35,8 +41,8 @@ public partial class ConveyorBelt : Node3D
             return;
         }
 
-        DetectionArea.BodyEntered += OnBodyEntered;
-        DetectionArea.BodyExited += OnBodyExited;
+        area.BodyEntered += OnBodyEntered;
+        area.BodyExited += OnBodyExited;
     }
 
     private void OnBodyEntered(Node3D body)
