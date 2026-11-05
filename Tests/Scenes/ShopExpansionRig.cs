@@ -31,6 +31,7 @@ public sealed class ShopExpansionRig
     public static readonly Vector3 StorageInside = new(4f, 0f, -4f);
     public static readonly Vector3 LotStoragePart = new(-4f, 0f, -4f);
 
+    private const string CounterPath = "World/Storefront/CheckoutCounter";
     private const string BoxScenePath = "res://Scenes/Shop/Items/ShelfBox.tscn";
     private const int SettleFrames = 10;
 
@@ -49,7 +50,22 @@ public sealed class ShopExpansionRig
         Spawner = shop.GetNode<CustomerSpawner>("Services/CustomerSpawner");
         View = shop.GetNode<ExpansionLotView>("World/ExpansionLot");
         FurnitureRoot = shop.GetNode<Node3D>("World/Furniture");
+        Counter = shop.GetNode<CheckoutCounter>(CounterPath);
+        Cashier = shop.GetNode<CashierWorker>($"{CounterPath}/CashierWorker");
+        Staff = shop.GetNode<StaffService>("Services/Staff");
+        Day = shop.GetNode<ShopDayService>("Services/ShopDayService");
+        Progression = shop.GetNode<ShopProgression>("Services/ShopProgression");
     }
+
+    public CheckoutCounter Counter { get; }
+
+    public CashierWorker Cashier { get; }
+
+    public StaffService Staff { get; }
+
+    public ShopDayService Day { get; }
+
+    public ShopProgression Progression { get; }
 
     public Node3D Shop { get; }
 
@@ -86,6 +102,7 @@ public sealed class ShopExpansionRig
         TestServices.Inject(rig.Controller);
         TestServices.Inject(rig.Spawner);
         TestServices.Inject(rig.View);
+        TestServices.Inject(rig.Cashier);
         // The camera aim is not driven headless; the cases place the pose with AimAt.
         rig.Controller.AimOverride = true;
 
