@@ -14,6 +14,17 @@ SecondsPerScan = 1.5
 SecondsPerPayment = 2.0
 TakeOverDelay = 3.0
 
+[sub_resource type="Resource" id="Resource_restocker"]
+script = ExtResource("2_roledata")
+Id = "restocker"
+DisplayName = "Restocker"
+UnlockId = "staff_restocker"
+HireFee = 300
+DailyWage = 30
+SecondsPerScan = 0.0
+SecondsPerPayment = 0.0
+TakeOverDelay = 0.0
+
 [resource]
 script = ExtResource("1_catalog")
-Roles = [SubResource("Resource_cashier")]
+Roles = [SubResource("Resource_cashier"), SubResource("Resource_restocker")]

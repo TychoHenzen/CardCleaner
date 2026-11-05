@@ -90,6 +90,25 @@ public class StaffServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void Restocker_is_hired_at_level_3_refused_at_level_2_and_not_hired_twice()
+    {
+        var progression = AutoFree(new ShopProgression());
+        _staff.Catalog = CashierAndRestockerCatalog();
+        _staff.Progression = progression;
+
+        progression.AwardCheckout(500);
+        AssertThat(_staff.Hire(StaffRoleIds.Restocker)).IsEqual(StaffResult.Locked);
+        AssertThat(_money.Balance).IsEqual(StartingBalance);
+
+        progression.AwardCheckout(1000);
+        AssertThat(_staff.Hire(StaffRoleIds.Restocker)).IsEqual(StaffResult.Hired);
+        AssertThat(_money.Balance).IsEqual(StartingBalance - StaffDefaults.RestockerHireFee);
+        AssertThat(_staff.Hire(StaffRoleIds.Restocker)).IsEqual(StaffResult.AlreadyHired);
+        AssertThat(_money.Balance).IsEqual(StartingBalance - StaffDefaults.RestockerHireFee);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void Hire_unknown_role_is_UnknownRole()
     {
         AssertThat(_staff.Hire("ghost")).IsEqual(StaffResult.UnknownRole);
@@ -245,6 +264,20 @@ public class StaffServiceTest
             {
                 Id = CashierId, DisplayName = "Cashier", UnlockId = CashierUnlock, HireFee = CashierFee,
                 DailyWage = 40, SecondsPerScan = 1.5f, SecondsPerPayment = 2f, TakeOverDelay = 3f,
+            },
+        ],
+    };
+
+    private static StaffCatalog CashierAndRestockerCatalog() => new()
+    {
+        Roles =
+        [
+            CashierCatalog().Roles[0],
+            new StaffRoleData
+            {
+                Id = StaffDefaults.RestockerId, DisplayName = StaffDefaults.RestockerName,
+                UnlockId = StaffDefaults.RestockerUnlockId, HireFee = StaffDefaults.RestockerHireFee,
+                DailyWage = StaffDefaults.RestockerDailyWage,
             },
         ],
     };

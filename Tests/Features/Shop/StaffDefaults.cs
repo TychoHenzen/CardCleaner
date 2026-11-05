@@ -17,6 +17,22 @@ public static class StaffDefaults
     public const float CashierSecondsPerPayment = 2.0f;
     public const float CashierTakeOverDelay = 3.0f;
 
+    public const string RestockerId = StaffRoleIds.Restocker;
+    public const string RestockerUnlockId = "staff_restocker";
+    public const string RestockerName = "Restocker";
+    public const int RestockerHireFee = 300;
+    public const int RestockerDailyWage = 30;
+
+    public static StaffRole Restocker() => new(
+        RestockerId,
+        RestockerName,
+        RestockerUnlockId,
+        RestockerHireFee,
+        RestockerDailyWage,
+        0f,
+        0f,
+        0f);
+
     public static StaffRole Cashier() => new(
         CashierId,
         CashierName,

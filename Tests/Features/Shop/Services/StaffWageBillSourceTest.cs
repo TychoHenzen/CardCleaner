@@ -35,6 +35,24 @@ public class StaffWageBillSourceTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public static void Both_roles_hired_give_two_wage_lines_in_hire_order()
+    {
+        var staff = new FakeStaffService(StaffDefaults.Cashier(), StaffDefaults.Restocker());
+        staff.HiredIds.Add(StaffDefaults.CashierId);
+        staff.HiredIds.Add(StaffDefaults.RestockerId);
+        var source = new StaffWageBillSource(staff);
+
+        var lines = source.GetBillLines(1).ToList();
+
+        AssertThat(lines.Count).IsEqual(2);
+        AssertThat(lines[0].Name).IsEqual("Cashier wage");
+        AssertThat(lines[0].Amount).IsEqual(StaffDefaults.CashierDailyWage);
+        AssertThat(lines[1].Name).IsEqual("Restocker wage");
+        AssertThat(lines[1].Amount).IsEqual(StaffDefaults.RestockerDailyWage);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static void Dismissed_gives_no_line()
     {
         var staff = new FakeStaffService(StaffDefaults.Cashier());
