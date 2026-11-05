@@ -1,6 +1,8 @@
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
-/// <summary>The guards of a payment, as plain rules: a usable register, a sale with a customer, every item scanned.</summary>
+/// <summary>
+///     The guards of a payment, as plain rules: a usable register, a sale with a customer, every item scanned.
+/// </summary>
 public static class CheckoutPaymentGuard
 {
     public const string UnavailableMessage = "The register is unavailable right now.";

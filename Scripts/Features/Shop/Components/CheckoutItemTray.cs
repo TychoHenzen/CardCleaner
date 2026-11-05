@@ -17,7 +17,9 @@ public sealed class CheckoutItemTray(Node3D counter)
     /// <summary>Finds the <c>ItemSpot</c> markers under the counter. Call once the counter's children exist.</summary>
     public void FindSpots() => _spots = CheckoutCounterLayout.MarkersNamed(counter, SpotPrefix);
 
-    /// <summary>Lays one prop per item on the spots; a prop calls <paramref name="onScan" /> when interacted with.</summary>
+    /// <summary>
+    ///     Lays one prop per item on the spots; a prop calls <paramref name="onScan" /> when interacted with.
+    /// </summary>
     public void Lay(IReadOnlyList<CheckoutItem> items, Action<int> onScan) =>
         _props = CheckoutCounterLayout.LayOutItems(counter, _spots, items, onScan);
 
