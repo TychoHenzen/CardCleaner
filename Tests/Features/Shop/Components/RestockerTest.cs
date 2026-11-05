@@ -1,15 +1,7 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Randomness;
-using CardCleaner.Scripts.Features.Card.Components;
-using CardCleaner.Scripts.Features.Packs.Components;
-using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Services;
-using CardCleaner.Tests.Scenes;
-using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;

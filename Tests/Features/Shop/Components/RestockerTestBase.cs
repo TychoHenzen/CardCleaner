@@ -123,7 +123,8 @@ public abstract class RestockerTestBase
         return (ordered[0], ordered[1]);
     }
 
-    private protected static bool IsCarried(CardContainer container) => container.GetParent()?.Name.ToString() == "Hand";
+    private protected static bool IsCarried(CardContainer container) =>
+        container.GetParent()?.Name.ToString() == "Hand";
 
     // Packs that are in the world and unopened: locked on a shelf or lying loose.
     private protected int PackCount() => _tree.GetNodesInGroup("card_containers").OfType<CardContainer>()
