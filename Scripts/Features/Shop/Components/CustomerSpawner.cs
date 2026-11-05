@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
@@ -19,13 +17,14 @@ public partial class CustomerSpawner : Node, IDependent
     private const float DefaultSpeed = 1.6f;
     private const float DefaultStuckSeconds = 8f;
 
-    private readonly HashSet<string> _claimed = new(StringComparer.Ordinal);
+    private readonly CustomerBriefing _briefing;
     private readonly ArrivalDriver _arrivals;
     private IServiceResolver? _services;
     private IShopDayService? _dayService;
 
     public CustomerSpawner()
     {
+        _briefing = new CustomerBriefing(GetTree, () => RandomSource);
         _arrivals = new ArrivalDriver(() => RandomSource, () => EffectiveCustomersPerDay, () => SpawnNow());
         _arrivals.Opened += () => SpawnedCount = 0;
     }
@@ -84,7 +83,7 @@ public partial class CustomerSpawner : Node, IDependent
     public int PendingArrivals => _arrivals.Pending;
 
     /// <summary>Offers currently claimed by customers on their way to buy them.</summary>
-    public int ClaimedCount => _claimed.Count;
+    public int ClaimedCount => _briefing.ClaimedCount;
 
     public void Inject(IServiceResolver services) => _services = services;
 
@@ -97,20 +96,12 @@ public partial class CustomerSpawner : Node, IDependent
             return;
         }
 
-        Fill<IShopDayService>(_services, () => DayService, service => DayService = service);
-        Fill<IComplaintLog>(_services, () => Complaints, log => Complaints = log);
-        Fill<ICheckoutHandoff>(_services, () => Handoff, handoff => Handoff = handoff);
-        Fill<IRandom>(_services, () => Rng, rng => Rng = rng);
-        Fill<IShopExpansion>(_services, () => Expansion, expansion => Expansion = expansion);
+        ServiceFill.Into<IShopDayService>(_services, () => DayService, service => DayService = service);
+        ServiceFill.Into<IComplaintLog>(_services, () => Complaints, log => Complaints = log);
+        ServiceFill.Into<ICheckoutHandoff>(_services, () => Handoff, handoff => Handoff = handoff);
+        ServiceFill.Into<IRandom>(_services, () => Rng, rng => Rng = rng);
+        ServiceFill.Into<IShopExpansion>(_services, () => Expansion, expansion => Expansion = expansion);
     }
-
-    // Fills a property from the resolver unless it was assigned directly (tests do).
-    private static void Fill<T>(IServiceResolver services, Func<T?> current, Action<T> assign) where T : class =>
-        services.Get<T>(service =>
-        {
-            if (current() == null)
-                assign(service);
-        });
 
     public override void _EnterTree() => _arrivals.Attach();
 
@@ -129,15 +120,8 @@ public partial class CustomerSpawner : Node, IDependent
         }
 
         var customer = CreateCustomer();
-        var offers = new ShelfOfferIndex(GetTree());
-        var rng = RandomSource;
-        var plan = ShoppingPlanner.Plan(offers.Collect(), _claimed, ShoppingPlanner.DrawWish(rng), rng);
-        // ASSUMPTION (Low): about half of the customers pay by card; the draw comes after the plan draws so the plan
-        // of each customer is unchanged.
-        customer.Method = rng.RandiRange(0, 1) == 0 ? PaymentMethod.Card : PaymentMethod.Cash;
-        ClaimOffers(customer, plan);
         SpawnedCount++;
-        customer.Begin(plan, offers, CounterMarker.GlobalPosition, DespawnMarker.GlobalPosition);
+        _briefing.Send(customer, CounterMarker.GlobalPosition, DespawnMarker.GlobalPosition);
         return customer;
     }
 
@@ -163,12 +147,5 @@ public partial class CustomerSpawner : Node, IDependent
         SpawnRoot!.AddChild(customer);
         customer.GlobalPosition = SpawnMarker!.GlobalPosition;
         return customer;
-    }
-
-    private void ClaimOffers(Customer customer, IReadOnlyList<PlannedPick> plan)
-    {
-        var claims = plan.Where(pick => pick.Outcome.Buys).Select(pick => pick.Offer.OfferId).ToList();
-        _claimed.UnionWith(claims);
-        customer.Finished += _ => _claimed.ExceptWith(claims);
     }
 }

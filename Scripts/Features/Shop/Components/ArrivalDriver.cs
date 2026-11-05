@@ -20,15 +20,8 @@ internal sealed class ArrivalDriver
     private IShopDayService? _day;
     private int _next;
 
-    /// <param name="random">The random source for the arrival minutes.</param>
-    /// <param name="customersPerDay">How many customers today's schedule holds.</param>
-    /// <param name="spawn">Spawns one customer.</param>
-    public ArrivalDriver(Func<IRandom> random, Func<int> customersPerDay, Action spawn)
-    {
-        _random = random;
-        _customersPerDay = customersPerDay;
-        _spawn = spawn;
-    }
+    public ArrivalDriver(Func<IRandom> random, Func<int> customersPerDay, Action spawn) =>
+        (_random, _customersPerDay, _spawn) = (random, customersPerDay, spawn);
 
     /// <summary>Raised when the shop opens, before the schedule is built.</summary>
     public event Action? Opened;
@@ -97,8 +90,6 @@ internal sealed class ArrivalDriver
 
     // A close ends the day's arrivals: the rest of the schedule counts as done.
     private void OnClosed(DayReport report) => _next = _schedule.Count;
-
-    // A restore and a new opening each start from no schedule.
 
     private void Clear()
     {
