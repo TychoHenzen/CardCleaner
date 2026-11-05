@@ -4,11 +4,10 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Ui;
 
 /// <summary>
-///     The desktop on the backoffice PC screen. The Stock, Furniture, Bills and Expansions icons open
-///     the apps assigned to <see cref="StockApp" />, <see cref="FurnitureApp" />, <see cref="BillsApp" />
-///     and <see cref="ExpansionsApp" />.
-///     The other icons stay disabled until their app slot exists. The Home
-///     button returns to the desktop, and the taskbar Close button raises
+///     The desktop on the backoffice PC screen. The Stock, Furniture, Bills, Expansions and Staff icons open
+///     the apps assigned to <see cref="StockApp" />, <see cref="FurnitureApp" />, <see cref="BillsApp" />,
+///     <see cref="ExpansionsApp" /> and <see cref="StaffApp" />. An icon whose app is unassigned stays disabled.
+///     The Home button returns to the desktop, and the taskbar Close button raises
 ///     <see cref="CloseRequested" />. The nodes live in the scene.
 /// </summary>
 public partial class PcDesktop : Control
@@ -40,6 +39,12 @@ public partial class PcDesktop : Control
     /// </summary>
     [Export]
     public Control? ExpansionsApp { get; set; }
+
+    /// <summary>
+    ///     The app the Staff icon opens. Unassigned keeps that icon disabled.
+    /// </summary>
+    [Export]
+    public Control? StaffApp { get; set; }
 
     /// <summary>Raised when the player presses Close on the taskbar.</summary>
     public event Action? CloseRequested;
@@ -77,15 +82,14 @@ public partial class PcDesktop : Control
         }
     }
 
-    // The one place each app is named next to its icon. A new app is one
-    // export and one row here; ResetToDesktop reads the same rows.
+    // ResetToDesktop reads these rows too, so a new app needs one export and one row here.
     private (string Path, Control? App)[] IconRows() =>
     [
         ("Icons/StockIcon", StockApp),
         ("Icons/BillsIcon", BillsApp),
         ("Icons/FurnitureIcon", FurnitureApp),
         ("Icons/ExpansionsIcon", ExpansionsApp),
-        ("Icons/StaffIcon", null)
+        ("Icons/StaffIcon", StaffApp)
     ];
 
     private void ShowApp(Control app)

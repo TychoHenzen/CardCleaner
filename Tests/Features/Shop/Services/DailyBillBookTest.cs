@@ -3,6 +3,7 @@ using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Shop.Services;
@@ -34,7 +35,8 @@ public class DailyBillBookTest
     [TestCategory("Unit")]
     public static void EmptySourceContributesNothing()
     {
-        var book = new DailyBillBook(new IDailyBillSource[] { new FakeSource() });
+        var book = new DailyBillBook(
+            new IDailyBillSource[] { new FakeSource() });
 
         AssertThat(book.LinesFor(1).Count).IsEqual(0);
         AssertThat(book.TotalFor(1)).IsEqual(0);
@@ -46,7 +48,10 @@ public class DailyBillBookTest
     {
         var book = new DailyBillBook(new IDailyBillSource[]
         {
-            new FakeSource(new BillLine("Rent", RentAmount), new BillLine("Zero", 0), new BillLine("Credit", -5)),
+            new FakeSource(
+                new BillLine("Rent", RentAmount),
+                new BillLine("Zero", 0),
+                new BillLine("Credit", -5)),
         });
 
         var names = book.LinesFor(1).Select(line => line.Name).ToArray();
@@ -73,7 +78,9 @@ public class DailyBillBookTest
     public static void ScanBuildsTheBookWithRent()
     {
         var container = new ServiceContainer();
-        container.RegisterSingleton(typeof(IShopExpansion), new NoLotsExpansion());
+        var expansion = new NoLotsExpansion();
+        container.RegisterSingleton(typeof(IShopExpansion), expansion);
+        container.RegisterSingleton(typeof(IStaffService), new FakeStaffService());
         TestServices.RegisterGameServiceClasses(container);
 
         var book = container.Resolve<IDailyBillBook>();
@@ -83,6 +90,28 @@ public class DailyBillBookTest
         AssertThat(lines[0].Name).IsEqual("Rent");
         AssertThat(lines[0].Amount).IsEqual(RentAmount);
         AssertThat(book.TotalFor(1)).IsEqual(RentAmount);
+        AssertThat(expansion.BuyRequests.Count).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ScanBuildsTheBookWithTheCashierWage()
+    {
+        var container = new ServiceContainer();
+        container.RegisterSingleton(typeof(IShopExpansion), new NoLotsExpansion());
+        var staff = new FakeStaffService(StaffDefaults.Cashier());
+        staff.HiredIds.Add(StaffDefaults.CashierId);
+        container.RegisterSingleton(typeof(IStaffService), staff);
+        TestServices.RegisterGameServiceClasses(container);
+
+        var book = container.Resolve<IDailyBillBook>();
+
+        var lines = book.LinesFor(1);
+        AssertThat(lines.Count).IsEqual(2);
+        AssertThat(lines[0].Name).IsEqual("Rent");
+        AssertThat(lines[1].Name).IsEqual("Cashier wage");
+        AssertThat(lines[1].Amount).IsEqual(StaffDefaults.CashierDailyWage);
+        AssertThat(book.TotalFor(1)).IsEqual(RentAmount + StaffDefaults.CashierDailyWage);
     }
 
     private sealed class NoLotsExpansion : IShopExpansion
@@ -97,7 +126,13 @@ public class DailyBillBookTest
 
         public int ExtraCustomersPerDay => 0;
 
-        public PurchaseOutcome TryBuy(string lotId) => PurchaseOutcome.Unknown;
+        public List<string> BuyRequests { get; } = new();
+
+        public PurchaseOutcome TryBuy(string lotId)
+        {
+            BuyRequests.Add(lotId);
+            return PurchaseOutcome.Unknown;
+        }
     }
 
     private sealed class FakeSource : IDailyBillSource

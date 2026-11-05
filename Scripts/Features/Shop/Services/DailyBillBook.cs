@@ -7,15 +7,16 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 
 /// <summary>
 ///     The one place a day's bill lines are collected from every source. A later bill slice adds its source as one
-///     more constructor parameter here, registered under its own type. This class is built once, on its first resolve.
+///     more constructor parameter here, registered under its own type. The staff wages come from
+///     <see cref="StaffWageBillSource" />. This class is built once, on its first resolve.
 /// </summary>
 [Service(typeof(IDailyBillBook))]
 internal sealed class DailyBillBook : IDailyBillBook
 {
     private readonly IReadOnlyList<IDailyBillSource> _sources;
 
-    public DailyBillBook(RentBillSource rent, ExpansionRentBillSource expansionRent)
-        : this(new IDailyBillSource[] { rent, expansionRent })
+    public DailyBillBook(RentBillSource rent, ExpansionRentBillSource expansionRent, StaffWageBillSource staffWage)
+        : this(new IDailyBillSource[] { rent, expansionRent, staffWage })
     {
     }
 

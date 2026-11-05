@@ -32,6 +32,11 @@ public static class CheckoutCounterLayout
         return props;
     }
 
+    /// <summary>One checkout item per basket entry, numbered in basket order.</summary>
+    public static List<CheckoutItem> ItemsOf(ICheckoutCustomer customer) => customer.Basket.Items
+        .Select((offer, index) => new CheckoutItem(index, offer.AskingPrice))
+        .ToList();
+
     /// <summary>Marker3D children of <paramref name="parent" /> named prefix plus an index, in index order.</summary>
     public static Marker3D[] MarkersNamed(Node parent, string prefix) => parent.GetChildren()
         .OfType<Marker3D>()
