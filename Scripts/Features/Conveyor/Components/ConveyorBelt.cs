@@ -23,26 +23,28 @@ public partial class ConveyorBelt : Node3D
 
     public override void _Ready()
     {
-        if (NodeExports.ExportCheck(DetectionArea, nameof(DetectionArea), this) ||
-            NodeExports.ExportCheck(DestinationMarker, nameof(DestinationMarker), this))
-            return;
-
         var area = DetectionArea;
-        if (NodeExports.ExportCheck(area, nameof(DetectionArea), this) ||
-            NodeExports.ExportCheck(DestinationMarker, nameof(DestinationMarker), this) ||
-            area == null)
+        if (!ExportsAssigned(area) || area == null || !TryCacheAreaBox(area))
             return;
-
-        var collision = area.GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
-        _areaBox = collision?.Shape as BoxShape3D;
-        if (_areaBox == null)
-        {
-            ILog.Error("DetectionArea needs a BoxShape3D child.");
-            return;
-        }
 
         area.BodyEntered += OnBodyEntered;
         area.BodyExited += OnBodyExited;
+    }
+
+    private bool ExportsAssigned(Area3D? area) =>
+        !NodeExports.ExportCheck(area, nameof(DetectionArea), this) &&
+        !NodeExports.ExportCheck(DestinationMarker,
+            nameof(DestinationMarker), this);
+
+    private bool TryCacheAreaBox(Area3D area)
+    {
+        var collision = area.GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
+        _areaBox = collision?.Shape as BoxShape3D;
+        if (_areaBox != null)
+            return true;
+
+        ILog.Error("DetectionArea needs a BoxShape3D child.");
+        return false;
     }
 
     private void OnBodyEntered(Node3D body)
@@ -66,9 +68,18 @@ public partial class ConveyorBelt : Node3D
 
     public override void _PhysicsProcess(double delta)
     {
-        if (DestinationMarker == null)
+        var marker = DestinationMarker;
+        if (marker == null)
             return;
 
+        RemoveInvalidCards();
+
+        for (var i = 0; i < _onBelt.Count; i++)
+            DriveCard(_onBelt[i], marker);
+    }
+
+    private void RemoveInvalidCards()
+    {
         var writeIndex = 0;
         for (var i = 0; i < _onBelt.Count; i++)
         {
@@ -81,21 +92,23 @@ public partial class ConveyorBelt : Node3D
                 _onBelt[writeIndex] = card;
 
             writeIndex++;
-
-            if (card.Sleeping)
-                card.SetSleeping(false);
-
-            // Destination + offset, ignoring vertical component
-            var target = DestinationMarker.GlobalPosition;
-            var dir = target - card.GlobalPosition;
-            dir.Y += 0.1f;
-
-            // Drive the card straight toward the marker
-            card.LinearVelocity = dir.Normalized() * Speed;
         }
 
         // Remove all invalid cards at once (single O(k) operation)
         if (writeIndex < _onBelt.Count)
             _onBelt.RemoveRange(writeIndex, _onBelt.Count - writeIndex);
+    }
+
+    private void DriveCard(RigidBody3D card, Node3D marker)
+    {
+        if (card.Sleeping)
+            card.SetSleeping(false);
+
+        // Destination + offset, ignoring vertical component
+        var dir = marker.GlobalPosition - card.GlobalPosition;
+        dir.Y += 0.1f;
+
+        // Drive the card straight toward the marker
+        card.LinearVelocity = dir.Normalized() * Speed;
     }
 }

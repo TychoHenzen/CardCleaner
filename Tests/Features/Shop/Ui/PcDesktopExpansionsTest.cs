@@ -4,7 +4,7 @@ using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Ui;
 
-/// <summary>The desktop's Expansions icon: enabled once an app is assigned, it opens that app and Home closes it.</summary>
+/// <summary>The Expansions icon is enabled once an app is assigned; it opens that app and Home closes it.</summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class PcDesktopExpansionsTest
@@ -50,7 +50,9 @@ public class PcDesktopExpansionsTest
         AssertThat(expansionsApp.Visible).IsFalse();
     }
 
-    private static (PcDesktop Desktop, Control StockApp, Control ExpansionsApp) BuildDesktop()
+    private readonly record struct DesktopParts(PcDesktop Desktop, Control StockApp, Control ExpansionsApp);
+
+    private static DesktopParts BuildDesktop()
     {
         var desktop = GD.Load<PackedScene>(DesktopScene).Instantiate<PcDesktop>();
         var stockApp = NewApp("StockApp", desktop);
@@ -58,7 +60,7 @@ public class PcDesktopExpansionsTest
         desktop.StockApp = stockApp;
         desktop.ExpansionsApp = expansionsApp;
         AddNode(desktop);
-        return (desktop, stockApp, expansionsApp);
+        return new DesktopParts(desktop, stockApp, expansionsApp);
     }
 
     private static Control NewApp(string name, Node parent)

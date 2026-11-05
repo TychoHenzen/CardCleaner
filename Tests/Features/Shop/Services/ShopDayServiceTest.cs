@@ -249,7 +249,7 @@ public class ShopDayServiceTest
         }
     }
 
-    private ShopDayService NewService(int startingBalance) =>
+    private static ShopDayService NewService(int startingBalance) =>
         AutoFree(new ShopDayService
         {
             Money = AutoFree(new MoneyService { StartingBalance = startingBalance }),

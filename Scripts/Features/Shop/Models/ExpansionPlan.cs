@@ -4,17 +4,6 @@ using System.Linq;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
-/// <summary>The result of asking to buy one expansion lot.</summary>
-public enum PurchaseOutcome
-{
-    Bought,
-    OutOfOrder,
-    Locked,
-    Unaffordable,
-    AlreadyOwned,
-    Unknown,
-}
-
 /// <summary>
 ///     The expansion lots in purchase order and which of them are owned. Immutable: <see cref="With" /> returns a new
 ///     plan. Pure rules, no engine types.

@@ -30,8 +30,16 @@ public class ShopExpansionServiceTest
             {
                 Lots =
                 [
-                    MakeLot("lot_a", 1, 100, "unlock_a", 40, 6, "Lot A", -8f),
-                    MakeLot("lot_b", 2, 200, "unlock_b", 60, 9, "Lot B", -12f),
+                    new ExpansionLotData
+                    {
+                        Id = "lot_a", Order = 1, Price = 100, UnlockId = "unlock_a", DailyRent = 40,
+                        ExtraCustomers = 6, DisplayName = "Lot A", StorefrontMinX = -8f,
+                    },
+                    new ExpansionLotData
+                    {
+                        Id = "lot_b", Order = 2, Price = 200, UnlockId = "unlock_b", DailyRent = 60,
+                        ExtraCustomers = 9, DisplayName = "Lot B", StorefrontMinX = -12f,
+                    },
                 ],
             },
             Money = _money,
@@ -146,17 +154,4 @@ public class ShopExpansionServiceTest
         AssertThat(catalog.Lots[0].Price).IsEqual(1500);
     }
 
-    private static ExpansionLotData MakeLot(string id, int order, int price, string unlockId, int rent,
-        int customers, string name, float minX) =>
-        new()
-        {
-            Id = id,
-            Order = order,
-            Price = price,
-            UnlockId = unlockId,
-            DailyRent = rent,
-            ExtraCustomers = customers,
-            DisplayName = name,
-            StorefrontMinX = minX,
-        };
 }

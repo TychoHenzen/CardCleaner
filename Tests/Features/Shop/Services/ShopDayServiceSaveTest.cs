@@ -226,7 +226,7 @@ public class ShopDayServiceSaveTest
         AssertThat(service.Debt).IsEqual(0);
     }
 
-    private ShopDayService NewService(int startingBalance) =>
+    private static ShopDayService NewService(int startingBalance) =>
         AutoFree(new ShopDayService
         {
             Money = AutoFree(new MoneyService { StartingBalance = startingBalance }),
