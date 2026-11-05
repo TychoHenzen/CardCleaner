@@ -85,7 +85,7 @@ public partial class Restocker : CharacterBody3D, IDependent
 
     public override void _PhysicsProcess(double delta) => Step(delta);
 
-    /// <summary>Advances the restocker by one physics step. Public so tests can drive it without a frame loop.</summary>
+    /// <summary>Advances the restocker by one physics step. Public so tests can drive it by hand.</summary>
     public void Step(double delta)
     {
         _job.Tick(delta);

@@ -26,7 +26,7 @@ internal sealed class RestockerHands
     public CardContainer? Carried =>
         _carried != null && GodotObject.IsInstanceValid(_carried) ? _carried : null;
 
-    /// <summary>Takes the container (releasing it from a rack slot). True when it is in the hands afterwards.</summary>
+    /// <summary>Takes the container (freeing its rack slot). True when it is in the hands afterwards.</summary>
     public bool Take(CardContainer container)
     {
         if (ReferenceEquals(Carried, container))
