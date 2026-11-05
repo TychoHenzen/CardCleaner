@@ -61,6 +61,14 @@
 [ext_resource type="Resource" path="res://Data/Shop/ExpansionLots.tres" id="ExpansionLots"]
 [ext_resource type="Resource" path="res://Data/Shop/Furniture/FurnitureItems.tres" id="FurnitureItems"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Ui/ExpansionsApp.cs" id="ExpansionsApp"]
+[ext_resource type="Script" uid="uid://t306livelmae" path="res://Scripts/Features/Shop/Services/StaffService.cs" id="StaffService"]
+[ext_resource type="Script" uid="uid://dtlyq0sdgspo0" path="res://Scripts/Features/Shop/Ui/StaffApp.cs" id="StaffApp"]
+[ext_resource type="Script" uid="uid://ck6rxiqcn12sc" path="res://Scripts/Features/Shop/Components/CashierWorker.cs" id="CashierWorker"]
+[ext_resource type="Resource" path="res://Data/Shop/StaffCatalog.tres" id="StaffCatalog"]
+
+[sub_resource type="CapsuleMesh" id="CashierCapsuleMesh"]
+radius = 0.2
+height = 1.7
 
 [sub_resource type="StandardMaterial3D" id="GrayMaterial"]
 albedo_color = Color(0.62, 0.62, 0.65, 1)
@@ -692,6 +700,22 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 1.15, 0)
 
 [node name="ItemSpot3" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.15, 0)
+
+[node name="CashierSpot" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.9)
+
+[node name="CashierFigure" type="Node3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.9)
+visible = false
+
+[node name="Body" type="MeshInstance3D" parent="World/Storefront/CheckoutCounter/CashierFigure"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+mesh = SubResource("CashierCapsuleMesh")
+
+[node name="CashierWorker" type="Node" parent="World/Storefront/CheckoutCounter" node_paths=PackedStringArray("Counter", "Figure")]
+script = ExtResource("CashierWorker")
+Counter = NodePath("..")
+Figure = NodePath("../CashierFigure")
 
 [node name="Street" type="Node3D" parent="World" groups=["shop_navigation"]]
 
@@ -1572,6 +1596,10 @@ script = ExtResource("AutoServiceProvider")
 script = ExtResource("ShopExpansionService")
 Catalog = ExtResource("ExpansionLots")
 
+[node name="Staff" type="Node" parent="Services"]
+script = ExtResource("StaffService")
+Catalog = ExtResource("StaffCatalog")
+
 [node name="FurniturePlacement" type="Node" parent="Services" node_paths=PackedStringArray("FurnitureRoot", "Navigation")]
 script = ExtResource("FurniturePlacementController")
 FurnitureRoot = NodePath("../../World/Furniture")
@@ -1615,11 +1643,12 @@ AutoLoadOnStart = true
 size = Vector2i(1280, 720)
 render_target_update_mode = 4
 
-[node name="PcDesktop" parent="PcDesktopViewport" node_paths=PackedStringArray("StockApp", "BillsApp", "FurnitureApp", "ExpansionsApp") instance=ExtResource("PcDesktop")]
+[node name="PcDesktop" parent="PcDesktopViewport" node_paths=PackedStringArray("StockApp", "BillsApp", "FurnitureApp", "ExpansionsApp", "StaffApp") instance=ExtResource("PcDesktop")]
 StockApp = NodePath("../StockApp")
 BillsApp = NodePath("../BillsApp")
 FurnitureApp = NodePath("../FurnitureApp")
 ExpansionsApp = NodePath("../ExpansionsApp")
+StaffApp = NodePath("../StaffApp")
 
 [node name="StockApp" type="Control" parent="PcDesktopViewport"]
 layout_mode = 3
@@ -1663,6 +1692,16 @@ offset_bottom = -48.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("ExpansionsApp")
+
+[node name="StaffApp" type="Control" parent="PcDesktopViewport"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -48.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("StaffApp")
 
 [node name="Pause" type="Node" parent="." node_paths=PackedStringArray("PauseMenuLayer")]
 script = ExtResource("PauseController")

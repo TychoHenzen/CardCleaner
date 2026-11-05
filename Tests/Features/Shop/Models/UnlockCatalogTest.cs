@@ -10,6 +10,7 @@ public class UnlockCatalogTest
 {
     private const string BackofficeCatalogPath = "res://Data/Shop/BackofficeCatalog.tres";
     private const string WorkshopCatalogPath = "res://Data/Workshop/WorkshopCatalog.tres";
+    private const string StaffCatalogPath = "res://Data/Shop/StaffCatalog.tres";
 
     [TestCase]
     [TestCategory("Unit")]
@@ -19,6 +20,7 @@ public class UnlockCatalogTest
 
         AssertThat(catalog.RequiredLevel("bulk_packing_station")).IsEqual(2);
         AssertThat(catalog.RequiredLevel("expansion_side_wing_1")).IsEqual(2);
+        AssertThat(catalog.RequiredLevel("staff_cashier")).IsEqual(2);
         foreach (var id in new[]
                  {
                      "shelf", "shelf_unit", "cardboard_box", "product_shelf", "storage_rack",
@@ -68,6 +70,20 @@ public class UnlockCatalogTest
         var rows = new[] { new UnlockEntry("  ", UnlockKind.Furniture, 1) };
 
         AssertThrown(() => new UnlockCatalog(rows)).IsInstanceOf<ArgumentException>();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void StaffRoleUnlockIdsHaveRows()
+    {
+        var catalog = UnlockCatalog.Default;
+        var roles = GD.Load<StaffCatalog>(StaffCatalogPath).ToRoles();
+        foreach (var role in roles.Values)
+        {
+            AssertThat(catalog.RequiredLevel(role.UnlockId))
+                .OverrideFailureMessage($"staff role '{role.Id}' has no unlock row for '{role.UnlockId}'")
+                .IsNotNull();
+        }
     }
 
     [TestCase]

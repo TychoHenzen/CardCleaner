@@ -31,6 +31,10 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     private Marker3D[] _queueSpots = Array.Empty<Marker3D>();
     private Marker3D[] _itemSpots = Array.Empty<Marker3D>();
     private string _message = string.Empty;
+    private object? _claimant;
+
+    // A payable sale: the session, the front customer it belongs to, and the money service that takes the payment.
+    private readonly record struct Sale(CheckoutSession Session, ICheckoutCustomer Customer, IMoneyService Money);
 
     [Export]
     public Label3D? StatusLabel { get; set; }
@@ -67,6 +71,9 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     }
 
     public bool CanInteract => Session is { State: CheckoutState.AwaitingPayment };
+
+    /// <summary>True while an automated operator holds the front customer's sale.</summary>
+    public bool IsClaimed => _claimant != null;
 
     public Node3D InteractionBody => this;
 
@@ -119,9 +126,34 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
             Refresh();
     }
 
-    /// <summary>Marks an item of the current basket scanned. False for an unknown, repeated or finished item.</summary>
-    public bool Scan(int itemId)
+    /// <summary>
+    ///     Lets an automated operator (the cashier) serve the front customer. Only a waiting customer whose basket
+    ///     nobody has scanned yet can be claimed, and one claim stands at a time.
+    /// </summary>
+    public bool TryClaim(object claimant)
     {
+        ArgumentNullException.ThrowIfNull(claimant);
+        if (Session == null || Session.ScannedCount != 0 || _claimant != null || Front is not { Waiting: true })
+            return false;
+
+        _claimant = claimant;
+        return true;
+    }
+
+    /// <summary>Gives the claim back. A caller that does not hold the claim releases nothing.</summary>
+    public void ReleaseClaim(object claimant)
+    {
+        ArgumentNullException.ThrowIfNull(claimant);
+        if (ReferenceEquals(claimant, _claimant))
+            _claimant = null;
+    }
+
+    /// <summary>Marks an item of the current basket scanned. False for an unknown, repeated or finished item.</summary>
+    public bool Scan(int itemId, object? claimant = null)
+    {
+        if (RefusedByClaim(claimant))
+            return false;
+
         if (_money == null)
         {
             SetMessage(UnavailableMessage);
@@ -132,7 +164,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
             return false;
 
         _props.FirstOrDefault(prop => prop.ItemId == itemId)?.MarkScanned();
-        if (Session.State == CheckoutState.AwaitingPayment)
+        if (Session.State == CheckoutState.AwaitingPayment && _claimant == null)
             PaymentReady?.Invoke(Session);
 
         SetMessage(string.Empty);
@@ -140,14 +172,19 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     }
 
     /// <summary>Takes a card payment of the typed total for the front customer.</summary>
-    public bool PayCard(int typedTotal) => TryPay(session => session.TryPayCard(typedTotal), "Wrong total");
+    public bool PayCard(int typedTotal, object? claimant = null) =>
+        TryPay(session => session.TryPayCard(typedTotal), "Wrong total", claimant);
 
     /// <summary>Takes a cash payment with the change picked for the front customer.</summary>
-    public bool PayCash(IReadOnlyCollection<int> picked) =>
-        TryPay(session => session.TryPayCash(picked), "Wrong change");
+    public bool PayCash(IReadOnlyCollection<int> picked, object? claimant = null) =>
+        TryPay(session => session.TryPayCash(picked), "Wrong change", claimant);
 
     public void Interact()
     {
+        // A claimed sale is the cashier's to finish; opening the payment screen would take the player's cursor.
+        if (IsClaimed)
+            return;
+
         if (Session is { State: CheckoutState.AwaitingPayment } session)
             PaymentReady?.Invoke(session);
     }
@@ -164,44 +201,63 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
             HighlightMesh.Visible = false;
     }
 
-    private bool TryPay(Func<CheckoutSession, bool> pay, string wrongMessage)
+    private bool RefusedByClaim(object? claimant)
     {
-        if (_money == null)
-        {
-            SetMessage(UnavailableMessage);
-            return false;
-        }
-
-        if (Session == null || Front is not { } customer)
+        if (_claimant == null || ReferenceEquals(claimant, _claimant))
             return false;
 
-        if (!customer.Waiting)
-        {
-            DropDeparted();
-            Refresh();
-            return false;
-        }
+        SetMessage("The cashier is serving this customer");
+        return true;
+    }
 
-        if (Session.State == CheckoutState.Scanning)
-        {
-            SetMessage("Scan every item first");
+    private bool TryPay(Func<CheckoutSession, bool> pay, string wrongMessage, object? claimant)
+    {
+        if (RefusedByClaim(claimant) || PayableSale() is not { } sale)
             return false;
-        }
 
-        if (!pay(Session))
+        if (!pay(sale.Session))
         {
             SetMessage(wrongMessage);
             return false;
         }
 
-        var total = Session.Total;
-        _money.Add(total);
+        var total = sale.Session.Total;
+        sale.Money.Add(total);
         Progression?.AwardCheckout(total);
-        customer.Leave();
-        _queue.Remove(customer);
+        sale.Customer.Leave();
+        _queue.Remove(sale.Customer);
         CloseSession($"Paid {total}");
         Refresh();
         return true;
+    }
+
+    // The guards of a payment: a usable register, a session with a front customer, and every item scanned.
+    // A front customer who stopped waiting forfeits the session on the way.
+    private Sale? PayableSale()
+    {
+        if (_money == null)
+        {
+            SetMessage(UnavailableMessage);
+            return null;
+        }
+
+        if (Session == null || Front is not { } customer)
+            return null;
+
+        if (!customer.Waiting)
+        {
+            DropDeparted();
+            Refresh();
+            return null;
+        }
+
+        if (Session.State == CheckoutState.Scanning)
+        {
+            SetMessage("Scan every item first");
+            return null;
+        }
+
+        return new Sale(Session, customer, _money);
     }
 
     // A front customer who stopped waiting forfeits the session; any other who stopped leaves the line.
@@ -250,6 +306,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     {
         ClearItems();
         Session = null;
+        _claimant = null;
         SessionEnded?.Invoke();
         SetMessage(message);
     }

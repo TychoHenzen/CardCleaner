@@ -30,8 +30,10 @@ public static class ShopOrderingRig
         TestServices.Container.RegisterSingleton<ICursorOwner>(shop.GetNode<CursorOwner>("Services/CursorOwner"));
         TestServices.Container.RegisterSingleton<IOrderingService>(
             shop.GetNode<OrderingService>("Services/OrderingService"));
+        TestServices.Container.RegisterSingleton<IStaffService>(shop.GetNode<StaffService>("Services/Staff"));
         // The shop is not the current scene, so no autoload injects it; the furniture load reads the lots through it.
         TestServices.Inject(shop.GetNode<FurnitureSaveService>("Services/FurnitureSave"));
+        TestServices.Inject(shop.GetNode<StaffService>("Services/Staff"));
         return shop;
     }
 }
