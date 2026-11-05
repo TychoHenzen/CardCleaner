@@ -114,8 +114,11 @@ public class ShopSceneContractTest
     [TestCategory("Unit")]
     public void PcAndSeamMarkersAreInTheBackoffice()
     {
-        AssertBool(IsInsideArea("Backoffice", MarkerPosition("PcLocation"))).IsTrue();
-        AssertBool(IsInsideArea("Backoffice", MarkerPosition("SeamLocation"))).IsTrue();
+        foreach (var marker in new[] { "PcLocation", "SeamLocation" })
+        {
+            var position = _shop.GetNode<Marker3D>($"World/Markers/{marker}").GlobalPosition;
+            AssertBool(IsInsideArea("Backoffice", position)).IsTrue();
+        }
     }
 
     [TestCase]
