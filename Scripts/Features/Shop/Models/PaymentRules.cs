@@ -59,6 +59,31 @@ public static class PaymentRules
         return sum == due;
     }
 
+    /// <summary>
+    /// The change due split into <see cref="ChangeDenominations"/>, largest first, by taking the largest
+    /// denomination that still fits until nothing is due. A due of zero gives an empty list.
+    /// </summary>
+    public static IReadOnlyList<int> ChangeParts(int due)
+    {
+        if (due < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(due), due, "Change due cannot be negative.");
+        }
+
+        var parts = new List<int>();
+        var remaining = due;
+        foreach (var value in ChangeDenominations.OrderByDescending(v => v))
+        {
+            while (remaining >= value)
+            {
+                parts.Add(value);
+                remaining -= value;
+            }
+        }
+
+        return parts;
+    }
+
     private static void ValidateTotal(int total)
     {
         if (total <= 0)
