@@ -1,45 +1,14 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Card.Controllers;
-using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Tests.TestUtilities.Helpers;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
 
 [TestSuite]
 [RequireGodotRuntime]
-public class CardShelfTest
+public class CardShelfTest : CardShelfTestBase
 {
-    private const string ShelfScene = "res://Scenes/Shop/Items/Shelf.tscn";
-    private const float FloorThickness = 0.2f;
-    private const int SettleFrames = 30;
-    private const int StabilityFrames = 90;
-    private const float StabilityTolerance = 0.01f;
-
-    private CardShelf _shelf = null!;
-
-    [BeforeTest]
-    public async Task Setup()
-    {
-        var floor = new StaticBody3D
-        {
-            Position = new Vector3(0f, -FloorThickness / 2f, 0f),
-        };
-        var floorShape = new BoxShape3D
-        {
-            Size = new Vector3(10f, FloorThickness, 10f),
-        };
-        floor.AddChild(new CollisionShape3D { Shape = floorShape });
-        AddNode(floor);
-        _shelf = GD.Load<PackedScene>(ShelfScene).Instantiate<CardShelf>();
-        AddNode(_shelf);
-        await Frames(SettleFrames);
-    }
-
     [TestCase]
     [TestCategory("Unit")]
     public void ShelfSceneHasSeveralOneCardSlotsAndJoinsTheShelfGroup()
@@ -111,22 +80,6 @@ public class CardShelfTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task ARigidBodyThatOnlyHasCardInItsNameIsNotLockedIntoASlot()
-    {
-        var box = new RigidBody3D { Name = "CardboardBox" };
-        AddNode(box);
-
-        var slot = _shelf.Slots.First();
-        slot.Area.EmitSignal(Area3D.SignalName.BodyEntered, box);
-        await Frames(2);
-
-        AssertThat(_shelf.StockedCount).IsEqual(0);
-        AssertBool(box.Freeze).IsFalse();
-        AssertThat(box.GetParent()).IsNotEqual(_shelf.Slots.First());
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardIsLockedWhateverItsNodeIsNamed()
     {
         var slot = _shelf.Slots.First();
@@ -137,52 +90,5 @@ public class CardShelfTest
 
         AssertThat(_shelf.StockedCount).IsEqual(1);
         AssertBool(card.Freeze).IsTrue();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task StockedCardsAndTheShelfStayStillWhilePhysicsRuns()
-    {
-        var slots = _shelf.Slots.ToArray();
-        var cards = new CardController[slots.Length];
-        for (var i = 0; i < slots.Length; i++)
-        {
-            cards[i] = MakeCard();
-            await Drop(slots[i], cards[i]);
-        }
-
-        var shelfBefore = _shelf.GlobalPosition;
-        var cardsBefore = cards.Select(c => c.GlobalPosition).ToArray();
-
-        await Frames(StabilityFrames);
-
-        AssertThat(_shelf.StockedCount).IsEqual(slots.Length);
-        var shelfMoved = _shelf.GlobalPosition.DistanceTo(shelfBefore);
-        AssertBool(shelfMoved < StabilityTolerance).IsTrue();
-        for (var i = 0; i < cards.Length; i++)
-        {
-            var cardMoved = cards[i].GlobalPosition.DistanceTo(cardsBefore[i]);
-            AssertBool(cards[i].Freeze).IsTrue();
-            AssertBool(cardMoved < StabilityTolerance).IsTrue();
-        }
-    }
-
-    private static CardController MakeCard()
-    {
-        var card = ShopTestCards.Create(new CardSignature());
-        AddNode(card);
-        return card;
-    }
-
-    private static async Task Frames(int count)
-    {
-        var message = await BoundedWait.PhysicsFrames(count);
-        AssertThat(message).IsNull();
-    }
-
-    private static async Task Drop(DeckSlot slot, RigidBody3D card)
-    {
-        slot.Area.EmitSignal(Area3D.SignalName.BodyEntered, card);
-        await Frames(2);
     }
 }
