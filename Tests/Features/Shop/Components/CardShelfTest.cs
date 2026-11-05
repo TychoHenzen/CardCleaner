@@ -25,8 +25,14 @@ public class CardShelfTest
     [BeforeTest]
     public async Task Setup()
     {
-        var floor = new StaticBody3D { Position = new Vector3(0f, -FloorThickness / 2f, 0f) };
-        var floorShape = new BoxShape3D { Size = new Vector3(10f, FloorThickness, 10f) };
+        var floor = new StaticBody3D
+        {
+            Position = new Vector3(0f, -FloorThickness / 2f, 0f),
+        };
+        var floorShape = new BoxShape3D
+        {
+            Size = new Vector3(10f, FloorThickness, 10f),
+        };
         floor.AddChild(new CollisionShape3D { Shape = floorShape });
         AddNode(floor);
         _shelf = GD.Load<PackedScene>(ShelfScene).Instantiate<CardShelf>();
