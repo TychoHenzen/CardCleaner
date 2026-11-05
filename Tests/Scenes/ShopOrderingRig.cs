@@ -29,19 +29,28 @@ public static class ShopOrderingRig
         // one on a file that is never saved to instead of reading the player's settings.
         TestServices.Container.RegisterSingleton<OptionsStore>(new OptionsStore(UnusedOptionsPath));
         TestServices.Container.RegisterSingleton<OptionsApplier>(new OptionsApplier());
-        TestServices.Container.RegisterSingleton<IGameSettings>(shop.GetNode<GameSettings>("Services/GameSettings"));
-        TestServices.Container.RegisterSingleton<IMoneyService>(shop.GetNode<MoneyService>("Services/MoneyService"));
-        TestServices.Container.RegisterSingleton<IShopProgression>(
-            shop.GetNode<ShopProgression>("Services/ShopProgression"));
-        TestServices.Container.RegisterSingleton<IShopExpansion>(
-            shop.GetNode<ShopExpansionService>("Services/ShopExpansion"));
-        TestServices.Container.RegisterSingleton<ICursorOwner>(shop.GetNode<CursorOwner>("Services/CursorOwner"));
-        TestServices.Container.RegisterSingleton<IOrderingService>(
-            shop.GetNode<OrderingService>("Services/OrderingService"));
-        TestServices.Container.RegisterSingleton<IStaffService>(shop.GetNode<StaffService>("Services/Staff"));
-        // The shop is not the current scene, so no autoload injects it; the furniture load reads the lots through it.
-        TestServices.Inject(shop.GetNode<FurnitureSaveService>("Services/FurnitureSave"));
-        TestServices.Inject(shop.GetNode<StaffService>("Services/Staff"));
+        var container = TestServices.Container;
+        container.RegisterSingleton<IGameSettings>(
+            Service<GameSettings>(shop, "GameSettings"));
+        container.RegisterSingleton<IMoneyService>(
+            Service<MoneyService>(shop, "MoneyService"));
+        container.RegisterSingleton<IShopProgression>(
+            Service<ShopProgression>(shop, "ShopProgression"));
+        container.RegisterSingleton<IShopExpansion>(
+            Service<ShopExpansionService>(shop, "ShopExpansion"));
+        container.RegisterSingleton<ICursorOwner>(
+            Service<CursorOwner>(shop, "CursorOwner"));
+        container.RegisterSingleton<IOrderingService>(
+            Service<OrderingService>(shop, "OrderingService"));
+        container.RegisterSingleton<IStaffService>(
+            Service<StaffService>(shop, "Staff"));
+        // No autoload injects the shop (it is not the current scene);
+        // the furniture load reads the lots through it.
+        TestServices.Inject(Service<FurnitureSaveService>(shop, "FurnitureSave"));
+        TestServices.Inject(Service<StaffService>(shop, "Staff"));
         return shop;
     }
+
+    private static T Service<T>(Node shop, string name) where T : Node =>
+        shop.GetNode<T>($"Services/{name}");
 }
