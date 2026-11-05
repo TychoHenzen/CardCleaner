@@ -110,7 +110,8 @@ public class CardShelfTest
         var box = new RigidBody3D { Name = "CardboardBox" };
         AddNode(box);
 
-        _shelf.Slots.First().Area.EmitSignal(Area3D.SignalName.BodyEntered, box);
+        var slot = _shelf.Slots.First();
+        slot.Area.EmitSignal(Area3D.SignalName.BodyEntered, box);
         await Frames(2);
 
         AssertThat(_shelf.StockedCount).IsEqual(0);
