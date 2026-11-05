@@ -1,5 +1,3 @@
-// ConveyorBeltTweenToMarker.cs
-
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Utilities;
@@ -24,17 +22,26 @@ public partial class ConveyorBelt : Node3D
     public override void _Ready()
     {
         var area = DetectionArea;
-        if (!ExportsAssigned(area) || area == null || !TryCacheAreaBox(area))
+        // ExportCheck is true for a missing export. Both are checked so each missing one is reported.
+        var areaMissing = NodeExports.ExportCheck(area, nameof(DetectionArea), this);
+        var markerMissing = NodeExports.ExportCheck(DestinationMarker, nameof(DestinationMarker), this);
+        if (areaMissing || markerMissing || area == null || !TryCacheAreaBox(area))
             return;
 
         area.BodyEntered += OnBodyEntered;
         area.BodyExited += OnBodyExited;
     }
 
-    private bool ExportsAssigned(Area3D? area) =>
-        !NodeExports.ExportCheck(area, nameof(DetectionArea), this) &&
-        !NodeExports.ExportCheck(DestinationMarker,
-            nameof(DestinationMarker), this);
+    public override void _PhysicsProcess(double delta)
+    {
+        var marker = DestinationMarker;
+        if (marker == null)
+            return;
+
+        _onBelt.RemoveAll(card => !IsInstanceValid(card));
+        foreach (var card in _onBelt)
+            DriveCard(card, marker);
+    }
 
     private bool TryCacheAreaBox(Area3D area)
     {
@@ -49,54 +56,14 @@ public partial class ConveyorBelt : Node3D
 
     private void OnBodyEntered(Node3D body)
     {
-        if (body is not RigidBody3D card)
-            return;
-        if (_onBelt.Contains(card))
-            return;
-
-        _onBelt.Add(card);
-        // Cancel any falling motion immediately
-        var v = card.LinearVelocity;
-        card.LinearVelocity = v;
+        if (body is RigidBody3D card && !_onBelt.Contains(card))
+            _onBelt.Add(card);
     }
 
     private void OnBodyExited(Node3D body)
     {
         if (body is RigidBody3D card)
             _onBelt.Remove(card);
-    }
-
-    public override void _PhysicsProcess(double delta)
-    {
-        var marker = DestinationMarker;
-        if (marker == null)
-            return;
-
-        RemoveInvalidCards();
-
-        for (var i = 0; i < _onBelt.Count; i++)
-            DriveCard(_onBelt[i], marker);
-    }
-
-    private void RemoveInvalidCards()
-    {
-        var writeIndex = 0;
-        for (var i = 0; i < _onBelt.Count; i++)
-        {
-            var card = _onBelt[i];
-            if (!IsInstanceValid(card))
-                continue;
-
-            // Compact valid cards to front of list
-            if (writeIndex != i)
-                _onBelt[writeIndex] = card;
-
-            writeIndex++;
-        }
-
-        // Remove all invalid cards at once (single O(k) operation)
-        if (writeIndex < _onBelt.Count)
-            _onBelt.RemoveRange(writeIndex, _onBelt.Count - writeIndex);
     }
 
     private void DriveCard(RigidBody3D card, Node3D marker)

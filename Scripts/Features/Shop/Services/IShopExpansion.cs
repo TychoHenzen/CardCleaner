@@ -15,9 +15,6 @@ public interface IShopExpansion
     /// <summary>Tries to buy a lot. A refused purchase charges nothing and changes nothing.</summary>
     PurchaseOutcome TryBuy(string lotId);
 
-    /// <summary>The rent per day of every owned lot.</summary>
-    int DailyRent { get; }
-
     /// <summary>The extra customers per day that every owned lot adds.</summary>
     int ExtraCustomersPerDay { get; }
 }

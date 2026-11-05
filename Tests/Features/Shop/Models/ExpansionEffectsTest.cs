@@ -16,41 +16,21 @@ public class ExpansionEffectsTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void NothingOwnedGivesNoRentAndNoCustomers()
-    {
-        var plan = Table();
-
-        AssertThat(ExpansionEffects.DailyRent(plan)).IsEqual(0);
-        AssertThat(ExpansionEffects.ExtraCustomers(plan)).IsEqual(0);
-    }
+    public static void NothingOwnedGivesNoCustomers() =>
+        AssertThat(ExpansionEffects.ExtraCustomers(Table())).IsEqual(0);
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void OneOwnedLotGivesItsOwnValues()
-    {
-        var plan = Table("lot_a");
-
-        AssertThat(ExpansionEffects.DailyRent(plan)).IsEqual(40);
-        AssertThat(ExpansionEffects.ExtraCustomers(plan)).IsEqual(6);
-    }
+    public static void OneOwnedLotGivesItsOwnValue() =>
+        AssertThat(ExpansionEffects.ExtraCustomers(Table("lot_a"))).IsEqual(6);
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void BothOwnedLotsGiveTheSums()
-    {
-        var plan = Table("lot_a", "lot_b");
-
-        AssertThat(ExpansionEffects.DailyRent(plan)).IsEqual(100);
-        AssertThat(ExpansionEffects.ExtraCustomers(plan)).IsEqual(15);
-    }
+    public static void BothOwnedLotsGiveTheSum() =>
+        AssertThat(ExpansionEffects.ExtraCustomers(Table("lot_a", "lot_b"))).IsEqual(15);
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void OwnedIdMissingFromTheTableIsIgnored()
-    {
-        var plan = Table("ghost");
-
-        AssertThat(ExpansionEffects.DailyRent(plan)).IsEqual(0);
-        AssertThat(ExpansionEffects.ExtraCustomers(plan)).IsEqual(0);
-    }
+    public static void OwnedIdMissingFromTheTableIsIgnored() =>
+        AssertThat(ExpansionEffects.ExtraCustomers(Table("ghost"))).IsEqual(0);
 }

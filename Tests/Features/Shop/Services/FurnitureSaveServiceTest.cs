@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 using Saveable;
 
@@ -18,6 +19,8 @@ public class FurnitureSaveServiceTest
     private const string CatalogPath = "res://Data/Shop/Furniture/FurnitureItems.tres";
     private const string OrderCatalogPath = "res://Data/Shop/FurnitureOrderCatalog.tres";
     private const string BoxScenePath = "res://Scenes/Shop/Items/ShelfBox.tscn";
+    private const float LotMinX = -8f;
+    private const float LotX = -4f;
 
     private Window _root = null!;
     private Node3D _parent = null!;
@@ -47,6 +50,15 @@ public class FurnitureSaveServiceTest
         _parent.AddChild(_service);
         AddNode(_parent);
         _root = _parent.GetTree().Root;
+        UseExpansion(new FakeExpansion());
+    }
+
+    private void UseExpansion(FakeExpansion? expansion)
+    {
+        TestServices.Reset();
+        if (expansion != null)
+            TestServices.Container.RegisterSingleton<IShopExpansion>(expansion);
+        TestServices.Inject(_service);
     }
 
     [AfterTest]
@@ -112,6 +124,63 @@ public class FurnitureSaveServiceTest
         var poses = PlacedPoses();
         AssertInt(poses.Count).IsEqual(1);
         AssertBool(poses[0].X == 8f && poses[0].Z == 6f).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ARecordOnAnOwnedLotLoads()
+    {
+        UseExpansion(new FakeExpansion(owned: true));
+
+        _service.Load(SaveWith(new FurnitureRecord("shelf_unit", LotX, 6f, 0, false)));
+
+        AssertInt(PlacedPoses().Count).IsEqual(1);
+    }
+
+    // The expansion's own save entry must load before the furniture's; with the order reversed the lot is not
+    // owned yet, so the record on it is skipped with an error.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ARecordOnAnUnownedLotIsSkipped()
+    {
+        var sink = new RecordingLog();
+        var previous = ILog.Sink;
+        try
+        {
+            UseExpansion(new FakeExpansion(owned: false));
+            ILog.Sink = sink;
+
+            _service.Load(SaveWith(new FurnitureRecord("shelf_unit", LotX, 6f, 0, false)));
+
+            AssertInt(PlacedPoses().Count).IsEqual(0);
+            AssertInt(sink.Errors.Count).IsEqual(1);
+        }
+        finally
+        {
+            ILog.Sink = previous;
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AMissingExpansionServiceIsLoggedAndTheBaseFloorUsed()
+    {
+        var sink = new RecordingLog();
+        var previous = ILog.Sink;
+        try
+        {
+            UseExpansion(null);
+            ILog.Sink = sink;
+
+            _service.Load(SaveWith(new FurnitureRecord("shelf_unit", 8f, 6f, 0, false)));
+
+            AssertInt(PlacedPoses().Count).IsEqual(1);
+            AssertInt(sink.Errors.Count).IsEqual(1);
+        }
+        finally
+        {
+            ILog.Sink = previous;
+        }
     }
 
     [TestCase]
@@ -242,6 +311,27 @@ public class FurnitureSaveServiceTest
 
     private List<FurniturePose> PlacedPoses() =>
         _furnitureRoot.GetChildren().OfType<PlacedFurniture>().Select(p => p.Pose).ToList();
+
+    private sealed class FakeExpansion : IShopExpansion
+    {
+        public FakeExpansion(bool owned = false)
+        {
+            var lot = new ExpansionLot("lot_test", 1, 100, "lot_test", 10, 1, "Test lot", LotMinX);
+            Plan = new ExpansionPlan([lot], owned ? new HashSet<string> { lot.Id } : new HashSet<string>());
+        }
+
+        public ExpansionPlan Plan { get; }
+
+        public event Action<string>? Opened
+        {
+            add { }
+            remove { }
+        }
+
+        public int ExtraCustomersPerDay => 0;
+
+        public PurchaseOutcome TryBuy(string lotId) => PurchaseOutcome.Unknown;
+    }
 
     private sealed class RecordingLog : ILog
     {

@@ -139,7 +139,23 @@ public class ShopExpansionServiceTest
         _expansion.TryBuy("lot_b");
 
         AssertThat(_expansion.ExtraCustomersPerDay).IsEqual(15);
-        AssertThat(_expansion.DailyRent).IsEqual(100);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RentSourceHasOneLinePerOwnedLotWithItsOwnAmount()
+    {
+        var source = new ExpansionRentBillSource(_expansion);
+        _expansion.TryBuy("lot_a");
+        _expansion.TryBuy("lot_b");
+
+        var lines = source.GetBillLines(1).ToList();
+
+        AssertThat(lines.Count).IsEqual(2);
+        AssertThat(lines[0].Name).IsEqual("Rent: Lot A");
+        AssertThat(lines[0].Amount).IsEqual(40);
+        AssertThat(lines[1].Name).IsEqual("Rent: Lot B");
+        AssertThat(lines[1].Amount).IsEqual(60);
     }
 
     [TestCase]

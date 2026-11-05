@@ -24,8 +24,6 @@ public partial class ShopExpansionService : Node, IShopExpansion, IDependent, IL
     private IServiceResolver? _services;
     private ExpansionPlan? _plan;
 
-    // ASSUMPTION (Medium): the catalog is converted once to ExpansionLot records on the first read of Plan.
-    // Assign it before the first purchase; a later change is not seen.
     /// <summary>
     ///     The purchasable lots, in any order. The purchase order is each lot's
     ///     <see cref="ExpansionLotData.Order" />.
@@ -45,12 +43,11 @@ public partial class ShopExpansionService : Node, IShopExpansion, IDependent, IL
     public StringName UniqueID => "expansions";
 
     /// <summary>The lots in purchase order and which of them are owned, as of now.</summary>
+    // ASSUMPTION (Medium): the catalog is converted once to ExpansionLot records on the first read of Plan.
+    // Assign Catalog before the first purchase; a later change is not seen.
     public ExpansionPlan Plan => _plan ??= new ExpansionPlan(
         (Catalog?.Lots ?? []).Select(ToLot).ToList(),
         new HashSet<string>(StringComparer.Ordinal));
-
-    /// <summary>The rent per day of every owned lot.</summary>
-    public int DailyRent => ExpansionEffects.DailyRent(Plan);
 
     /// <summary>The extra customers per day that every owned lot adds.</summary>
     public int ExtraCustomersPerDay => ExpansionEffects.ExtraCustomers(Plan);
@@ -77,11 +74,12 @@ public partial class ShopExpansionService : Node, IShopExpansion, IDependent, IL
     {
         var plan = Plan;
         var lot = plan.Lots.FirstOrDefault(candidate => candidate.Id == lotId);
-        var unlocked = lot is not null && Progression is { } progression && progression.IsUnlocked(lot.UnlockId);
-        var balance = Money?.Balance ?? 0;
+        if (lot is null)
+            return PurchaseOutcome.Unknown;
 
-        var outcome = plan.Decide(lotId, unlocked, balance);
-        if (outcome != PurchaseOutcome.Bought || lot is null)
+        var unlocked = Progression is { } progression && progression.IsUnlocked(lot.UnlockId);
+        var outcome = plan.Decide(lotId, unlocked, Money?.Balance ?? 0);
+        if (outcome != PurchaseOutcome.Bought)
             return outcome;
         if (Money is null || !Money.TrySpend(lot.Price))
             return PurchaseOutcome.Unaffordable;

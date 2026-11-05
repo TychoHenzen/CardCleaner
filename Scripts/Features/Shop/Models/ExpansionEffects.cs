@@ -6,9 +6,6 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 /// <summary>What the owned expansion lots add to the shop. Pure rules, no engine types.</summary>
 public static class ExpansionEffects
 {
-    /// <summary>The rent per day of every owned lot. An owned id missing from the table adds nothing.</summary>
-    public static int DailyRent(ExpansionPlan plan) => OwnedLots(plan).Sum(lot => lot.DailyRent);
-
     /// <summary>
     ///     The extra customers per day of every owned lot. An owned id missing from the table adds nothing.
     /// </summary>
@@ -17,3 +14,4 @@ public static class ExpansionEffects
     private static IEnumerable<ExpansionLot> OwnedLots(ExpansionPlan plan) =>
         plan.Lots.Where(lot => plan.Owned.Contains(lot.Id));
 }
+

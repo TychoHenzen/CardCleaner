@@ -1577,11 +1577,10 @@ script = ExtResource("FurniturePlacementController")
 FurnitureRoot = NodePath("../../World/Furniture")
 Navigation = NodePath("../../World/Navigation")
 
-[node name="FurnitureSave" type="Node" parent="Services" node_paths=PackedStringArray("Expansion", "FurnitureRoot", "BoxRoot", "Navigation", "DeliveryPoint")]
+[node name="FurnitureSave" type="Node" parent="Services" node_paths=PackedStringArray("FurnitureRoot", "BoxRoot", "Navigation", "DeliveryPoint")]
 script = ExtResource("FurnitureSaveService")
 Furniture = ExtResource("FurnitureItems")
 Boxes = ExtResource("FurnitureOrderCatalog")
-Expansion = NodePath("../ShopExpansion")
 FurnitureRoot = NodePath("../../World/Furniture")
 BoxRoot = NodePath("../../World")
 Navigation = NodePath("../../World/Navigation")

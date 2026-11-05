@@ -14,6 +14,7 @@ public partial class ExpansionLotView : Node3D, IDependent
     private const string OpenSign = "Expansion lot (open)";
 
     private IServiceResolver? _services;
+    private IShopExpansion? _expansion;
     private bool _open;
 
     /// <summary>The lot that this node shows; its id in the expansion catalog.</summary>
@@ -42,8 +43,23 @@ public partial class ExpansionLotView : Node3D, IDependent
         _services.Get<IShopExpansion>(Connect);
     }
 
+    // The subscription is dropped on every exit and made again on every re-entry (a reparent), so the service
+    // never keeps a handler of a node that left the tree.
+    public override void _EnterTree()
+    {
+        if (_expansion != null)
+            _expansion.Opened += OnOpened;
+    }
+
+    public override void _ExitTree()
+    {
+        if (_expansion != null)
+            _expansion.Opened -= OnOpened;
+    }
+
     private void Connect(IShopExpansion expansion)
     {
+        _expansion = expansion;
         expansion.Opened += OnOpened;
         if (expansion.Plan.Owned.Contains(LotId))
             Open();

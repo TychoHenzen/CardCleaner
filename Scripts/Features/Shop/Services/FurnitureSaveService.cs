@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
@@ -12,9 +13,11 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 ///     The save half lives here; <c>FurnitureSaveService.Restore.cs</c> holds the load half. It is an ISaveable node in
 ///     the shop's Services provider and carries no [Service] attribute, because nothing resolves it by type.
 /// </summary>
-public partial class FurnitureSaveService : Node, ILoadsFirst
+public partial class FurnitureSaveService : Node, ILoadsFirst, IDependent
 {
     public const string RecordsKey = "records";
+
+    private IServiceResolver? _services;
 
     [Export] public FurnitureCatalog? Furniture { get; set; }
 
@@ -26,16 +29,12 @@ public partial class FurnitureSaveService : Node, ILoadsFirst
 
     [Export] public ShopNavigationRegion? Navigation { get; set; }
 
-    /// <summary>
-    ///     The expansion service whose owned lots widen the floor a record may stand on. It must come before this node
-    ///     in the Services provider, so its own load has run when the furniture is restored.
-    /// </summary>
-    [Export] public ShopExpansionService? Expansion { get; set; }
-
     /// <summary>The delivery area that restored boxes count against, so a new order avoids them.</summary>
     [Export] public DeliveryMarker? DeliveryPoint { get; set; }
 
     public StringName UniqueID => "furniture";
+
+    public void Inject(IServiceResolver services) => _services = services;
 
     public void Save(NodeSave save)
     {

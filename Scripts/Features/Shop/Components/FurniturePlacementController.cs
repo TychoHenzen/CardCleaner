@@ -20,12 +20,10 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     public const float StartZ = 6f;
 
     private IServiceResolver? _services;
-    private IInputService? _input;
     private FurnitureGhost? _ghost;
     private FurnitureBox? _box;
     private CarriedFurniture? _carried;
     private FurnitureItem? _item;
-    private bool _physicsBlocked;
 
     [Export]
     public Node3D? FurnitureRoot { get; set; }
@@ -41,12 +39,6 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     public FurniturePose CurrentPose { get; private set; }
 
     public bool CurrentValid { get; private set; }
-
-    /// <summary>When true, the camera aim is ignored so a test can place the pose directly.</summary>
-    internal bool AimOverride { get; set; }
-
-    /// <summary>The placed furniture under the camera's aim while no session is active, or null.</summary>
-    internal PlacedFurniture? AimedFurniture { get; private set; }
 
     public void Inject(IServiceResolver services) => _services = services;
 
@@ -101,11 +93,8 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     {
         if (!IsActive)
             return;
-        var quarterTurns = CurrentPose.QuarterTurns;
         CurrentPose = new FurniturePose(
-            FurniturePlacementModel.Snap(x),
-            FurniturePlacementModel.Snap(z),
-            quarterTurns);
+            FurniturePlacementModel.Snap(x), FurniturePlacementModel.Snap(z), CurrentPose.QuarterTurns);
         Refresh();
     }
 
@@ -113,43 +102,46 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     {
         if (!IsActive)
             return;
-        var quarterTurns = FurniturePlacementModel.Turn(CurrentPose.QuarterTurns, 1);
-        CurrentPose = CurrentPose with { QuarterTurns = quarterTurns };
+        CurrentPose = CurrentPose with { QuarterTurns = FurniturePlacementModel.Turn(CurrentPose.QuarterTurns, 1) };
         Refresh();
     }
 
     public bool Confirm()
     {
-        var root = FurnitureRoot;
-        if (!IsActive || root == null || _item == null)
+        if (!IsActive)
             return false;
 
         // Rotate and aim only refresh the floor check; the physics check runs on the next tick. Judge the exact
         // pose being committed, so a confirm that follows a rotate within one tick cannot use the old clearance.
         ProbePhysics();
-        if (!CurrentValid)
+        if (!CurrentValid || !Commit())
             return false;
-
-        if (_carried != null)
-        {
-            if (!_carried.PutDownAt(CurrentPose))
-            {
-                // A load freed the piece while it was carried; there is nothing left to put down.
-                EndSession();
-                return false;
-            }
-        }
-        else
-        {
-            var placed = PlacedFurniture.Create(_item, CurrentPose);
-            if (placed == null)
-                return false;
-            placed.StandUnder(root);
-            _box?.QueueFree();
-        }
 
         Navigation?.Rebake();
         EndSession();
+        return true;
+    }
+
+    private bool Commit() => _carried != null ? PutDownCarried(_carried) : PlaceNew();
+
+    private bool PutDownCarried(CarriedFurniture carried)
+    {
+        if (carried.PutDownAt(CurrentPose))
+            return true;
+
+        // A load freed the piece while it was carried; there is nothing left to put down.
+        EndSession();
+        return false;
+    }
+
+    private bool PlaceNew()
+    {
+        var placed = _item == null || FurnitureRoot == null ? null : PlacedFurniture.Create(_item, CurrentPose);
+        if (placed == null)
+            return false;
+
+        placed.StandUnder(FurnitureRoot!);
+        _box?.QueueFree();
         return true;
     }
 
@@ -163,28 +155,23 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
         EndSession();
     }
 
-    /// <summary>
-    ///     Puts a carried piece back down at the pose it was picked up from. False when nothing was carried, or
-    ///     when a load freed the piece meanwhile.
-    /// </summary>
+    /// <summary>Puts a carried piece back where it was picked up; false when none was carried or a load freed it.</summary>
     private bool ReleaseCarried() => _carried?.PutBack() == true;
 
     private void StartSession(FurnitureItem item)
     {
         _item = item;
         IsActive = true;
-        _ghost ??= CreateGhost();
+        if (_ghost == null)
+        {
+            // ASSUMPTION: the ghost is a child of this Node, so its pose is read in the space of the nearest Node3D
+            // ancestor, the same space FurnitureRoot places furniture in. Step 7 of the scene test checks they agree.
+            _ghost = new FurnitureGhost { Name = "FurnitureGhost" };
+            AddChild(_ghost);
+        }
+
         _ghost.Configure(item.Footprint, item.Height);
         _ghost.Visible = true;
-    }
-
-    // ASSUMPTION: the ghost is a child of this Node, so its pose is read in the space of the nearest Node3D
-    // ancestor, the same space FurnitureRoot places furniture in. Step 7 of the scene test checks the two agree.
-    private FurnitureGhost CreateGhost()
-    {
-        var ghost = new FurnitureGhost { Name = "FurnitureGhost" };
-        AddChild(ghost);
-        return ghost;
     }
 
     private void EndSession()
@@ -207,7 +194,7 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
             _item.Footprint,
             CurrentPose,
             PlacedRects(),
-            Expansion is { } expansion ? FurnitureFloor.For(expansion.Plan) : FurnitureFloor.Shop);
+            ExpansionFloor.For(Expansion));
         _ghost?.Show(CurrentPose, CurrentValid);
     }
 

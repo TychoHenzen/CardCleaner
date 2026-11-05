@@ -32,6 +32,7 @@ public partial class FurnitureSaveService
         ClearFurniture();
 
         var placedRects = new List<FurnitureRect>();
+        var floor = CurrentFloor();
         foreach (var record in records)
         {
             if (!float.IsFinite(record.X) || !float.IsFinite(record.Z))
@@ -43,7 +44,7 @@ public partial class FurnitureSaveService
             if (record.IsBox)
                 RestoreBox(record);
             else
-                RestorePlaced(record, placedRects);
+                RestorePlaced(record, placedRects, floor);
         }
 
         Navigation?.Rebake();
@@ -64,7 +65,22 @@ public partial class FurnitureSaveService
         }
     }
 
-    private void RestorePlaced(FurnitureRecord record, List<FurnitureRect> placedRects)
+    /// <summary>
+    ///     The floor the records are judged on. The owned lots come from <see cref="IShopExpansion" />, which is
+    ///     restored by its own save entry first: both services load first, and the expansion node sits before this
+    ///     one in the Services provider. With the order reversed the lots are not owned yet and a record standing on
+    ///     one is skipped with an error (<c>FurnitureSaveServiceTest.ARecordOnAnUnownedLotIsSkipped</c>).
+    /// </summary>
+    private FurnitureRect CurrentFloor()
+    {
+        if (_services is { } services && services.Has<IShopExpansion>())
+            return ExpansionFloor.For(services.Get<IShopExpansion>());
+
+        ILog.Error("FurnitureSaveService has no IShopExpansion; furniture is restored on the base shop floor");
+        return FurnitureFloor.Shop;
+    }
+
+    private void RestorePlaced(FurnitureRecord record, List<FurnitureRect> placedRects, FurnitureRect floor)
     {
         var item = Furniture!.Find(record.Id);
         if (item == null)
@@ -74,7 +90,6 @@ public partial class FurnitureSaveService
         }
 
         var pose = new FurniturePose(record.X, record.Z, record.QuarterTurns);
-        var floor = Expansion is { } expansion ? FurnitureFloor.For(expansion.Plan) : FurnitureFloor.Shop;
         if (!FurniturePlacementModel.IsValid(item.Footprint, pose, placedRects, floor))
         {
             ILog.Error($"Furniture record '{record.Id}' no longer fits the shop floor; skipped");

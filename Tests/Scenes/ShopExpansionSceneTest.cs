@@ -21,6 +21,9 @@ public class ShopExpansionSceneTest
     private const int ExtraCustomers = 6;
     private const int SettleRounds = 3;
 
+    private static readonly System.Text.RegularExpressions.Regex DoorName =
+        new("door|portal|gate", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
     private InMemorySlotFileSystem _files = null!;
     private ShopExpansionRig _rig = null!;
     private ShopExpansionRig? _second;
@@ -47,16 +50,30 @@ public class ShopExpansionSceneTest
     {
         _rig.MeetTheLotRequirements();
         AssertBool(_rig.Reaches(ShopExpansionRig.ShelfArea, ShopExpansionRig.LotStorefrontPart)).IsFalse();
+        AssertBool(_rig.Reaches(ShopExpansionRig.StorageInside, ShopExpansionRig.LotStoragePart)).IsFalse();
+        var doorsBefore = DoorLikePaths();
 
         AssertThat(await _rig.BuyAsync()).IsEqual(PurchaseOutcome.Bought);
 
+        // The storefront and the lot are one room, and the storage room reaches into the lot's storage part.
         AssertBool(_rig.Reaches(ShopExpansionRig.ShelfArea, ShopExpansionRig.LotStorefrontPart)).IsTrue();
         AssertBool(_rig.Reaches(ShopExpansionRig.StorageInside, ShopExpansionRig.LotStoragePart)).IsTrue();
         AssertBool(_rig.View.IsOpen).IsTrue();
-        AssertBool(ShapesOf("World/Walls/LeftWall").All(shape => shape.Disabled)).IsTrue();
+        var sealing = ShapesOf("World/Walls/LeftWall").ToList();
+        AssertBool(sealing.Count > 0).IsTrue();
+        AssertBool(sealing.All(shape => shape.Disabled)).IsTrue();
+        AssertBool(_rig.Shop.GetNode<Node3D>("World/Walls/LeftWall").Visible).IsFalse();
         // The rest of the walls stand: the back wall still wraps the storage behind the storefront.
         foreach (var wall in new[] { "BackWall", "LotBack", "LotOuterLeft" })
-            AssertBool(ShapesOf($"World/Walls/{wall}").Any(shape => shape.Disabled)).IsFalse();
+        {
+            var shapes = ShapesOf($"World/Walls/{wall}").ToList();
+            AssertBool(shapes.Count > 0).IsTrue();
+            AssertBool(shapes.Any(shape => shape.Disabled)).IsFalse();
+        }
+
+        // No street door is added: the purchase adds no door node, and none sits at the lot's walls.
+        AssertBool(DoorLikePaths().SetEquals(doorsBefore)).IsTrue();
+        AssertBool(DoorLikePaths().Any(path => path.Contains("/LotBack") || path.Contains("/LotOuterLeft"))).IsFalse();
     }
 
     [TestCase]
@@ -169,6 +186,13 @@ public class ShopExpansionSceneTest
         var restored = (PlacedFurniture)_second.FurnitureRoot.GetChild(0);
         AssertBool(restored.Pose.X == -4f && restored.Pose.Z == 6f).IsTrue();
     }
+
+    // Every node of the shop scene that is named like a door, doorway or portal.
+    private System.Collections.Generic.HashSet<string> DoorLikePaths() =>
+        _rig.Shop.FindChildren("*", "", true, false)
+            .Where(node => DoorName.IsMatch(node.Name.ToString()))
+            .Select(node => node.GetPath().ToString())
+            .ToHashSet();
 
     private System.Collections.Generic.IEnumerable<CollisionShape3D> ShapesOf(string wallPath) =>
         _rig.Shop.GetNode(wallPath).GetChildren().OfType<CollisionShape3D>();

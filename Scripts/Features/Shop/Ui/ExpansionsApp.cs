@@ -142,7 +142,8 @@ public partial class ExpansionsApp : Control, IDependent
             return "Owned";
         if (lot.Id == plan.Next?.Id)
             return "Next";
-        return previous == null ? "Next" : $"After {previous.DisplayName}";
+        // Neither owned nor next, so the next lot comes earlier in the order and this lot has a predecessor.
+        return $"After {previous!.DisplayName}";
     }
 
     // The level the lot needs while the shop is below it. A lot with no unlock row reads as plainly locked.

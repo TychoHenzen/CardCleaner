@@ -10,6 +10,17 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 /// </summary>
 public partial class FurniturePlacementController
 {
+    private IInputService? _input;
+    private PlacedFurniture? _aimed;
+    private bool _aimOverride;
+    private bool _physicsBlocked;
+
+    /// <summary>When true, the camera aim is ignored so a test can place the pose directly.</summary>
+    internal bool AimOverride { get => _aimOverride; set => _aimOverride = value; }
+
+    /// <summary>The placed furniture under the camera's aim while no session is active, or null.</summary>
+    internal PlacedFurniture? AimedFurniture => _aimed;
+
     public override void _Ready()
     {
         if (_services == null)
@@ -38,28 +49,32 @@ public partial class FurniturePlacementController
 
     public override void _PhysicsProcess(double delta)
     {
+        _aimed = IsActive ? null : FindAimed(GetViewport());
         if (IsActive)
             UpdateFromCamera();
-        else
-            UpdateAimedFurniture();
+    }
+
+    private static PlacedFurniture? FindAimed(Viewport viewport)
+    {
+        var camera = viewport.GetCamera3D();
+        return camera == null ? null : FurnitureProbe.Aimed(viewport.World3D, camera);
     }
 
     private void TryPickUpAimed()
     {
-        if (!IsActive && AimedFurniture != null)
-            BeginMove(AimedFurniture);
+        if (!IsActive && _aimed != null)
+            BeginMove(_aimed);
     }
 
     private void UpdateFromCamera()
     {
         var camera = GetViewport().GetCamera3D();
-        if (camera != null && !AimOverride
+        if (camera != null && !_aimOverride
             && FurnitureAim.TryFloorPoint(camera.GlobalPosition, -camera.GlobalBasis.Z, out var x, out var z))
         {
             AimAt(x, z);
         }
 
-        AimedFurniture = null;
         ProbePhysics();
     }
 
@@ -76,11 +91,5 @@ public partial class FurniturePlacementController
             return;
         _physicsBlocked = blocked;
         Refresh();
-    }
-
-    private void UpdateAimedFurniture()
-    {
-        var camera = GetViewport().GetCamera3D();
-        AimedFurniture = camera == null ? null : FurnitureProbe.Aimed(GetViewport().World3D, camera);
     }
 }

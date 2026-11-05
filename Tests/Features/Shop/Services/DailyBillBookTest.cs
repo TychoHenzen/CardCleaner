@@ -95,8 +95,6 @@ public class DailyBillBookTest
             remove { }
         }
 
-        public int DailyRent => 0;
-
         public int ExtraCustomersPerDay => 0;
 
         public PurchaseOutcome TryBuy(string lotId) => PurchaseOutcome.Unknown;
