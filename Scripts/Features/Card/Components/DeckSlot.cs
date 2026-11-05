@@ -79,15 +79,14 @@ public partial class DeckSlot : Node3D
         if (body is not RigidBody3D rigid || !Accepts(rigid) || _cards.Contains(rigid))
             return;
 
-        if (_cards.Count < Capacity)
-        {
-            _processingEntry = true;
-            CallDeferred(MethodName.LockCardDeferred, rigid);
-        }
-        else
+        if (_cards.Count >= Capacity)
         {
             EjectCard(rigid);
+            return;
         }
+
+        _processingEntry = true;
+        CallDeferred(MethodName.LockCardDeferred, rigid);
     }
 
     private void LockCardDeferred(RigidBody3D body)

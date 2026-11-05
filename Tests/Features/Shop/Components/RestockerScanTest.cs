@@ -144,7 +144,7 @@ public class RestockerScanTest
         AssertThat(result.PutBackSlot(pack, origin, Vector3.Zero)).IsEqual(origin);
     }
 
-    private CardShelf Shelf(string path, Vector3 at)
+    private static CardShelf Shelf(string path, Vector3 at)
     {
         var shelf = AddNode(GD.Load<PackedScene>(path).Instantiate<CardShelf>());
         shelf.GlobalPosition = at;

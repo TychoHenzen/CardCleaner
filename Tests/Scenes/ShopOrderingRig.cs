@@ -28,6 +28,7 @@ public static class ShopOrderingRig
         // missing one logs an exception from _Ready that later crashes Godot's finalizer (exit 0xC000001D), so register
         // one on a file that is never saved to instead of reading the player's settings.
         TestServices.Container.RegisterSingleton<OptionsStore>(new OptionsStore(UnusedOptionsPath));
+        TestServices.Container.RegisterSingleton<OptionsApplier>(new OptionsApplier());
         TestServices.Container.RegisterSingleton<IGameSettings>(shop.GetNode<GameSettings>("Services/GameSettings"));
         TestServices.Container.RegisterSingleton<IMoneyService>(shop.GetNode<MoneyService>("Services/MoneyService"));
         TestServices.Container.RegisterSingleton<IShopProgression>(
