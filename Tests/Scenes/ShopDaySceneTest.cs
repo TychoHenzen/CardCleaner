@@ -37,7 +37,8 @@ public class ShopDaySceneTest
         _service = _shop.GetNode<ShopDayService>("Services/ShopDayService");
         TestServices.Container.RegisterSingleton<IShopDayService>(_service);
         TestServices.Container.RegisterSingleton<IComplaintLog>(_service);
-        TestServices.Container.RegisterSingleton<IDailyBillBook>(new DailyBillBook(new RentBillSource()));
+        TestServices.Container.RegisterSingleton<IDailyBillBook>(
+            new DailyBillBook(new IDailyBillSource[] { new RentBillSource() }));
         TestServices.Container.RegisterSingleton(RandomSources.Create(400UL));
 
         _sign = _shop.GetNode<ShopSign>("World/Storefront/ShopSign");

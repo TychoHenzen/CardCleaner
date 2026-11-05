@@ -56,7 +56,11 @@
 [ext_resource type="PackedScene" path="res://Scenes/Shop/PcDesktop.tscn" id="PcDesktop"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/FurniturePlacementController.cs" id="FurniturePlacementController"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/FurnitureSaveService.cs" id="FurnitureSaveService"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Services/ShopExpansionService.cs" id="ShopExpansionService"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ExpansionLotView.cs" id="ExpansionLotView"]
+[ext_resource type="Resource" path="res://Data/Shop/ExpansionLots.tres" id="ExpansionLots"]
 [ext_resource type="Resource" path="res://Data/Shop/Furniture/FurnitureItems.tres" id="FurnitureItems"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Ui/ExpansionsApp.cs" id="ExpansionsApp"]
 
 [sub_resource type="StandardMaterial3D" id="GrayMaterial"]
 albedo_color = Color(0.62, 0.62, 0.65, 1)
@@ -548,7 +552,11 @@ Placeholder = NodePath("Placeholder")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
 mesh = SubResource("FloorBoxMesh")
 
-[node name="ExpansionLot" type="Node3D" parent="World" groups=["shop_navigation"]]
+[node name="ExpansionLot" type="Node3D" parent="World" node_paths=PackedStringArray("SealingWall", "Sign", "Navigation") groups=["shop_navigation"]]
+script = ExtResource("ExpansionLotView")
+SealingWall = NodePath("../Walls/LeftWall")
+Sign = NodePath("Sign")
+Navigation = NodePath("../Navigation")
 
 [node name="Sign" type="Label3D" parent="World/ExpansionLot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, 2)
@@ -1560,6 +1568,10 @@ navigation_mesh = SubResource("ShopNavigationMesh")
 [node name="Services" type="Node" parent="."]
 script = ExtResource("AutoServiceProvider")
 
+[node name="ShopExpansion" type="Node" parent="Services"]
+script = ExtResource("ShopExpansionService")
+Catalog = ExtResource("ExpansionLots")
+
 [node name="FurniturePlacement" type="Node" parent="Services" node_paths=PackedStringArray("FurnitureRoot", "Navigation")]
 script = ExtResource("FurniturePlacementController")
 FurnitureRoot = NodePath("../../World/Furniture")
@@ -1603,10 +1615,11 @@ AutoLoadOnStart = true
 size = Vector2i(1280, 720)
 render_target_update_mode = 4
 
-[node name="PcDesktop" parent="PcDesktopViewport" node_paths=PackedStringArray("StockApp", "BillsApp", "FurnitureApp") instance=ExtResource("PcDesktop")]
+[node name="PcDesktop" parent="PcDesktopViewport" node_paths=PackedStringArray("StockApp", "BillsApp", "FurnitureApp", "ExpansionsApp") instance=ExtResource("PcDesktop")]
 StockApp = NodePath("../StockApp")
 BillsApp = NodePath("../BillsApp")
 FurnitureApp = NodePath("../FurnitureApp")
+ExpansionsApp = NodePath("../ExpansionsApp")
 
 [node name="StockApp" type="Control" parent="PcDesktopViewport"]
 layout_mode = 3
@@ -1640,6 +1653,16 @@ grow_vertical = 2
 script = ExtResource("StockApp")
 Catalog = ExtResource("FurnitureOrderCatalog")
 Title = "Furniture"
+
+[node name="ExpansionsApp" type="Control" parent="PcDesktopViewport"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -48.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("ExpansionsApp")
 
 [node name="Pause" type="Node" parent="." node_paths=PackedStringArray("PauseMenuLayer")]
 script = ExtResource("PauseController")

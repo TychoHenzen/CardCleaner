@@ -226,11 +226,11 @@ public class ShopDayServiceSaveTest
         AssertThat(service.Debt).IsEqual(0);
     }
 
-    private ShopDayService NewService(int startingBalance) =>
+    private static ShopDayService NewService(int startingBalance) =>
         AutoFree(new ShopDayService
         {
             Money = AutoFree(new MoneyService { StartingBalance = startingBalance }),
-            Bills = new DailyBillBook(new RentBillSource()),
+            Bills = new DailyBillBook(new IDailyBillSource[] { new RentBillSource() }),
         });
 
     // Records each day-close save and runs the given check inside the save, as the slot writer would.

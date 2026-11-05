@@ -14,7 +14,8 @@ internal sealed class DailyBillBook : IDailyBillBook
 {
     private readonly IReadOnlyList<IDailyBillSource> _sources;
 
-    public DailyBillBook(RentBillSource rent) : this(new IDailyBillSource[] { rent })
+    public DailyBillBook(RentBillSource rent, ExpansionRentBillSource expansionRent)
+        : this(new IDailyBillSource[] { rent, expansionRent })
     {
     }
 

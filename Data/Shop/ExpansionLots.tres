@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ExpansionLotCatalog" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Models/ExpansionLotCatalog.cs" id="1_catalog"]
+[ext_resource type="Script" uid="uid://03p5ftgvs6w" path="res://Scripts/Features/Shop/Models/ExpansionLotData.cs" id="2_lotdata"]
+
+[sub_resource type="Resource" id="Resource_sidewing1"]
+script = ExtResource("2_lotdata")
+Id = "side_wing_1"
+Order = 1
+Price = 1500
+UnlockId = "expansion_side_wing_1"
+DailyRent = 40
+ExtraCustomers = 6
+DisplayName = "Side wing"
+StorefrontMinX = -8.0
+
+[resource]
+script = ExtResource("1_catalog")
+Lots = [SubResource("Resource_sidewing1")]

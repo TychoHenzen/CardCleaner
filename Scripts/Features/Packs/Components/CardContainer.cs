@@ -11,12 +11,9 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Packs.Components;
 
 /// <summary>
-///     A box, pack or booster the player opens by looking at it and interacting. Opening a box spawns
-///     8 packs, a pack spawns 8 boosters and a booster spawns 8 cards whose signatures come from
-///     <see cref="CardPackGenerator" />. The contents appear one per frame (like the debug card spawner)
-///     in a column straight above the container, each one a little higher than the last, and physics
-///     lets them settle. A column takes no more floor than the container itself, so opening never throws
-///     items through the walls of the room the container stands in, and no item spawns inside another.
+///     A box, pack or booster the player opens by interacting. It spawns 8 packs, boosters or cards (signatures
+///     from <see cref="CardPackGenerator" />), one per frame, in a column above the container that takes no more
+///     floor than the container, so opening never throws items through walls or into each other.
 /// </summary>
 public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 {
@@ -189,7 +186,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         if (!CanInteract || GetParent() is not Node3D parent)
             return false;
 
-        var origin = Hide();
+        var origin = HideForOpening();
 
         if (Kind == CardContainerKind.Booster)
             QueueCards(parent, origin);
@@ -211,7 +208,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         if (Kind == CardContainerKind.Booster || !CanInteract || GetParent() is not Node3D parent)
             return false;
 
-        var origin = Hide();
+        var origin = HideForOpening();
         var placeable = Math.Min(CardContainerLayout.ItemsPerContainer, freeSlots.Count);
         for (var i = 0; i < placeable; i++)
         {
@@ -228,7 +225,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     // Marks the container opened and hidden, and stops it colliding and falling. Returns the origin its contents
     // spawn above.
-    private Vector3 Hide()
+    private Vector3 HideForOpening()
     {
         IsOpened = true;
         var origin = GlobalPosition;
@@ -264,23 +261,6 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         }
     }
 
-    // Each child of a sealed container gets its own seed, derived from this one and the child's index. The parent
-    // seed is mixed before the index is added, so neighbouring parent seeds (777, 778) share no child seed.
-    private static ulong ChildSeed(ulong parentSeed, int index) =>
-        SplitMix64(unchecked(SplitMix64(parentSeed) + (ulong)index));
-
-    // One splitmix64 step: spreads a counter into a well-mixed seed.
-    private static ulong SplitMix64(ulong value)
-    {
-        unchecked
-        {
-            var z = value + 0x9E3779B97F4A7C15UL;
-            z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9UL;
-            z = (z ^ (z >> 27)) * 0x94D049BB133111EBUL;
-            return z ^ (z >> 31);
-        }
-    }
-
     private void SpawnCard(Node3D parent, CardSignature signature, Vector3 position)
     {
         if (!GodotObject.IsInstanceValid(parent))
@@ -303,7 +283,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
             container.Generator = Generator;
             container.Spawning = Spawning;
             if (ContentSeed is { } seed)
-                container.ContentSeed = ChildSeed(seed, index);
+                container.ContentSeed = ContainerSeeds.ChildSeed(seed, index);
         }
 
         parent.AddChild(child);

@@ -49,6 +49,8 @@ public sealed class UnlockCatalog
         new UnlockEntry("conveyor", UnlockKind.Furniture, 1),
         new UnlockEntry("arcade_cabinet", UnlockKind.Furniture, 1),
         new UnlockEntry("wiring", UnlockKind.Product, 1),
+        // ASSUMPTION (Low): the side wing opens at level 2, one level after the first bulk row; retune in data.
+        new UnlockEntry("expansion_side_wing_1", UnlockKind.Expansion, 2),
     });
 
     /// <summary>The level that unlocks the id, or null when the id has no row.</summary>
