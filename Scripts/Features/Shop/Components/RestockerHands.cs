@@ -15,6 +15,7 @@ internal sealed class RestockerHands
     private readonly Node3D _owner;
     private readonly Node3D _hand;
     private CardContainer? _carried;
+    private uint _savedLayer;
 
     public RestockerHands(Node3D owner, Node3D hand)
     {
@@ -26,6 +27,9 @@ internal sealed class RestockerHands
     public CardContainer? Carried =>
         _carried != null && GodotObject.IsInstanceValid(_carried) ? _carried : null;
 
+    /// <summary>The slot the carried container was taken from, or null when it came off the floor.</summary>
+    public DeckSlot? Origin { get; private set; }
+
     /// <summary>Takes the container (freeing its rack slot). True when it is in the hands afterwards.</summary>
     public bool Take(CardContainer container)
     {
@@ -34,8 +38,13 @@ internal sealed class RestockerHands
         if (Carried != null || !GodotObject.IsInstanceValid(container) || container.IsOpened || container.IsHeld)
             return false;
 
-        if (container.GetParent() is DeckSlot slot)
-            slot.ReleaseCard(container);
+        Origin = container.GetParent() as DeckSlot;
+        Origin?.ReleaseCard(container);
+
+        // Off every collision layer while carried: the Area of the slot it left would otherwise see the reparented
+        // body enter again and lock it straight back.
+        _savedLayer = container.CollisionLayer;
+        container.CollisionLayer = 0;
         container.Freeze = true;
         container.LinearVelocity = Vector3.Zero;
         container.AngularVelocity = Vector3.Zero;
@@ -48,11 +57,18 @@ internal sealed class RestockerHands
     /// <summary>Locks the carried container into the slot. False, still carried, when the slot refuses.</summary>
     public bool Shelve(DeckSlot slot)
     {
-        if (Carried is not { } container || !slot.TryLock(container))
+        if (Carried is not { } container)
             return false;
 
-        _carried = null;
-        return true;
+        container.CollisionLayer = _savedLayer;
+        if (slot.TryLock(container))
+        {
+            _carried = null;
+            return true;
+        }
+
+        container.CollisionLayer = 0;
+        return false;
     }
 
     /// <summary>Sets the carried container down at the restocker's feet and returns it, or null when empty.</summary>
@@ -61,6 +77,7 @@ internal sealed class RestockerHands
         if (Carried is not { } container || _owner.GetParent() is not { } world)
             return null;
 
+        container.CollisionLayer = _savedLayer;
         container.Reparent(world, true);
         container.GlobalPosition = _owner.GlobalPosition + SetDownOffset;
         container.Freeze = false;

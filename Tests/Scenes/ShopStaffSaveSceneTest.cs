@@ -4,7 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Scripts.Features.Packs.Components;
+using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
+using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.Features.SaveSlots.Services;
@@ -27,6 +30,9 @@ public class ShopStaffSaveSceneTest
     private const string HiredKey = "hired";
     private const int SpareMoney = 137;
     private const int LevelTwoPayment = 500;
+    private const int LevelThreePayment = 1500;
+    private const int MaxFrames = 2400;
+    private const int IdleFrames = 120;
     private const int SettleRounds = 3;
     private const int ShortBalance = 10;
     private const int ClaimSteps = 4;
@@ -216,6 +222,103 @@ public class ShopStaffSaveSceneTest
         AssertInt(customer.LeaveCount).IsEqual(0);
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task Hired_restocker_survives_save_and_reload_at_home_with_empty_hands()
+    {
+        HireCashier();
+        HireRestocker();
+        var home = _rig.Restocker.GlobalPosition;
+        AssertBool(_rig.Saves.ManualSave()).IsTrue();
+        _rig.Close();
+
+        _second = await ShopExpansionRig.StartAsync(_files);
+        await SettleAsync();
+
+        AssertBool(_second.Staff.IsHired(StaffDefaults.RestockerId)).IsTrue();
+        AssertBool(_second.Restocker.Visible).IsTrue();
+        AssertThat(_second.Restocker.GlobalPosition).IsEqual(home);
+        AssertInt(_second.Restocker.GetNode("Hand").GetChildCount()).IsEqual(0);
+        AssertThat(_second.Staff.HiredRoles.Select(role => role.Id).First()).IsEqual(StaffDefaults.CashierId);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task Pack_carried_at_save_time_reloads_once_as_a_loose_container()
+    {
+        HireRestocker();
+        var day = OpenDay();
+        TestServices.Container.RegisterSingleton<IShopDayService>(day);
+        TestServices.ExecutePendingCallbacks();
+        var rackSlot = _rig.Shop.GetNode<CardShelf>("World/RightStorage/StorageRack").Slots.First();
+        var pack = GD.Load<PackedScene>("res://Scenes/Shop/Items/Pack.tscn").Instantiate<CardContainer>();
+        _rig.Shop.GetNode("World").AddChild(pack);
+        AssertBool(rackSlot.TryLock(pack)).IsTrue();
+        var carried = await PollFrames(() => pack.GetParent()?.Name.ToString() == "Hand");
+        AssertBool(carried).IsTrue();
+        var before = PackCount();
+        AssertBool(_rig.Saves.ManualSave()).IsTrue();
+        _rig.Close();
+
+        _second = await ShopExpansionRig.StartAsync(_files);
+        await SettleAsync();
+
+        AssertInt(PackCount()).IsEqual(before);
+        AssertInt(_second.Restocker.GetNode("Hand").GetChildCount()).IsEqual(0);
+        AssertBool(PackContainers().All(c => c.GetParent()?.Name.ToString() != "Hand")).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void Saved_roster_with_an_unknown_role_or_without_the_restocker_hires_no_restocker()
+    {
+        var log = new RecordingLog();
+        using var sink = Capture(log);
+        var unknown = new NodeSave();
+        unknown.SetOrAddProperty(HiredKey, "[\"cashier\",\"ghost\"]");
+        var omitted = new NodeSave();
+        omitted.SetOrAddProperty(HiredKey, "[\"cashier\"]");
+
+        _rig.Staff.Load(unknown);
+        AssertInt(log.Warnings.Count).IsEqual(1);
+        AssertBool(_rig.Staff.IsHired(StaffDefaults.RestockerId)).IsFalse();
+        _rig.Staff.Load(omitted);
+
+        AssertInt(log.Warnings.Count).IsEqual(1);
+        AssertBool(_rig.Staff.IsHired(StaffDefaults.RestockerId)).IsFalse();
+        AssertBool(_rig.Staff.IsHired(StaffDefaults.CashierId)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task Both_wages_are_charged_once_and_a_dismissed_restocker_stops_working()
+    {
+        HireCashier();
+        HireRestocker();
+        var day = OpenDay();
+        TestServices.Container.RegisterSingleton<IShopDayService>(day);
+        TestServices.ExecutePendingCallbacks();
+        AssertThat(_rig.Staff.Dismiss(StaffDefaults.RestockerId)).IsEqual(StaffResult.Dismissed);
+        var rackSlot = _rig.Shop.GetNode<CardShelf>("World/RightStorage/StorageRack").Slots.First();
+        var pack = GD.Load<PackedScene>("res://Scenes/Shop/Items/Pack.tscn").Instantiate<CardContainer>();
+        _rig.Shop.GetNode("World").AddChild(pack);
+        AssertBool(rackSlot.TryLock(pack)).IsTrue();
+
+        for (var i = 0; i < IdleFrames; i++)
+            await ISceneRunner.SyncPhysicsFrame;
+
+        AssertBool(_rig.Restocker.Visible).IsFalse();
+        AssertBool(rackSlot.Cards.Contains(pack)).IsTrue();
+        _rig.Money.Add(StaffDefaults.RestockerHireFee);
+        AssertThat(_rig.Staff.Hire(StaffDefaults.RestockerId)).IsEqual(StaffResult.Hired);
+        DayReport? report = null;
+        day.Closed += closed => report = closed;
+        day.CloseShop();
+        AssertBool(report != null).IsTrue();
+        AssertInt(report!.Settlement.Lines.Count(line => line.Name == "Cashier wage")).IsEqual(1);
+        AssertInt(report.Settlement.Lines.Count(line => line.Name == "Restocker wage")).IsEqual(1);
+    }
+
     // Reaches level 2 and leaves SpareMoney after the fee, so a reload shows whether the fee was charged again.
     private void HireCashier()
     {
@@ -223,6 +326,29 @@ public class ShopStaffSaveSceneTest
         _rig.Money.Add(StaffDefaults.CashierHireFee + SpareMoney);
         _rig.Progression.AwardCheckout(LevelTwoPayment);
         AssertThat(_rig.Staff.Hire(StaffDefaults.CashierId)).IsEqual(StaffResult.Hired);
+    }
+
+    // Adds the restocker on top of whatever is hired: level 3 and the fee on top of the balance.
+    private void HireRestocker()
+    {
+        _rig.Money.Add(StaffDefaults.RestockerHireFee);
+        _rig.Progression.AwardCheckout(LevelThreePayment);
+        AssertThat(_rig.Staff.Hire(StaffDefaults.RestockerId)).IsEqual(StaffResult.Hired);
+    }
+
+    private IEnumerable<CardContainer> PackContainers() =>
+        _second!.Shop.GetTree().GetNodesInGroup("card_containers").OfType<CardContainer>()
+            .Where(c => c.Kind == CardContainerKind.Pack && !c.IsOpened);
+
+    private int PackCount() => (_second?.Shop ?? _rig.Shop).GetTree().GetNodesInGroup("card_containers")
+        .OfType<CardContainer>().Count(c => c.Kind == CardContainerKind.Pack && !c.IsOpened);
+
+    private static async Task<bool> PollFrames(Func<bool> done)
+    {
+        for (var frame = 0; frame < MaxFrames && !done(); frame++)
+            await ISceneRunner.SyncPhysicsFrame;
+
+        return done();
     }
 
     // The scene's day service gets the bill book a root would build and a save command that writes no file.

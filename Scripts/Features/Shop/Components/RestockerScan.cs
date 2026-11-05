@@ -18,6 +18,9 @@ internal sealed class RestockerScan
 
     private readonly SceneTree _tree;
     private readonly float _pickupRadius;
+    private readonly RestockerIds _sourceIds = new();
+    private readonly RestockerIds _slotIds = new();
+    private readonly RestockerIds _shelfIds = new();
 
     public RestockerScan(SceneTree tree, float pickupRadius)
     {
@@ -25,12 +28,22 @@ internal sealed class RestockerScan
         _pickupRadius = pickupRadius;
     }
 
-    public RestockerScanResult Gather(Vector3 from)
+    /// <summary>
+    ///     Scans the shop. While the restocker carries a container, that container is the only source: it must be
+    ///     shelved or put back before anything else is taken.
+    /// </summary>
+    public RestockerScanResult Gather(Vector3 from, CardContainer? carried = null)
     {
-        var result = new RestockerScanResult();
+        var result = new RestockerScanResult(_sourceIds, _slotIds, _shelfIds);
         var sales = Shelves(CardShelf.SalesGroupName);
-        AddSources(result, from, sales.Concat(Shelves(CardShelf.StorageGroupName)).ToList());
+        var storage = Shelves(CardShelf.StorageGroupName);
+        if (carried != null)
+            result.AddSource(carried, false, 0f);
+        else
+            AddSources(result, from, sales.Concat(storage).ToList());
         AddSlots(result, sales);
+        foreach (var slot in storage.SelectMany(rack => rack.Slots).Where(s => !s.HasCards))
+            result.AddRackSlot(slot);
         return result;
     }
 
@@ -62,10 +75,10 @@ internal sealed class RestockerScan
 
     private static void AddSlots(RestockerScanResult result, IReadOnlyList<CardShelf> sales)
     {
-        for (var shelfId = 0; shelfId < sales.Count; shelfId++)
+        foreach (var shelf in sales)
         {
-            foreach (var slot in sales[shelfId].Slots.Where(s => !s.HasCards))
-                result.AddSlot(slot, shelfId, sales[shelfId]);
+            foreach (var slot in shelf.Slots.Where(s => !s.HasCards))
+                result.AddSlot(slot, shelf);
         }
     }
 }

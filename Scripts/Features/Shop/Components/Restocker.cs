@@ -1,3 +1,4 @@
+using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
@@ -34,6 +35,7 @@ public partial class Restocker : CharacterBody3D, IDependent
     private Vector3 _home;
     private double _sinceScan;
     private bool _homing;
+    private DeckSlot? _putBackSlot;
 
     [Export] public float MoveSpeed { get; set; } = DefaultMoveSpeed;
 
@@ -92,7 +94,7 @@ public partial class Restocker : CharacterBody3D, IDependent
         if (_navigator == null || !Active)
             return;
 
-        if (_job.Phase == RestockerPhase.Idle)
+        if (_job.Phase == RestockerPhase.Idle && _putBackSlot == null)
         {
             _sinceScan += delta;
             if (_sinceScan >= ScanSeconds)
@@ -102,7 +104,7 @@ public partial class Restocker : CharacterBody3D, IDependent
             }
         }
 
-        if (_job.Phase != RestockerPhase.Idle || _homing)
+        if (_job.Phase != RestockerPhase.Idle || _homing || _putBackSlot != null)
             _navigator.Step(delta, MoveSpeed, StuckSeconds);
     }
 
@@ -110,21 +112,45 @@ public partial class Restocker : CharacterBody3D, IDependent
 
     private void PlanNext()
     {
-        _seen = _scan!.Gather(GlobalPosition);
-        if (_hands!.Carried is { } carried)
-            _seen.AddSource(carried, false, 0f);
-
+        _seen = _scan!.Gather(GlobalPosition, _hands!.Carried);
         var step = RestockPlanner.Plan(
             _seen.Sources, _seen.Slots, _job.BlockedPairs, _seen.Distance, BoxUnpackThreshold);
         if (step.Kind == RestockStepKind.Idle || _seen.SourcePosition(step) is not { } source)
         {
-            GoHome();
+            // Nothing can use what is in the hands (a box below the threshold, no free slot): put it back.
+            if (_hands.Carried == null)
+                GoHome();
+            else
+                PutBack();
             return;
         }
 
         _homing = false;
         _job.Begin(step);
         _navigator!.Start(source);
+    }
+
+    // Walks the carried container to the rack slot it came from, or another empty one. With no rack slot free it is
+    // set down on the floor, unfrozen, where the next scan finds it as a loose source.
+    private void PutBack()
+    {
+        var slot = _seen.PutBackSlot(_hands!.Carried!, _hands.Origin, GlobalPosition);
+        if (slot == null)
+        {
+            _hands.SetDown();
+            return;
+        }
+
+        _putBackSlot = slot;
+        _navigator!.Start(slot.GlobalPosition);
+    }
+
+    private void FinishPutBack()
+    {
+        var slot = _putBackSlot;
+        _putBackSlot = null;
+        if (slot == null || !GodotObject.IsInstanceValid(slot) || !_hands!.Shelve(slot))
+            _hands!.SetDown();
     }
 
     private void GoHome()
@@ -148,16 +174,23 @@ public partial class Restocker : CharacterBody3D, IDependent
                 break;
             default:
                 _homing = false;
+                if (_putBackSlot != null)
+                    FinishPutBack();
                 break;
         }
     }
 
     private void OnBlocked()
     {
-        if (_job.Phase == RestockerPhase.Idle)
-            _homing = false;
-        else
+        if (_job.Phase != RestockerPhase.Idle)
+        {
             _job.NoPath();
+            return;
+        }
+
+        _homing = false;
+        if (_putBackSlot != null)
+            FinishPutBack();
     }
 
     private void ArriveAtSource()
@@ -187,10 +220,13 @@ public partial class Restocker : CharacterBody3D, IDependent
     private bool Shelve(RestockStep step) =>
         _seen.SlotNode(step.TargetId) is DeckSlot slot && _hands!.Shelve(slot);
 
-    // The box must stand in the world for OpenOnto, which spawns the packs beside it.
+    // The box must stand in the world for OpenOnto, which spawns the packs beside it. Slots may have been stocked
+    // on the walk, so the threshold is checked again; a box that fails is put back by the next scan.
     private bool Unpack(RestockStep step)
     {
-        if (_seen.ShelfNode(step.TargetId) is not CardShelf shelf || _hands!.SetDown() is not { } box)
+        var free = _scan!.Gather(GlobalPosition, _hands!.Carried).Slots.Count(s => s.Shelf == ShelfKind.ProductShelf);
+        if (free < BoxUnpackThreshold || _seen.ShelfNode(step.TargetId) is not CardShelf shelf
+            || _hands.SetDown() is not { } box)
             return false;
 
         return shelf.TryUnpack(box);

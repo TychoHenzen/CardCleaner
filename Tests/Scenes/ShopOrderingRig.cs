@@ -1,6 +1,7 @@
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Menu.Services;
 using CardCleaner.Scripts.Features.Pause.Components;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
@@ -16,11 +17,17 @@ namespace CardCleaner.Tests.Scenes;
 /// </summary>
 public static class ShopOrderingRig
 {
+    private const string UnusedOptionsPath = "user://test_shop_ordering_rig_unused.cfg";
+
     public static Node3D LoadShopWithServices()
     {
         var shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
 
         TestServices.Reset();
+        // Reset empties the container, and the shop's pause and options menus resolve OptionsStore when they ready. A
+        // missing one logs an exception from _Ready that later crashes Godot's finalizer (exit 0xC000001D), so register
+        // one on a file that is never saved to instead of reading the player's settings.
+        TestServices.Container.RegisterSingleton<OptionsStore>(new OptionsStore(UnusedOptionsPath));
         TestServices.Container.RegisterSingleton<IGameSettings>(shop.GetNode<GameSettings>("Services/GameSettings"));
         TestServices.Container.RegisterSingleton<IMoneyService>(shop.GetNode<MoneyService>("Services/MoneyService"));
         TestServices.Container.RegisterSingleton<IShopProgression>(

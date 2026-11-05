@@ -110,6 +110,40 @@ public class RestockerScanTest
         AssertThat(result.Sources.Select(s => s.Id).ToArray()).IsEqual(new[] { 0, 1 });
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AContainerKeepsItsIdWhenAnEarlierOneLeaves()
+    {
+        var first = Container(BoxScene, new Vector3(1f, 1f, 0f));
+        var second = Container(PackScene, new Vector3(-1f, 1f, 0f));
+        var before = _scan.Gather(Vector3.Zero);
+        var secondId = before.Sources.Single(s => s.Kind == StockKind.Pack).Id;
+
+        first.Free();
+        var after = _scan.Gather(Vector3.Zero);
+
+        AssertThat(after.Sources.Select(s => s.Id).ToArray()).IsEqual(new[] { secondId });
+        AssertThat(after.SourceNode(secondId)).IsEqual(second);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CarriedContainerIsTheOnlySourceAndRackSlotsListTheEmptyOnes()
+    {
+        var pack = Container(PackScene, new Vector3(1f, 1f, 0f));
+        Container(PackScene, new Vector3(-1f, 1f, 0f));
+        AssertBool(_rack.Slots.First().TryLock(pack)).IsTrue();
+        var origin = _rack.Slots.First();
+        origin.ReleaseCard(pack);
+
+        var result = _scan.Gather(Vector3.Zero, pack);
+
+        AssertInt(result.Sources.Count).IsEqual(1);
+        AssertThat(result.SourceNode(result.Sources[0].Id)).IsEqual(pack);
+        AssertInt(result.RackSlots.Count).IsEqual(_rack.SlotCount);
+        AssertThat(result.PutBackSlot(pack, origin, Vector3.Zero)).IsEqual(origin);
+    }
+
     private CardShelf Shelf(string path, Vector3 at)
     {
         var shelf = AddNode(GD.Load<PackedScene>(path).Instantiate<CardShelf>());

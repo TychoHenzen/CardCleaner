@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
@@ -8,41 +9,77 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     What one <see cref="RestockerScan" /> found: the planner's Godot-free sources and free slots, and the maps
-///     from their ids back to the live nodes. Ids are assigned in scene-tree order; slot ids and shelf ids are
-///     separate id spaces.
+///     from their ids back to the live nodes. Ids come from the scan's <see cref="RestockerIds" />, so a node keeps
+///     its id across scans; slot ids and shelf ids are separate id spaces.
 /// </summary>
 internal sealed class RestockerScanResult
 {
+    private readonly RestockerIds _sourceIds;
+    private readonly RestockerIds _slotIds;
+    private readonly RestockerIds _shelfIds;
     private readonly List<StockSource> _sources = new();
     private readonly List<FreeSlot> _slots = new();
+    private readonly List<DeckSlot> _rackSlots = new();
     private readonly Dictionary<int, Node3D> _sourceNodes = new();
     private readonly Dictionary<int, Node3D> _slotNodes = new();
     private readonly Dictionary<int, Node3D> _shelfNodes = new();
+
+    /// <summary>An empty result with ids of its own, for the restocker before its first scan.</summary>
+    public RestockerScanResult() : this(new RestockerIds(), new RestockerIds(), new RestockerIds())
+    {
+    }
+
+    public RestockerScanResult(RestockerIds sourceIds, RestockerIds slotIds, RestockerIds shelfIds)
+    {
+        _sourceIds = sourceIds;
+        _slotIds = slotIds;
+        _shelfIds = shelfIds;
+    }
 
     public IReadOnlyList<StockSource> Sources => _sources;
 
     public IReadOnlyList<FreeSlot> Slots => _slots;
 
+    /// <summary>The empty slots of the storage racks, where a container that cannot be shelved goes back.</summary>
+    public IReadOnlyList<DeckSlot> RackSlots => _rackSlots;
+
     public void AddSource(CardContainer container, bool onRack, float distance)
     {
-        var id = _sources.Count;
+        var id = _sourceIds.For(container);
         _sources.Add(new StockSource(id, ShelfPlacementRule.From(container.Kind), onRack, distance));
         _sourceNodes[id] = container;
     }
 
-    public void AddSlot(DeckSlot slot, int shelfId, CardShelf shelf)
+    public void AddSlot(DeckSlot slot, CardShelf shelf)
     {
-        var id = _slots.Count;
+        var id = _slotIds.For(slot);
+        var shelfId = _shelfIds.For(shelf);
         _slots.Add(new FreeSlot(id, shelfId, shelf.Kind));
         _slotNodes[id] = slot;
         _shelfNodes[shelfId] = shelf;
     }
+
+    public void AddRackSlot(DeckSlot slot) => _rackSlots.Add(slot);
 
     public Node3D? SourceNode(int id) => Live(_sourceNodes.GetValueOrDefault(id));
 
     public Node3D? SlotNode(int id) => Live(_slotNodes.GetValueOrDefault(id));
 
     public Node3D? ShelfNode(int id) => Live(_shelfNodes.GetValueOrDefault(id));
+
+    /// <summary>
+    ///     The empty rack slot that takes the container: its origin slot when that one is still empty, else the
+    ///     nearest to <paramref name="from" />. Null when no rack slot has room.
+    /// </summary>
+    public DeckSlot? PutBackSlot(CardContainer container, DeckSlot? origin, Vector3 from)
+    {
+        var stock = ShelfPlacementRule.From(container.Kind);
+        var fitting = _rackSlots.Where(s => ShelfPlacementRule.Accepts(s.Kind, stock)).ToList();
+        if (origin != null && fitting.Contains(origin))
+            return origin;
+
+        return fitting.OrderBy(s => s.GlobalPosition.DistanceTo(from)).FirstOrDefault();
+    }
 
     /// <summary>Straight-line distance from a source to a slot; huge when either node is gone.</summary>
     public float Distance(int sourceId, int slotId) =>
