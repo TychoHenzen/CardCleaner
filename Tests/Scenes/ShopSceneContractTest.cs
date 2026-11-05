@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using Godot;
 
@@ -73,6 +74,19 @@ public class ShopSceneContractTest
             AssertThat(wall).IsInstanceOf<StaticBody3D>();
             AssertThat(CollisionShapeCount(wall)).IsGreater(0);
         }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ExactlyOneHiddenRestockerStandsInTheRightStorageRoom()
+    {
+        var restockers = _shop.FindChildren("*", "CharacterBody3D", true, false)
+            .Where(node => node is Restocker).ToList();
+
+        AssertInt(restockers.Count).IsEqual(1);
+        var restocker = _shop.GetNode<Restocker>("World/RightStorage/Restocker");
+        AssertBool(restocker.Visible).IsFalse();
+        AssertBool(IsInsideArea("RightStorage", restocker.GlobalPosition)).IsTrue();
     }
 
     [TestCase]

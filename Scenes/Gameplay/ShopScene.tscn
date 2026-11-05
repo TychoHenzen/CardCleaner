@@ -51,6 +51,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Neighbourhood.tscn" id="Neighbourhood"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/ProductShelf.tscn" id="ProductShelf"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/StorageRack.tscn" id="StorageRack"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Restocker.tscn" id="RestockerScene"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/PcScreenPointer.cs" id="PcScreenPointer"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/PcDesktopLink.cs" id="PcDesktopLink"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/PcDesktop.tscn" id="PcDesktop"]
@@ -1303,6 +1304,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 10.5)
 
 [node name="StorageRack" parent="World/RightStorage" instance=ExtResource("StorageRack")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, -6.5)
+
+[node name="Restocker" parent="World/RightStorage" instance=ExtResource("RestockerScene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, -3)
 
 [node name="LotBack" type="StaticBody3D" parent="World/Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -8)
