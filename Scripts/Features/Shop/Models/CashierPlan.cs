@@ -2,24 +2,6 @@ using System;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
-/// <summary>Where a cashier is in serving one customer.</summary>
-public enum CashierStep
-{
-    Idle,
-    Claiming,
-    Scanning,
-    Paying,
-    Done,
-}
-
-/// <summary>What the cashier does on an <see cref="CashierPlan.Advance"/> call.</summary>
-public enum CashierAction
-{
-    None,
-    Scan,
-    Pay,
-}
-
 /// <summary>
 /// The timing of one cashier serving one customer: take over the till, scan each item, then take payment.
 /// Pure time-driven rules with no Godot types. Each <see cref="Advance"/> call makes at most one transition,

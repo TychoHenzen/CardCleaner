@@ -1,14 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Randomness;
-using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
-using CardCleaner.Scripts.Features.Shop.Ui;
-using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
+using StaffApp = CardCleaner.Scripts.Features.Shop.Ui.StaffApp;
+using FakeCheckoutCustomer = CardCleaner.Tests.Features.Shop.FakeCheckoutCustomer;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -57,7 +56,7 @@ public class ShopStaffFailureSceneTest
         var spawner = _shop.GetNode<CustomerSpawner>("Services/CustomerSpawner");
         spawner.Rng = RandomSources.Create(402UL);
         spawner.ProcessMode = Node.ProcessModeEnum.Disabled;
-        _day.SaveCommand = new FakeSaveGame();
+        _day.SaveCommand = new NoOpSaveGame();
         TestServices.Inject(_day);
         TestServices.Inject(_worker);
         TestServices.Inject(_app);
@@ -263,10 +262,5 @@ public class ShopStaffFailureSceneTest
     {
         for (var elapsed = 0f; elapsed < CheckoutSeconds && !done(); elapsed += StepSeconds)
             _worker.Step(StepSeconds);
-    }
-
-    private sealed class FakeSaveGame : ISaveGameCommand
-    {
-        public bool ManualSave() => true;
     }
 }

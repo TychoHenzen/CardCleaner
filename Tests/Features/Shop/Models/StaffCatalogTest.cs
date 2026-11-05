@@ -7,7 +7,8 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 [RequireGodotRuntime]
 public class StaffCatalogTest
 {
-    private const string ShippedCatalogPath = "res://Data/Shop/StaffCatalog.tres";
+    private const string ShippedCatalogPath =
+        "res://Data/Shop/StaffCatalog.tres";
 
     [TestCase]
     [TestCategory("Unit")]
@@ -16,7 +17,8 @@ public class StaffCatalogTest
         var roles = GD.Load<StaffCatalog>(ShippedCatalogPath).ToRoles();
 
         AssertThat(roles.Count).IsEqual(1);
-        AssertThat(roles[StaffDefaults.CashierId]).IsEqual(StaffDefaults.Cashier());
+        AssertThat(roles[StaffDefaults.CashierId])
+            .IsEqual(StaffDefaults.Cashier());
     }
 
     [TestCase]

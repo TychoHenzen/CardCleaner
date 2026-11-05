@@ -1,14 +1,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Randomness;
-using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
-using CardCleaner.Scripts.Features.Shop.Ui;
-using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
+using PcDesktop = CardCleaner.Scripts.Features.Shop.Ui.PcDesktop;
+using StaffApp = CardCleaner.Scripts.Features.Shop.Ui.StaffApp;
+using FakeCheckoutCustomer = CardCleaner.Tests.Features.Shop.FakeCheckoutCustomer;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -62,7 +62,8 @@ public class ShopStaffSceneTest
         _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
         _bills = new DailyBillBook(new IDailyBillSource[] { new RentBillSource(), new StaffWageBillSource(_staff) });
 
-        // The shop is not the current scene, so no autoload injects its nodes; each one the suite drives is injected here.
+        // The shop is not the current scene, so no autoload injects its nodes;
+        // each one the suite drives is injected here.
         TestServices.Container.RegisterSingleton<IShopDayService>(_day);
         TestServices.Container.RegisterSingleton<IDailyBillBook>(_bills);
         // Opening the shop wakes the real spawner; it gets a random source and no frame loop, so it adds no customer
@@ -70,7 +71,7 @@ public class ShopStaffSceneTest
         var spawner = _shop.GetNode<CustomerSpawner>("Services/CustomerSpawner");
         spawner.Rng = RandomSources.Create(400UL);
         spawner.ProcessMode = Node.ProcessModeEnum.Disabled;
-        _day.SaveCommand = new FakeSaveGame();
+        _day.SaveCommand = new NoOpSaveGame();
         TestServices.Inject(_day);
         TestServices.Inject(_worker);
         TestServices.Inject(_shop.GetNode<StaffApp>($"{DesktopViewportPath}/StaffApp"));
@@ -144,7 +145,8 @@ public class ShopStaffSceneTest
         AssertBool(_staff.IsHired(StaffDefaults.CashierId)).IsTrue();
         AssertInt(_money.Balance).IsEqual(0);
 
-        // The cashier, not the test, drives the checkout: the counter is only given the customer and the worker is stepped.
+        // The cashier, not the test, drives the checkout: the counter is only given the customer
+        // and the worker is stepped.
         int xpBefore = _progression.Xp;
         bool paymentRaised = false;
         _counter.PaymentReady += _ => paymentRaised = true;
@@ -196,11 +198,5 @@ public class ShopStaffSceneTest
                 return found;
         }
         return null;
-    }
-
-    // Stands in for the slot writer so the day close writes no file during the scene test.
-    private sealed class FakeSaveGame : ISaveGameCommand
-    {
-        public bool ManualSave() => true;
     }
 }

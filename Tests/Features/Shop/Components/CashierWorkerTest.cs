@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
-using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 
@@ -271,7 +270,8 @@ public class CashierWorkerTest
         figure.Free();
     }
 
-    /// <summary>Steps the worker until the condition holds, or returns false after <see cref="StepLimit" /> steps.</summary>
+    /// <summary>Steps the worker until the condition holds, or returns false after <see cref="StepLimit" /> steps.
+    /// </summary>
     private bool StepUntil(Func<bool> done)
     {
         for (var i = 0; i < StepLimit && !done(); i++)

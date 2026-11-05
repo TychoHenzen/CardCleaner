@@ -8,8 +8,11 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 [RequireGodotRuntime]
 public class UnlockCatalogTest
 {
-    private const string BackofficeCatalogPath = "res://Data/Shop/BackofficeCatalog.tres";
-    private const string WorkshopCatalogPath = "res://Data/Workshop/WorkshopCatalog.tres";
+    private const string BackofficeCatalogPath =
+        "res://Data/Shop/BackofficeCatalog.tres";
+
+    private const string WorkshopCatalogPath =
+        "res://Data/Workshop/WorkshopCatalog.tres";
     private const string StaffCatalogPath = "res://Data/Shop/StaffCatalog.tres";
 
     [TestCase]
@@ -23,7 +26,8 @@ public class UnlockCatalogTest
         AssertThat(catalog.RequiredLevel("staff_cashier")).IsEqual(2);
         foreach (var id in new[]
                  {
-                     "shelf", "shelf_unit", "cardboard_box", "product_shelf", "storage_rack",
+                     "shelf", "shelf_unit", "cardboard_box",
+                     "product_shelf", "storage_rack",
                      "conveyor", "arcade_cabinet", "wiring",
                  })
         {
@@ -51,7 +55,8 @@ public class UnlockCatalogTest
             new UnlockEntry("shelf", UnlockKind.Product, 2),
         };
 
-        AssertThrown(() => new UnlockCatalog(rows)).IsInstanceOf<ArgumentException>();
+        AssertThrown(() => new UnlockCatalog(rows))
+            .IsInstanceOf<ArgumentException>();
     }
 
     [TestCase]
@@ -60,7 +65,8 @@ public class UnlockCatalogTest
     {
         var rows = new[] { new UnlockEntry("shelf", UnlockKind.Furniture, 0) };
 
-        AssertThrown(() => new UnlockCatalog(rows)).IsInstanceOf<ArgumentException>();
+        AssertThrown(() => new UnlockCatalog(rows))
+            .IsInstanceOf<ArgumentException>();
     }
 
     [TestCase]
@@ -69,7 +75,8 @@ public class UnlockCatalogTest
     {
         var rows = new[] { new UnlockEntry("  ", UnlockKind.Furniture, 1) };
 
-        AssertThrown(() => new UnlockCatalog(rows)).IsInstanceOf<ArgumentException>();
+        AssertThrown(() => new UnlockCatalog(rows))
+            .IsInstanceOf<ArgumentException>();
     }
 
     [TestCase]
@@ -81,7 +88,9 @@ public class UnlockCatalogTest
         foreach (var role in roles.Values)
         {
             AssertThat(catalog.RequiredLevel(role.UnlockId))
-                .OverrideFailureMessage($"staff role '{role.Id}' has no unlock row for '{role.UnlockId}'")
+                .OverrideFailureMessage(
+                    $"staff role '{role.Id}' has no unlock row "
+                    + $"for '{role.UnlockId}'")
                 .IsNotNull();
         }
     }
@@ -91,14 +100,16 @@ public class UnlockCatalogTest
     public static void EveryItemInTheShippedCatalogsHasAnUnlockRow()
     {
         var catalog = UnlockCatalog.Default;
-        foreach (var path in new[] { BackofficeCatalogPath, WorkshopCatalogPath })
+        var paths = new[] { BackofficeCatalogPath, WorkshopCatalogPath };
+        foreach (var path in paths)
         {
             var orderCatalog = GD.Load<OrderCatalog>(path);
             AssertThat(orderCatalog).IsNotNull();
             foreach (var item in orderCatalog.Items)
             {
                 AssertThat(catalog.RequiredLevel(item.Id))
-                    .OverrideFailureMessage($"{path} item '{item.Id}' has no unlock row")
+                    .OverrideFailureMessage(
+                        $"{path} item '{item.Id}' has no unlock row")
                     .IsNotNull();
             }
         }

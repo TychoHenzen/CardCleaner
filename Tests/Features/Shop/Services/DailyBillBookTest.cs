@@ -35,7 +35,8 @@ public class DailyBillBookTest
     [TestCategory("Unit")]
     public static void EmptySourceContributesNothing()
     {
-        var book = new DailyBillBook(new IDailyBillSource[] { new FakeSource() });
+        var book = new DailyBillBook(
+            new IDailyBillSource[] { new FakeSource() });
 
         AssertThat(book.LinesFor(1).Count).IsEqual(0);
         AssertThat(book.TotalFor(1)).IsEqual(0);
@@ -47,7 +48,10 @@ public class DailyBillBookTest
     {
         var book = new DailyBillBook(new IDailyBillSource[]
         {
-            new FakeSource(new BillLine("Rent", RentAmount), new BillLine("Zero", 0), new BillLine("Credit", -5)),
+            new FakeSource(
+                new BillLine("Rent", RentAmount),
+                new BillLine("Zero", 0),
+                new BillLine("Credit", -5)),
         });
 
         var names = book.LinesFor(1).Select(line => line.Name).ToArray();

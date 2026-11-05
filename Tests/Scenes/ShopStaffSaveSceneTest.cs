@@ -234,7 +234,7 @@ public class ShopStaffSaveSceneTest
         {
             new RentBillSource(), new StaffWageBillSource(_rig.Staff),
         });
-        day.SaveCommand = new FakeSaveGame();
+        day.SaveCommand = new NoOpSaveGame();
         // Opening the shop wakes the real spawner; it gets a random source and no frame loop, so it adds no customer.
         _rig.Spawner.Rng = RandomSources.Create(401UL);
         _rig.Spawner.ProcessMode = Node.ProcessModeEnum.Disabled;
@@ -257,11 +257,6 @@ public class ShopStaffSaveSceneTest
         public LogCapture(ILog log) => ILog.Sink = log;
 
         public void Dispose() => ILog.Sink = _previous;
-    }
-
-    private sealed class FakeSaveGame : ISaveGameCommand
-    {
-        public bool ManualSave() => true;
     }
 
     private sealed class RecordingLog : ILog
