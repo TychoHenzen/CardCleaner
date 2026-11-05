@@ -155,7 +155,7 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
         EndSession();
     }
 
-    /// <summary>Puts a carried piece back where it was picked up; false when none was carried or a load freed it.</summary>
+    /// <summary>Puts a carried piece back where it was; false when none is carried or a load freed it.</summary>
     private bool ReleaseCarried() => _carried?.PutBack() == true;
 
     private void StartSession(FurnitureItem item)
