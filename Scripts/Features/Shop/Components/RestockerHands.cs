@@ -45,7 +45,7 @@ internal sealed class RestockerHands
         return true;
     }
 
-    /// <summary>Locks the carried container into the slot. False (and still carried) when the slot refuses it.</summary>
+    /// <summary>Locks the carried container into the slot. False, still carried, when the slot refuses.</summary>
     public bool Shelve(DeckSlot slot)
     {
         if (Carried is not { } container || !slot.TryLock(container))
