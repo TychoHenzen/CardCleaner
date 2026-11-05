@@ -12,23 +12,40 @@ using CardCleaner.Tests.TestUtilities;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// Loads the shop scene for the ordering suites and hands its scene-owned services to the test service container,
-/// since a test scene is not the current scene and its autoload-style registration never runs.
+/// Loads the shop scene for the ordering suites and hands its scene-owned
+/// services to the test service container, since a test scene is not the
+/// current scene and its autoload-style registration never runs.
 /// </summary>
 public static class ShopOrderingRig
 {
-    private const string UnusedOptionsPath = "user://test_shop_ordering_rig_unused.cfg";
+    private const string UnusedOptionsPath =
+        "user://test_shop_ordering_rig_unused.cfg";
 
     public static Node3D LoadShopWithServices()
     {
-        var shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
+        var shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath)
+            .Instantiate<Node3D>();
 
         TestServices.Reset();
-        // Reset empties the container, and the shop's pause and options menus resolve OptionsStore when they ready. A
-        // missing one logs an exception from _Ready that later crashes Godot's finalizer (exit 0xC000001D), so register
-        // one on a file that is never saved to instead of reading the player's settings.
-        TestServices.Container.RegisterSingleton<OptionsStore>(new OptionsStore(UnusedOptionsPath));
-        TestServices.Container.RegisterSingleton<OptionsApplier>(new OptionsApplier());
+        RegisterOptions();
+        RegisterShopServices(shop);
+        return shop;
+    }
+
+    // Reset empties the container, and the shop's pause and options menus
+    // resolve OptionsStore when they ready. A missing one logs an exception
+    // from _Ready that later crashes Godot's finalizer (exit 0xC000001D), so
+    // register one on a file that is never saved to.
+    private static void RegisterOptions()
+    {
+        var container = TestServices.Container;
+        container.RegisterSingleton<OptionsStore>(
+            new OptionsStore(UnusedOptionsPath));
+        container.RegisterSingleton<OptionsApplier>(new OptionsApplier());
+    }
+
+    private static void RegisterShopServices(Node3D shop)
+    {
         var container = TestServices.Container;
         container.RegisterSingleton<IGameSettings>(
             Service<GameSettings>(shop, "GameSettings"));
@@ -46,9 +63,9 @@ public static class ShopOrderingRig
             Service<StaffService>(shop, "Staff"));
         // No autoload injects the shop (it is not the current scene);
         // the furniture load reads the lots through it.
-        TestServices.Inject(Service<FurnitureSaveService>(shop, "FurnitureSave"));
+        TestServices.Inject(
+            Service<FurnitureSaveService>(shop, "FurnitureSave"));
         TestServices.Inject(Service<StaffService>(shop, "Staff"));
-        return shop;
     }
 
     private static T Service<T>(Node shop, string name) where T : Node =>
