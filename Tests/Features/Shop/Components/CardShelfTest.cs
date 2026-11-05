@@ -157,11 +157,13 @@ public class CardShelfTest
         await Frames(StabilityFrames);
 
         AssertThat(_shelf.StockedCount).IsEqual(slots.Length);
-        AssertBool(_shelf.GlobalPosition.DistanceTo(shelfBefore) < StabilityTolerance).IsTrue();
+        var shelfMoved = _shelf.GlobalPosition.DistanceTo(shelfBefore);
+        AssertBool(shelfMoved < StabilityTolerance).IsTrue();
         for (var i = 0; i < cards.Length; i++)
         {
+            var cardMoved = cards[i].GlobalPosition.DistanceTo(cardsBefore[i]);
             AssertBool(cards[i].Freeze).IsTrue();
-            AssertBool(cards[i].GlobalPosition.DistanceTo(cardsBefore[i]) < StabilityTolerance).IsTrue();
+            AssertBool(cardMoved < StabilityTolerance).IsTrue();
         }
     }
 
