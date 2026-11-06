@@ -34,14 +34,17 @@ powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godo
 powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1
 ```
 
-A direct `GdUnitCmdTool.gd` run that passes a relative `-rd` (as `Run-GdUnit.ps1` does with `-rd reports/ci`) must
-also pass `-rc 100000`, or gdUnit's report cleanup doubles every delete path and floods the log with `ERROR: Delete`
-lines. A run without `-rd` uses gdUnit's absolute default report path, where cleanup works and needs no `-rc`.
+The vendored gdUnit4 is 6.2.3, which cleans a relative `-rd` report folder correctly: `GdUnitFileAccess.delete_directory`
+resolves the folder to its absolute path before it deletes, so a direct `GdUnitCmdTool.gd` run with a relative `-rd` (as
+`Run-GdUnit.ps1` uses with `-rd reports/ci`) logs no `ERROR: Delete` lines. Without `-rc`, gdUnit keeps the newest 20
+report folders and removes the older ones. `Run-GdUnit.ps1` and the one-liners below still pass `-rc 100000`, so every
+report folder of a run is kept; that is a choice, not a requirement of the cleanup. A run without `-rd` uses gdUnit's
+absolute default report path.
 
 **Without PowerShell.** Start Godot from Bash through node, so no console window opens:
 
 ```bash
-# One suite, the same arguments as Run-GdUnit.ps1 uses for a single suite (reports/<dir> is relative, so -rc is required)
+# One suite, the same arguments as Run-GdUnit.ps1 uses for a single suite (reports/<dir> is relative; -rc 100000 keeps every report folder, see above)
 node -e "const r=require('child_process').spawnSync('<godot console exe>',['--headless','--path','.','-s','res://addons/gdUnit4/bin/GdUnitCmdTool.gd','-c','--ignoreHeadlessMode','-rc','100000','-rd','reports/<dir>','-a','res://Tests/<path>Test.cs'],{stdio:'inherit',windowsHide:true});process.exit(r.status??1)"
 
 # The .uid import (writes only the sidecars, see Godot .uid Sidecars)
