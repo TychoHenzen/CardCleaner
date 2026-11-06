@@ -68,10 +68,11 @@ gdUnit finds a C# suite by its file name, so a `[TestSuite]` class must be named
 enforces this). `Run-GdUnit.ps1` fails when a `[TestSuite]` file never runs. When Godot prints nothing for
 `-StallSeconds` (180 by default) it kills Godot, names the suite it stalled in, and reruns only the unfinished suites
 (at most `-MaxResumes` times). A Godot crash gets the same treatment: an exit code gdUnit does not return (anything but
-0, 100, 101, 103 or 104) from an attempt that wrote no results report is named with its suite, logged in hex (for
+0, 100, 101, 103, 104 or 105) from an attempt that wrote no results report is named with its suite, logged in hex (for
 example `0xC000001D`), and the unfinished suites are resumed. Stalls and crashes share the `-MaxResumes` budget; a
-second interruption in the same suite, or a resume that finishes no suite, fails the run. Exits 100, 101, 103 and 104
-keep their own handling and never resume, and an abnormal exit after a green report still fails. Reports and logs go to
+second interruption in the same suite, or a resume that finishes no suite, fails the run. Exits 100, 101, 103, 104 and 105
+keep their own handling and never resume (105 is gdUnit 6.2.3's script errors found during discovery: no report is
+written, and the run fails naming the script errors), and an abnormal exit after a green report still fails. Reports and logs go to
 `reports/ci`; before the first Godot attempt, stale generated attempt logs directly in that directory matching
 `godot.stdout.log`, `godot.stderr.log`, `godot.resume*.stdout.log`, or `godot.resume*.stderr.log` are removed, while
 report folders and other files survive. Each attempt then has one log pair (`godot.stdout.log`, then
