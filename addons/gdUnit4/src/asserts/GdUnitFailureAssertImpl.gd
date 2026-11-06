@@ -3,8 +3,8 @@ extends GdUnitFailureAssert
 const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
 
 var _is_failed := false
-var _failure_message: String
-var _current_failure_message := ""
+var _failure_message := ""
+var _stack_trace: GdUnitStackTrace
 var _custom_failure_message := ""
 var _additional_failure_message := ""
 
@@ -26,14 +26,18 @@ func execute_and_await(assertion :Callable, do_await := true) -> GdUnitFailureAs
 	else:
 		assertion.call()
 	_set_do_expect_fail(false)
+
 	# get the assert instance from current tread context
 	var current_assert := thread_context.get_assert()
 	if not is_instance_of(current_assert, GdUnitAssert):
 		_is_failed = true
 		_failure_message = "Invalid Callable! It must be a callable of 'GdUnitAssert'"
 		return self
-	@warning_ignore("unsafe_method_access")
-	_failure_message = current_assert.failure_message()
+
+	var last_error := thread_context.get_execution_context().last_error()
+	if last_error != null:
+		_stack_trace = last_error._stack_trace
+		_failure_message = last_error._message
 	return self
 
 
@@ -92,14 +96,22 @@ func has_line(expected :int) -> GdUnitFailureAssert:
 	return self
 
 
+func has_stack_trace(stack_trace_elements: Array[GdUnitStackTraceElement]) -> GdUnitFailureAssert:
+	var current_stack_trace := str(_stack_trace)
+	var expected_stack_trace := str(GdUnitStackTrace.of(stack_trace_elements))
+	if current_stack_trace != expected_stack_trace:
+		return _report_error(GdAssertMessages.error_equal(current_stack_trace, expected_stack_trace))
+	return self
+
+
 func has_message(expected :String) -> GdUnitFailureAssert:
 	@warning_ignore("return_value_discarded")
 	is_failed()
 	var expected_error := GdUnitTools.normalize_text(GdUnitTools.richtext_normalize(expected))
 	var current_error := GdUnitTools.normalize_text(GdUnitTools.richtext_normalize(_failure_message))
 	if current_error != expected_error:
-		var diffs := GdDiffTool.string_diff(current_error, expected_error)
-		var current := GdAssertMessages.colored_array_div(diffs[1])
+		var hunks: Array[GdDiffTool.Hunk] = GdDiffTool.diff(current_error, expected_error)
+		var current := GdAssertMessages.colored_diff(current_error, expected_error, hunks)
 		return _report_error(GdAssertMessages.error_not_same_error(current, expected_error))
 	return self
 
@@ -108,8 +120,8 @@ func contains_message(expected :String) -> GdUnitFailureAssert:
 	var expected_error := GdUnitTools.normalize_text(expected)
 	var current_error := GdUnitTools.normalize_text(GdUnitTools.richtext_normalize(_failure_message))
 	if not current_error.contains(expected_error):
-		var diffs := GdDiffTool.string_diff(current_error, expected_error)
-		var current := GdAssertMessages.colored_array_div(diffs[1])
+		var hunks: Array[GdDiffTool.Hunk] = GdDiffTool.diff(current_error, expected_error)
+		var current := GdAssertMessages.colored_diff(current_error, expected_error, hunks)
 		return _report_error(GdAssertMessages.error_not_same_error(current, expected_error))
 	return self
 
@@ -118,16 +130,17 @@ func starts_with_message(expected :String) -> GdUnitFailureAssert:
 	var expected_error := GdUnitTools.normalize_text(expected)
 	var current_error := GdUnitTools.normalize_text(GdUnitTools.richtext_normalize(_failure_message))
 	if current_error.find(expected_error) != 0:
-		var diffs := GdDiffTool.string_diff(current_error, expected_error)
-		var current := GdAssertMessages.colored_array_div(diffs[1])
+		var hunks: Array[GdDiffTool.Hunk] = GdDiffTool.diff(current_error, expected_error)
+		var current := GdAssertMessages.colored_diff(current_error, expected_error, hunks)
 		return _report_error(GdAssertMessages.error_not_same_error(current, expected_error))
 	return self
 
 
 func _report_error(error_message :String, failure_line_number: int = -1) -> GdUnitAssert:
-	var line_number := failure_line_number if failure_line_number != -1 else GdUnitAssertions.get_line_number()
-	_current_failure_message = GdAssertMessages.build_failure_message(error_message, _additional_failure_message, _custom_failure_message)
-	GdAssertReports.report_error(_current_failure_message, line_number)
+	var stack_trace := GdUnitStackTrace.new()
+	var line_number := failure_line_number if failure_line_number != -1 else stack_trace.get_line_number()
+	var failure_message := GdAssertMessages.build_failure_message(error_message, _additional_failure_message, _custom_failure_message)
+	GdAssertReports.report_error(GdUnitError.new(failure_message, line_number, stack_trace))
 	return self
 
 

@@ -34,14 +34,17 @@ powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godo
 powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1
 ```
 
-A direct `GdUnitCmdTool.gd` run that passes a relative `-rd` (as `Run-GdUnit.ps1` does with `-rd reports/ci`) must
-also pass `-rc 100000`, or gdUnit's report cleanup doubles every delete path and floods the log with `ERROR: Delete`
-lines. A run without `-rd` uses gdUnit's absolute default report path, where cleanup works and needs no `-rc`.
+The vendored gdUnit4 is 6.2.3, which cleans a relative `-rd` report folder correctly: `GdUnitFileAccess.delete_directory`
+resolves the folder to its absolute path before it deletes, so a direct `GdUnitCmdTool.gd` run with a relative `-rd` (as
+`Run-GdUnit.ps1` uses with `-rd reports/ci`) logs no `ERROR: Delete` lines. Without `-rc`, gdUnit keeps the newest 20
+report folders and removes the older ones. `Run-GdUnit.ps1` and the one-liners below still pass `-rc 100000`, so every
+report folder of a run is kept; that is a choice, not a requirement of the cleanup. A run without `-rd` uses gdUnit's
+absolute default report path.
 
 **Without PowerShell.** Start Godot from Bash through node, so no console window opens:
 
 ```bash
-# One suite, the same arguments as Run-GdUnit.ps1 uses for a single suite (reports/<dir> is relative, so -rc is required)
+# One suite, the same arguments as Run-GdUnit.ps1 uses for a single suite (reports/<dir> is relative; -rc 100000 keeps every report folder, see above)
 node -e "const r=require('child_process').spawnSync('<godot console exe>',['--headless','--path','.','-s','res://addons/gdUnit4/bin/GdUnitCmdTool.gd','-c','--ignoreHeadlessMode','-rc','100000','-rd','reports/<dir>','-a','res://Tests/<path>Test.cs'],{stdio:'inherit',windowsHide:true});process.exit(r.status??1)"
 
 # The .uid import (writes only the sidecars, see Godot .uid Sidecars)
@@ -65,10 +68,11 @@ gdUnit finds a C# suite by its file name, so a `[TestSuite]` class must be named
 enforces this). `Run-GdUnit.ps1` fails when a `[TestSuite]` file never runs. When Godot prints nothing for
 `-StallSeconds` (180 by default) it kills Godot, names the suite it stalled in, and reruns only the unfinished suites
 (at most `-MaxResumes` times). A Godot crash gets the same treatment: an exit code gdUnit does not return (anything but
-0, 100, 101, 103 or 104) from an attempt that wrote no results report is named with its suite, logged in hex (for
+0, 100, 101, 103, 104 or 105) from an attempt that wrote no results report is named with its suite, logged in hex (for
 example `0xC000001D`), and the unfinished suites are resumed. Stalls and crashes share the `-MaxResumes` budget; a
-second interruption in the same suite, or a resume that finishes no suite, fails the run. Exits 100, 101, 103 and 104
-keep their own handling and never resume, and an abnormal exit after a green report still fails. Reports and logs go to
+second interruption in the same suite, or a resume that finishes no suite, fails the run. Exits 100, 101, 103, 104 and 105
+keep their own handling and never resume (105 is gdUnit 6.2.3's script errors found during discovery: no report is
+written, and the run fails naming the script errors), and an abnormal exit after a green report still fails. Reports and logs go to
 `reports/ci`; before the first Godot attempt, stale generated attempt logs directly in that directory matching
 `godot.stdout.log`, `godot.stderr.log`, `godot.resume*.stdout.log`, or `godot.resume*.stderr.log` are removed, while
 report folders and other files survive. Each attempt then has one log pair (`godot.stdout.log`, then
