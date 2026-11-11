@@ -11,68 +11,66 @@ using System.Threading.Tasks;
 /// <summary>
 ///     Starts one C# test suite again when its start is lost.
 ///     <para>
-///         gdUnit4.api runs a suite on a thread-pool thread, and the first thing the suite does there is await Godot's
-///         process_frame through a SignalAwaiter. That awaiter is not thread-safe: when the main thread emits the
-///         signal between the awaiter's completion check and its continuation registration, the continuation is never
-///         run and the suite never starts, while the main loop keeps running (gdUnit4Net issue 397). The package keeps
-///         that code internal, so the project cannot run the suite on the main thread instead.
+///         gdUnit4.api awaits Godot's process_frame through a SignalAwaiter on a thread-pool thread. The awaiter is not
+///         thread-safe, so a suite can never start while the main loop runs (gdUnit4Net issue 397). The package keeps
+///         that code internal, so an attempt that stays silent is cancelled and the suite started again.
 ///     </para>
 ///     <para>
-///         An attempt that sends no event within the start bound is abandoned: its run is cancelled, every later event
-///         from it is dropped, and the suite is started again, at most <c>maxAttempts</c> times in all. The last
-///         attempt is awaited without a bound, so the runner's stall watchdog still reports a suite that never starts.
+///         The last attempt is awaited without a bound, so the runner's stall watchdog still reports a suite that
+///         never starts. CLAUDE.md names this patch and SuiteStartGuardTest keeps it in place.
 ///     </para>
 /// </summary>
 public static class SuiteStartWatchdog
 {
-    /// <summary>Attempts per suite, the first one included.</summary>
-    public const int DefaultMaxAttempts = 3;
+    /// <summary>Bounds of a run: silence before a start is lost, attempts in all, wait for a cancelled run.</summary>
+    public sealed record Policy(TimeSpan StartBound, int MaxAttempts, TimeSpan SettleBound);
 
-    /// <summary>How long an attempt may stay silent before its start counts as lost.</summary>
-    public static readonly TimeSpan DefaultStartBound = TimeSpan.FromSeconds(30);
+    /// <summary>Where a run reports: the started attempt's events, lost starts, dropped events, unsettled runs.</summary>
+    public sealed record Callbacks<TEvent>(
+        Action<TEvent> Forward,
+        Action<int> ReportLostStart,
+        Action<TEvent> ReportDroppedEvent,
+        Action<int> ReportUnsettled);
 
-    /// <summary>
-    ///     Runs a suite through <paramref name="startAttempt" /> and starts it again while its start is lost.
-    /// </summary>
-    /// <param name="startAttempt">Starts one attempt: it gets the receiver for the attempt's events and its token.</param>
-    /// <param name="forward">Receives the events of the attempt that started.</param>
-    /// <param name="reportLostStart">Called with the attempt number of each abandoned attempt.</param>
-    /// <param name="reportDroppedEvent">Called for each event an abandoned attempt sends after all.</param>
-    /// <param name="startBound">How long an attempt may stay silent before it is abandoned.</param>
-    /// <param name="maxAttempts">Attempts in all; the last one is never abandoned.</param>
+    /// <summary>The policy the addon runs with: three attempts, a 30 s start bound, a 5 s settle bound.</summary>
+    public static readonly Policy DefaultPolicy = new(TimeSpan.FromSeconds(30), 3, TimeSpan.FromSeconds(5));
+
+    /// <summary>Runs a suite through <paramref name="startAttempt" />, starting it again while its start is lost.</summary>
+    /// <param name="startAttempt">Starts one attempt, given the receiver for its events and its token.</param>
+    /// <param name="callbacks">Where the events and the reports go.</param>
+    /// <param name="policy">The bounds of the run; the last attempt is never abandoned.</param>
     /// <param name="cancellation">Cancels the whole run.</param>
     /// <returns>A task that completes when the attempt that started has finished.</returns>
     public static async Task Run<TEvent>(
         Func<Action<TEvent>, CancellationToken, Task> startAttempt,
-        Action<TEvent> forward,
-        Action<int> reportLostStart,
-        Action<TEvent> reportDroppedEvent,
-        TimeSpan startBound,
-        int maxAttempts,
+        Callbacks<TEvent> callbacks,
+        Policy policy,
         CancellationToken cancellation)
     {
-        for (var attempt = 1; ; attempt++)
+        for (var attempt = 1; attempt < policy.MaxAttempts; attempt++)
         {
             using var attemptCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
-            var gate = new AttemptGate<TEvent>(forward, reportDroppedEvent);
+            var gate = new AttemptGate<TEvent>(callbacks.Forward, callbacks.ReportDroppedEvent);
             var run = startAttempt(gate.Receive, attemptCancellation.Token);
-            if (attempt < maxAttempts && await StartWasLost(run, gate, startBound, cancellation))
+            if (!await StartWasLost(run, gate, policy.StartBound, cancellation))
             {
-                reportLostStart(attempt);
-                attemptCancellation.Cancel();
-                await Settle(run);
-                continue;
+                await run;
+                return;
             }
 
-            await run;
-            return;
+            callbacks.ReportLostStart(attempt);
+            attemptCancellation.Cancel();
+            if (!await Settle(run, policy.SettleBound))
+                callbacks.ReportUnsettled(attempt);
         }
+
+        var last = new AttemptGate<TEvent>(callbacks.Forward, callbacks.ReportDroppedEvent);
+        await startAttempt(last.Receive, cancellation);
     }
 
     // ASSUMPTION (Medium): an attempt that sends no event within the bound while the main loop runs lost its start.
     // gdUnit sends a suite's first event after the suite's [Before] hook, so this holds only while no [Before] hook
-    // awaits; SuiteStartGuardTest fails when one does. A synchronous hook blocks the main thread, and this check,
-    // which resumes on the main thread, until the hook has returned and the first event is sent.
+    // awaits; SuiteStartGuardTest fails when one does.
     private static async Task<bool> StartWasLost<TEvent>(
         Task run, AttemptGate<TEvent> gate, TimeSpan startBound, CancellationToken cancellation)
     {
@@ -83,16 +81,14 @@ public static class SuiteStartWatchdog
         return first == delay && !cancellation.IsCancellationRequested && gate.TryAbandon();
     }
 
-    // An abandoned run ends through its own cancellation handling; a cancellation thrown out of it is expected.
-    private static async Task Settle(Task run)
+    // An abandoned run ends through its own cancellation handling. A run that ignores its token is left behind after
+    // the bound, so the next attempt still starts; its late failure is observed here and never escapes.
+    private static async Task<bool> Settle(Task run, TimeSpan settleBound)
     {
-        try
-        {
-            await run;
-        }
-        catch (OperationCanceledException)
-        {
-        }
+        _ = run.ContinueWith(
+            faulted => _ = faulted.Exception, TaskContinuationOptions.OnlyOnFaulted);
+        var finished = await Task.WhenAny(run, Task.Delay(settleBound));
+        return finished == run;
     }
 
     // Lets the events of one attempt through until the attempt is abandoned. Starting and abandoning take the same

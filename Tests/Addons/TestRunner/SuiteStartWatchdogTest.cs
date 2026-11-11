@@ -14,8 +14,9 @@ namespace CardCleaner.Tests.Addons.TestRunner;
 [RequireGodotRuntime]
 public class SuiteStartWatchdogTest
 {
-    private static readonly TimeSpan Bound = TimeSpan.FromMilliseconds(100);
+    private static readonly TimeSpan Bound = TimeSpan.FromMilliseconds(250);
     private const int Attempts = 3;
+    private static readonly TimeSpan Settle = TimeSpan.FromMilliseconds(100);
 
     [TestCase]
     [TestCategory("Unit")]
@@ -72,11 +73,25 @@ public class SuiteStartWatchdogTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public static async Task AnAttemptThatIgnoresItsCancellationDoesNotBlockTheNextAttempt()
+    {
+        var bridge = new FakeBridge(IgnoresCancellation, Starts);
+
+        await bridge.Run(Attempts);
+
+        AssertThat(bridge.AttemptsStarted).IsEqual(2);
+        AssertThat(bridge.LostStarts).ContainsExactly(1);
+        AssertThat(bridge.Unsettled).ContainsExactly(1);
+        AssertThat(bridge.Forwarded).ContainsExactly("event 2");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static async Task ACancelledRunIsNotStartedAgain()
     {
         var bridge = new FakeBridge(StaysSilent, Starts);
         using var cancellation = new CancellationTokenSource();
-        cancellation.CancelAfter(TimeSpan.FromMilliseconds(20));
+        cancellation.CancelAfter(TimeSpan.FromMilliseconds(10));
 
         await bridge.Run(Attempts, cancellation.Token);
 
@@ -92,10 +107,10 @@ public class SuiteStartWatchdogTest
         receive($"event {attempt}");
     }
 
-    // The attempt sends its event only after three start bounds, then finishes.
+    // The attempt sends its event only after four start bounds, then finishes.
     private static async Task StartsLate(int attempt, Action<string> receive, CancellationToken token)
     {
-        await Task.Delay(Bound * 3, CancellationToken.None);
+        await Task.Delay(Bound * 4, CancellationToken.None);
         receive($"event {attempt}");
     }
 
@@ -112,6 +127,10 @@ public class SuiteStartWatchdogTest
         }
     }
 
+    // The attempt never ends, as a run that ignores its token.
+    private static Task IgnoresCancellation(int attempt, Action<string> receive, CancellationToken token) =>
+        new TaskCompletionSource().Task;
+
     private delegate Task Attempt(int attempt, Action<string> receive, CancellationToken token);
 
     private sealed class FakeBridge(params Attempt[] attempts)
@@ -120,12 +139,16 @@ public class SuiteStartWatchdogTest
         public List<Action<string>> Receivers { get; } = new();
         public List<int> CancelledAttempts { get; } = new();
         public List<int> LostStarts { get; } = new();
+        public List<int> Unsettled { get; } = new();
         public List<string> Forwarded { get; } = new();
         public List<string> Dropped { get; } = new();
 
         public Task Run(int maxAttempts, CancellationToken cancellation = default) =>
             SuiteStartWatchdog.Run<string>(
-                Start, Forwarded.Add, LostStarts.Add, Dropped.Add, Bound, maxAttempts, cancellation);
+                Start,
+                new SuiteStartWatchdog.Callbacks<string>(Forwarded.Add, LostStarts.Add, Dropped.Add, Unsettled.Add),
+                new SuiteStartWatchdog.Policy(Bound, maxAttempts, Settle),
+                cancellation);
 
         private Task Start(Action<string> receive, CancellationToken token)
         {
