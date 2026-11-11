@@ -63,6 +63,12 @@ Native stacks of two captured freezes showed exactly that (godotengine/godot iss
 request 124990, merged to master on 2026-10-31 and marked for a 4.7 backport. Turn the setting back on only on an
 engine version that contains it.
 
+**Navigation maps build synchronously** (`navigation/world/map_use_async_iterations=false`, pinned by
+`NavigationMapSyncSettingTest`). With async map builds, a build that included a rebaked region could finish in the same
+navigation sync that applied the region, which from outside looks the same as a stale build finishing there, so
+`ShopNavigationRig.WaitForBakeSync` could wait for a map change that never came. Built synchronously, the sync that
+applies a region iteration also builds the map from it.
+
 CI scope: pull requests and pushes to `master` run only the Unit suites (`-Fast`). The full suite runs on the weekly
 schedule (Sunday 03:00 UTC) and on a manual dispatch with `full=true`, for example `gh workflow run ci.yml --ref
 <branch> -f full=true`. PR CI also fails when the latest scheduled run on `master` is not green. So a green PR or merge

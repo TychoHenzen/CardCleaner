@@ -109,6 +109,10 @@ ui_down={
 ]
 }
 
+[navigation]
+
+world/map_use_async_iterations=false
+
 [physics]
 
 3d/run_on_separate_thread=false

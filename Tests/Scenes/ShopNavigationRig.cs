@@ -19,28 +19,35 @@ public static class ShopNavigationRig
     private const int SyncMaxFrames = 60;
 
     /// <summary>
-    /// Waits for the server to apply a bake: first the region's iteration id leaves <paramref name="regionBefore" />
-    /// (the map id seen on that frame is kept), then the map id passes the kept value on a later frame. The map id
-    /// alone is not enough: it can move on the frame the region changes while the map still holds no polygons.
+    /// Waits for the server to apply a bake: the region's iteration id leaves <paramref name="regionBefore" />, and
+    /// the map id has moved past its value on the last frame the region was unchanged. The map builds synchronously
+    /// (<see cref="NavigationMapSyncSettingTest" />), so a map build in the sync that applies the region includes it;
+    /// with async builds a stale build finishing in that sync looked the same and the wait could not end.
     /// </summary>
     public static async Task WaitForBakeSync(ShopNavigationRegion region, uint regionBefore)
     {
         var map = region.GetNavigationMap();
         var rid = region.GetRid();
-        bool regionChanged = false;
-        uint mapAtRegion = 0;
+        if (NavigationServer3D.MapGetUseAsyncIterations(map))
+        {
+            throw new InvalidOperationException(
+                "the shop navigation map builds asynchronously, so a bake cannot be awaited "
+                + "(navigation/world/map_use_async_iterations must be false)");
+        }
+
+        // Null until a frame shows the region unchanged: a region already changed on entry was applied by an earlier
+        // sync, whose synchronous map build already holds it.
+        uint? mapBeforeRegion = null;
         for (int frame = 0; frame < SyncMaxFrames; frame++)
         {
             uint mapNow = NavigationServer3D.MapGetIterationId(map);
-            if (regionChanged && mapNow > mapAtRegion)
+            if (NavigationServer3D.RegionGetIterationId(rid) == regionBefore)
+            {
+                mapBeforeRegion = mapNow;
+            }
+            else if (mapBeforeRegion is null || mapNow != mapBeforeRegion)
             {
                 return;
-            }
-
-            if (!regionChanged && NavigationServer3D.RegionGetIterationId(rid) != regionBefore)
-            {
-                regionChanged = true;
-                mapAtRegion = mapNow;
             }
 
             await ISceneRunner.SyncPhysicsFrame;
@@ -49,7 +56,7 @@ public static class ShopNavigationRig
         throw new InvalidOperationException(
             $"navigation did not sync after {SyncMaxFrames} physics frames: region id "
             + $"{NavigationServer3D.RegionGetIterationId(rid)} (before {regionBefore}), map id "
-            + $"{NavigationServer3D.MapGetIterationId(map)} (at region change {mapAtRegion})");
+            + $"{NavigationServer3D.MapGetIterationId(map)} (before the region changed {mapBeforeRegion})");
     }
 
     /// <summary>A solid box across a street-wall door opening (3 m wide, 2 m high, 0.5 m deep at z=12).</summary>
