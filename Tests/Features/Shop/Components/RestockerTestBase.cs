@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -30,6 +31,9 @@ public abstract class RestockerTestBase
     private protected const int LevelThreePayment = 1500;
     private protected const int PacksInABox = 8;
     private protected const int ProductSlots = 3;
+    private protected const string ProductShelfScene = "res://Scenes/Shop/Items/ProductShelf.tscn";
+    private protected const float ShelfSpacing = 3f;
+    private protected const double LongWalkSeconds = 90;
 
     private protected readonly SceneTree _tree = (SceneTree)Engine.GetMainLoop();
     private protected Node3D _shop = null!;
@@ -41,6 +45,7 @@ public abstract class RestockerTestBase
     private protected ShopProgression _progression = null!;
     private protected CardShelf _rack = null!;
     private protected CardShelf _product = null!;
+    private protected ShopNavigationRegion _region = null!;
 
     [BeforeTest]
     public async Task Setup()
@@ -53,7 +58,7 @@ public abstract class RestockerTestBase
         _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
         _rack = _shop.GetNode<CardShelf>("World/RightStorage/StorageRack");
         _product = _shop.GetNode<CardShelf>("World/Storefront/ProductShelf");
-        var region = _shop.GetNode<ShopNavigationRegion>("World/Navigation");
+        var region = _region = _shop.GetNode<ShopNavigationRegion>("World/Navigation");
 
         var bills = new DailyBillBook(new IDailyBillSource[] { new RentBillSource(), new StaffWageBillSource(_staff) });
         TestServices.Container.RegisterSingleton<IShopDayService>(_day);
@@ -124,6 +129,32 @@ public abstract class RestockerTestBase
         return (ordered[0], ordered[1]);
     }
 
+    // Two more product shelves beside the scene's one, so nine product slots are free and the real box threshold
+    // (8) can be met. Each is checked to be reachable from the rack before a test relies on it.
+    private protected List<CardShelf> AddProductShelves()
+    {
+        var shelves = new List<CardShelf> { _product };
+        foreach (var offset in new[] { -ShelfSpacing, ShelfSpacing })
+        {
+            var shelf = GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>();
+            _product.GetParent().AddChild(shelf);
+            shelf.GlobalPosition = _product.GlobalPosition + new Vector3(offset, 0f, 0f);
+            AssertBool(Reaches(_rack, shelf)).IsTrue();
+            shelves.Add(shelf);
+        }
+
+        return shelves;
+    }
+
+    // Whether a path from one shelf's spot on the baked mesh reaches the other's.
+    private protected bool Reaches(CardShelf from, CardShelf to)
+    {
+        var map = _region.GetNavigationMap();
+        return _region.Reaches(
+            NavigationServer3D.MapGetClosestPoint(map, from.GlobalPosition),
+            NavigationServer3D.MapGetClosestPoint(map, to.GlobalPosition));
+    }
+
     private protected static bool IsCarried(CardContainer container) =>
         container.GetParent()?.Name.ToString() == "Hand";
 
@@ -134,8 +165,9 @@ public abstract class RestockerTestBase
     // Waits for a condition through BoundedWait and fails the case with its message, plus the restocker state, when
     // the wall-clock bound passes (issue 408: the runner's stall watchdog killed an unbounded wait after 180 s).
     private protected async Task<bool> Poll(
-        Func<bool> done, [CallerArgumentExpression(nameof(done))] string? what = null) =>
-        Passed(await BoundedWait.Until(done, what ?? "a condition"));
+        Func<bool> done, double maxSeconds = BoundedWait.DefaultMaxSeconds,
+        [CallerArgumentExpression(nameof(done))] string? what = null) =>
+        Passed(await BoundedWait.Until(done, what ?? "a condition", maxSeconds));
 
     // Waits for count physics ticks to pass, with the same wall-clock bound as Poll.
     private protected async Task Frames(int count) => Passed(await BoundedWait.PhysicsFrames(count));

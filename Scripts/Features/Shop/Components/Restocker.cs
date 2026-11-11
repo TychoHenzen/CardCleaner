@@ -108,7 +108,23 @@ public partial class Restocker : CharacterBody3D, IDependent
             _navigator.Step(delta, MoveSpeed, StuckSeconds);
     }
 
-    private void RefreshVisible() => Visible = _staff?.IsHired(StaffRoleIds.Restocker) ?? false;
+    private void RefreshVisible()
+    {
+        var hired = _staff?.IsHired(StaffRoleIds.Restocker) ?? false;
+        Visible = hired;
+        if (!hired)
+            StandDown();
+    }
+
+    // A dismissed restocker sets what it carries down at its feet, unfrozen, where the next scan finds it as a loose
+    // source, and forgets its walk, so nothing stays parked in a hidden hand.
+    private void StandDown()
+    {
+        _hands?.SetDown();
+        _putBackSlot = null;
+        _homing = false;
+        _job.Cancel();
+    }
 
     private void PlanNext()
     {

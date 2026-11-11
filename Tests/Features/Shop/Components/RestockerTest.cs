@@ -31,16 +31,23 @@ public class RestockerTest : RestockerTestBase
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task BoxIsUnpackedAtTheShelfAndAllEightPacksEndUpCounted()
+    public async Task BoxIsUnpackedAtTheRealThresholdAndEveryPackEndsOnAProductShelf()
     {
         HireAndOpen();
-        _restocker.BoxUnpackThreshold = ProductSlots;
+        var shelves = AddProductShelves();
+        Stock(PackScene, shelves[0].Slots.First());
         var box = Stock(BoxScene, _rack.Slots.First());
+        var slotCount = shelves.Sum(shelf => shelf.SlotCount);
+        AssertInt(slotCount - 1).IsEqual(_restocker.BoxUnpackThreshold);
 
-        var unpacked = await Poll(() => !GodotObject.IsInstanceValid(box) && PackCount() == PacksInABox);
+        // One shelf takes its free slots at the unpack; the rest spill and are carried to the other shelves.
+        var shelved = await Poll(
+            () => !GodotObject.IsInstanceValid(box) && shelves.Sum(shelf => shelf.StockedCount) == slotCount,
+            LongWalkSeconds);
 
-        AssertBool(unpacked).IsTrue();
-        AssertInt(_product.StockedCount).IsEqual(ProductSlots);
+        AssertBool(shelved).IsTrue();
+        AssertInt(PackCount()).IsEqual(PacksInABox + 1);
+        AssertThat(_restocker.Phase).IsEqual(RestockerPhase.Idle);
     }
 
     [TestCase]
@@ -58,13 +65,14 @@ public class RestockerTest : RestockerTestBase
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task BoxStaysOnTheRackWhenTooFewProductSlotsAreFree()
+    public async Task BoxStaysOnTheRackAtTheRealThresholdWithOneSlotTooFewFree()
     {
         HireAndOpen();
-        _restocker.BoxUnpackThreshold = ProductSlots;
-        foreach (var slot in _product.Slots.Take(2))
+        var shelves = AddProductShelves();
+        foreach (var slot in shelves[0].Slots.Take(2))
             Stock(PackScene, slot);
         var box = Stock(BoxScene, _rack.Slots.First());
+        AssertInt(shelves.Sum(shelf => shelf.SlotCount) - 2).IsEqual(_restocker.BoxUnpackThreshold - 1);
 
         await Frames(LongIdleFrames);
 

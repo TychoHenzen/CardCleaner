@@ -66,6 +66,21 @@ public class RestockerJobTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public static void Cancel_returns_Idle_without_blocking_the_pair()
+    {
+        var job = new RestockerJob();
+        job.Begin(Step);
+        job.Arrived();
+
+        job.Cancel();
+
+        AssertThat(job.Phase).IsEqual(RestockerPhase.Idle);
+        AssertThat(job.Current).IsEqual(RestockStep.Idle);
+        AssertThat(job.BlockedPairs.Count).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static void Calls_in_Idle_change_nothing()
     {
         var job = new RestockerJob();

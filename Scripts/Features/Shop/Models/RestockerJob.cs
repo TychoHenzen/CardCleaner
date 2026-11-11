@@ -51,6 +51,9 @@ public sealed class RestockerJob
 
     public void NoPath() => Abandon();
 
+    /// <summary>Drops the walk without blocking its pair: the restocker was dismissed, nothing went wrong.</summary>
+    public void Cancel() => Reset();
+
     public void Tick(double seconds)
     {
         _now += seconds;

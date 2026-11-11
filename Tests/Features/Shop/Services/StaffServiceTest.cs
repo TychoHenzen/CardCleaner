@@ -1,43 +1,13 @@
-using System;
-using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
-using Godot;
-using Saveable;
 
 namespace CardCleaner.Tests.Features.Shop.Services;
 
+/// <summary>Hiring and dismissing through the staff service: fees, unlock levels, refusals and change events.</summary>
 [TestSuite]
 [RequireGodotRuntime]
-public class StaffServiceTest
+public class StaffServiceTest : StaffServiceTestBase
 {
-    private const int StartingBalance = 1000;
-    private const string CashierId = "cashier";
-    private const string CashierUnlock = "staff_cashier";
-    private const int CashierFee = 200;
-
-    private Node3D _world = null!;
-    private MoneyService _money = null!;
-    private StaffService _staff = null!;
-
-    [BeforeTest]
-    public void Setup()
-    {
-        _world = new Node3D();
-        AddNode(_world);
-
-        _money = new MoneyService { StartingBalance = StartingBalance };
-        _world.AddChild(_money);
-
-        _staff = AutoFree(new StaffService
-        {
-            Catalog = CashierCatalog(),
-            Money = _money,
-            Progression = new OpenProgression(),
-        });
-    }
-
     [TestCase]
     [TestCategory("Unit")]
     public void Hire_locked_does_not_charge()
@@ -152,100 +122,6 @@ public class StaffServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void Save_Load_round_trips_the_hired_set()
-    {
-        _staff.Hire(CashierId);
-        var save = new NodeSave();
-        _staff.Save(save);
-
-        var reloaded = AutoFree(new StaffService
-        {
-            Catalog = CashierCatalog(),
-            Money = _money,
-            Progression = new OpenProgression(),
-        });
-        reloaded.Load(save);
-
-        AssertBool(reloaded.IsHired(CashierId)).IsTrue();
-        AssertThat(reloaded.HiredRoles.Count).IsEqual(1);
-        AssertThat(_money.Balance).IsEqual(StartingBalance - CashierFee);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void Load_with_unknown_and_duplicate_ids_keeps_valid_ones()
-    {
-        var log = new RecordingLog();
-        var previous = ILog.Sink;
-        ILog.Sink = log;
-        try
-        {
-            var save = new NodeSave();
-            save.SetOrAddProperty("hired", @"[""cashier"",""ghost"",""cashier""]");
-
-            _staff.Load(save);
-
-            AssertBool(_staff.IsHired(CashierId)).IsTrue();
-            AssertThat(_staff.HiredRoles.Count).IsEqual(1);
-            AssertThat(log.Warnings.Count).IsEqual(1);
-        }
-        finally
-        {
-            ILog.Sink = previous;
-        }
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void Load_with_unreadable_json_changes_nothing()
-    {
-        _staff.Hire(CashierId);
-        var log = new RecordingLog();
-        var previous = ILog.Sink;
-        ILog.Sink = log;
-        try
-        {
-            var save = new NodeSave();
-            save.SetOrAddProperty("hired", "not json");
-
-            _staff.Load(save);
-
-            AssertBool(_staff.IsHired(CashierId)).IsTrue();
-            AssertThat(log.Warnings.Count).IsEqual(1);
-        }
-        finally
-        {
-            ILog.Sink = previous;
-        }
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void Load_with_a_non_string_hired_value_changes_nothing()
-    {
-        _staff.Hire(CashierId);
-        var log = new RecordingLog();
-        var previous = ILog.Sink;
-        ILog.Sink = log;
-        try
-        {
-            // A hand-edited save may hold the list itself, not the string that Save writes.
-            var save = new NodeSave();
-            save.SetOrAddProperty("hired", new List<string> { CashierId });
-
-            _staff.Load(save);
-
-            AssertBool(_staff.IsHired(CashierId)).IsTrue();
-            AssertThat(log.Warnings.Count).IsEqual(1);
-        }
-        finally
-        {
-            ILog.Sink = previous;
-        }
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
     public void Null_catalog_hires_nothing()
     {
         var empty = AutoFree(new StaffService { Money = _money, Progression = new OpenProgression() });
@@ -254,47 +130,5 @@ public class StaffServiceTest
         AssertThat(empty.HiredRoles.Count).IsEqual(0);
         AssertThat(empty.Roles.Count).IsEqual(0);
         AssertThat(_money.Balance).IsEqual(StartingBalance);
-    }
-
-    private static StaffCatalog CashierCatalog() => new()
-    {
-        Roles =
-        [
-            new StaffRoleData
-            {
-                Id = CashierId, DisplayName = "Cashier", UnlockId = CashierUnlock, HireFee = CashierFee,
-                DailyWage = 40, SecondsPerScan = 1.5f, SecondsPerPayment = 2f, TakeOverDelay = 3f,
-            },
-        ],
-    };
-
-    private static StaffCatalog CashierAndRestockerCatalog() => new()
-    {
-        Roles =
-        [
-            CashierCatalog().Roles[0],
-            new StaffRoleData
-            {
-                Id = StaffDefaults.RestockerId, DisplayName = StaffDefaults.RestockerName,
-                UnlockId = StaffDefaults.RestockerUnlockId, HireFee = StaffDefaults.RestockerHireFee,
-                DailyWage = StaffDefaults.RestockerDailyWage,
-            },
-        ],
-    };
-
-    private sealed class RecordingLog : ILog
-    {
-        public List<string> Warnings { get; } = new();
-        public List<string> Errors { get; } = new();
-
-        public void LogMessage(string message)
-        {
-        }
-
-        public void LogWarning(string message) => Warnings.Add(message);
-
-        public void LogError(string message) => Errors.Add(message);
-
-        public void LogError(string message, Exception exception) => Errors.Add(message);
     }
 }
