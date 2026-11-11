@@ -20,7 +20,8 @@ public class NavigationMapSyncSettingTest
         var async = ProjectSettings.GetSetting("navigation/world/map_use_async_iterations").AsBool();
 
         Assertions.AssertBool(async)
-            .OverrideFailureMessage("navigation/world/map_use_async_iterations is on; a rebake can no longer be awaited")
+            .OverrideFailureMessage(
+                "navigation/world/map_use_async_iterations is on; a rebake can no longer be awaited")
             .IsFalse();
     }
 }

@@ -20,7 +20,8 @@ public class PhysicsThreadSettingTest
         var separate = ProjectSettings.GetSetting("physics/3d/run_on_separate_thread").AsBool();
 
         Assertions.AssertBool(separate)
-            .OverrideFailureMessage("physics/3d/run_on_separate_thread is on; Godot 4.7.1 deadlocks with it (godot#123654)")
+            .OverrideFailureMessage(
+                "physics/3d/run_on_separate_thread is on; Godot 4.7.1 deadlocks with it (godot#123654)")
             .IsFalse();
     }
 }
