@@ -7,4 +7,5 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 public static class StaffRoleIds
 {
     public const string Cashier = "cashier";
+    public const string Restocker = "restocker";
 }

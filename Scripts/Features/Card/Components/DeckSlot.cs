@@ -79,20 +79,23 @@ public partial class DeckSlot : Node3D
         if (body is not RigidBody3D rigid || !Accepts(rigid) || _cards.Contains(rigid))
             return;
 
-        if (_cards.Count < Capacity)
-        {
-            _processingEntry = true;
-            CallDeferred(MethodName.LockCardDeferred, rigid);
-        }
-        else
+        if (_cards.Count >= Capacity)
         {
             EjectCard(rigid);
+            return;
         }
+
+        _processingEntry = true;
+        CallDeferred(MethodName.LockCardDeferred, rigid);
     }
 
     private void LockCardDeferred(RigidBody3D body)
     {
-        TryLock(body);
+        // A body on no collision layer was taken out of play after it entered (the restocker carries a container that
+        // way), so the entry queued for it is stale.
+        if (IsInstanceValid(body) && body.CollisionLayer != 0)
+            TryLock(body);
+
         _processingEntry = false;
     }
 

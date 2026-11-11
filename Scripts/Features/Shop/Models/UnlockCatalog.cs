@@ -53,6 +53,8 @@ public sealed class UnlockCatalog
         new UnlockEntry("expansion_side_wing_1", UnlockKind.Expansion, 2),
         // ASSUMPTION (Low): the cashier is hireable at level 2, one level after the first bulk row; retune in data.
         new UnlockEntry("staff_cashier", UnlockKind.Staff, 2),
+        // ASSUMPTION (Low): the restocker is hireable at level 3, one level after the cashier; retune in data.
+        new UnlockEntry("staff_restocker", UnlockKind.Staff, 3),
     });
 
     /// <summary>The level that unlocks the id, or null when the id has no row.</summary>

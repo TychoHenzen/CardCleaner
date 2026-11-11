@@ -55,7 +55,10 @@ public sealed class ShopExpansionRig
         Staff = shop.GetNode<StaffService>("Services/Staff");
         Day = shop.GetNode<ShopDayService>("Services/ShopDayService");
         Progression = shop.GetNode<ShopProgression>("Services/ShopProgression");
+        Restocker = shop.GetNode<Restocker>("World/RightStorage/Restocker");
     }
+
+    public Restocker Restocker { get; }
 
     public CheckoutCounter Counter { get; }
 
@@ -103,6 +106,7 @@ public sealed class ShopExpansionRig
         TestServices.Inject(rig.Spawner);
         TestServices.Inject(rig.View);
         TestServices.Inject(rig.Cashier);
+        TestServices.Inject(rig.Restocker);
         // The camera aim is not driven headless; the cases place the pose with AimAt.
         rig.Controller.AimOverride = true;
 

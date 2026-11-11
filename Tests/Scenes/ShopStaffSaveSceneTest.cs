@@ -1,56 +1,26 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Randomness;
-using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
-using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.Features.Shop;
-using CardCleaner.Tests.TestUtilities;
 using Godot;
 using Saveable;
 
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-///     The staff roster through a real slot save and reload of the shop scene, the bad-data paths of its load, and the
-///     wage line at the day close.
+///     The cashier roster through a real slot save and reload of the shop scene, the bad-data paths of its load, and
+///     the wage line at the day close. The restocker's save paths are in <see cref="ShopRestockerSaveSceneTest" />.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
-public class ShopStaffSaveSceneTest
+public class ShopStaffSaveSceneTest : ShopStaffSaveSceneTestBase
 {
     private const string FigurePath = "World/Storefront/CheckoutCounter/CashierFigure";
-    private const string HiredKey = "hired";
-    private const int SpareMoney = 137;
-    private const int LevelTwoPayment = 500;
-    private const int SettleRounds = 3;
     private const int ShortBalance = 10;
     private const int ClaimSteps = 4;
     private const float StepSeconds = 0.5f;
-
-    private InMemorySlotFileSystem _files = null!;
-    private ShopExpansionRig _rig = null!;
-    private ShopExpansionRig? _second;
-
-    [BeforeTest]
-    public async Task Setup()
-    {
-        _files = new InMemorySlotFileSystem();
-        _rig = await ShopExpansionRig.StartAsync(_files);
-    }
-
-    [AfterTest]
-    public void Teardown()
-    {
-        _second?.Close();
-        _second = null;
-        _rig.Close();
-        ShopPauseRig.Teardown();
-    }
 
     [TestCase]
     [TestCategory("Unit")]
@@ -192,9 +162,7 @@ public class ShopStaffSaveSceneTest
     public async Task Save_written_mid_checkout_reloads_hired_idle_and_closed()
     {
         HireCashier();
-        var day = OpenDay();
-        TestServices.Container.RegisterSingleton<IShopDayService>(day);
-        TestServices.ExecutePendingCallbacks();
+        var day = OpenRegisteredDay();
         _rig.Counter.Money = _rig.Money;
         var customer = new FakeCheckoutCustomer(PaymentMethod.Card, 10, 20);
         _rig.Counter.Checkout(customer);
@@ -214,67 +182,5 @@ public class ShopStaffSaveSceneTest
         AssertBool(_second.Counter.Session == null && _second.Counter.Front == null).IsTrue();
         AssertInt(_second.Money.Balance).IsEqual(balance);
         AssertInt(customer.LeaveCount).IsEqual(0);
-    }
-
-    // Reaches level 2 and leaves SpareMoney after the fee, so a reload shows whether the fee was charged again.
-    private void HireCashier()
-    {
-        _rig.Money.TrySpend(_rig.Money.Balance);
-        _rig.Money.Add(StaffDefaults.CashierHireFee + SpareMoney);
-        _rig.Progression.AwardCheckout(LevelTwoPayment);
-        AssertThat(_rig.Staff.Hire(StaffDefaults.CashierId)).IsEqual(StaffResult.Hired);
-    }
-
-    // The scene's day service gets the bill book a root would build and a save command that writes no file.
-    private ShopDayService OpenDay()
-    {
-        var day = _rig.Day;
-        day.Money = _rig.Money;
-        day.Bills = new DailyBillBook(new IDailyBillSource[]
-        {
-            new RentBillSource(), new StaffWageBillSource(_rig.Staff),
-        });
-        day.SaveCommand = new NoOpSaveGame();
-        // Opening the shop wakes the real spawner; it gets a random source and no frame loop, so it adds no customer.
-        _rig.Spawner.Rng = RandomSources.Create(401UL);
-        _rig.Spawner.ProcessMode = Node.ProcessModeEnum.Disabled;
-        day.OpenShop();
-        return day;
-    }
-
-    private static async Task SettleAsync()
-    {
-        for (var i = 0; i < SettleRounds; i++)
-            await ShopExpansionRig.SettleAsync();
-    }
-
-    private static LogCapture Capture(ILog log) => new(log);
-
-    private sealed class LogCapture : IDisposable
-    {
-        private readonly ILog? _previous = ILog.Sink;
-
-        public LogCapture(ILog log) => ILog.Sink = log;
-
-        public void Dispose() => ILog.Sink = _previous;
-    }
-
-    private sealed class RecordingLog : ILog
-    {
-        public List<string> Warnings { get; } = new();
-
-        public void LogMessage(string message)
-        {
-        }
-
-        public void LogWarning(string message) => Warnings.Add(message);
-
-        public void LogError(string message)
-        {
-        }
-
-        public void LogError(string message, Exception exception)
-        {
-        }
     }
 }

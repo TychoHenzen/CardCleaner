@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
@@ -12,13 +14,15 @@ public class StaffCatalogTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void Shipped_catalog_has_exactly_the_cashier_with_default_values()
+    public static void Shipped_catalog_has_the_cashier_then_the_restocker_with_default_values()
     {
         var roles = GD.Load<StaffCatalog>(ShippedCatalogPath).ToRoles();
 
-        AssertThat(roles.Count).IsEqual(1);
-        AssertThat(roles[StaffDefaults.CashierId])
-            .IsEqual(StaffDefaults.Cashier());
+        AssertThat(roles.Count).IsEqual(2);
+        AssertThat(roles.Keys.ToList())
+            .IsEqual(new List<string> { StaffDefaults.CashierId, StaffDefaults.RestockerId });
+        AssertThat(roles[StaffDefaults.CashierId]).IsEqual(StaffDefaults.Cashier());
+        AssertThat(roles[StaffDefaults.RestockerId]).IsEqual(StaffDefaults.Restocker());
     }
 
     [TestCase]
