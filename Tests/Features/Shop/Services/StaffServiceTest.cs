@@ -3,7 +3,7 @@ using CardCleaner.Scripts.Features.Shop.Services;
 
 namespace CardCleaner.Tests.Features.Shop.Services;
 
-/// <summary>Hiring and dismissing through the staff service: fees, unlock levels, refusals and change events.</summary>
+/// <summary>Hiring and dismissing through the staff service: fees, unlock levels, refusals and events.</summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class StaffServiceTest : StaffServiceTestBase

@@ -7,14 +7,17 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// The graybox shop scene keeps its named areas, collision, markers and spawn. The pack-mesh slots
-/// are covered by <see cref="ShopSceneArtSlotTest"/>, and where the player can walk by <see cref="ShopSceneLayoutWalkTest"/>.
+/// are covered by <see cref="ShopSceneArtSlotTest"/>, and where the player can walk by
+/// <see cref="ShopSceneLayoutWalkTest"/>.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class ShopSceneContractTest : ShopSceneContractTestBase
 {
     private static readonly string[] ShopMarkerNames =
-        ["PcLocation", "SeamLocation", "DeliveryPoint", "ShelfSlotsArea", "ExpansionLot1", "CustomerCounter"];
+        [
+            "PcLocation", "SeamLocation", "DeliveryPoint", "ShelfSlotsArea", "ExpansionLot1", "CustomerCounter",
+        ];
     private static readonly string[] StreetMarkerNames = ["CustomerSpawn", "CustomerDespawn"];
 
     [TestCase]
@@ -110,8 +113,9 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
         AssertThat(mesh.GeometrySourceGroupName.ToString()).IsEqual("shop_navigation");
         // x -16..24, z -8..16.
         AssertThat(mesh.FilterBakingAabb).IsEqual(new Aabb(-16f, -1f, -8f, 40f, 5f, 24f));
-        foreach (var name in new[]
-                     { "Storefront", "Storage", "Backoffice", "RightStorage", "ExpansionLot", "Street", "Walls" })
+        string[] navigable =
+            ["Storefront", "Storage", "Backoffice", "RightStorage", "ExpansionLot", "Street", "Walls"];
+        foreach (var name in navigable)
         {
             AssertBool(_shop.GetNode($"World/{name}").IsInGroup("shop_navigation")).IsTrue();
         }
@@ -123,8 +127,7 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     {
         AssertBool(_shop.GetNode("World/Furniture").IsInGroup("shop_navigation")).IsTrue();
 
-        var placement = _shop.GetNodeOrNull<CardCleaner.Scripts.Features.Shop.Components.FurniturePlacementController>(
-            "Services/FurniturePlacement");
+        var placement = _shop.GetNodeOrNull<FurniturePlacementController>("Services/FurniturePlacement");
         AssertThat(placement).IsNotNull();
         AssertThat(placement!.FurnitureRoot).IsNotNull();
         AssertThat(placement.Navigation).IsNotNull();
