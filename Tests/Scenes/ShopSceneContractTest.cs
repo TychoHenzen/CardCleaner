@@ -94,7 +94,7 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     {
         foreach (var marker in new[] { "PcLocation", "SeamLocation" })
         {
-            AssertBool(IsInsideArea("Backoffice", MarkerPosition(marker))).IsTrue();
+            AssertBool(this.IsInsideArea("Backoffice", this.MarkerPosition(marker))).IsTrue();
         }
     }
 
