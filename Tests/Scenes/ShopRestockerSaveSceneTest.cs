@@ -51,7 +51,7 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
     {
         HireRestocker();
         OpenRegisteredDay();
-        var (_, pack) = StockRackPack();
+        var pack = StockRackPack();
         var timeout = await BoundedWait.Until(
             () => pack.GetParent()?.Name.ToString() == HandName, "the restocker to carry the pack");
         AssertBool(timeout == null).OverrideFailureMessage(timeout ?? string.Empty).IsTrue();
@@ -96,13 +96,13 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
         HireRestocker();
         var day = OpenRegisteredDay();
         AssertThat(_rig.Staff.Dismiss(StaffDefaults.RestockerId)).IsEqual(StaffResult.Dismissed);
-        var (rackSlot, pack) = StockRackPack();
+        var pack = StockRackPack();
 
         for (var i = 0; i < IdleFrames; i++)
             await ISceneRunner.SyncPhysicsFrame;
 
         AssertBool(_rig.Restocker.Visible).IsFalse();
-        AssertBool(rackSlot.Cards.Contains(pack)).IsTrue();
+        AssertBool(RackSlot().Cards.Contains(pack)).IsTrue();
         _rig.Money.Add(StaffDefaults.RestockerHireFee);
         AssertThat(_rig.Staff.Hire(StaffDefaults.RestockerId)).IsEqual(StaffResult.Hired);
         DayReport? report = null;
@@ -113,14 +113,15 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
         AssertInt(report.Settlement.Lines.Count(line => line.Name == "Restocker wage")).IsEqual(1);
     }
 
+    private DeckSlot RackSlot() => _rig.Shop.GetNode<CardShelf>("World/RightStorage/StorageRack").Slots.First();
+
     // A new pack locked into the first slot of the storage rack.
-    private (DeckSlot Slot, CardContainer Pack) StockRackPack()
+    private CardContainer StockRackPack()
     {
-        var slot = _rig.Shop.GetNode<CardShelf>("World/RightStorage/StorageRack").Slots.First();
         var pack = GD.Load<PackedScene>(PackScene).Instantiate<CardContainer>();
         _rig.Shop.GetNode("World").AddChild(pack);
-        AssertBool(slot.TryLock(pack)).IsTrue();
-        return (slot, pack);
+        AssertBool(RackSlot().TryLock(pack)).IsTrue();
+        return pack;
     }
 
     private IEnumerable<CardContainer> PackContainers() =>
