@@ -54,7 +54,8 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
         var pack = StockRackPack();
         var timeout = await BoundedWait.Until(
             () => pack.GetParent()?.Name.ToString() == HandName, "the restocker to carry the pack");
-        AssertBool(timeout == null).OverrideFailureMessage(timeout ?? string.Empty).IsTrue();
+        if (timeout != null)
+            AssertBool(false).OverrideFailureMessage(timeout).IsTrue();
         var before = PackCount();
         AssertBool(_rig.Saves.ManualSave()).IsTrue();
         _rig.Close();
