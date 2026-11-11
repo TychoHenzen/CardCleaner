@@ -133,18 +133,46 @@ public partial class GdUnit4CSharpApi : RefCounted
 
             Debug.Assert(tests != null, nameof(tests) + " != null");
             var testSuiteNodes = new List<TestSuiteNode> { BuildTestSuiteNodeFrom(tests) };
-            GdUnit4NetApiGodotBridge.ExecuteAsync(testSuiteNodes, listener, executionCts.Token)
+            var suite = testSuiteNodes[0].ManagedType;
+            var callbacks = SuiteStartReports(suite, listener);
+
+            // Project patch (issue 448): the bridge runs through SuiteStartWatchdog, which starts a suite again when
+            // the package's off-main-thread SignalAwaiter loses its start (gdUnit4Net issue 397).
+            SuiteStartWatchdog.Run<Variant>(
+                    (receive, token) => GdUnit4NetApiGodotBridge.ExecuteAsync(
+                        testSuiteNodes, Callable.From(receive), token),
+                    callbacks,
+                    SuiteStartWatchdog.DefaultPolicy,
+                    executionCts.Token)
                 .GetAwaiter()
-                .OnCompleted(() => EmitSignal(SignalName.ExecutionCompleted));
+                .OnCompleted(EmitCompletedDeferred);
         }
 #pragma warning disable CA1031
         catch (Exception e)
 #pragma warning restore CA1031
         {
             GD.PrintErr($"Error executing tests: {e.Message}\n{e.StackTrace}");
-            Task.Run(() => { }).GetAwaiter().OnCompleted(() => EmitSignal(SignalName.ExecutionCompleted));
+            EmitCompletedDeferred();
         }
     }
+
+    // Project patch (issue 448): where SuiteStartWatchdog sends the events and its reports for one suite.
+    private static SuiteStartWatchdog.Callbacks<Variant> SuiteStartReports(string suite, Callable listener)
+        => new(
+            testEvent => listener.Call(testEvent),
+            attempt => GD.PrintErr(
+                $"gdUnit4 suite start lost: {suite} sent no event within "
+                + $"{SuiteStartWatchdog.DefaultPolicy.StartBound.TotalSeconds} s (attempt {attempt}), "
+                + "starting it again (gdUnit4Net issue 397)."),
+            _ => GD.PrintErr(
+                $"gdUnit4 suite start lost: {suite} sent an event after its attempt was abandoned; dropped."),
+            attempt => GD.PrintErr(
+                $"gdUnit4 suite start lost: {suite} attempt {attempt} did not end after its cancellation; "
+                + "starting the next attempt anyway."));
+
+    // Deferred, so the signal is never emitted before the GDScript caller reaches its await on it.
+    private void EmitCompletedDeferred()
+        => CallDeferred(GodotObject.MethodName.EmitSignal, SignalName.ExecutionCompleted);
 
     /// <summary>
     ///     Will cancel the current test execution.
