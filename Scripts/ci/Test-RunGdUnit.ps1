@@ -1146,6 +1146,12 @@ function Test-GdUnitExitCodes {
         Assert-Contains $result.Stderr "(exit=$code)" "exit $code fails without a report and is not resumed"
     }
 
+    # Exit 105 is gdUnit's script-errors-at-discovery code. Invoke-ExitScenario asserts one Godot run, so no resume.
+    $result = Invoke-ExitScenario -Context $Context -Name 'Exit105' -Lines @('exit 105')
+    Assert-ExitCode -Result $result -Expected 1 -Message 'exit 105 fails the run'
+    Assert-Contains $result.Stderr 'detected script errors while discovering the test suites (exit code 105)' 'exit 105 names the script errors'
+    Assert-That (-not ((Get-FlatRunnerOutput $result) -match 'crash 0x')) 'exit 105 is not treated as a crash'
+
     $afterGreenLines = $suites + @('report r1 0 0', 'exit -1073741795')
     $result = Invoke-ExitScenario -Context $Context -Name 'ExitAfterGreen' -Lines $afterGreenLines
     Assert-ExitCode -Result $result -Expected 1 -Message 'an abnormal exit after a green report fails the run'

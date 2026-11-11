@@ -39,7 +39,7 @@ $KillWaitMilliseconds = 15000
 $ReadRetries = 10
 # Exit codes gdUnit returns itself (GdUnitTestSessionRunner.gd). Any other exit code from an attempt that wrote no
 # results report is a Godot crash, for example the Windows NTSTATUS 0xC000001D (illegal instruction).
-$GdUnitExitCodes = @(0, 100, 101, 103, 104)
+$GdUnitExitCodes = @(0, 100, 101, 103, 104, 105)
 $AnsiEscape = [regex]::new([string][char]27 + '\[[0-9;]*m')
 $SuiteStartPattern = [regex]::new('^\s*Run Test Suite: (?<suite>res://\S+)')
 $StatisticsPattern = [regex]::new('^\s*Statistics: (?<cases>\d+) test cases \| (?<errors>\d+) errors \| (?<failures>\d+) failures')
@@ -525,7 +525,8 @@ if ($expected.Count -eq 0) {
 Invoke-Build -RepositoryRoot $repositoryRoot -ReportRoot $reportRoot
 Invoke-Import -GodotPath $godotPath -RepositoryRoot $repositoryRoot -ReportRoot $reportRoot
 
-# -rc 100000 stops gdUnit's report cleanup from trying (and failing) to delete old report_N folders (#198).
+# -rc 100000 keeps every report folder of a run; gdUnit would otherwise keep only the newest 20. That is a choice,
+# not a workaround: gdUnit 6.2.3 cleans a relative -rd folder correctly.
 $baseArguments = @(
     '--headless', '--path', '.', '-s', 'res://addons/gdUnit4/bin/GdUnitCmdTool.gd', '-c', '--ignoreHeadlessMode',
     '-rd', ($reportRelative -replace '\\', '/'), '-rc', '100000'
@@ -631,6 +632,13 @@ $summaryErrors = ($suiteResults | Measure-Object -Property Errors -Sum).Sum
 $summaryFailures = ($suiteResults | Measure-Object -Property Failures -Sum).Sum
 Write-Host ("Run summary: suites=$($suiteResults.Count) cases=$([int]$summaryCases) " +
     "errors=$([int]$summaryErrors) failures=$([int]$summaryFailures) attempts=$($attemptLogs.Count)")
+
+# Exit 105 (RETURN_ERROR_SCRIPT_ERRORS_DETECTED) is gdUnit's own answer to script errors found while it discovers the
+# suites. It writes no report and a rerun finds the same errors, so the run fails here and is never resumed.
+if ($finalExitCode -eq 105) {
+    $stdoutTail = (Get-Content -LiteralPath $stdoutPath -Tail 40) -join [Environment]::NewLine
+    throw "GdUnit detected script errors while discovering the test suites (exit code 105) and wrote no report under $reportRoot. Fix the script errors in the Godot log and rerun. stdout=$stdoutTail"
+}
 
 # Every report written since the run began counts, and at least one is required: a run whose last attempt was
 # interrupted after its final suite printed Statistics still has to leave a report before it can pass.
