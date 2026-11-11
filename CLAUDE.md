@@ -41,6 +41,16 @@ report folders and removes the older ones. `Run-GdUnit.ps1` and the one-liners b
 report folder of a run is kept; that is a choice, not a requirement of the cleanup. A run without `-rd` uses gdUnit's
 absolute default report path.
 
+**Project patch in the vendored addon (issue 448).** gdUnit4.api runs each C# suite on a thread-pool thread, and the
+suite first awaits Godot's `process_frame` through a `SignalAwaiter`, which is not thread-safe. When the frame lands
+between the awaiter's completion check and its continuation registration, the suite never starts and the run stalls
+between suites (gdUnit4Net issue 397, closed upstream as a Godot bug; the package keeps that code internal).
+`addons/gdUnit4/src/dotnet/GdUnit4CSharpApi.cs` therefore runs the bridge through `SuiteStartWatchdog` (same folder): an
+attempt that sends no event within 30 s is cancelled, its late events are dropped, and the suite starts again, three
+attempts in all. Each abandoned attempt prints `gdUnit4 suite start lost:` to stderr. gdUnit sends a suite's first event
+after its `[Before]` hook, so no `[Before]` hook may await. `SuiteStartGuardTest` fails when an addon update drops the
+patch or a `[Before]` hook returns a task; reapply both files after updating the addon.
+
 **Without PowerShell.** Start Godot from Bash through node, so no console window opens:
 
 ```bash
