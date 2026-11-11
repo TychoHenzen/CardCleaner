@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -16,15 +17,18 @@ public static class ShopNavigationRig
     public const float FrontDoorX = 6.05f;
     public const float RoadDoorX = 18.05f;
 
-    private const int SyncMaxFrames = 60;
-
     /// <summary>
     /// Waits for the server to apply a bake: the region's iteration id leaves <paramref name="regionBefore" />, and
     /// the map id has moved past its value on the last frame the region was unchanged. The map builds synchronously
     /// (<see cref="NavigationMapSyncSettingTest" />), so a map build in the sync that applies the region includes it;
     /// with async builds a stale build finishing in that sync looked the same and the wait could not end.
+    /// The wait is bounded by wall-clock time through BoundedWait; a timeout throws InvalidOperationException whose
+    /// message starts with 'navigation did not sync'.
     /// </summary>
-    public static async Task WaitForBakeSync(ShopNavigationRegion region, uint regionBefore)
+    public static async Task WaitForBakeSync(
+        ShopNavigationRegion region,
+        uint regionBefore,
+        double maxSeconds = BoundedWait.DefaultMaxSeconds)
     {
         var map = region.GetNavigationMap();
         var rid = region.GetRid();
@@ -35,28 +39,31 @@ public static class ShopNavigationRig
                 + "(navigation/world/map_use_async_iterations must be false)");
         }
 
-        // Null until a frame shows the region unchanged: a region already changed on entry was applied by an earlier
-        // sync, whose synchronous map build already holds it.
+        // Null until a tick shows the region unchanged: a region already changed on entry was applied by an earlier
+        // sync, whose synchronous map build already holds it. Both ids are read on the main thread between syncs, so
+        // several physics frames per tick still leave the map id different from the value kept here.
         uint? mapBeforeRegion = null;
-        for (int frame = 0; frame < SyncMaxFrames; frame++)
+        var timeout = await BoundedWait.Until(
+            () =>
+            {
+                uint mapNow = NavigationServer3D.MapGetIterationId(map);
+                if (NavigationServer3D.RegionGetIterationId(rid) == regionBefore)
+                {
+                    mapBeforeRegion = mapNow;
+                    return false;
+                }
+
+                return mapBeforeRegion is null || mapNow != mapBeforeRegion;
+            },
+            "the navigation map to apply a bake",
+            maxSeconds);
+        if (timeout is not null)
         {
-            uint mapNow = NavigationServer3D.MapGetIterationId(map);
-            if (NavigationServer3D.RegionGetIterationId(rid) == regionBefore)
-            {
-                mapBeforeRegion = mapNow;
-            }
-            else if (mapBeforeRegion is null || mapNow != mapBeforeRegion)
-            {
-                return;
-            }
-
-            await ISceneRunner.SyncPhysicsFrame;
+            throw new InvalidOperationException(
+                $"navigation did not sync: {timeout} Region id now {NavigationServer3D.RegionGetIterationId(rid)} "
+                + $"(before {regionBefore}), map id now {NavigationServer3D.MapGetIterationId(map)} "
+                + $"(before the region changed {mapBeforeRegion?.ToString() ?? "unset"}).");
         }
-
-        throw new InvalidOperationException(
-            $"navigation did not sync after {SyncMaxFrames} physics frames: region id "
-            + $"{NavigationServer3D.RegionGetIterationId(rid)} (before {regionBefore}), map id "
-            + $"{NavigationServer3D.MapGetIterationId(map)} (before the region changed {mapBeforeRegion})");
     }
 
     /// <summary>A solid box across a street-wall door opening (3 m wide, 2 m high, 0.5 m deep at z=12).</summary>
