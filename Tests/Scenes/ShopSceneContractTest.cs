@@ -94,8 +94,7 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     {
         foreach (var marker in new[] { "PcLocation", "SeamLocation" })
         {
-            var position = _shop.GetNode<Marker3D>($"World/Markers/{marker}").GlobalPosition;
-            AssertBool(IsInsideArea("Backoffice", position)).IsTrue();
+            AssertBool(IsInsideArea("Backoffice", MarkerPosition(marker))).IsTrue();
         }
     }
 
