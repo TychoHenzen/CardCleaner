@@ -53,8 +53,15 @@ node -e "const r=require('child_process').spawnSync('<godot console exe>',['--he
 
 These give one suite and the .uid import when powershell.exe cannot start. The one-liners exit with Godot's own status,
 and non-zero (1) when Godot cannot start, so a missing exe fails the command. They have no watchdog, no resume and no suite
-aggregation, so Run-GdUnit.ps1 stays the supported path for a full or -Fast run. A suite that stalls the whole process
-is the Jolt separate-thread symptom, whose owner decision is pending (issues 408 and 411).
+aggregation, so Run-GdUnit.ps1 stays the supported path for a full or -Fast run.
+
+**Physics runs on the main thread** (`physics/3d/run_on_separate_thread=false`, pinned by `PhysicsThreadSettingTest`).
+With the separate thread on, Godot 4.7.1 froze the whole process, in tests and in the game alike. A main-thread physics
+call during the physics frame (here a `CollisionObject3D` notification) found the physics command queue mid-flush,
+queued a sync and waited, while the physics thread finished its flush and refused to flush again until the frame ended.
+Native stacks of two captured freezes showed exactly that (godotengine/godot issue 123654). The upstream fix is pull
+request 124990, merged to master on 2026-10-31 and marked for a 4.7 backport. Turn the setting back on only on an
+engine version that contains it.
 
 CI scope: pull requests and pushes to `master` run only the Unit suites (`-Fast`). The full suite runs on the weekly
 schedule (Sunday 03:00 UTC) and on a manual dispatch with `full=true`, for example `gh workflow run ci.yml --ref
