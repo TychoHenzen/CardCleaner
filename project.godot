@@ -109,9 +109,13 @@ ui_down={
 ]
 }
 
+[navigation]
+
+world/map_use_async_iterations=false
+
 [physics]
 
-3d/run_on_separate_thread=true
+3d/run_on_separate_thread=false
 3d/physics_engine="Jolt Physics"
 jolt_physics_3d/simulation/velocity_steps=4
 jolt_physics_3d/simulation/sleep_velocity_threshold=0.1

@@ -489,6 +489,8 @@ if ([IO.Path]::IsPathRooted($ReportDirectory) -or $reportSegments -contains '..'
     $reportSegments.Count -lt 2 -or $reportSegments[0] -ne 'reports') {
     throw "-ReportDirectory must be a relative folder below reports/ without '..': $ReportDirectory"
 }
+# powershell -File passes a comma-joined -Suite list as one string, so each value may name several suites.
+$Suite = @($Suite | ForEach-Object { $_ -split ',' })
 if ($Fast -and $Suite.Count -gt 0) {
     throw '-Suite and -Fast cannot be combined; -Suite already names the suites to run.'
 }
