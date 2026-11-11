@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -12,6 +11,7 @@ using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.Scenes;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -25,8 +25,6 @@ public abstract class RestockerTestBase
 {
     private protected const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private protected const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
-    private protected const double MaxWaitSeconds = 45;
-    private const double MinPhysicsTicksPerSecond = 30;
     private protected const int IdleFrames = 120;
     private protected const int LongIdleFrames = 600;
     private protected const int LevelThreePayment = 1500;
@@ -133,50 +131,24 @@ public abstract class RestockerTestBase
     private protected int PackCount() => _tree.GetNodesInGroup("card_containers").OfType<CardContainer>()
         .Count(c => c.Kind == CardContainerKind.Pack && !c.IsOpened);
 
-    // Waits for a condition, one render frame at a time, and fails the case with a message once MaxWaitSeconds of
-    // wall-clock time have passed. The bound is wall-clock and the tick is the process frame, not the physics
-    // frame: a wait counted in physics frames never ends when that signal stops while the main loop still runs
-    // (issue 408: the runner's stall watchdog killed such a case after 180 s of silence).
+    // Waits for a condition through BoundedWait and fails the case with its message, plus the restocker state, when
+    // the wall-clock bound passes (issue 408: the runner's stall watchdog killed an unbounded wait after 180 s).
     private protected async Task<bool> Poll(
-        Func<bool> done, [CallerArgumentExpression(nameof(done))] string? what = null)
-    {
-        var clock = Stopwatch.StartNew();
-        var firstTick = Engine.GetPhysicsFrames();
-        while (!done())
-        {
-            if (clock.Elapsed.TotalSeconds > MaxWaitSeconds)
-            {
-                AssertBool(false).OverrideFailureMessage(TimeoutMessage(what, clock, firstTick)).IsTrue();
-                return false;
-            }
-
-            await NextFrame();
-        }
-
-        return true;
-    }
+        Func<bool> done, [CallerArgumentExpression(nameof(done))] string? what = null) =>
+        Passed(await BoundedWait.Until(done, what ?? "a condition"));
 
     // Waits for count physics ticks to pass, with the same wall-clock bound as Poll.
-    private protected async Task Frames(int count)
+    private protected async Task Frames(int count) => Passed(await BoundedWait.PhysicsFrames(count));
+
+    private bool Passed(string? timeout)
     {
-        var clock = Stopwatch.StartNew();
-        var firstTick = Engine.GetPhysicsFrames();
-        while (Engine.GetPhysicsFrames() - firstTick < (ulong)count)
+        if (timeout is null)
         {
-            if (clock.Elapsed.TotalSeconds > MaxWaitSeconds + count / MinPhysicsTicksPerSecond)
-            {
-                AssertBool(false).OverrideFailureMessage(TimeoutMessage($"{count} physics frames", clock, firstTick))
-                    .IsTrue();
-                return;
-            }
-
-            await NextFrame();
+            return true;
         }
+
+        AssertBool(false).OverrideFailureMessage(
+            $"{timeout} Restocker phase {_restocker.Phase}, paused {_tree.Paused}.").IsTrue();
+        return false;
     }
-
-    private async Task NextFrame() => await _tree.ToSignal(_tree, SceneTree.SignalName.ProcessFrame);
-
-    private string TimeoutMessage(string? what, Stopwatch clock, ulong firstTick) =>
-        $"Timed out after {clock.Elapsed.TotalSeconds:F0} s waiting for: {what}. Physics frames passed: " +
-        $"{Engine.GetPhysicsFrames() - firstTick}. Restocker phase {_restocker.Phase}, paused {_tree.Paused}.";
 }
