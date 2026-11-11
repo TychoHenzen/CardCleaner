@@ -792,11 +792,26 @@ function Test-SingleSuite {
     Assert-That (Test-Path -LiteralPath (Join-Path $Context.Repo 'reports\single\godot.stdout.log') -PathType Leaf) 'logs go to the chosen folder'
 }
 
+function Test-CommaSuiteList {
+    param($Context)
+
+    Set-FakePlan -Context $Context -Index 0 -Lines @(
+        (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats -Cases 3), (Get-SuiteStart $SuiteBeta), (Get-SuiteStats -Cases 5),
+        'report r1 0 0', 'exit 0')
+    $result = Invoke-Runner -Context $Context -Suite @($SuiteAlpha, $SuiteBeta)
+    Assert-ExitCode -Result $result -Expected 0 -Message 'a comma-joined two-suite list exits 0'
+    Assert-Line $result.Stdout 'GdUnit passed: 2 of 2 suite files ran.' 'both named suites are expected'
+    $tests = @(Get-RunnerTestCalls -Context $Context)
+    Assert-Equal 1 $tests.Count 'one test invocation'
+    Assert-That ($tests[0].Contains($SuiteAlpha) -and $tests[0].Contains($SuiteBeta)) 'the call names both suites'
+}
+
 function Test-InvalidSuiteParameters {
     param($Context)
 
     foreach ($case in @(
             @{ Suite = @('res://Tests/Nope/NopeTest.cs'); Dir = ''; Expect = 'Unknown -Suite value(s): res://Tests/Nope/NopeTest.cs' },
+            @{ Suite = @($SuiteAlpha, 'res://Tests/Nope/NopeTest.cs'); Dir = ''; Expect = 'Unknown -Suite value(s): res://Tests/Nope/NopeTest.cs' },
             @{ Suite = @(''); Dir = ''; Expect = 'Empty -Suite value' },
             @{ Suite = @(' '); Dir = ''; Expect = 'Empty -Suite value' },
             @{ Suite = @(); Dir = 'reports\..\escape'; Expect = '-ReportDirectory must be a relative folder below reports/' },
@@ -1131,6 +1146,12 @@ function Test-GdUnitExitCodes {
         Assert-Contains $result.Stderr "(exit=$code)" "exit $code fails without a report and is not resumed"
     }
 
+    # Exit 105 is gdUnit's script-errors-at-discovery code. Invoke-ExitScenario asserts one Godot run, so no resume.
+    $result = Invoke-ExitScenario -Context $Context -Name 'Exit105' -Lines @('exit 105')
+    Assert-ExitCode -Result $result -Expected 1 -Message 'exit 105 fails the run'
+    Assert-Contains $result.Stderr 'detected script errors while discovering the test suites (exit code 105)' 'exit 105 names the script errors'
+    Assert-That (-not ((Get-FlatRunnerOutput $result) -match 'crash 0x')) 'exit 105 is not treated as a crash'
+
     $afterGreenLines = $suites + @('report r1 0 0', 'exit -1073741795')
     $result = Invoke-ExitScenario -Context $Context -Name 'ExitAfterGreen' -Lines $afterGreenLines
     Assert-ExitCode -Result $result -Expected 1 -Message 'an abnormal exit after a green report fails the run'
@@ -1233,7 +1254,7 @@ $AllChecks = @(
     'CleanRun', 'BuildLeavesWorkerRunning', 'BuildFails', 'Fast', 'StallResumes', 'RepeatedStallFails',
     'CrashNoReport', 'CrashAfterEarlierReportResumes', 'RepeatedCrashFails', 'StallThenCrashFails',
     'CrashResumeNoProgressFails', 'InterruptionBudget', 'GdUnitExitCodes', 'ReportAggregation', 'GateAndSummary',
-    'PatternLockstep', 'SingleSuite', 'InvalidSuiteParameters', 'SingleSuiteStall')
+    'PatternLockstep', 'SingleSuite', 'CommaSuiteList', 'InvalidSuiteParameters', 'SingleSuiteStall')
 if ([string]::IsNullOrWhiteSpace($Only)) {
     $checks = $AllChecks
 }
