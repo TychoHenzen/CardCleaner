@@ -43,23 +43,18 @@ jobs:
         run: dotnet build CardCleaner.csproj --no-restore --configuration Release /p:EnableNETAnalyzers=true /p:EnforceCodeStyleInBuild=true
 
       - name: Download Godot 4.7.1 .NET
+        # Install-Godot.ps1 retries a failed download or unzip (3 attempts, 15 s then 30 s apart) and warns on each failure.
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           $archiveName = 'Godot_v4.7.1-stable_mono_win64.zip'
-          $archivePath = Join-Path $env:RUNNER_TEMP $archiveName
-          $extractPath = Join-Path $env:RUNNER_TEMP 'godot-4.7.1-stable-mono'
-          $downloadUrl = 'https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_win64.zip'
+          $godotBinary = ./Scripts/ci/Install-Godot.ps1 `
+            -Uri "https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/$archiveName" `
+            -ArchivePath (Join-Path $env:RUNNER_TEMP $archiveName) `
+            -ExtractPath (Join-Path $env:RUNNER_TEMP 'godot-4.7.1-stable-mono') `
+            -BinaryName 'Godot_v4.7.1-stable_mono_win64.exe'
 
-          Invoke-WebRequest -Uri $downloadUrl -OutFile $archivePath
-          Expand-Archive -LiteralPath $archivePath -DestinationPath $extractPath -Force
-
-          $godotBinary = Get-ChildItem -LiteralPath $extractPath -Filter 'Godot_v4.7.1-stable_mono_win64.exe' -File -Recurse | Select-Object -First 1
-          if ($null -eq $godotBinary) {
-            throw "Godot binary was not found under $extractPath"
-          }
-
-          "GODOT_BIN=$($godotBinary.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "GODOT_BIN=$godotBinary" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Check latest weekly GdUnit result
         if: github.event_name == 'pull_request'
@@ -132,6 +127,10 @@ jobs:
       - name: Run the runner fixture
         shell: powershell
         run: ./Scripts/ci/Test-RunGdUnit.ps1 -RunnerShell pwsh
+
+      - name: Run the Godot download fixture
+        shell: pwsh
+        run: ./Scripts/ci/Test-InstallGodot.ps1
 
   dependency-audit:
     name: NuGet vulnerability check

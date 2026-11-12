@@ -14,6 +14,7 @@ The repository uses a small set of reproducible gates for the C# Godot project. 
 - Restore before building with `dotnet restore CardCleaner.csproj`.
 - Build with analyzers using `dotnet build CardCleaner.csproj --no-restore --configuration Release /p:EnableNETAnalyzers=true /p:EnforceCodeStyleInBuild=true`.
 - Run GdUnit locally with `scripts/ci/Run-GdUnit.ps1 -GodotBinary <path-to-Godot_v4.7.1-stable_mono_win64.exe>` or set `GODOT_BIN`; the runner uses the sibling console executable when available so Windows waits for the actual headless process.
+- Download Godot in CI with `scripts/ci/Install-Godot.ps1`, which retries a failed download or unzip for up to 3 attempts (15 s, then 30 s apart); `scripts/ci/Test-InstallGodot.ps1` proves it against a local server.
 - Audit the complete dependency graph with `dotnet list CardCleaner.csproj package --vulnerable --include-transitive`.
 - Lint workflows with `go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12`.
 
