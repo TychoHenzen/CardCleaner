@@ -32,6 +32,9 @@ powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godo
 
 # Runner fixture: runs Run-GdUnit.ps1 against a fake Godot, so no Godot is needed (CI runs it too)
 powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1
+
+# Godot download retry fixture: runs Install-Godot.ps1 against a loopback HTTP server, so no Godot or network is needed (CI runs it too)
+powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-InstallGodot.ps1
 ```
 
 The vendored gdUnit4 is 6.2.3, which cleans a relative `-rd` report folder correctly: `GdUnitFileAccess.delete_directory`
@@ -84,6 +87,14 @@ schedule (Sunday 03:00 UTC) and on a manual dispatch with `full=true`, for examp
 <branch> -f full=true`. PR CI also fails when the latest scheduled run on `master` is not green. So a green PR or merge
 run does not prove the full suite; dispatch `full=true` on the branch (or tag) whose head needs it, e.g.
 `gh workflow run ci.yml --ref <branch> -f full=true`.
+
+The Godot download in CI goes through `Scripts/ci/Install-Godot.ps1`. It retries a failed download or unzip (an HTTP 5xx such
+as the 504 that failed the 2026-11-08 weekly run, a connection error, a truncated archive) for 3 attempts in all, waiting 15 s
+and then 30 s, and writes `Godot download attempt <n> of 3 failed: <error>` as a warning for each failure, so the retry shows in
+the run log. An archive that unzips without the executable fails at once. `Scripts/ci/Test-InstallGodot.ps1` proves the loop
+against a loopback HTTP server (no Godot and no network), and the `runner-fixture` job runs it under pwsh. The rule that a pull
+request fails while the latest scheduled master run is not green is unchanged, so a weekly run that fails for another reason still
+needs `gh run rerun <run-id> --failed`.
 
 Tests use gdUnit4 framework and require the Godot runtime (`[RequireGodotRuntime]` attribute). Test files are in `Tests/` mirroring the `Scripts/` structure.
 
