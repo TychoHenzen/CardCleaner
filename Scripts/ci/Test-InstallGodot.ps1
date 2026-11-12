@@ -122,13 +122,21 @@ function Assert-That {
     if (-not $Condition) { throw "assertion failed: $Message" }
 }
 
+# The script must print exactly one object, the executable path; a failure names every object it printed.
+function Assert-OnlyExecutablePath {
+    param($Result)
+    $printed = @($Result.Output | ForEach-Object { "[$($_.GetType().Name)] $_" }) -join ' | '
+    Assert-That ($Result.Output.Count -eq 1 -and ([string]$Result.Output[0]).EndsWith($BinaryName)) `
+        "one output, the executable path, expected; got $($Result.Output.Count): $printed"
+}
+
 $Cases = [ordered]@{
     'first-try'              = {
         $r = Invoke-Install -Plan @('zip') -MaxAttempts 3
         Assert-That ($null -eq $r.Failure) "no failure expected, got: $($r.Failure)"
         Assert-That ($r.Requests -eq 1) "1 request expected, got $($r.Requests)"
         Assert-That ($r.Warnings.Count -eq 0) "0 warnings expected, got $($r.Warnings.Count)"
-        Assert-That ($r.Output.Count -eq 1 -and ([string]$r.Output[0]).EndsWith($BinaryName)) 'one output: the executable path'
+        Assert-OnlyExecutablePath $r
     }
     'retry-504'              = {
         $r = Invoke-Install -Plan @('504', 'zip') -MaxAttempts 3
@@ -136,7 +144,7 @@ $Cases = [ordered]@{
         Assert-That ($r.Requests -eq 2) "2 requests expected, got $($r.Requests)"
         Assert-That ($r.Warnings.Count -eq 1) "1 warning expected, got $($r.Warnings.Count)"
         Assert-That ($r.Warnings[0] -like 'Godot download attempt 1 of 3 failed:*504*') "warning text: $($r.Warnings[0])"
-        Assert-That ($r.Output.Count -eq 1 -and ([string]$r.Output[0]).EndsWith($BinaryName)) 'one output: the executable path'
+        Assert-OnlyExecutablePath $r
     }
     'always-504'             = {
         $r = Invoke-Install -Plan @('504') -MaxAttempts 3
@@ -151,7 +159,7 @@ $Cases = [ordered]@{
         Assert-That ($null -eq $r.Failure) "no failure expected, got: $($r.Failure)"
         Assert-That ($r.Requests -eq 2) "2 requests expected, got $($r.Requests)"
         Assert-That ($r.Warnings.Count -eq 1) "1 warning expected, got $($r.Warnings.Count)"
-        Assert-That ($r.Output.Count -eq 1 -and ([string]$r.Output[0]).EndsWith($BinaryName)) 'one output: the executable path'
+        Assert-OnlyExecutablePath $r
     }
     'missing-binary'         = {
         $r = Invoke-Install -Plan @('zip') -MaxAttempts 3 -ZipEntry 'readme.txt'
