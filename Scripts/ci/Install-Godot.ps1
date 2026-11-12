@@ -45,8 +45,11 @@ for ($attempt = 1; $attempt -le $MaxAttempts -and -not $succeeded; $attempt++) {
         if (Test-Path -LiteralPath $ArchivePath) {
             Remove-Item -LiteralPath $ArchivePath -Force
         }
-        Invoke-WebRequest -UseBasicParsing -Uri $Uri -OutFile $ArchivePath -TimeoutSec $TimeoutSeconds
-        Expand-Archive -LiteralPath $ArchivePath -DestinationPath $ExtractPath -Force
+        # The only object this script prints is the executable path, so the caller can read it as one line. Both
+        # cmdlets' pipeline output is discarded: under pwsh 7, Expand-Archive on a corrupt archive emits the
+        # WindowsBase assembly it loads while failing, which made a retried install print two objects.
+        $null = Invoke-WebRequest -UseBasicParsing -Uri $Uri -OutFile $ArchivePath -TimeoutSec $TimeoutSeconds
+        $null = Expand-Archive -LiteralPath $ArchivePath -DestinationPath $ExtractPath -Force
         $succeeded = $true
     }
     catch {
