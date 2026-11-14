@@ -138,17 +138,13 @@ public partial class InteractionSystem : Node3D, IDependent
         // Clear previous target
         CurrentTarget?.ClearHighlight();
 
-        // Set and validate new target
-        CurrentTarget = newTarget;
-        if (CurrentTarget?.CanInteract == true && IsTargetInRange(CurrentTarget))
-        {
-            ILog.Print("Highlighting target");
-            CurrentTarget.Highlight();
-        }
-        else
-        {
-            CurrentTarget = null;
-        }
+        // Keep the new target only while it can be used from here
+        CurrentTarget = newTarget?.CanInteract == true && IsTargetInRange(newTarget) ? newTarget : null;
+        if (CurrentTarget == null)
+            return;
+
+        ILog.Print("Highlighting target");
+        CurrentTarget.Highlight();
     }
 
     private bool IsTargetInRange(IInteractable target)
@@ -168,16 +164,13 @@ public partial class InteractionSystem : Node3D, IDependent
 
         ILog.Print($"Interact pressed on: {CurrentTarget.InteractionBody.Name}");
 
-        var distanceSquared = Camera.GlobalPosition.DistanceSquaredTo(CurrentTarget.InteractionBody.GlobalPosition);
-        var rangeSquared = CurrentTarget.InteractionRange * CurrentTarget.InteractionRange;
-        if (distanceSquared <= rangeSquared)
+        if (!IsTargetInRange(CurrentTarget))
         {
-            ILog.Print("Calling Interact()");
-            CurrentTarget.Interact();
+            ILog.Print($"Too far to interact: range {CurrentTarget.InteractionRange}");
+            return;
         }
-        else
-        {
-            ILog.Print($"Too far to interact: √{distanceSquared:F2} > {CurrentTarget.InteractionRange}");
-        }
+
+        ILog.Print("Calling Interact()");
+        CurrentTarget.Interact();
     }
 }
