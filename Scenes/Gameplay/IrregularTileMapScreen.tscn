@@ -5,9 +5,11 @@
 [ext_resource type="PackedScene" uid="uid://r47yt6f8uot1" path="res://Scenes/UI/CombatUi.tscn" id="4_kg7sc"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_c04c6"]
+resource_local_to_scene = true
 viewport_path = NodePath("SubViewport")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_10on8"]
+resource_local_to_scene = true
 cull_mode = 2
 shading_mode = 0
 albedo_texture = SubResource("ViewportTexture_c04c6")

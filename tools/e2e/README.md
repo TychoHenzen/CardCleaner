@@ -10,7 +10,7 @@ cursor clip.
 ```bash
 node tools/e2e/e2e.mjs start --scene res://Scenes/Gameplay/ShopScene.tscn
 node tools/e2e/e2e.mjs send state
-node tools/e2e/e2e.mjs send use node=/root/ShopScene/World/Markers/PcLocation/PcTerminal
+node tools/e2e/e2e.mjs send use node=World/Markers/PcLocation/PcTerminal
 node tools/e2e/e2e.mjs send press text=Stock
 node tools/e2e/e2e.mjs shot pc-stock
 node tools/e2e/e2e.mjs stop
@@ -37,8 +37,10 @@ The Godot binary is `%GODOT%`, or `C:\Development\Godot_v4.7.1-stable_mono_win64
 
 ## Commands
 
-`send help` lists them with their arguments. Node paths are absolute (`/root/ShopScene/...`), relative to the current
-scene, or a bare node name found anywhere under it.
+`send help` lists them with their arguments. Node paths are absolute (`/root/Root/...` in the shop, whose root node is
+named `Root`), relative to the current scene, or a bare node name found anywhere under it. Prefer relative paths from
+Git Bash: it rewrites an argument that starts with `/` into a Windows path (`C:/Program Files/Git/root/...`), so an
+absolute path needs `MSYS_NO_PATHCONV=1` in front of the command.
 
 | Group | Commands |
 |-------|----------|
