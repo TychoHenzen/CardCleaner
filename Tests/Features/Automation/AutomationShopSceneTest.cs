@@ -98,6 +98,26 @@ public class AutomationShopSceneTest
         AssertThat(missing["error"]!.GetValue<string>()).Contains("no node at /root/Nowhere");
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task FindByScriptTypeReturnsTheNodesThatCarryThatScript()
+    {
+        var reply = await Run("find", new JsonObject { ["type"] = nameof(PlayerController) });
+
+        AssertBool(reply["ok"]!.GetValue<bool>()).OverrideFailureMessage(reply.ToJsonString()).IsTrue();
+        AssertThat(reply["result"]!.AsArray().Select(path => path!.GetValue<string>()).ToList())
+            .Contains(_player.GetPath().ToString());
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TheAgentIsRegisteredAsAnAutoload()
+    {
+        // A line outside [autoload] is a plain setting, and the game would never start the agent.
+        AssertThat(ProjectSettings.GetSetting("autoload/Automation", "").AsString())
+            .IsEqual("*res://Scripts/Features/Automation/AutomationAgent.cs");
+    }
+
     [TestCase(Timeout = 60000)]
     public async Task UseWalksToThePcAndOpensIt()
     {

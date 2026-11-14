@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Player.Controllers;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Automation;
@@ -81,7 +82,20 @@ public static class MotionCommands
         var target = AutomationView.ResolveTarget(commands.Tree, args);
         var walked = await walker.Walk(commands, target, (float)args.Number("distance", UseDistanceMeters), 30);
         var view = await LookAt(commands, aim, new JsonObject { ["node"] = node });
+        await WaitForInteractionScan(commands);
         var click = await commands.Mouse.Click(commands, new JsonObject { ["button"] = args.OptionalString("button") });
         return new JsonObject { ["walk"] = walked, ["view"] = view, ["click"] = click };
+    }
+
+    /// <summary>
+    ///     The interaction system picks its target on a physics-time scan, so a click sent right after aiming can
+    ///     reach the previous target. Waiting out two scan intervals of physics frames guarantees a scan of the new
+    ///     aim, whatever the render rate.
+    /// </summary>
+    private static async Task WaitForInteractionScan(AutomationCommands commands)
+    {
+        var frames = (int)System.Math.Ceiling(2 * InteractionSystem.RaycastInterval * Engine.PhysicsTicksPerSecond);
+        for (var i = 0; i < frames + 1; i++)
+            await commands.NextPhysicsFrame();
     }
 }

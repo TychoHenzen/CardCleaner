@@ -65,7 +65,8 @@ public static class InspectCommands
         var name = args.OptionalString("name");
         var nodes = group != null
             ? tree.GetNodesInGroup(group).AsEnumerable()
-            : tree.Root.FindChildren(name ?? "*", type ?? "", true, false).AsEnumerable();
+            // No type here: FindChildren knows only native classes and would drop a node whose script is the type.
+            : tree.Root.FindChildren(name ?? "*", "", true, false).AsEnumerable();
         var found = new JsonArray();
         foreach (var node in nodes.Where(n => type == null || n.IsClass(type) || ScriptNamed(n, type)).Take(MaxFound))
             found.Add(node.GetPath().ToString());

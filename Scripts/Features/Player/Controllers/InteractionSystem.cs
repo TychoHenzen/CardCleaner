@@ -14,7 +14,8 @@ public partial class InteractionSystem : Node3D, IDependent
     // Default values as constants
     private const float DefaultRayLength = 100f;
     private const uint DefaultInteractableCollisionMask = 6; // Layer 2 (cards) + Layer 3 (buttons)
-    private const float RaycastInterval = 0.05f; // 20Hz = 50ms interval
+    /// <summary>Seconds between target scans (20 Hz). A click only reaches what the last scan picked.</summary>
+    public const float RaycastInterval = 0.05f;
 
     private IInputService? _inputService;
     private IServiceResolver? _services;
