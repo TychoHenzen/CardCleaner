@@ -121,6 +121,15 @@ and report-aggregation paths. It also checks that the suite-detection patterns i
 
 The runner prints its results to the job log, so no artifact download is needed for them: one `Suite result: <suite> cases=<n> errors=<e> failures=<f>` line per finished suite (also for suites finished in an attempt that later stalled or crashed), a `FAILED <suite> > <case>: <message>` line for each failing case before it throws, every `dependency gate:` line from all attempt logs, and a `Run summary:` line. `-Suite` takes res:// paths of `[TestSuite]` files and cannot be combined with `-Fast`. `-ReportDirectory` is relative and must lie below `reports/` (default `reports\ci`, which CI uses). A suite that stalls twice fails the run and is named.
 
+### Driving the Rendered Game (e2e)
+
+`node tools/e2e/e2e.mjs` runs the real, rendering game on a hidden Win32 desktop (no window ever reaches the user's
+screen) and drives it over a local socket: keys, mouse, `walk_to`, `look_at`, `use`, scene inspection and
+screenshots into `reports/e2e/<session>/shots/`. Use it to look at a change in-game; see `tools/e2e/README.md`. The
+in-game side is the `Automation` autoload (`Scripts/Features/Automation`), dormant unless a debug build gets
+`-- --automation-port=<n>`. In that mode `CursorOwner` never captures the mouse, because a captured mouse clips the
+user's real cursor even from a hidden desktop.
+
 ## Code Style
 
 The project uses `.editorconfig` for code style enforcement with Godot-specific adaptations:

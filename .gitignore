@@ -147,3 +147,7 @@ Scripts/Tools/*.png.import
 
 # The Asset Manager plugin (addons/asset_manager) writes its catalog, tags, thumbnails and legacy index.db here
 .assetmanager/
+
+# dotnet build of the e2e launcher (tools/e2e/e2e.mjs builds it into reports/e2e/bin)
+tools/HiddenDesktop/obj/
+tools/HiddenDesktop/bin/
