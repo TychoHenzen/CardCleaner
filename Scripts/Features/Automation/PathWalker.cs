@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Godot;
+using static System.FormattableString;
 
 namespace CardCleaner.Scripts.Features.Automation;
 
@@ -66,11 +67,12 @@ public sealed class PathWalker(ViewAim aim)
             if (at.DistanceTo(last) > TeleportMeters)
                 throw new AutomationException($"the player was moved from {last} to {at} (a stuck or bounds reset?)");
             if (Time.GetTicksMsec() > deadline)
-                throw new AutomationException($"timed out at {at}, {Flat(target - at).Length():F2} m from the goal");
+                throw new AutomationException(
+                    Invariant($"timed out at {at}, {Flat(target - at).Length():F2} m from the goal"));
             if (Flat(at - anchor).Length() >= ProgressMeters)
                 (anchor, anchorTime) = (at, Time.GetTicksMsec());
             else if (Time.GetTicksMsec() - anchorTime > StuckSeconds * 1000)
-                throw new AutomationException($"blocked at {at}: no progress for {StuckSeconds} s");
+                throw new AutomationException(Invariant($"blocked at {at}: no progress for {StuckSeconds} s"));
 
             while (index < path.Length - 1 && Flat(path[index] - at).Length() < WaypointReachedMeters)
                 index++;

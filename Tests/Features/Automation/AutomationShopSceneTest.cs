@@ -113,7 +113,7 @@ public class AutomationShopSceneTest
         AssertBool(_player.ControlEnabled).IsFalse();
     }
 
-    private async Task Settle()
+    private static async Task Settle()
     {
         await WorkshopSceneRig.Settle();
     }
