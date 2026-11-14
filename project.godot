@@ -41,6 +41,7 @@ shader_language/warnings/treat_warnings_as_errors=true
 
 project/assembly_name="CardCleaner"
 
+Automation="*res://Scripts/Features/Automation/AutomationAgent.cs"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/godot_omni/plugin.cfg", "res://addons/saveable/plugin.cfg", "res://addons/tile_editor/plugin.cfg", "res://addons/asset_manager/plugin.cfg")
