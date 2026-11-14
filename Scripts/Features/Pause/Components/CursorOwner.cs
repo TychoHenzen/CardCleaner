@@ -21,7 +21,7 @@ public partial class CursorOwner : Node, ICursorOwner
     {
         // Keep applying the mode while the game is paused, so a pause menu's
         // claim still shows the cursor.
-        ProcessMode = ProcessModeEnum.Always;
+        this.ProcessMode = ProcessModeEnum.Always;
         Apply();
     }
 

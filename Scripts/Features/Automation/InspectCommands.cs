@@ -14,7 +14,8 @@ public static class InspectCommands
     public static void Register(AutomationCommands commands)
     {
         var tree = commands.Tree;
-        commands.Add(new AutomationCommand("tree", "{node?: path (scene root), depth?: n (2)} -> names, types, children",
+        commands.Add(new AutomationCommand("tree",
+            "{node?: path (scene root), depth?: n (2)} -> names, types, children",
             args => Done(Tree(AutomationView.RequireNode(tree, args.OptionalString("node") ?? "."),
                 (int)args.Number("depth", DefaultDepth)))));
         commands.Add(new AutomationCommand("find", "{group? | type? | name?: glob} -> matching node paths",

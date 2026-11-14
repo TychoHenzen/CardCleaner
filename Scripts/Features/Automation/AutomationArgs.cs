@@ -5,7 +5,7 @@ using System.Text.Json.Nodes;
 namespace CardCleaner.Scripts.Features.Automation;
 
 /// <summary>Typed reads of a request's <c>args</c>; a wrong type is an <see cref="AutomationException" />.</summary>
-public static class AutomationArgs
+internal static class AutomationArgs
 {
     public static string? OptionalString(this JsonObject args, string name) =>
         args[name] switch

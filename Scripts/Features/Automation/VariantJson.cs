@@ -4,7 +4,9 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Automation;
 
-/// <summary>Converts Godot values to JSON for replies, and JSON to the Variant a property or argument expects.</summary>
+/// <summary>
+///     Converts Godot values to JSON for replies, and JSON to the Variant a property or argument expects.
+/// </summary>
 public static class VariantJson
 {
     private const int MaxDepth = 4;

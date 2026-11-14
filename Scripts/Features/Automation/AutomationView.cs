@@ -4,7 +4,9 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Automation;
 
-/// <summary>Finds the player and describes or aims the active camera; shared by the state and motion commands.</summary>
+/// <summary>
+///     Finds the player and describes or aims the active camera; shared by the state and motion commands.
+/// </summary>
 public static class AutomationView
 {
     public const string PlayerGroup = "player";
@@ -19,7 +21,9 @@ public static class AutomationView
     public static Camera3D RequireCamera(SceneTree tree) =>
         tree.Root.GetCamera3D() ?? throw new AutomationException("no current 3D camera");
 
-    /// <summary>Yaw in degrees (0 looks along -Z, positive turns left) and pitch in degrees (positive looks up).</summary>
+    /// <summary>
+    ///     Yaw in degrees (0 looks along -Z, positive turns left) and pitch in degrees (positive looks up).
+    /// </summary>
     public static Vector2 YawPitch(Vector3 forward)
     {
         var dir = forward.Normalized();
@@ -30,7 +34,9 @@ public static class AutomationView
 
     public static Vector3 Forward(Camera3D camera) => -camera.GlobalBasis.Z;
 
-    /// <summary>The signed smallest angle from <paramref name="from" /> to <paramref name="to" />, in degrees.</summary>
+    /// <summary>
+    ///     The signed smallest angle from <paramref name="from" /> to <paramref name="to" />, in degrees.
+    /// </summary>
     public static float AngleDelta(float from, float to) => Mathf.Wrap(to - from, -180f, 180f);
 
     public static JsonObject Describe(Camera3D camera)

@@ -3,9 +3,6 @@ using System.Text.Json.Nodes;
 
 namespace CardCleaner.Scripts.Features.Automation;
 
-/// <summary>One command line from a client: <c>{"id": 1, "cmd": "walk_to", "args": {...}}</c>.</summary>
-public sealed record AutomationRequest(JsonNode? Id, string Command, JsonObject Args);
-
 /// <summary>
 ///     The wire format of the automation agent: one JSON object per line each way. A reply carries the request's
 ///     <c>id</c> and either <c>"ok": true</c> with a <c>result</c>, or <c>"ok": false</c> with an <c>error</c> text.
@@ -44,6 +41,3 @@ public static class AutomationProtocol
     public static string Failure(JsonNode? id, string error) =>
         new JsonObject { ["id"] = id?.DeepClone(), ["ok"] = false, ["error"] = error }.ToJsonString();
 }
-
-/// <summary>A command that cannot run as asked; its message goes back to the client as the error.</summary>
-public sealed class AutomationException(string message) : System.Exception(message);

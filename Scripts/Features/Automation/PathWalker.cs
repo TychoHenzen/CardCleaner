@@ -10,7 +10,7 @@ namespace CardCleaner.Scripts.Features.Automation;
 ///     stops when the player is within the stop distance of the goal, and fails when the player stops making
 ///     progress, is teleported (the player controller's stuck and out-of-bounds resets do that) or time runs out.
 /// </summary>
-public sealed class PathWalker(ViewAim aim)
+public sealed class PathWalker
 {
     public const float DefaultStopMeters = 0.5f;
     public const string ForwardAction = "ui_up";
@@ -19,6 +19,16 @@ public sealed class PathWalker(ViewAim aim)
     private const float TeleportMeters = 2.5f;
     private const float ProgressMeters = 0.15f;
     private const double StuckSeconds = 2.5;
+
+    private readonly ViewAim _aim;
+
+    // The progress of the walk in hand; commands run one at a time, so one walker serves every walk.
+    private Vector3 _last;
+    private Vector3 _anchor;
+    private ulong _anchorTime;
+    private ulong _deadline;
+
+    public PathWalker(ViewAim aim) => _aim = aim;
 
     public static Vector3[] PathFor(Node3D player, Vector3 target)
     {
@@ -58,27 +68,32 @@ public sealed class PathWalker(ViewAim aim)
         ulong deadline)
     {
         var index = 0;
-        var last = player.GlobalPosition;
-        var anchor = last;
-        var anchorTime = Time.GetTicksMsec();
+        (_last, _anchor, _anchorTime, _deadline) =
+            (player.GlobalPosition, player.GlobalPosition, Time.GetTicksMsec(), deadline);
         while (Flat(target - player.GlobalPosition).Length() > stop)
         {
             var at = player.GlobalPosition;
-            if (at.DistanceTo(last) > TeleportMeters)
-                throw new AutomationException($"the player was moved from {last} to {at} (a stuck or bounds reset?)");
-            if (Time.GetTicksMsec() > deadline)
-                throw new AutomationException(
-                    Invariant($"timed out at {at}, {Flat(target - at).Length():F2} m from the goal"));
-            if (Flat(at - anchor).Length() >= ProgressMeters)
-                (anchor, anchorTime) = (at, Time.GetTicksMsec());
-            else if (Time.GetTicksMsec() - anchorTime > StuckSeconds * 1000)
-                throw new AutomationException(Invariant($"blocked at {at}: no progress for {StuckSeconds} s"));
-
+            CheckProgress(at, target);
             while (index < path.Length - 1 && Flat(path[index] - at).Length() < WaypointReachedMeters)
                 index++;
             await Steer(commands, at, index < path.Length - 1 ? path[index] : target);
-            last = at;
+            _last = at;
         }
+    }
+
+    /// <summary>Fails the walk when the player was teleported, time ran out, or it stopped getting anywhere.</summary>
+    private void CheckProgress(Vector3 at, Vector3 target)
+    {
+        var now = Time.GetTicksMsec();
+        if (at.DistanceTo(_last) > TeleportMeters)
+            throw new AutomationException($"the player was moved from {_last} to {at} (a stuck or bounds reset?)");
+        if (now > _deadline)
+            throw new AutomationException(
+                Invariant($"timed out at {at}, {Flat(target - at).Length():F2} m from the goal"));
+        if (Flat(at - _anchor).Length() >= ProgressMeters)
+            (_anchor, _anchorTime) = (at, now);
+        else if (now - _anchorTime > StuckSeconds * 1000)
+            throw new AutomationException(Invariant($"blocked at {at}: no progress for {StuckSeconds} s"));
     }
 
     private async Task Steer(AutomationCommands commands, Vector3 at, Vector3 waypoint)
@@ -86,14 +101,14 @@ public sealed class PathWalker(ViewAim aim)
         var before = ViewAim.Angles(commands);
         var wantedYaw = AutomationView.YawPitch(new Vector3(waypoint.X - at.X, 0f, waypoint.Z - at.Z)).X;
         var error = AutomationView.AngleDelta(before.X, wantedYaw);
-        var pixels = aim.PixelsFor(new Vector2(error, 0f));
+        var pixels = _aim.PixelsFor(new Vector2(error, 0f));
         if (Mathf.Abs(pixels.X) >= 1f)
             commands.Mouse.Relative(pixels, commands);
         Input.ParseInputEvent(new InputEventAction
             { Action = ForwardAction, Pressed = Mathf.Abs(error) < WalkWhileTurnedDegrees, Strength = 1f });
         await commands.NextFrame();
         var turned = AutomationView.AngleDelta(before.X, ViewAim.Angles(commands).X);
-        aim.Learn(pixels, new Vector2(turned, 0f));
+        _aim.Learn(pixels, new Vector2(turned, 0f));
     }
 
     private static Vector2 Flat(Vector3 v) => new(v.X, v.Z);

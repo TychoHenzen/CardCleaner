@@ -7,9 +7,6 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Automation;
 
-/// <summary>One command: what it does (shown by <c>help</c>) and the handler that runs it on the main thread.</summary>
-public sealed record AutomationCommand(string Name, string Usage, Func<JsonObject, Task<JsonNode?>> Run);
-
 /// <summary>
 ///     The command table of the automation agent, plus the frame waits every command shares. Commands run one at a
 ///     time on the main thread; a handler awaits frames through <see cref="NextFrame" /> or
@@ -22,7 +19,8 @@ public sealed class AutomationCommands
     public AutomationCommands(Node host)
     {
         Host = host;
-        Add(new AutomationCommand("help", "lists every command with its arguments", _ => Task.FromResult<JsonNode?>(Help())));
+        Add(new AutomationCommand("help", "lists every command with its arguments",
+            _ => Task.FromResult<JsonNode?>(Help())));
         CoreCommands.Register(this);
         InputCommands.Register(this);
         InspectCommands.Register(this);

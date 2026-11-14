@@ -12,7 +12,9 @@ public static class AutomationLaunch
 {
     public const string PortArgument = "--automation-port=";
 
-    /// <summary>The requested port, or null when the run is not automated. Only debug builds honour the argument.</summary>
+    /// <summary>
+    ///     The requested port, or null when the run is not automated. Only debug builds honour the argument.
+    /// </summary>
     public static int? Port { get; } = OS.IsDebugBuild() ? ParsePort(OS.GetCmdlineUserArgs()) : null;
 
     public static bool Requested => Port != null;

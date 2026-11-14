@@ -11,7 +11,8 @@ public static class CoreCommands
 
     public static void Register(AutomationCommands commands)
     {
-        commands.Add(new AutomationCommand("ping", "-> frame, fps, scene", _ => Task.FromResult<JsonNode?>(Ping(commands))));
+        commands.Add(new AutomationCommand("ping", "-> frame, fps, scene",
+            _ => Task.FromResult<JsonNode?>(Ping(commands))));
         commands.Add(new AutomationCommand("wait", "{frames?: n, seconds?: s} waits; seconds are real time",
             args => Wait(commands, args)));
         commands.Add(new AutomationCommand("scene", "{path: res://...tscn} changes scene and waits until it is ready",
@@ -21,7 +22,8 @@ public static class CoreCommands
             _ => Task.FromResult<JsonNode?>(State(commands))));
         commands.Add(new AutomationCommand("pause", "{paused: bool} pauses or resumes the scene tree",
             args => SetPaused(commands, args)));
-        commands.Add(new AutomationCommand("quit", "{code?: n} quits the game after replying", args => Quit(commands, args)));
+        commands.Add(new AutomationCommand("quit", "{code?: n} quits the game after replying",
+            args => Quit(commands, args)));
     }
 
     private static JsonNode Ping(AutomationCommands commands) => new JsonObject
