@@ -37,6 +37,9 @@ public partial class MainMenuController : Control, IDependent
     /// </summary>
     public Action<string>? ChangeScene;
 
+    /// <summary>Quits the game; set before _Ready to replace the tree's Quit, the same way as ChangeScene.</summary>
+    public Action? Quit;
+
     private IServiceResolver? _services;
     private ISaveSlotCatalog _catalog = null!;
     private IActiveSaveSlot _activeSlot = null!;
@@ -58,12 +61,13 @@ public partial class MainMenuController : Control, IDependent
         _store = _services.Get<OptionsStore>();
         _applier = _services.Get<OptionsApplier>();
         ChangeScene ??= path => GetTree().ChangeSceneToFile(path);
+        Quit ??= () => GetTree().Quit();
 
         GetNode<Button>(ContinuePath).Pressed += OnContinuePressed;
         GetNode<Button>(NewGamePath).Pressed += OnNewGamePressed;
         GetNode<Button>(OptionsButtonPath).Pressed += () => GetNode<Control>(OptionsPath).Visible = true;
         GetNode<OptionsMenuController>(OptionsPath).Closed += () => GetNode<Control>(OptionsPath).Visible = false;
-        GetNode<Button>(QuitPath).Pressed += () => GetTree().Quit();
+        GetNode<Button>(QuitPath).Pressed += () => Quit!();
         GetNode<SlotListController>(SlotListPath).LoadRequested += OnLoadRequested;
         GetNode<SlotListController>(SlotListPath).DeleteRequested += OnDeleteRequested;
         GetNode<ConfirmationDialog>(NewGameDialogPath).Confirmed += OnNewGameConfirmed;

@@ -17,6 +17,9 @@ namespace CardCleaner.Scripts.Composition;
 /// <summary>
 ///     Composes the service container as the "Services" autoload and injects every IDependent node that enters
 ///     the tree. Any other instance logs an error and composes nothing. Owns one <see cref="ServiceHost" />.
+///     The container has two scopes. The app scope (the [Service] scan and the core services) is composed once,
+///     synchronously in _Ready, so the first scene's nodes can resolve it in their own _Ready. The scene scope (the
+///     current scene's service providers) is registered after each scene is ready and dropped when it leaves.
 /// </summary>
 public partial class CompositionRoot : Node
 {
@@ -26,8 +29,11 @@ public partial class CompositionRoot : Node
     // Node services the last Compose added as children; the next Compose frees them before it builds new ones.
     private readonly List<Node> _ownedNodes = new();
 
-    // Only the autoload subscribes to NodeAdded; _ExitTree must not disconnect a handler it never connected.
+    // Only the autoload subscribes to the tree's signals; _ExitTree must not disconnect handlers it never connected.
     private bool _injecting;
+
+    // The scene whose providers the scene scope holds; its removal from the tree drops that scope.
+    private Node? _scene;
 
     /// <summary>The container, pending callbacks and resolver of this root; tests read the autoload's.</summary>
     internal ServiceHost Host { get; } = new();
@@ -40,18 +46,51 @@ public partial class CompositionRoot : Node
             return;
         }
 
-        GetTree().NodeAdded += OnNodeAdded;
+        var tree = GetTree();
+        // Subscribed first: ComposeAppScope adds IDependent node services that must be injected as they enter.
+        tree.NodeAdded += OnNodeAdded;
+        tree.NodeRemoved += OnNodeRemoved;
+        tree.SceneChanged += OnSceneChanged;
         _injecting = true;
         InjectExistingNodes();
-        ScheduleCompose();
+        ComposeOnStartup();
+    }
+
+    // The app scope now, before the main scene's _Ready; the scene scope after it. The main scene is in the tree
+    // but not ready yet, and its providers join their group in their own _Ready.
+    internal void ComposeOnStartup()
+    {
+        ComposeAppScope();
+        _scene = GetTree().CurrentScene;
+        CallDeferred(MethodName.ComposeSceneScope);
     }
 
     public override void _ExitTree()
     {
         if (!_injecting)
             return;
-        GetTree().NodeAdded -= OnNodeAdded;
+        var tree = GetTree();
+        tree.NodeAdded -= OnNodeAdded;
+        tree.NodeRemoved -= OnNodeRemoved;
+        tree.SceneChanged -= OnSceneChanged;
         _injecting = false;
+    }
+
+    // ChangeSceneToFile removes the outgoing scene at once and adds the new one at the end of the frame, so the
+    // scope is always dropped before the next scene's nodes enter and queue callbacks.
+    private void OnNodeRemoved(Node node)
+    {
+        if (node != _scene)
+            return;
+        _scene = null;
+        Host.LeaveScene();
+    }
+
+    // Emitted once the new scene is in the tree and every node in it, providers included, has run _Ready.
+    private void OnSceneChanged()
+    {
+        _scene = GetTree().CurrentScene;
+        ComposeSceneScope();
     }
 
     // SceneTree emits node_added after the node's _EnterTree and before its children enter and before its _Ready,
@@ -63,8 +102,8 @@ public partial class CompositionRoot : Node
     }
 
     // Injects once every IDependent node that entered the tree before the autoload subscribed to NodeAdded. The
-    // main scene has entered the tree when Services gets _Ready, so the pass injects its nodes, before their _Ready
-    // and before the deferred Compose; such a node must resolve services through Get<T>(callback).
+    // main scene has entered the tree when Services gets _Ready, so the pass injects its nodes before their _Ready.
+    // They can resolve app-scope services directly; a scene-scope service needs Get<T>(callback), like any scene's.
     internal void InjectExistingNodes() => InjectSubtree(GetTree().Root);
 
     private void InjectSubtree(Node node)
@@ -73,10 +112,6 @@ public partial class CompositionRoot : Node
         foreach (var child in node.GetChildren())
             InjectSubtree(child);
     }
-
-    // ASSUMPTION: the deferred call runs after the main scene's service providers enter the tree, as the
-    // removed locator's _Ready call did before the split. No requirement states this ordering.
-    internal void ScheduleCompose() => CallDeferred(MethodName.Compose);
 
     // The sink mirrors the ILog in the host's current container, the same source that Has and Get read.
     private void SyncLogSink()
@@ -87,13 +122,27 @@ public partial class CompositionRoot : Node
 
     private bool IsAutoload() => GetParent() == GetTree().Root && Name == "Services";
 
-    // Internal so that TestServices can compose again on the autoload synchronously.
+    // Internal so that TestServices can compose both scopes again on the autoload synchronously.
     internal void Compose()
+    {
+        ComposeAppScope();
+        ComposeSceneScope();
+    }
+
+    internal void ComposeAppScope()
     {
         FreeOwnedNodes();
         // First, so the explicit registrations below replace any scanned entry for the same service type.
         RegisterGameServiceClasses(Host.Container);
         RegisterCoreServices(Host.Container);
+        Host.Container.SealAppScope();
+        Host.ExecutePendingCallbacks();
+    }
+
+    // Registers the providers of the scene in the tree, then runs the callbacks that waited for them. Providers
+    // register the same nodes again when called twice, so a repeated pass changes nothing.
+    internal void ComposeSceneScope()
+    {
         RegisterFromProviders(Host.Container);
         Host.ExecutePendingCallbacks();
     }

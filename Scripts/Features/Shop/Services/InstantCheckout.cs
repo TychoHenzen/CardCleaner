@@ -1,10 +1,11 @@
 using System;
-using CardCleaner.Scripts.Core.DependencyInjection;
 
 namespace CardCleaner.Scripts.Features.Shop.Services;
 
-/// <summary>Instant stand-in: credits the basket's total asking price at once and sends the customer away.</summary>
-[Service(typeof(ICheckoutHandoff))]
+/// <summary>
+///     Instant stand-in: credits the basket's total asking price at once and sends the customer away. Tests register
+///     it by instance; it is not a scanned [Service], so the game always resolves the shop's real CheckoutCounter.
+/// </summary>
 internal sealed class InstantCheckout : ICheckoutHandoff
 {
     private readonly IMoneyService _money;

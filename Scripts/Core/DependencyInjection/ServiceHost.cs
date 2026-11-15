@@ -29,6 +29,16 @@ public sealed class ServiceHost : IServiceResolver
         _pendingCallbacks.Clear();
     }
 
+    /// <summary>
+    ///     The current scene left the tree: its registrations go and the callbacks its nodes queued are dropped, so
+    ///     none of them runs on a freed node when the next scene registers that service.
+    /// </summary>
+    internal void LeaveScene()
+    {
+        Container.DropSceneScope();
+        _pendingCallbacks.Clear();
+    }
+
     public void ExecutePendingCallbacks()
     {
         var failures = new List<Exception>();

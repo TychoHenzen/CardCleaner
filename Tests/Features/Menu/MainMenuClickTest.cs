@@ -119,6 +119,53 @@ public class MainMenuClickTest : MainMenuSceneTestBase
 
     [TestCase]
     [TestCategory("Unit")]
+    public async Task Options_button_click_opens_the_options_and_back_closes_them()
+    {
+        AddMenu();
+        await Settle();
+        Assertions.AssertBool(Get<Control>("Options").Visible).IsFalse();
+
+        await Click(Get<Button>("Layout/OptionsButton"));
+        var openedByTheClick = Get<Control>("Options").Visible;
+        await Click(Get<Button>("Options/Layout/BackButton"));
+
+        Assertions.AssertBool(openedByTheClick).IsTrue();
+        Assertions.AssertBool(Get<Control>("Options").Visible).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task Quit_button_click_quits()
+    {
+        AddMenu();
+        await Settle();
+
+        await Click(Get<Button>("Layout/QuitButton"));
+
+        Assertions.AssertInt(_quits).IsEqual(1);
+        Assertions.AssertInt(_changedScenes.Count).IsEqual(0);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task New_game_confirm_creates_the_slot_activates_it_and_opens_the_shop()
+    {
+        AddMenu();
+        await Settle();
+
+        await Click(Get<Button>("Layout/NewGameButton"));
+        Get<LineEdit>("NewGameDialog/NameEdit").Text = "fresh";
+        Get<ConfirmationDialog>("NewGameDialog").EmitSignal("confirmed");
+        await CloseDialog("NewGameDialog");
+
+        Assertions.AssertString(_active.Current.Value).IsEqual("fresh");
+        Assertions.AssertInt(_store.List().Count).IsEqual(1);
+        Assertions.AssertInt(_changedScenes.Count).IsEqual(1);
+        Assertions.AssertString(_changedScenes[0]).IsEqual(MainMenuController.ShopScenePath);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public async Task Unreadable_slot_delete_through_the_menu_removes_it_and_a_new_game_can_reuse_the_name()
     {
         _store.TryCreate("broken", out var broken, out _);

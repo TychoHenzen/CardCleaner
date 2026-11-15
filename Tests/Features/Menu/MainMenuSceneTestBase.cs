@@ -17,8 +17,8 @@ namespace CardCleaner.Tests.Features.Menu;
 
 /// <summary>
 /// Shared fixture for the main menu scene suites. Slots live in an in-memory file system and the options in a
-/// throw-away user:// file. ChangeScene is replaced with a recorder. The teardown restores the audio buses and the
-/// window size.
+/// throw-away user:// file. ChangeScene and Quit are replaced with recorders. The teardown restores the audio buses
+/// and the window size.
 /// </summary>
 public abstract class MainMenuSceneTestBase
 {
@@ -32,6 +32,7 @@ public abstract class MainMenuSceneTestBase
     private protected FakeImporter _importer = null!;
     private protected string _path = null!;
     private protected List<string> _changedScenes = null!;
+    private protected int _quits;
     private Window _window = null!;
     private Vector2I _originalWindowSize;
     private MainMenuController? _node;
@@ -47,6 +48,7 @@ public abstract class MainMenuSceneTestBase
         _importer = new FakeImporter();
         _path = $"user://test_main_menu_{Guid.NewGuid():N}.cfg";
         _changedScenes = new List<string>();
+        _quits = 0;
 
         TestServices.Container.RegisterSingleton<ISaveSlotCatalog>(_store);
         TestServices.Container.RegisterSingleton<IActiveSaveSlot>(_active);
@@ -117,6 +119,7 @@ public abstract class MainMenuSceneTestBase
         var packed = GD.Load<PackedScene>(ScenePath);
         _node = (MainMenuController)packed.Instantiate();
         _node.ChangeScene = path => _changedScenes.Add(path);
+        _node.Quit = () => _quits++;
         TestServices.Inject(_node);
         Assertions.AddNode(_node, autoFree: false);
     }

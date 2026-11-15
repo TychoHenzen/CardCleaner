@@ -235,8 +235,17 @@ The project uses a custom DI container with no static service state: an instance
   container and clears its queue but keeps the host, and it names no feature or composition type;
   `DependencyInjectionBoundaryTest` enforces that. It does not touch `ILog.Sink`.
 - **CompositionRoot** (`Scripts/Composition/CompositionRoot.cs`): the "Services" autoload. It owns one `ServiceHost`
-  (`Host`) and registers the plain `[Service]` classes of `CardCleaner.Scripts` lazily into it, then the core
-  services, then every node in the `service_providers` group, then runs the pending callbacks. It also sets
+  (`Host`) and composes it in two scopes. The **app scope** (the plain `[Service]` classes of `CardCleaner.Scripts`,
+  registered lazily, then the core services) is composed synchronously in the autoload's `_Ready`, before the main
+  scene's `_Ready`, and lives for the whole run: the main menu resolves it directly, and the slot it activates on
+  `ActiveSaveSlot` reaches the shop. The **scene scope** (every node in the `service_providers` group) is registered
+  in the deferred flush after startup and on every `SceneTree.SceneChanged`, then the pending callbacks run. When the
+  current scene leaves the tree (`ChangeSceneToFile` removes it at once), `ServiceHost.LeaveScene` drops its
+  registrations, restores app registrations they replaced, forgets callbacks its nodes queued, and makes every
+  scanned class built from a scene service (such as `DailyBillBook`) build again in the next scene
+  (`ServiceContainer.SealAppScope` / `DropSceneScope`). A scene node that needs a provider-registered service still
+  uses `Get<T>(callback)`; a scanned `[Service]` must never stand in for a node a scene provides, since a scene node
+  could resolve it before the provider registers (`InstantCheckout` is therefore not scanned). It also sets
   `ILog.Sink` (a static property, because `ILog`'s static helpers have no instance) when it registers `ILog`;
   production never clears it, and only `TestServices.Reset` sets it back to null. Only that autoload composes and injects; any other instance logs an error
   and composes nothing.
@@ -282,8 +291,9 @@ The project uses a custom DI container with no static service state: an instance
   from the autoload on `SceneTree.NodeAdded`: after the node's `_EnterTree`, before its `_Ready`, and again whenever it
   re-enters the tree (reparent). `Inject` only stores the resolver; the node does its wiring in `_Ready` through it.
   Nodes already in the tree when the autoload starts are injected once by a startup pass
-  (`CompositionRoot.InjectExistingNodes`), which runs after their `_Ready`, so an `IDependent` must never be an
-  autoload ordered before Services.
+  (`CompositionRoot.InjectExistingNodes`). The main scene has entered but is not ready then, so its nodes are
+  injected before their `_Ready`; an autoload ordered before Services is already ready, so an `IDependent` must
+  never be one.
   The injected resolver is the autoload's `ServiceHost`, which reads its current container at call time, so a
   resolver injected before a reset reads the replacement container and its `Get<T>(callback)` shares the one
   pending-callback queue.
