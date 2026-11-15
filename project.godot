@@ -22,16 +22,26 @@ config/defaults/default_clear_color=Color(0.3, 0.3, 0.3, 1)
 
 [asset_manager]
 
-export_roots={"models": "res://Assets/Models", "images": "res://Assets/Images", "sounds": "res://Assets/Sounds", "music": "res://Assets/Music", "videos": "res://Assets/Videos", "hdris": "res://Assets/HDRIs", "materials": "res://Assets/Materials", "effects": "res://Assets/Effects", "shaders": "res://Assets/Shaders", "themes": "res://Assets/Themes", "scenes": "res://Assets/Scenes", "other": "res://Assets/Other"}
-
-[audio]
-
-buses/default_bus_layout="res://default_bus_layout.tres"
+export_roots={
+"effects": "res://Assets/Effects",
+"hdris": "res://Assets/HDRIs",
+"images": "res://Assets/Images",
+"materials": "res://Assets/Materials",
+"models": "res://Assets/Models",
+"music": "res://Assets/Music",
+"other": "res://Assets/Other",
+"scenes": "res://Assets/Scenes",
+"shaders": "res://Assets/Shaders",
+"sounds": "res://Assets/Sounds",
+"themes": "res://Assets/Themes",
+"videos": "res://Assets/Videos"
+}
 
 [autoload]
 
 Services="*res://Scripts/Composition/CompositionRoot.cs"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+Automation="*res://Scripts/Features/Automation/AutomationAgent.cs"
 
 [debug]
 
@@ -115,7 +125,6 @@ world/map_use_async_iterations=false
 
 [physics]
 
-3d/run_on_separate_thread=false
 3d/physics_engine="Jolt Physics"
 jolt_physics_3d/simulation/velocity_steps=4
 jolt_physics_3d/simulation/sleep_velocity_threshold=0.1

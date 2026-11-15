@@ -5,6 +5,8 @@ using CardCleaner.Scripts.Composition;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Menu.Services;
+using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -17,8 +19,9 @@ using CardCleaner.Tests.TestUtilities;
 namespace CardCleaner.Tests.Composition;
 
 /// <summary>
-/// The "Services" autoload composes the container: in the game, in the deferred-call flush after its _Ready; in tests,
-/// synchronously through TestServices.Reinitialize. Any other CompositionRoot logs an error and changes nothing (#168).
+/// The "Services" autoload composes the container: in the game, the app scope in its _Ready and the scene providers
+/// in the deferred-call flush after it and after every scene change; in tests, synchronously through
+/// TestServices.Reinitialize. Any other CompositionRoot logs an error and changes nothing (#168).
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -99,7 +102,7 @@ public class CompositionRootTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static async Task TestAutoloadComposesInTheDeferredFlushAfterReady()
+    public static async Task StartupComposesTheAppScopeAtOnceAndTheSceneProvidersInTheDeferredFlush()
     {
         // Arrange - an empty container, as it is before the autoload's first composition
         TestServices.Reset();
@@ -107,24 +110,92 @@ public class CompositionRootTest
         var created = Array.Empty<Node>();
         try
         {
-            // Act - schedule the way _Ready does, then add a provider the way a main-scene provider joins in its _Ready
-            root.ScheduleCompose();
+            // Act - start the way _Ready does, then add a provider the way a main-scene provider joins in its _Ready
+            root.ComposeOnStartup();
+            created = ReinitializedNodes();
+            var appScopeBeforeTheFlush = TestServices.Resolver.Has<ILog>();
             var provider = Assertions.AddNode(new TestServiceProvider());
             provider.AddToGroup("service_providers");
-            var composedBeforeTheFlush = TestServices.Resolver.Has<ILog>();
-            // Deferred calls run in the order they were queued, so this one completes after the scheduled Compose
+            var providerBeforeTheFlush = TestServices.Resolver.Has<IAsyncTestService>();
+            // Deferred calls run in the order they were queued, so this one completes after the scene pass
             var flushed = new TaskCompletionSource();
             Callable.From(() => flushed.SetResult()).CallDeferred();
             await flushed.Task;
-            created = ReinitializedNodes();
 
-            // Assert
-            Assertions.AssertBool(composedBeforeTheFlush).IsFalse();
+            // Assert - the main scene's _Ready (between the two) finds the app scope; its providers come after it
+            Assertions.AssertBool(appScopeBeforeTheFlush).IsTrue();
+            Assertions.AssertBool(providerBeforeTheFlush).IsFalse();
             Assertions.AssertBool(provider.RegisterServicesCalled).IsTrue();
             Assertions.AssertBool(TestServices.Resolver.Has<IAsyncTestService>()).IsTrue();
         }
         finally
         {
+            QueueFreeAll(created);
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TheAppScopeHoldsEveryServiceTheMainMenuResolvesInItsReady()
+    {
+        // The main menu is the main scene: its _Ready runs before any scene pass, so all it resolves is app scope
+        TestServices.Reset();
+        TestServices.Autoload.ComposeAppScope();
+        var created = ReinitializedNodes();
+        try
+        {
+            Assertions.AssertBool(TestServices.Resolver.Has<ISaveSlotCatalog>()).IsTrue();
+            Assertions.AssertBool(TestServices.Resolver.Has<IActiveSaveSlot>()).IsTrue();
+            Assertions.AssertBool(TestServices.Resolver.Has<ILegacySaveImporter>()).IsTrue();
+            Assertions.AssertBool(TestServices.Resolver.Has<OptionsStore>()).IsTrue();
+            Assertions.AssertBool(TestServices.Resolver.Has<OptionsApplier>()).IsTrue();
+        }
+        finally
+        {
+            QueueFreeAll(created);
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ASceneChangeRegistersTheNewSceneAndItsRemovalDropsItButKeepsTheAppScope()
+    {
+        // Arrange - the app scope is composed, and the menu picked a slot on the app-scope ActiveSaveSlot
+        TestServices.Reinitialize();
+        var created = ReinitializedNodes();
+        var tree = (SceneTree)Engine.GetMainLoop();
+        var previousScene = tree.CurrentScene;
+        var activeSlot = TestServices.Resolver.Get<IActiveSaveSlot>();
+        var scene = new Node();
+        var provider = new TestServiceProvider();
+        scene.AddChild(provider);
+        provider.AddToGroup("service_providers");
+        try
+        {
+            // Act - the scene arrives the way ChangeSceneToFile delivers it: in the tree, current, then SceneChanged
+            tree.Root.AddChild(scene);
+            tree.CurrentScene = scene;
+            tree.EmitSignal(SceneTree.SignalName.SceneChanged);
+            var registeredWhileItRuns = TestServices.Resolver.Has<IAsyncTestService>();
+            var queuedRuns = 0;
+            TestServices.Resolver.Get<ITestService>(_ => queuedRuns++);
+            tree.CurrentScene = previousScene;
+            tree.Root.RemoveChild(scene);
+
+            // Assert - its service is gone, its queued callback never runs, and the app scope is the same object
+            Assertions.AssertBool(registeredWhileItRuns).IsTrue();
+            Assertions.AssertBool(TestServices.Resolver.Has<IAsyncTestService>()).IsFalse();
+            TestServices.Container.RegisterSingleton<ITestService>(new TestServiceImpl());
+            TestServices.ExecutePendingCallbacks();
+            Assertions.AssertInt(queuedRuns).IsEqual(0);
+            Assertions.AssertThat(TestServices.Resolver.Get<IActiveSaveSlot>()).IsSame(activeSlot);
+        }
+        finally
+        {
+            tree.CurrentScene = previousScene;
+            if (scene.IsInsideTree())
+                tree.Root.RemoveChild(scene);
+            scene.Free();
             QueueFreeAll(created);
         }
     }

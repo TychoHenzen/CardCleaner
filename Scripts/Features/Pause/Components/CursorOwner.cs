@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Features.Automation;
 using CardCleaner.Scripts.Features.Pause.Models;
 using Godot;
 
@@ -20,7 +21,7 @@ public partial class CursorOwner : Node, ICursorOwner
     {
         // Keep applying the mode while the game is paused, so a pause menu's
         // claim still shows the cursor.
-        ProcessMode = ProcessModeEnum.Always;
+        this.ProcessMode = ProcessModeEnum.Always;
         Apply();
     }
 
@@ -44,6 +45,6 @@ public partial class CursorOwner : Node, ICursorOwner
         AppliedMode = Claims.HasClaims
             ? Input.MouseModeEnum.Visible
             : Input.MouseModeEnum.Captured;
-        Input.MouseMode = AppliedMode;
+        Input.MouseMode = AutomationLaunch.SafeMouseMode(AppliedMode);
     }
 }

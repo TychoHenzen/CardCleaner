@@ -28,4 +28,13 @@ public interface IServiceContainer
     ///     it names none; never pass Godot objects. One counts as registered once all its constructor parameters
     ///     are, is built on its first Resolve and is then shared by all its types.</summary>
     void RegisterServiceClasses(IEnumerable<Type> candidates);
+
+    /// <summary>Records every registration so far as the app scope, which outlives scene changes. Everything
+    ///     registered later, and every scanned class built from a later registration, is scene scope.</summary>
+    void SealAppScope();
+
+    /// <summary>Returns the container to the app scope SealAppScope recorded: scene registrations go, app ones they
+    ///     replaced come back, and scanned classes built from a scene service are built again on their next
+    ///     resolve. Does nothing before SealAppScope.</summary>
+    void DropSceneScope();
 }

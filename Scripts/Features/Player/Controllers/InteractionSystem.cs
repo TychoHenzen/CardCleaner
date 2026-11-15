@@ -14,7 +14,8 @@ public partial class InteractionSystem : Node3D, IDependent
     // Default values as constants
     private const float DefaultRayLength = 100f;
     private const uint DefaultInteractableCollisionMask = 6; // Layer 2 (cards) + Layer 3 (buttons)
-    private const float RaycastInterval = 0.05f; // 20Hz = 50ms interval
+    /// <summary>Seconds between target scans (20 Hz). A click only reaches what the last scan picked.</summary>
+    public const float RaycastInterval = 0.05f;
 
     private IInputService? _inputService;
     private IServiceResolver? _services;
@@ -137,17 +138,13 @@ public partial class InteractionSystem : Node3D, IDependent
         // Clear previous target
         CurrentTarget?.ClearHighlight();
 
-        // Set and validate new target
-        CurrentTarget = newTarget;
-        if (CurrentTarget?.CanInteract == true && IsTargetInRange(CurrentTarget))
-        {
-            ILog.Print("Highlighting target");
-            CurrentTarget.Highlight();
-        }
-        else
-        {
-            CurrentTarget = null;
-        }
+        // Keep the new target only while it can be used from here
+        CurrentTarget = newTarget?.CanInteract == true && IsTargetInRange(newTarget) ? newTarget : null;
+        if (CurrentTarget == null)
+            return;
+
+        ILog.Print("Highlighting target");
+        CurrentTarget.Highlight();
     }
 
     private bool IsTargetInRange(IInteractable target)
@@ -167,16 +164,13 @@ public partial class InteractionSystem : Node3D, IDependent
 
         ILog.Print($"Interact pressed on: {CurrentTarget.InteractionBody.Name}");
 
-        var distanceSquared = Camera.GlobalPosition.DistanceSquaredTo(CurrentTarget.InteractionBody.GlobalPosition);
-        var rangeSquared = CurrentTarget.InteractionRange * CurrentTarget.InteractionRange;
-        if (distanceSquared <= rangeSquared)
+        if (!IsTargetInRange(CurrentTarget))
         {
-            ILog.Print("Calling Interact()");
-            CurrentTarget.Interact();
+            ILog.Print($"Too far to interact: range {CurrentTarget.InteractionRange}");
+            return;
         }
-        else
-        {
-            ILog.Print($"Too far to interact: √{distanceSquared:F2} > {CurrentTarget.InteractionRange}");
-        }
+
+        ILog.Print("Calling Interact()");
+        CurrentTarget.Interact();
     }
 }

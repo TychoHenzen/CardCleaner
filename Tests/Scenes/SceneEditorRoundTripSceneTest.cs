@@ -51,7 +51,9 @@ public class SceneEditorRoundTripSceneTest
             return [$"Pack failed with {error}"];
         }
 
-        var saved = packed.Instantiate<Node>();
+        // Reopened in the same edit state as the editor would: a game-state instance duplicates every
+        // resource_local_to_scene resource into a copy with no path, which reads as a lost value though the save keeps it.
+        var saved = packed.Instantiate<Node>(PackedScene.GenEditState.Main);
         var lost = new List<string>();
         Compare(original, original, saved, lost);
         original.Free();

@@ -30,8 +30,9 @@ public partial class PlayerResetService : Node, IPlayerResetService, IDependent
             return false;
         }
 
-        // Lazy-find player controller
-        _playerController ??= FindPlayerController();
+        // Lazy-find the player controller, and find it again once a scene change has freed the one found before
+        if (!IsInstanceValid(_playerController))
+            _playerController = FindPlayerController();
 
         if (_playerController == null)
         {

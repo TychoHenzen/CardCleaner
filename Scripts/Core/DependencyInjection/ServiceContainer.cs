@@ -14,6 +14,10 @@ public class ServiceContainer : IServiceContainer
     // Scanned [Service] classes, built on first Resolve. One entry is shared by every service type of its class.
     private readonly Dictionary<Type, LazyService> _lazy = new();
 
+    // The registrations SealAppScope recorded; null until it runs. DropSceneScope returns the maps to these.
+    private Dictionary<Type, object>? _appSingletons;
+    private Dictionary<Type, LazyService>? _appLazy;
+
     public void RegisterSingleton<T>(T instance) where T : class
     {
         RegisterSingleton(typeof(T), instance);
@@ -21,8 +25,34 @@ public class ServiceContainer : IServiceContainer
 
     public void RegisterSingleton(Type serviceType, object instance)
     {
+        WarnIfAppInstanceWasHandedOut(serviceType, instance);
         _singletons[serviceType] = instance;
         _lazy.Remove(serviceType);
+    }
+
+    public void SealAppScope()
+    {
+        _appSingletons = new Dictionary<Type, object>(_singletons);
+        _appLazy = new Dictionary<Type, LazyService>(_lazy);
+    }
+
+    public void DropSceneScope()
+    {
+        if (_appSingletons == null || _appLazy == null)
+            return;
+
+        _singletons.Clear();
+        foreach (var (type, instance) in _appSingletons)
+            _singletons[type] = instance;
+        _lazy.Clear();
+        foreach (var (type, entry) in _appLazy)
+            _lazy[type] = entry;
+        // A class built from a scene service holds that scene's objects, so it is built again in the next scene.
+        foreach (var entry in _appLazy.Values.Where(entry => entry.SceneBound))
+        {
+            entry.Instance = null;
+            entry.SceneBound = false;
+        }
     }
 
     public void RegisterSingleton<TInterface, TImplementation>()
@@ -42,9 +72,39 @@ public class ServiceContainer : IServiceContainer
             return singleton;
 
         if (_lazy.TryGetValue(type, out var lazy))
-            return lazy.Instance ??= Construct(lazy.Implementation);
+            return lazy.Instance ?? Build(lazy);
 
         throw new InvalidOperationException($"Service {type.Name} not registered");
+    }
+
+    // Builds a scanned class once. It is scene-bound when any constructor argument came from the scene scope.
+    private object Build(LazyService lazy)
+    {
+        var parameters = GreediestConstructor(lazy.Implementation).GetParameters();
+        lazy.Instance = Construct(lazy.Implementation);
+        lazy.SceneBound = parameters.Any(parameter => IsSceneScoped(parameter.ParameterType));
+        return lazy.Instance;
+    }
+
+    // Scene scope is whatever was registered or built from a scene registration after SealAppScope.
+    private bool IsSceneScoped(Type type)
+    {
+        if (_appSingletons == null || _appLazy == null)
+            return false;
+        if (_singletons.TryGetValue(type, out var instance))
+            return !(_appSingletons.TryGetValue(type, out var appInstance) && ReferenceEquals(appInstance, instance));
+        return _lazy.TryGetValue(type, out var lazy) && (lazy.SceneBound || !_appLazy.ContainsKey(type));
+    }
+
+    // A scene registration replaces an app-scope service only for later lookups; a node that already resolved the
+    // app one keeps it, which is almost always a wiring mistake.
+    private void WarnIfAppInstanceWasHandedOut(Type serviceType, object instance)
+    {
+        if (_appLazy == null || !_appLazy.TryGetValue(serviceType, out var appEntry))
+            return;
+        if (appEntry.Instance != null && !appEntry.SceneBound && !ReferenceEquals(appEntry.Instance, instance))
+            ILog.Warning($"{serviceType.Name} was already resolved as {appEntry.Implementation.Name} from the " +
+                $"app scope; registering {instance.GetType().Name} affects only later lookups");
     }
 
     public bool IsRegistered<T>() where T : class
@@ -146,5 +206,8 @@ public class ServiceContainer : IServiceContainer
     {
         public Type Implementation { get; } = implementation;
         public object? Instance { get; set; }
+
+        // True when Instance was built from a scene-scope service; DropSceneScope then clears Instance.
+        public bool SceneBound { get; set; }
     }
 }

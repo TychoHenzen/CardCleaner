@@ -12,6 +12,9 @@
     </PropertyGroup>
     <ItemGroup>
         <Folder Include="addons\" />
+        <!-- tools/ holds standalone helper programs with their own projects (tools/e2e/README.md). -->
+        <Compile Remove="tools/**" />
+        <None Remove="tools/**" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="gdUnit4.analyzers" Version="1.0.0">
