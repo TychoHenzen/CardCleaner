@@ -53,7 +53,8 @@ public sealed class ViewAim
             commands.Mouse.Relative(pixels, commands);
             await commands.Frames(2);
             var turned = Turned(now, Angles(commands));
-            if (step == 0 && turned.Length() < MeasurableDegrees)
+            // Only yaw proves control: pitch may already sit at its limit, which the next line reports instead.
+            if (step == 0 && Mathf.Abs(pixels.X) >= 1f && turned.Length() < MeasurableDegrees)
                 throw new AutomationException("the view did not move: player control is off or a UI owns the mouse");
             pitchLimited |= Mathf.Abs(pixels.Y) >= 1f && Mathf.Abs(turned.Y) < MeasurableDegrees;
             Learn(pixels, turned);

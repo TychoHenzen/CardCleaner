@@ -24,7 +24,7 @@ public sealed class VirtualPointer
             return VariantJson.ToJson(Position(commands));
         }
 
-        await MoveTo(commands, Required(args, commands));
+        await MoveTo(commands, Required(args));
         return VariantJson.ToJson(Position(commands));
     }
 
@@ -91,6 +91,6 @@ public sealed class VirtualPointer
     private static Vector2? Optional(JsonObject args) =>
         args.OptionalNumber("x") is { } x && args.OptionalNumber("y") is { } y ? new Vector2((float)x, (float)y) : null;
 
-    private static Vector2 Required(JsonObject args, AutomationCommands commands) =>
+    private static Vector2 Required(JsonObject args) =>
         Optional(args) ?? throw new AutomationException("give {dx, dy} or {x, y}");
 }

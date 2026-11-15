@@ -70,16 +70,24 @@ public sealed class PathWalker
         var index = 0;
         (_last, _anchor, _anchorTime, _deadline) =
             (player.GlobalPosition, player.GlobalPosition, Time.GetTicksMsec(), deadline);
-        while (Flat(target - player.GlobalPosition).Length() > stop)
+        while (!Arrived(player.GlobalPosition, path[^1], target, stop))
         {
             var at = player.GlobalPosition;
             CheckProgress(at, target);
             while (index < path.Length - 1 && Flat(path[index] - at).Length() < WaypointReachedMeters)
                 index++;
-            await Steer(commands, at, index < path.Length - 1 ? path[index] : target);
+            await Steer(commands, at, path[index]);
             _last = at;
         }
     }
+
+    /// <summary>
+    ///     Near the target, or at the end of the path: a target off the navigation mesh (inside a shelf, say) can
+    ///     never be reached, and the path ends at the nearest walkable point instead. Walk reports the distance left.
+    /// </summary>
+    private static bool Arrived(Vector3 at, Vector3 pathEnd, Vector3 target, float stop) =>
+        Flat(target - at).Length() <= stop
+        || Flat(pathEnd - at).Length() <= Mathf.Min(stop, WaypointReachedMeters);
 
     /// <summary>Fails the walk when the player was teleported, time ran out, or it stopped getting anywhere.</summary>
     private void CheckProgress(Vector3 at, Vector3 target)

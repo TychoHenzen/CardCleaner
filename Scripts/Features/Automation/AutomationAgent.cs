@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -75,23 +76,36 @@ public partial class AutomationAgent : Node
     private async Task RunNext()
     {
         _running = true;
-        while (_pending.Count > 0)
+        try
         {
-            var (client, line) = _pending.Dequeue();
-            string reply;
-            try
+            while (_pending.Count > 0)
             {
-                reply = await _commands!.Execute(AutomationProtocol.Parse(line));
+                var (client, line) = _pending.Dequeue();
+                client.Send(await Reply(line));
             }
-            catch (AutomationException e)
-            {
-                reply = AutomationProtocol.Failure(null, e.Message);
-            }
-
-            client.Send(reply);
         }
+        finally
+        {
+            _running = false;
+        }
+    }
 
-        _running = false;
+    /// <summary>Runs one line. A failure of any kind becomes an error reply, so one bad command never stops the queue.</summary>
+    private async Task<string> Reply(string line)
+    {
+        try
+        {
+            return await _commands!.Execute(AutomationProtocol.Parse(line));
+        }
+        catch (AutomationException e)
+        {
+            return AutomationProtocol.Failure(null, e.Message);
+        }
+        catch (Exception e)
+        {
+            ILog.Error($"automation: command failed: {e}");
+            return AutomationProtocol.Failure(null, $"{e.GetType().Name}: {e.Message}");
+        }
     }
 
     /// <summary>One connection: buffers bytes into lines and writes replies, one JSON object per line.</summary>

@@ -70,17 +70,21 @@ internal static class Program
         Console.Out.WriteLine(JsonSerializer.Serialize(new { pid = process.dwProcessId, desktop = options.Desktop }));
         Console.Out.Flush();
 
-        var watch = new Watch(process.dwProcessId, options.WatchLog);
+        // Godot's _console.exe is a wrapper that starts the real game as a child process; children join the job, so
+        // the watch checks every process in it, not only the one this launcher started.
+        var watch = new Watch(() => JobProcessIds(job), options.WatchLog);
         var deadline = options.TimeoutSeconds > 0
             ? DateTime.UtcNow.AddSeconds(options.TimeoutSeconds)
             : DateTime.MaxValue;
+        var timedOut = false;
         while (Native.WaitForSingleObject(process.hProcess, PollMilliseconds) == WaitTimeout)
         {
             watch.Check();
-            if (DateTime.UtcNow < deadline)
+            if (timedOut || DateTime.UtcNow < deadline)
                 continue;
-            watch.Record("timeout", $"killed after {options.TimeoutSeconds} s");
-            Native.TerminateProcess(process.hProcess, 124);
+            timedOut = true;
+            Console.Error.WriteLine($"HiddenDesktop: killed after {options.TimeoutSeconds} s");
+            Native.TerminateJobObject(job, 124);
         }
 
         Native.GetExitCodeProcess(process.hProcess, out var exitCode);
@@ -90,6 +94,29 @@ internal static class Program
         Native.CloseHandle(job);
         Native.CloseDesktop(desktop);
         return (int)exitCode;
+    }
+
+    /// <summary>The ids of the processes in the job now (JobObjectBasicProcessIdList).</summary>
+    private static HashSet<int> JobProcessIds(IntPtr job)
+    {
+        const int maxIds = 256;
+        // JOBOBJECT_BASIC_PROCESS_ID_LIST: two DWORD counts, then ULONG_PTR ids.
+        var size = 8 + maxIds * IntPtr.Size;
+        var buffer = Marshal.AllocHGlobal(size);
+        try
+        {
+            if (!Native.QueryInformationJobObject(job, 3, buffer, (uint)size, IntPtr.Zero))
+                return [];
+            var count = Marshal.ReadInt32(buffer, 4);
+            var ids = new HashSet<int>();
+            for (var i = 0; i < count; i++)
+                ids.Add((int)Marshal.ReadIntPtr(buffer, 8 + i * IntPtr.Size));
+            return ids;
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+        }
     }
 
     private static IntPtr KillOnCloseJob()
@@ -115,7 +142,7 @@ internal static class Program
 }
 
 /// <summary>Watches the user's desktop (the one this launcher runs on) for anything the hidden child shows there.</summary>
-internal sealed class Watch(int pid, string? logPath)
+internal sealed class Watch(Func<HashSet<int>> processIds, string? logPath)
 {
     private readonly Native.Rect _clip = CurrentClip();
     private readonly HashSet<IntPtr> _reportedWindows = [];
@@ -126,17 +153,19 @@ internal sealed class Watch(int pid, string? logPath)
 
     public void Check()
     {
+        var pids = processIds();
         Native.EnumWindows((window, _) =>
         {
             Native.GetWindowThreadProcessId(window, out var owner);
-            if (owner == pid && _reportedWindows.Add(window))
-                Record("window", $"top-level window 0x{window:X} visible={Native.IsWindowVisible(window)}");
+            if (pids.Contains(owner) && _reportedWindows.Add(window))
+                Record("window",
+                    $"top-level window 0x{window:X} of pid {owner} visible={Native.IsWindowVisible(window)}");
             return true;
         }, IntPtr.Zero);
 
         var foreground = Native.GetForegroundWindow();
         Native.GetWindowThreadProcessId(foreground, out var foregroundOwner);
-        if (foreground != IntPtr.Zero && foregroundOwner == pid && !_reportedForeground)
+        if (foreground != IntPtr.Zero && pids.Contains(foregroundOwner) && !_reportedForeground)
         {
             _reportedForeground = true;
             Record("foreground", $"window 0x{foreground:X} took the foreground");
@@ -192,7 +221,11 @@ internal sealed class Options
                 case "--desktop": options.Desktop = value; break;
                 case "--appdata": options.AppData = Path.GetFullPath(value); break;
                 case "--watch-log": options.WatchLog = Path.GetFullPath(value); break;
-                case "--timeout-sec": options.TimeoutSeconds = int.Parse(value); break;
+                case "--timeout-sec":
+                    options.TimeoutSeconds = int.TryParse(value, out var seconds) && seconds >= 0
+                        ? seconds
+                        : throw new ArgumentException($"--timeout-sec needs a whole number of seconds, not {value}");
+                    break;
                 default: throw new ArgumentException($"unknown option {args[i]}");
             }
 
@@ -325,9 +358,6 @@ internal static class Native
     public static extern bool GetExitCodeProcess(IntPtr process, out uint exitCode);
 
     [DllImport("kernel32.dll")]
-    public static extern bool TerminateProcess(IntPtr process, uint exitCode);
-
-    [DllImport("kernel32.dll")]
     public static extern bool CloseHandle(IntPtr handle);
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
@@ -338,4 +368,11 @@ internal static class Native
 
     [DllImport("kernel32.dll", SetLastError = true)]
     public static extern bool AssignProcessToJobObject(IntPtr job, IntPtr process);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool QueryInformationJobObject(IntPtr job, int infoClass, IntPtr info, uint length,
+        IntPtr returnLength);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool TerminateJobObject(IntPtr job, uint exitCode);
 }

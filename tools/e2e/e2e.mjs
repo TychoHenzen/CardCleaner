@@ -52,7 +52,11 @@ export function parseCommandArgs(words) {
   return args;
 }
 
-const sessionDir = (name) => path.join(root, 'reports', 'e2e', name);
+// The name becomes a folder below reports/e2e that start empties, so it may hold no path separator or "..".
+function sessionDir(name) {
+  if (!/^[A-Za-z0-9_-]+$/.test(name)) throw new Error(`session name "${name}" may use only letters, digits, - and _`);
+  return path.join(root, 'reports', 'e2e', name);
+}
 const sessionFile = (name) => path.join(sessionDir(name), 'session.json');
 
 function readSession(name) {

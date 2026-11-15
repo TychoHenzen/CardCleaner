@@ -117,4 +117,29 @@ public class AutomationProtocolTest
         AssertThat(back.AsVector3()).IsEqual(new Vector3(1, 2.5f, -3));
         AssertThat(VariantJson.FromJson(JsonValue.Create(4.0), Variant.Type.Int).AsInt64()).IsEqual(4L);
     }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void VariantJsonReadsNumbersSentAsTextAndRefusesOtherText()
+    {
+        var whole = VariantJson.FromJson(JsonValue.Create("3"), Variant.Type.Int);
+        var real = VariantJson.FromJson(JsonValue.Create("0.5"), Variant.Type.Float);
+        var flag = VariantJson.FromJson(JsonValue.Create("true"), Variant.Type.Bool);
+
+        AssertThat(whole.VariantType).IsEqual(Variant.Type.Int);
+        AssertThat(whole.AsInt64()).IsEqual(3L);
+        AssertThat(real.AsDouble()).IsEqual(0.5);
+        AssertBool(flag.AsBool()).IsTrue();
+        AutomationException? thrown = null;
+        try
+        {
+            VariantJson.FromJson(JsonValue.Create("fast"), Variant.Type.Float);
+        }
+        catch (AutomationException e)
+        {
+            thrown = e;
+        }
+
+        AssertThat(thrown?.Message).Contains("\"fast\" is not a Float");
+    }
 }

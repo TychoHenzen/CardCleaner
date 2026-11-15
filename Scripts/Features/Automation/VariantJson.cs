@@ -60,10 +60,27 @@ public static class VariantJson
             JsonValueKind.True or JsonValueKind.False => value.GetValue<bool>(),
             JsonValueKind.Number when type == Variant.Type.Int => (long)value.GetValue<double>(),
             JsonValueKind.Number => value.GetValue<double>(),
+            _ when type is Variant.Type.Int or Variant.Type.Float or Variant.Type.Bool =>
+                ParseText(value.GetValue<string>(), type),
             _ when type == Variant.Type.NodePath => new NodePath(value.GetValue<string>()),
             _ when type == Variant.Type.StringName => new StringName(value.GetValue<string>()),
             _ => value.GetValue<string>()
         };
+
+    /// <summary>A number or bool sent as text ("3", "0.5", "true"); anything else is refused, not stored as text.</summary>
+    private static Variant ParseText(string text, Variant.Type type)
+    {
+        var invariant = System.Globalization.CultureInfo.InvariantCulture;
+        if (type == Variant.Type.Int && long.TryParse(text, System.Globalization.NumberStyles.Integer, invariant,
+                out var whole))
+            return whole;
+        if (type == Variant.Type.Float && double.TryParse(text, System.Globalization.NumberStyles.Float, invariant,
+                out var real))
+            return real;
+        if (type == Variant.Type.Bool && bool.TryParse(text, out var flag))
+            return flag;
+        throw new AutomationException($"\"{text}\" is not a {type}");
+    }
 
     private static bool Vectorish(Variant.Type type) =>
         type is Variant.Type.Vector2 or Variant.Type.Vector2I or Variant.Type.Vector3 or Variant.Type.Vector3I
