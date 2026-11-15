@@ -141,7 +141,9 @@ internal static class Program
     }
 }
 
-/// <summary>Watches the user's desktop (the one this launcher runs on) for anything the hidden child shows there.</summary>
+/// <summary>
+///     Watches the user's desktop (the one this launcher runs on) for anything the hidden child shows there.
+/// </summary>
 internal sealed class Watch(Func<HashSet<int>> processIds, string? logPath)
 {
     private readonly Native.Rect _clip = CurrentClip();
