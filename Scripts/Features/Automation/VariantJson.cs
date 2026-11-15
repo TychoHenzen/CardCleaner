@@ -67,7 +67,9 @@ public static class VariantJson
             _ => value.GetValue<string>()
         };
 
-    /// <summary>A number or bool sent as text ("3", "0.5", "true"); anything else is refused, not stored as text.</summary>
+    /// <summary>
+    ///     A number or bool sent as text ("3", "0.5", "true"); anything else is refused, not stored as text.
+    /// </summary>
     private static Variant ParseText(string text, Variant.Type type)
     {
         var invariant = System.Globalization.CultureInfo.InvariantCulture;

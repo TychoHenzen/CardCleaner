@@ -90,7 +90,9 @@ public partial class AutomationAgent : Node
         }
     }
 
-    /// <summary>Runs one line. A failure of any kind becomes an error reply, so one bad command never stops the queue.</summary>
+    /// <summary>
+    ///     Runs one line. A failure of any kind becomes an error reply, so one bad command never stops the queue.
+    /// </summary>
     private async Task<string> Reply(string line)
     {
         try
