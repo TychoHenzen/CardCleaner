@@ -48,7 +48,9 @@ public static class AskingPrice
     /// <summary>The asking price as printed large on a price tag.</summary>
     public static string Readout(int marketValue, int markupPercent) => $"{For(marketValue, markupPercent)}";
 
-    /// <summary>The small print under the price on a tag: the market value and the markup that sets the price.</summary>
+    /// <summary>
+    ///     The small print under the price on a tag: the market value and the markup that sets the price.
+    /// </summary>
     public static string Detail(int marketValue, int markupPercent)
     {
         var sign = markupPercent >= 0 ? "+" : "";

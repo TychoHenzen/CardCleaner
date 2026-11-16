@@ -35,7 +35,9 @@ public partial class CheckoutItemProp : StaticBody3D, IInteractable
     /// <summary>The asking price, shown once the item is scanned.</summary>
     public int Price { get; set; }
 
-    /// <summary>The still copy of the real item, adopted as a child when the prop is ready. Null shows a grey box.</summary>
+    /// <summary>
+    ///     The still copy of the real item, adopted as a child when the prop is ready. Null shows a grey box.
+    /// </summary>
     public StockItemLook? Look { get; set; }
 
     /// <summary>Set by the counter; called with <see cref="ItemId" /> when an unscanned item is used.</summary>

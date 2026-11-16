@@ -6,7 +6,9 @@ namespace CardCleaner.Scripts.Features.Card.Models;
 /// <summary>The key hints while the player holds cards.</summary>
 public static class CardHandHints
 {
-    /// <summary>No hints for an empty hand; otherwise the drop keys, or the release while a drop is being aimed.</summary>
+    /// <summary>
+    ///     No hints for an empty hand; otherwise the drop keys, or the release while a drop is being aimed.
+    /// </summary>
     public static IReadOnlyList<ControlHint> For(int heldCount, bool aimingDrop)
     {
         if (heldCount <= 0)

@@ -51,12 +51,12 @@ public partial class ShelfSlotTarget : StaticBody3D, IInteractable, IDependent
         }
 
         var slotInBox = shapeNode.GlobalTransform.AffineInverse() * slot.GlobalPosition;
-        var (size, centre) = ReachDownToSurface(box.Size, slotInBox);
+        var reach = ReachDownToSurface(box.Size, slotInBox);
         var target = new ShelfSlotTarget { Name = $"{slot.Name}Target", _slot = slot };
-        target.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = size } });
+        target.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = reach.Size } });
         target._highlight = new MeshInstance3D
         {
-            Mesh = new BoxMesh { Size = size },
+            Mesh = new BoxMesh { Size = reach.Size },
             MaterialOverride = GD.Load<Material>(HighlightMaterialPath),
             Visible = false,
         };
@@ -64,17 +64,18 @@ public partial class ShelfSlotTarget : StaticBody3D, IInteractable, IDependent
         target.AddToGroup(DeliveryMarker.NoFootprintGroup);
         shelf.AddChild(target);
         target.Transform = shelf.GlobalTransform.AffineInverse() * shapeNode.GlobalTransform
-                           * new Transform3D(Basis.Identity, centre);
+                           * new Transform3D(Basis.Identity, reach.GetCenter());
         return target;
     }
 
     // The trigger box grown downwards until it ends a little below the slot's origin (given in the box's frame),
-    // keeping its top. Returns the new size and the new centre in the box's frame.
-    private static (Vector3 Size, Vector3 Centre) ReachDownToSurface(Vector3 triggerSize, Vector3 slotOrigin)
+    // keeping its top, as a box in that frame.
+    private static Aabb ReachDownToSurface(Vector3 triggerSize, Vector3 slotOrigin)
     {
         var top = triggerSize.Y / 2f;
         var bottom = Mathf.Min(-top, slotOrigin.Y - SurfaceMargin);
-        return (new Vector3(triggerSize.X, top - bottom, triggerSize.Z), new Vector3(0f, (top + bottom) / 2f, 0f));
+        var corner = new Vector3(-triggerSize.X / 2f, bottom, -triggerSize.Z / 2f);
+        return new Aabb(corner, new Vector3(triggerSize.X, top - bottom, triggerSize.Z));
     }
 
     public void Inject(IServiceResolver services) => _services = services;

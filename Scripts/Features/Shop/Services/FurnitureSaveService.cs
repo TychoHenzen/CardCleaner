@@ -18,9 +18,8 @@ public partial class FurnitureSaveService : Node, ILoadsFirst, IDependent
     public const string RecordsKey = "records";
 
     /// <summary>
-    ///     Set in every save that lists the scene's own starting furniture with the rest. A save without it was written
-    ///     while the starting shelves were not furniture yet, so its records are added beside them instead of
-    ///     replacing them.
+    ///     Set in every save that lists the scene's starting furniture with the rest. A save without it predates the
+    ///     starting shelves being furniture, so its records are added beside them instead of replacing them.
     /// </summary>
     public const string WholeLayoutKey = "whole_layout";
 

@@ -14,7 +14,9 @@ public static class DayReportSheet
 
     public static string Title(DayReport report) => $"Day {report.Day} closed";
 
-    /// <summary>The figures in reading order: takings, debt carried in, each bill, unpaid debt, the day's net.</summary>
+    /// <summary>
+    ///     The figures in reading order: takings, debt carried in, each bill, unpaid debt, the day's net.
+    /// </summary>
     public static IReadOnlyList<(string Label, string Value)> Figures(DayReport report)
     {
         var settlement = report.Settlement;
@@ -28,7 +30,9 @@ public static class DayReportSheet
         return rows;
     }
 
-    /// <summary>One line per complaint reason with its count, or <see cref="NoComplaints" /> when there were none.</summary>
+    /// <summary>
+    ///     One line per complaint reason with its count, or <see cref="NoComplaints" /> when there were none.
+    /// </summary>
     public static IReadOnlyList<string> Complaints(DayReport report) =>
         report.Complaints.Count == 0
             ? new[] { NoComplaints }

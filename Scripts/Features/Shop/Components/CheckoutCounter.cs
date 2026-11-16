@@ -57,9 +57,8 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     public IMoneyService? Money { get; set; }
 
     /// <summary>
-    ///     True while the front customer's items are all scanned and the player, not the cashier, takes the payment.
-    ///     The counter is on the interaction layer only then, so at any other time the aim passes through it to the
-    ///     scan props and to whatever lies on it.
+    ///     True while the front customer's items are scanned and the player, not the cashier, takes the payment. Only
+    ///     then is the counter on the interaction layer, so otherwise the aim passes through to what lies on it.
     /// </summary>
     public bool CanInteract => !IsClaimed && Session is { State: CheckoutState.AwaitingPayment };
 

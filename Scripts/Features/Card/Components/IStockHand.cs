@@ -12,6 +12,8 @@ public interface IStockHand
     /// </summary>
     RigidBody3D? Offered { get; }
 
-    /// <summary>Moves <see cref="Offered" /> from the hand into the slot; false, with nothing moved, when it cannot.</summary>
+    /// <summary>
+    ///     Moves <see cref="Offered" /> from the hand into the slot; false, with nothing moved, when it cannot.
+    /// </summary>
     bool TryStock(DeckSlot slot);
 }

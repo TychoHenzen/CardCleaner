@@ -73,7 +73,9 @@ public partial class PcScreenOverlay : CanvasLayer
         SetShown(false);
     }
 
-    /// <summary>Shows the desktop fullscreen, fading it in over <paramref name="fadeSeconds" />, and takes input.</summary>
+    /// <summary>
+    ///     Shows the desktop fullscreen, fading it in over <paramref name="fadeSeconds" />, and takes input.
+    /// </summary>
     public void Activate(float fadeSeconds)
     {
         Active = true;

@@ -17,9 +17,8 @@ public interface IInputService
     bool IsActionJustReleased(string actionName);
 
     /// <summary>
-    ///     While true, a press fires no registered action: a menu or screen holds the cursor, so world keys and clicks
-    ///     must not act behind it. Releases still reach mouse actions, so a press made before ends cleanly. Raw events
-    ///     and the polled movement are not affected.
+    ///     While true (a menu or screen holds the cursor), a press fires no registered action, so nothing acts behind
+    ///     it. Releases still reach mouse actions, so an earlier press ends cleanly; raw events and movement do not.
     /// </summary>
     bool ActionsSuspended { get; set; }
 

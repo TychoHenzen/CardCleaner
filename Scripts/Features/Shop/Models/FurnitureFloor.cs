@@ -15,7 +15,9 @@ public static class FurnitureFloor
     /// <summary>The storage and backoffice strip behind the storefront: x 0..24, z -8..0.</summary>
     public static readonly FurnitureRect BackRoom = new(WallInset, -8f + WallInset, 24f - WallInset, -WallInset);
 
-    /// <summary>The right storage arm beside the storefront: x 16..24, z -8..12 (it opens into the back room).</summary>
+    /// <summary>
+    ///     The right storage arm beside the storefront: x 16..24, z -8..12 (it opens into the back room).
+    /// </summary>
     public static readonly FurnitureRect RightArm =
         new(16f + WallInset, -8f + WallInset, 24f - WallInset, 12f - WallInset);
 
