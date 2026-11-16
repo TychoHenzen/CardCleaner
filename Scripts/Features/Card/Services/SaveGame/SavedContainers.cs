@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
@@ -100,7 +101,8 @@ internal static class SavedContainers
     }
 
     /// <summary>
-    ///     Frees the scene's own containers, then adds one container under <paramref name="world" /> per saved one.
+    ///     Frees the scene's own containers, then adds one container under <paramref name="world" /> per saved one, and
+    ///     locks each one saved on a slot's seat back into that slot.
     /// </summary>
     internal static void Restore(SceneTree tree, IEnumerable<Saved> saved, Node3D world)
     {
@@ -115,6 +117,8 @@ internal static class SavedContainers
             existing.QueueFree();
         }
 
+        var slots = SlotsUnder(world).ToList();
+        var seated = new List<(CardContainer Container, DeckSlot Slot, int Seat)>();
         foreach (var record in saved)
         {
             var packed = ResourceLoader.Load<PackedScene>(record.ScenePath);
@@ -133,6 +137,36 @@ internal static class SavedContainers
             container.GlobalRotation = record.Rotation;
             // A failed pick-up leaves the container at its saved position.
             if (record.Held) holder?.TryPickUp(container);
+            else if (SeatOf(slots, record.Position) is { } seat) seated.Add((container, seat.Slot, seat.Index));
+        }
+
+        // Locked now, before any physics step, not by the slot's trigger: a seat lies inside its shelf's solid
+        // collider, which pushes a free container off the seat, and out of the trigger, on the first step. A slot's
+        // lower seats are filled first, so a stack comes back in its saved order.
+        foreach (var (container, slot, _) in seated.OrderBy(entry => entry.Seat))
+            slot.TryLock(container);
+    }
+
+    private static (DeckSlot Slot, int Index)? SeatOf(IEnumerable<DeckSlot> slots, Vector3 position)
+    {
+        foreach (var slot in slots)
+        {
+            if (slot.SeatAt(position) is { } index)
+                return (slot, index);
+        }
+
+        return null;
+    }
+
+    private static IEnumerable<DeckSlot> SlotsUnder(Node node)
+    {
+        foreach (var child in node.GetChildren())
+        {
+            if (child is DeckSlot slot)
+                yield return slot;
+
+            foreach (var nested in SlotsUnder(child))
+                yield return nested;
         }
     }
 

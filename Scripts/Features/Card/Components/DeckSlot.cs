@@ -21,6 +21,10 @@ public partial class DeckSlot : Node3D
     private const ShelfKind DefaultKind = ShelfKind.CardShelf;
     private static readonly Vector3 DefaultStackOffset = new(0, 0.02f, 0);
 
+    // ASSUMPTION (Low): a locked body is saved on its seat to float precision, and the seats of different slots lie
+    // far more than this apart, so 5 cm tells a body on a seat from one lying beside the shelf.
+    private const float SeatTolerance = 0.05f;
+
     private readonly List<RigidBody3D> _cards = new();
     private readonly Dictionary<CardContainer, Action> _exitHandlers = new();
     private bool _processingEntry;
@@ -214,6 +218,27 @@ public partial class DeckSlot : Node3D
     /// plus <paramref name="index" /> times <see cref="StackOffset" />, both turned with the slot.
     /// </summary>
     public Vector3 SeatPosition(int index) => GlobalTransform * (PositionOffset + StackOffset * index);
+
+    /// <summary>
+    /// The index of the seat <paramref name="position" /> lies on: the nearest of this slot's seats within 5 cm of it,
+    /// or null when it lies on none.
+    /// </summary>
+    public int? SeatAt(Vector3 position)
+    {
+        int? nearest = null;
+        var nearestDistance = SeatTolerance;
+        for (var index = 0; index < Capacity; index++)
+        {
+            var distance = SeatPosition(index).DistanceTo(position);
+            if (distance > nearestDistance)
+                continue;
+
+            nearest = index;
+            nearestDistance = distance;
+        }
+
+        return nearest;
+    }
 
     private void EjectCard(RigidBody3D card)
     {

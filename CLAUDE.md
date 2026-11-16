@@ -515,8 +515,14 @@ non-finite coordinate or an invalid pose is skipped with an error. `FurnitureSav
 (`addons/saveable`), so `SaveSystem` loads it before the rest of the tree and the restored shelves are in the tree when
 their price tags and cards load. A restored piece keeps its saved name under `World/Furniture`
 (`PlacedFurniture.StandUnder`; a new piece takes the first free `Furniture<n>`), which keeps those node-path save ids
-stable, and restored boxes are tracked by the `DeliveryMarker` so a new order avoids them. Cards stocked on a placed shelf are saved by `GameSaveService` as
-cards and are not part of the furniture record (ASSUMPTION Medium: they re-seat as they do on a scene-placed shelf).
+stable, and restored boxes are tracked by the `DeliveryMarker` so a new order avoids them. Stock on a placed shelf
+(cards and containers) is saved by `GameSaveService`, not in the furniture record, at the seat it is locked on.
+
+A card or container saved on a slot's seat (`DeckSlot.SeatAt`, the nearest seat within 5 cm) is locked back into that
+slot while the save loads (`SavedContainers.Restore`, `SavedCardRespawner`), before any physics step, lower seats first.
+The slot's trigger cannot do it: a seat can lie inside its shelf's solid collider (the product shelf's does), which
+pushes a free body off the seat, and out of the trigger, on the first step.
+`ShelfStockSaveTest.StockIsBackInItsSlotsBeforeAnyPhysicsStep` pins it.
 
 The starting product shelf and storage rack used to stand under `World/Storefront/ProductShelf` and
 `World/RightStorage/StorageRack`, so a save from that layout keys their price tags by those paths and keeps their stock
