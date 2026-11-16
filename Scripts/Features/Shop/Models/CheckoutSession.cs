@@ -45,6 +45,12 @@ public sealed class CheckoutSession
 
     public int Total { get; }
 
+    /// <summary>How many items the basket holds.</summary>
+    public int ItemCount => _basket.Count;
+
+    /// <summary>How the customer pays.</summary>
+    public PaymentMethod Method => _method;
+
     /// <summary>The cash the customer hands over; zero for a card payment.</summary>
     public int Tendered { get; }
 

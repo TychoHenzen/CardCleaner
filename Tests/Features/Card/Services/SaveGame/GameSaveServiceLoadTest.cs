@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services.SaveGame;
@@ -17,14 +18,15 @@ namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
 
 /// <summary>
 /// Loads the committed pre-move save through the real save system (#172 U1). The game save service respawns each saved
-/// card, and the held card is handed to the player camera. The service reads and writes an in-memory slot file system,
-/// so no test touches the user folder.
+/// card, the held card is handed to the player camera, and a card saved on a slot's seat is locked back into that slot.
+/// The service reads and writes an in-memory slot file system, so no test touches the user folder.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class GameSaveServiceLoadTest
 {
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
+    private const string CardSlotScene = "res://Scenes/UI/CardSlot.tscn";
 
     [TestCase]
     [TestCategory("Unit")]
@@ -107,6 +109,63 @@ public class GameSaveServiceLoadTest
         var seeds = scene.Spawner.Spawned.Select(s => s.LookSeed).ToList();
         AssertBool(seeds.Count(v => v is null) == 1).IsTrue();
         AssertThat(seeds.Single(v => v.HasValue)!.Value).IsEqual(4242);
+    }
+
+    // A card saved on a slot's seat is locked back into the slot as it respawns, before any physics step: a seat can
+    // lie inside its shelf's solid collider, which pushes a free card off it before the slot's trigger catches it. A
+    // card saved under the slot but off its seats stays free.
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ACardSavedOnASlotSeatIsLockedIntoThatSlotAsItRespawns()
+    {
+        using var scene = new SaveWorld("GameSaveSeatWorld");
+        var slot = GD.Load<PackedScene>(CardSlotScene).Instantiate<DeckSlot>();
+        scene.World.AddChild(slot);
+        AddNode(scene.World, autoFree: false);
+        scene.Enter();
+        var respawner = new SavedCardRespawner(scene.Tree, scene.Spawner, scene.World, (_, _) => { });
+        var slotPath = slot.GetPath().ToString();
+
+        var seat = slot.SeatPosition(0);
+        respawner.Respawn(new SavedCardRecord(new CardSignature(), seat, Vector3.Zero, false, slotPath));
+        respawner.Respawn(new SavedCardRecord(new CardSignature(), seat + Vector3.Up, Vector3.Zero, false, slotPath));
+
+        var seated = scene.Spawner.Spawned[0].Card;
+        var beside = scene.Spawner.Spawned[1].Card;
+        AssertThat(slot.Cards.Count).IsEqual(1);
+        AssertObject(slot.Cards[0]).IsSame(seated);
+        AssertBool(seated.Freeze).IsTrue();
+        AssertBool(beside.Freeze).IsFalse();
+    }
+
+    // A reload into the same scene frees the shelved card and respawns its saved copy. The freed card must leave the
+    // slot before the copy respawns: a card-shelf slot holds one card, so a freed card still counted in it would keep
+    // the copy out.
+    [TestCase]
+    [TestCategory("Unit")]
+    public static async Task ReloadingPutsTheSavedCopyOfAShelvedCardIntoItsOneCardSlot()
+    {
+        using var scene = new SaveWorld("GameSaveShelvedWorld");
+        var slot = GD.Load<PackedScene>(CardSlotScene).Instantiate<DeckSlot>();
+        slot.Capacity = 1;
+        scene.World.AddChild(slot);
+        var shelved = new CardController { Name = "Shelved", Signature = new CardSignature() };
+        scene.World.AddChild(shelved);
+        var service = scene.Add(new GameSaveService(new InMemorySlotFileSystem(), SaveWorld.SlotNamed("a"))
+            { AutoLoadOnStart = false });
+        AddNode(scene.World, autoFree: false);
+        scene.Enter();
+        await scene.World.ToSignal(scene.Tree, SceneTree.SignalName.ProcessFrame);
+        AssertBool(slot.TryLock(shelved)).IsTrue();
+
+        var save = new NodeSave();
+        service.Save(save);
+        service.Load(save);
+        await scene.TwoFrames();
+
+        AssertThat(scene.Spawner.Spawned).HasSize(1);
+        AssertThat(slot.Cards.Count).IsEqual(1);
+        AssertObject(slot.Cards[0]).IsSame(scene.Spawner.Spawned[0].Card);
     }
 
     [TestCase]

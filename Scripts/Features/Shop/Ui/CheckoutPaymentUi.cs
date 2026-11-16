@@ -17,7 +17,7 @@ namespace CardCleaner.Scripts.Features.Shop.Ui;
 ///     decides it. A refused attempt clears the entry and keeps the screen open; Escape or Cancel closes it without
 ///     paying.
 /// </summary>
-public partial class CheckoutPaymentUi : CanvasLayer, IDependent
+public partial class CheckoutPaymentUi : CanvasLayer, IDependent, IModalScreen
 {
     private const int MaxDigits = 6;
     private const int PanelWidth = 420;
@@ -67,6 +67,8 @@ public partial class CheckoutPaymentUi : CanvasLayer, IDependent
         _change.ConfirmPressed += PayByCash;
     }
 
+    public override void _EnterTree() => AddToGroup(IModalScreen.GroupName);
+
     public override void _ExitTree()
     {
         // Freed while open: give the cursor and the player's control back.
@@ -114,8 +116,8 @@ public partial class CheckoutPaymentUi : CanvasLayer, IDependent
         Refresh();
     }
 
-    // Idempotent: paying, cancelling and the counter ending the session may each call it.
-    private void Close()
+    // Idempotent: paying, cancelling, the counter ending the session and the day report may each call it.
+    public void Close()
     {
         if (!Visible)
             return;
@@ -189,8 +191,11 @@ public partial class CheckoutPaymentUi : CanvasLayer, IDependent
         if (_session == null)
             return;
 
-        _keypad.ShowEntry(_typed, _session.Total);
-        _change.ShowPicked(_picks.Sum());
+        // Only the visible panel is refreshed: a card session hands over no cash, so it has no change to show.
+        if (_session.Method == PaymentMethod.Card)
+            _keypad.ShowEntry(_typed, _session.Total);
+        else
+            _change.ShowChange(_picks.Sum(), _session.Total, _session.Tendered);
     }
 
     private void BuildLayout()

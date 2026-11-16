@@ -20,6 +20,9 @@ public class ShopFurniturePlacementSceneTest
     private ShopNavigationRegion _region = null!;
     private FurniturePlacementController _controller = null!;
     private Node3D _furnitureRoot = null!;
+
+    // The shop's starting furniture, standing under the furniture root before a case places a piece.
+    private int _standing;
     private Window _root = null!;
 
     [BeforeTest]
@@ -37,6 +40,7 @@ public class ShopFurniturePlacementSceneTest
         uint regionBefore = NavigationServer3D.RegionGetIterationId(_region.GetRid());
         AddNode(_shop);
         _furnitureRoot = _shop.GetNode<Node3D>(FurnitureRootPath);
+        _standing = _furnitureRoot.GetChildCount();
         _root = _shop.GetTree().Root;
         await ShopNavigationRig.WaitForBakeSync(_region, regionBefore);
     }
@@ -93,7 +97,7 @@ public class ShopFurniturePlacementSceneTest
 
         AssertBool(_controller.CurrentValid).IsFalse();
         AssertBool(_controller.Confirm()).IsFalse();
-        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(0);
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(_standing);
         AssertBool(_controller.IsActive).IsTrue();
         AssertBool(GodotObject.IsInstanceValid(box)).IsTrue();
         AssertInt(_region.RebakeCount).IsEqual(rebakes);
@@ -109,8 +113,8 @@ public class ShopFurniturePlacementSceneTest
         _controller.AimAt(4f, 8f);
 
         AssertBool(_controller.Confirm()).IsTrue();
-        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
-        var placed = (PlacedFurniture)_furnitureRoot.GetChild(0);
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(_standing + 1);
+        var placed = (PlacedFurniture)_furnitureRoot.GetChild(_standing);
         AssertString(placed.Item!.Id).IsEqual("shelf_unit");
         AssertBool(placed.Position.IsEqualApprox(new Vector3(4f, 0f, 8f))).IsTrue();
 
@@ -193,7 +197,7 @@ public class ShopFurniturePlacementSceneTest
         AssertBool(confirmed).IsFalse();
         AssertBool(_controller.CurrentValid).IsFalse();
         AssertBool(_controller.IsActive).IsTrue();
-        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(0);
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(_standing);
     }
 
     [TestCase]
@@ -209,7 +213,7 @@ public class ShopFurniturePlacementSceneTest
 
         AssertBool(_controller.IsActive).IsFalse();
         AssertBool(GodotObject.IsInstanceValid(box)).IsTrue();
-        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(0);
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(_standing);
         AssertInt(_region.RebakeCount).IsEqual(rebakes);
     }
 

@@ -99,17 +99,22 @@ public class PlacedFurnitureTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void SetCarried_HidesThePieceAndLeavesTheCollisionLayer()
+    public void SetCarried_HidesThePieceAndTakesItOutOfThePhysicsSpace()
     {
         var placed = PlacedFurniture.Create(_shelf, Pose);
         AddNode(placed!);
 
-        placed!.SetCarried(true);
+        var content = placed!.GetNode<CollisionObject3D>(PlacedFurniture.ContentName);
+
+        placed.SetCarried(true);
         AssertBool(placed.IsCarried && !placed.Visible).IsTrue();
         AssertInt((int)placed.CollisionLayer).IsEqual(0);
+        // The shelf's own body leaves the physics space with the wrapper.
+        AssertBool(PhysicsServer3D.BodyGetSpace(content.GetRid()).IsValid).IsFalse();
 
         placed.SetCarried(false);
         AssertBool(!placed.IsCarried && placed.Visible).IsTrue();
         AssertInt((int)placed.CollisionLayer).IsEqual(1);
+        AssertBool(PhysicsServer3D.BodyGetSpace(content.GetRid()).IsValid).IsTrue();
     }
 }

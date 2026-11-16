@@ -62,6 +62,10 @@ ui/toolbar/run_overall=true
 settings/test/test_lookup_folder="Tests"
 ui/inspector/tree_view_mode=1
 
+[gui]
+
+theme/custom="res://Data/Ui/GameTheme.tres"
+
 [importer_defaults]
 
 texture={
@@ -128,6 +132,7 @@ world/map_use_async_iterations=false
 3d/physics_engine="Jolt Physics"
 jolt_physics_3d/simulation/velocity_steps=4
 jolt_physics_3d/simulation/sleep_velocity_threshold=0.1
+jolt_physics_3d/simulation/penetration_slop=0.001
 jolt_physics_3d/limits/temporary_memory_buffer_size=128
 common/physics_interpolation=true
 

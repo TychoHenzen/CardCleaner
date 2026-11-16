@@ -1,6 +1,23 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Ui/PcDesktop.cs" id="1_desktop"]
+
+[sub_resource type="Gradient" id="WallpaperColours"]
+colors = PackedColorArray(0.09, 0.2, 0.3, 1, 0.04, 0.08, 0.13, 1)
+
+[sub_resource type="GradientTexture2D" id="WallpaperTexture"]
+gradient = SubResource("WallpaperColours")
+fill_from = Vector2(0.2, 0)
+fill_to = Vector2(0.8, 1)
+
+[sub_resource type="StyleBoxFlat" id="TaskbarStyle"]
+content_margin_left = 8.0
+content_margin_top = 6.0
+content_margin_right = 8.0
+content_margin_bottom = 6.0
+bg_color = Color(0.05, 0.06, 0.09, 0.95)
+border_width_top = 1
+border_color = Color(0.3, 0.36, 0.45, 1)
 
 [node name="PcDesktop" type="Control"]
 layout_mode = 3
@@ -11,43 +28,104 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_desktop")
 
-[node name="Wallpaper" type="ColorRect" parent="."]
+[node name="Wallpaper" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.12, 0.24, 0.32, 1)
+texture = SubResource("WallpaperTexture")
+expand_mode = 1
 
-[node name="Icons" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 176.0
-offset_bottom = 336.0
+[node name="Brand" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 48.0
+offset_bottom = 120.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.75, 0.85, 0.95, 0.85)
+theme_override_font_sizes/font_size = 48
+text = "Card Shop Manager"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 120.0
+offset_bottom = 160.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 0.85)
+text = "Pick an app. Esc or Close leaves the PC."
+horizontal_alignment = 1
+
+[node name="Icons" type="GridContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -480.0
+offset_top = -70.0
+offset_right = 480.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 20
+columns = 5
 
 [node name="StockIcon" type="Button" parent="Icons"]
+custom_minimum_size = Vector2(176, 150)
 layout_mode = 2
+tooltip_text = "Order booster boxes, packs and boosters"
+theme_override_font_sizes/font_size = 26
 text = "Stock"
 
 [node name="FurnitureIcon" type="Button" parent="Icons"]
+custom_minimum_size = Vector2(176, 150)
 layout_mode = 2
+tooltip_text = "Order shelves and racks, delivered flat-packed"
+theme_override_font_sizes/font_size = 26
 text = "Furniture"
 
 [node name="ExpansionsIcon" type="Button" parent="Icons"]
+custom_minimum_size = Vector2(176, 150)
 layout_mode = 2
+tooltip_text = "Buy the next lot to grow the shop floor"
+theme_override_font_sizes/font_size = 26
 text = "Expansions"
 
 [node name="StaffIcon" type="Button" parent="Icons"]
+custom_minimum_size = Vector2(176, 150)
 layout_mode = 2
+tooltip_text = "Hire a cashier or a restocker"
+theme_override_font_sizes/font_size = 26
 text = "Staff"
 
 [node name="BillsIcon" type="Button" parent="Icons"]
+custom_minimum_size = Vector2(176, 150)
 layout_mode = 2
+tooltip_text = "Today's rent and wages"
+theme_override_font_sizes/font_size = 26
 text = "Bills"
 
-[node name="Taskbar" type="HBoxContainer" parent="."]
+[node name="AppWindow" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TaskbarBack" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -56,11 +134,28 @@ anchor_bottom = 1.0
 offset_top = -48.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_override_styles/panel = SubResource("TaskbarStyle")
+
+[node name="Taskbar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -44.0
+offset_right = -8.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 8
 
 [node name="HomeButton" type="Button" parent="Taskbar"]
+custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 text = "Home"
 
 [node name="CloseButton" type="Button" parent="Taskbar"]
+custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 text = "Close"

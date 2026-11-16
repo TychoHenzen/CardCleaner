@@ -1,5 +1,6 @@
 using System;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
@@ -7,7 +8,8 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 
 /// <summary>
-/// Spawns saved cards back into the current scene and hands cards that were held to the player camera.
+/// Spawns saved cards back into the current scene, hands cards that were held to the player camera, and locks a card
+/// saved on a slot's seat back into that slot.
 /// </summary>
 internal sealed class SavedCardRespawner
 {
@@ -46,6 +48,10 @@ internal sealed class SavedCardRespawner
 
         if (saved.IsHeld)
             ReparentWhenHeld(controller);
+        // Locked now, not by the slot's trigger: a seat can lie inside its shelf's solid collider, which pushes a free
+        // card off the seat, and out of the trigger, on the first physics step (see SavedContainers.Restore).
+        else if (spawnParent is DeckSlot slot && slot.SeatAt(saved.Position) != null)
+            slot.TryLock(controller);
     }
 
     private Node3D ResolveSpawnParent(string parentPath)

@@ -114,7 +114,7 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
         AssertInt(report.Settlement.Lines.Count(line => line.Name == "Restocker wage")).IsEqual(1);
     }
 
-    private DeckSlot RackSlot() => _rig.Shop.GetNode<CardShelf>("World/RightStorage/StorageRack").Slots.First();
+    private DeckSlot RackSlot() => _rig.Shop.GetNode<CardShelf>("World/Furniture/StorageRack/Content").Slots.First();
 
     // A new pack locked into the first slot of the storage rack.
     private CardContainer StockRackPack()

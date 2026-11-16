@@ -112,7 +112,7 @@ public class MainMenuClickTest : MainMenuSceneTestBase
         await Click(Get<Button>("Layout/NewGameButton"));
 
         Assertions.AssertBool(Get<ConfirmationDialog>("NewGameDialog").Visible).IsTrue();
-        Assertions.AssertString(Get<LineEdit>("NewGameDialog/NameEdit").Text).IsEmpty();
+        Assertions.AssertString(Get<LineEdit>("NewGameDialog/Content/NameEdit").Text).IsEmpty();
         await CloseDialog("NewGameDialog");
         Assertions.AssertInt(_changedScenes.Count).IsEqual(0);
     }
@@ -154,7 +154,7 @@ public class MainMenuClickTest : MainMenuSceneTestBase
         await Settle();
 
         await Click(Get<Button>("Layout/NewGameButton"));
-        Get<LineEdit>("NewGameDialog/NameEdit").Text = "fresh";
+        Get<LineEdit>("NewGameDialog/Content/NameEdit").Text = "fresh";
         Get<ConfirmationDialog>("NewGameDialog").EmitSignal("confirmed");
         await CloseDialog("NewGameDialog");
 
@@ -192,7 +192,7 @@ public class MainMenuClickTest : MainMenuSceneTestBase
         Assertions.AssertString(Get<Label>("Layout/MessageLabel").Text).IsEmpty();
 
         await Click(Get<Button>("Layout/NewGameButton"));
-        Get<LineEdit>("NewGameDialog/NameEdit").Text = "broken";
+        Get<LineEdit>("NewGameDialog/Content/NameEdit").Text = "broken";
         Get<ConfirmationDialog>("NewGameDialog").EmitSignal("confirmed");
         await CloseDialog("NewGameDialog");
         await Settle();

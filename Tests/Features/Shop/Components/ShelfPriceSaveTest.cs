@@ -34,7 +34,6 @@ public class ShelfPriceSaveTest
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
     private const ulong BoosterSeed = 4242;
     private const int SettleFrames = 10;
-    private const int ExpectedTagCount = 7;
 
     private SceneTree _tree = null!;
     private Node? _previousScene;
@@ -68,8 +67,8 @@ public class ShelfPriceSaveTest
         TestServices.Container.RegisterSingleton<SlotStore>(new SlotStore(_files));
         TestServices.Container.RegisterSingleton<ISaveGameCommand>(_saves);
 
-        _product = _shop.GetNode<CardShelf>("World/Storefront/ProductShelf");
-        _rack = _shop.GetNode<CardShelf>("World/RightStorage/StorageRack");
+        _product = _shop.GetNode<CardShelf>("World/Furniture/ProductShelf/Content");
+        _rack = _shop.GetNode<CardShelf>("World/Furniture/StorageRack/Content");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
 
         AddNode(_shop, autoFree: false);
@@ -149,9 +148,14 @@ public class ShelfPriceSaveTest
     public void EveryTagInTheShopHasADistinctId()
     {
         var tags = AllPricings(_shop).ToArray();
+        // One tag per slot of every shelf the shop starts with.
+        // FindChildren matches engine class names only, so the C# type is filtered after the walk.
+        var slots = _shop.FindChildren("*", "", true, false).OfType<CardShelf>()
+            .Sum(shelf => shelf.SlotCount);
 
-        AssertThat(tags.Length).IsEqual(ExpectedTagCount);
-        AssertThat(tags.Select(tag => tag.UniqueID.ToString()).Distinct().Count()).IsEqual(ExpectedTagCount);
+        AssertThat(slots).IsGreater(0);
+        AssertThat(tags.Length).IsEqual(slots);
+        AssertThat(tags.Select(tag => tag.UniqueID.ToString()).Distinct().Count()).IsEqual(slots);
     }
 
     [TestCase]

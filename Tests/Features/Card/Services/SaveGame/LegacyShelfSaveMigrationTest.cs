@@ -1,0 +1,177 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Card.Services.SaveGame;
+using CardCleaner.Scripts.Features.Packs.Components;
+using CardCleaner.Scripts.Features.SaveSlots.Models;
+using CardCleaner.Scripts.Features.SaveSlots.Services;
+using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Tests.Features.Packs;
+using CardCleaner.Tests.Features.SaveSlots.Services;
+using CardCleaner.Tests.Scenes;
+using CardCleaner.Tests.TestUtilities;
+using GdUnit4;
+using Godot;
+using Saveable;
+using Saveable.Extensions;
+
+namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
+
+/// <summary>
+/// A save made before the shop's starting product shelf and storage rack became furniture keyed their price tags by
+/// the old node paths and kept their stock at the old seats. Loaded into the current shop, its prices land on the
+/// moved tags and its stock locks into the same slots again. A current save loads as it is.
+/// </summary>
+[TestSuite]
+[RequireGodotRuntime]
+public class LegacyShelfSaveMigrationTest
+{
+    private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
+    private const ulong BoosterSeed = 4242;
+    private const int SavedMarkup = 20;
+    private const int SettleFrames = 10;
+    private const float SameSeatMeters = 0.05f;
+
+    // Before the move the product shelf stood at (10, 0, 10.5) under World/Storefront, its second slot sat at
+    // (0, 0.9, -0.2) on it, and a slot seated stock 0.16 m up and 0.2 m forward of itself.
+    private static readonly Vector3 OldSecondSlotSeat = new(10f, 1.06f, 10.5f);
+
+    private static readonly (string Current, string Old)[] ShelfPaths =
+    [
+        ("/World/Furniture/ProductShelf/Content/", "/World/Storefront/ProductShelf/"),
+        ("/World/Furniture/StorageRack/Content/", "/World/RightStorage/StorageRack/"),
+    ];
+
+    private SceneTree _tree = null!;
+    private Node? _previousScene;
+    private Node3D _shop = null!;
+    private GameSaveService _saves = null!;
+    private CardShelf _product = null!;
+    private InMemorySlotFileSystem _files = null!;
+    private SaveSlotName _slot;
+
+    [BeforeTest]
+    public async Task Setup()
+    {
+        _tree = (SceneTree)Engine.GetMainLoop();
+        _previousScene = _tree.CurrentScene;
+
+        // The rig resets the container, so the save services are registered after it and before the shop enters
+        // the tree; the shop's GameSaveService resolves them in its _Ready.
+        _shop = ShopOrderingRig.LoadShopWithServices();
+
+        _files = new InMemorySlotFileSystem();
+        var slots = new ActiveSaveSlot();
+        if (!SaveSlotName.TryCreate("a", out _slot, out var reason))
+            throw new InvalidOperationException(reason);
+        slots.Activate(_slot);
+
+        _saves = _shop.GetNode<GameSaveService>("Services/GameSaveService");
+        TestServices.Container.RegisterSingleton<IActiveSaveSlot>(slots);
+        TestServices.Container.RegisterSingleton<ISlotFileSystem>(_files);
+        TestServices.Container.RegisterSingleton<SlotStore>(new SlotStore(_files));
+        TestServices.Container.RegisterSingleton<ISaveGameCommand>(_saves);
+
+        _product = _shop.GetNode<CardShelf>("World/Furniture/ProductShelf/Content");
+
+        AddNode(_shop, autoFree: false);
+        _tree.CurrentScene = _shop;
+        await SettleAsync();
+    }
+
+    [AfterTest]
+    public void Teardown()
+    {
+        _tree.CurrentScene = _previousScene;
+        _shop.Free();
+        ShopPauseRig.Teardown();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task AnOldSaveKeepsItsShelfPriceAndItsShelfStock()
+    {
+        var slot = _product.GetNode<DeckSlot>("Slot2");
+        var pricing = _product.PricingFor(slot)!;
+        AssertBool(slot.TryLock(NewBooster())).IsTrue();
+        pricing.SetMarkup(SavedMarkup);
+        AssertBool(_saves.ManualSave()).IsTrue();
+        WriteAsOldSave(slot.SeatPosition(0));
+        pricing.SetMarkup(0);
+
+        _saves.LoadGame();
+        await SettleAsync();
+
+        AssertThat(pricing.MarkupPercent).IsEqual(SavedMarkup);
+        var booster = slot.Cards.OfType<CardContainer>().Single();
+        AssertThat(booster.ContentSeed).IsEqual(BoosterSeed);
+        AssertThat(BoostersWithTheSeed()).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ACurrentSaveIsLoadedAsItIs()
+    {
+        AssertBool(_product.GetNode<DeckSlot>("Slot2").TryLock(NewBooster())).IsTrue();
+        _product.PricingFor(_product.GetNode<DeckSlot>("Slot2"))!.SetMarkup(SavedMarkup);
+        AssertBool(_saves.ManualSave()).IsTrue();
+        var payload = ReadPayload();
+
+        AssertThat(LegacyShelfSaveMigration.Migrate(payload, _shop)).IsEqual(payload);
+    }
+
+    // Rewrites the slot's save the way the old layout wrote it: the two shelves' price ids under their old paths, the
+    // stock seated at `currentSeat` back at the old seat, and no furniture entry, which the old layout never saved.
+    private void WriteAsOldSave(Vector3 currentSeat)
+    {
+        var save = SaveExtension.DeserializeObject<TreeSave>(ReadPayload())!;
+        foreach (var key in save.Collections.Keys.ToList())
+        {
+            var oldKey = ShelfPaths.Aggregate(key, (id, paths) => id.Replace(paths.Current, paths.Old));
+            if (oldKey == key)
+                continue;
+
+            save.Collections[oldKey] = save.Collections[key];
+            save.Collections.Remove(key);
+        }
+
+        save.Collections.Remove("furniture");
+        var game = save.Collections["game_save_service"];
+        AssertBool(game.TryGetProperty<List<object>>("containers", out var containers)).IsTrue();
+        var moved = 0;
+        game.SetOrAddProperty("containers", SavedContainers.Relocate(containers!, position =>
+        {
+            if (position.DistanceTo(currentSeat) >= SameSeatMeters)
+                return null;
+
+            moved++;
+            return OldSecondSlotSeat;
+        }));
+        AssertThat(moved).IsEqual(1);
+
+        AssertBool(new SlotStore(_files).Save(_slot, SaveExtension.SerializeObject(save), DateTime.UtcNow)).IsTrue();
+    }
+
+    private string ReadPayload() => new SlotStore(_files).Load(_slot).Envelope!.Payload;
+
+    private CardContainer NewBooster()
+    {
+        var container = GD.Load<PackedScene>(BoosterScene).Instantiate<CardContainer>();
+        container.ContentSeed = BoosterSeed;
+        container.Spawning = new RecordingCardSpawner();
+        _shop.GetNode<Node3D>("World").AddChild(container);
+        return container;
+    }
+
+    private int BoostersWithTheSeed() =>
+        _tree.GetNodesInGroup("card_containers").OfType<CardContainer>()
+            .Count(container => container.ContentSeed == BoosterSeed);
+
+    private static async Task SettleAsync()
+    {
+        for (var i = 0; i < SettleFrames; i++)
+            await ISceneRunner.SyncPhysicsFrame;
+    }
+}

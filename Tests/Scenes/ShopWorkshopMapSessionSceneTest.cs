@@ -132,7 +132,7 @@ public class ShopWorkshopMapSessionSceneTest
 
         var mapCard = ShopTestCards.Create(new CardSignature().With(Element.Febris, 0.4f));
         workshop.AddChild(mapCard);
-        mapCard.GlobalPosition = cardHolder.GlobalPosition + cardHolder.PositionOffset;
+        mapCard.GlobalPosition = cardHolder.SeatPosition(0);
         await WorkshopSceneRig.Settle();
         AssertBool(button.Enabled).IsTrue();
         AssertBool(toggle.Enabled).IsTrue();

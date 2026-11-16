@@ -17,6 +17,14 @@ public class RefusalTextTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public static void NothingInStockTextIsNothingInStock()
+    {
+        AssertThat(RefusalText.For(RefusalReason.NothingInStock)).IsEqual("nothing in stock");
+        AssertThat(RefusalText.For(RefusalReason.NothingInStock)).IsEqual(RefusalText.NothingInStock);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static void UnknownReasonThrows()
     {
         AssertThrown(() => RefusalText.For((RefusalReason)99)).IsInstanceOf<ArgumentOutOfRangeException>();

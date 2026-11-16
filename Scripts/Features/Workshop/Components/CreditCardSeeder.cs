@@ -46,7 +46,7 @@ public partial class CreditCardSeeder : Node, IDependent
             return;
 
         var seat = Slot.GlobalTransform;
-        seat.Origin += Slot.PositionOffset;
+        seat.Origin = Slot.SeatPosition(0);
         Card = spawner.SpawnCard(CreditSignature, seat, SpawnParent);
     }
 }

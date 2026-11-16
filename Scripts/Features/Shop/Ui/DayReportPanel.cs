@@ -1,4 +1,4 @@
-using System.Text;
+using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
@@ -15,13 +15,24 @@ namespace CardCleaner.Scripts.Features.Shop.Ui;
 public partial class DayReportPanel : Control, IDependent
 {
     private const string PlayerGroup = "player";
+    private const float PanelWidth = 420f;
+    private const int Padding = 20;
+    private const int RowGap = 10;
+    private const int ColumnGap = 32;
+    private const int TitleFontSize = 28;
 
     private IShopDayService? _dayService;
     private ICursorOwner? _cursor;
     private IServiceResolver? _services;
     private PlayerController? _player;
 
-    public Label? ReportLabel { get; private set; }
+    public Label? TitleLabel { get; private set; }
+
+    /// <summary>Two columns: a label and its signed amount per row (<see cref="DayReportSheet.Figures" />).</summary>
+    public GridContainer? FiguresGrid { get; private set; }
+
+    /// <summary>One label per complaint line (<see cref="DayReportSheet.Complaints" />).</summary>
+    public VBoxContainer? ComplaintsBox { get; private set; }
 
     public Button? ContinueButton { get; private set; }
 
@@ -74,52 +85,101 @@ public partial class DayReportPanel : Control, IDependent
     }
 
     /// <summary>
-    ///     Fills the report with the day's figures, shows it, and takes the cursor and the player's controls.
+    ///     Fills the report with the day's figures, closes any open modal screen, shows the report, and takes the
+    ///     cursor and the player's controls.
     /// </summary>
     public void ShowReport(DayReport report)
     {
-        if (ReportLabel == null)
+        if (TitleLabel == null)
             return;
 
-        ReportLabel.Text = BuildText(report);
+        Fill(report);
+        if (IsInsideTree())
+            CloseModalScreens();
+
         Visible = true;
         Cursor?.Claim(this);
 
         if (IsInsideTree())
         {
-            // ASSUMPTION (Low): if the PC order screen is open at closing time, closing that screen re-enables
-            // player control while this report is still up. The report's cursor claim keeps the button usable;
-            // not handled.
             _player = GetTree().GetFirstNodeInGroup(PlayerGroup) as PlayerController;
             if (_player != null)
                 _player.ControlEnabled = false;
         }
     }
 
+    // Closing time can come while the PC or the payment screen is open. The PC overlay draws above this report and
+    // takes every click, and each screen gives the player's controls back as it closes, so they close first.
+    private void CloseModalScreens()
+    {
+        foreach (var screen in GetTree().GetNodesInGroup(IModalScreen.GroupName).OfType<IModalScreen>())
+            screen.Close();
+    }
+
+    // The panel sizes itself to its rows, centred on the screen, so a long bill list or many complaints never
+    // spill out of it.
     private void BuildPanel()
     {
-        var panel = new Panel { MouseFilter = MouseFilterEnum.Stop };
-        panel.SetAnchorsPreset(LayoutPreset.Center);
-        panel.OffsetLeft = -240;
-        panel.OffsetRight = 240;
-        panel.OffsetTop = -180;
-        panel.OffsetBottom = 180;
-        AddChild(panel);
+        var centre = new CenterContainer { MouseFilter = MouseFilterEnum.Ignore };
+        centre.SetAnchorsPreset(LayoutPreset.FullRect);
+        AddChild(centre);
 
-        var box = new VBoxContainer { MouseFilter = MouseFilterEnum.Ignore };
-        box.SetAnchorsPreset(LayoutPreset.FullRect);
-        box.OffsetLeft = 16;
-        box.OffsetTop = 16;
-        box.OffsetRight = -16;
-        box.OffsetBottom = -16;
-        panel.AddChild(box);
+        var panel = new PanelContainer
+        {
+            MouseFilter = MouseFilterEnum.Stop, CustomMinimumSize = new Vector2(PanelWidth, 0)
+        };
+        centre.AddChild(panel);
 
-        ReportLabel = new Label { Name = "ReportLabel" };
-        box.AddChild(ReportLabel);
+        var margin = new MarginContainer();
+        foreach (var side in new[] { "margin_left", "margin_right", "margin_top", "margin_bottom" })
+            margin.AddThemeConstantOverride(side, Padding);
+        panel.AddChild(margin);
+
+        var box = new VBoxContainer();
+        box.AddThemeConstantOverride("separation", RowGap);
+        margin.AddChild(box);
+
+        TitleLabel = new Label { Name = "Title", HorizontalAlignment = HorizontalAlignment.Center };
+        TitleLabel.AddThemeFontSizeOverride("font_size", TitleFontSize);
+        box.AddChild(TitleLabel);
+        box.AddChild(new HSeparator());
+
+        FiguresGrid = new GridContainer { Name = "Figures", Columns = 2 };
+        FiguresGrid.AddThemeConstantOverride("h_separation", ColumnGap);
+        box.AddChild(FiguresGrid);
+        box.AddChild(new HSeparator());
+
+        box.AddChild(new Label { Text = "Customer complaints" });
+        ComplaintsBox = new VBoxContainer { Name = "Complaints" };
+        box.AddChild(ComplaintsBox);
 
         ContinueButton = new Button { Name = "ContinueButton", Text = "Continue" };
         ContinueButton.Pressed += OnContinuePressed;
         box.AddChild(ContinueButton);
+    }
+
+    private void Fill(DayReport report)
+    {
+        TitleLabel!.Text = DayReportSheet.Title(report);
+        Clear(FiguresGrid!);
+        foreach (var (label, value) in DayReportSheet.Figures(report))
+        {
+            FiguresGrid!.AddChild(new Label { Text = label, SizeFlagsHorizontal = SizeFlags.ExpandFill });
+            FiguresGrid.AddChild(new Label { Text = value, HorizontalAlignment = HorizontalAlignment.Right });
+        }
+
+        Clear(ComplaintsBox!);
+        foreach (var line in DayReportSheet.Complaints(report))
+            ComplaintsBox!.AddChild(new Label { Text = line });
+    }
+
+    private static void Clear(Node parent)
+    {
+        foreach (var child in parent.GetChildren())
+        {
+            parent.RemoveChild(child);
+            child.QueueFree();
+        }
     }
 
     private void OnContinuePressed()
@@ -149,19 +209,4 @@ public partial class DayReportPanel : Control, IDependent
     }
 
     private void OnClosed(DayReport report) => ShowReport(report);
-
-    private static string BuildText(DayReport report)
-    {
-        var settlement = report.Settlement;
-        var text = new StringBuilder();
-        text.AppendLine($"Day {report.Day} report");
-        text.AppendLine($"Takings: {report.Takings}");
-        text.AppendLine($"Debt carried in: {settlement.CarriedIn}");
-        foreach (var line in settlement.Lines)
-            text.AppendLine($"{line.Name}: {line.Amount}");
-        text.AppendLine($"Unpaid (new debt): {settlement.Unpaid}");
-        foreach (var (reason, count) in report.Complaints)
-            text.AppendLine($"Complaint: {reason} x{count}");
-        return text.ToString().TrimEnd();
-    }
 }

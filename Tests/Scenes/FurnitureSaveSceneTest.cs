@@ -25,6 +25,9 @@ public class FurnitureSaveSceneTest
     private FurniturePlacementController _controller = null!;
     private FurnitureSaveService _save = null!;
     private Node3D _furnitureRoot = null!;
+
+    // The shop's starting furniture, standing under the furniture root before a case places a piece.
+    private int _standing;
     private Window _root = null!;
 
     [BeforeTest]
@@ -43,6 +46,7 @@ public class FurnitureSaveSceneTest
         AddNode(_shop);
         _save = _shop.GetNode<FurnitureSaveService>(SavePath);
         _furnitureRoot = _shop.GetNode<Node3D>(FurnitureRootPath);
+        _standing = _furnitureRoot.GetChildCount();
         _root = _shop.GetTree().Root;
         await ShopNavigationRig.WaitForBakeSync(_region, regionBefore);
     }
@@ -64,12 +68,12 @@ public class FurnitureSaveSceneTest
         _save.Save(save);
         _furnitureRoot.RemoveChild(placed);
         placed.Free();
-        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(0);
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(_standing);
 
         _save.Load(save);
 
-        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
-        var restored = (PlacedFurniture)_furnitureRoot.GetChild(0);
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(_standing + 1);
+        var restored = (PlacedFurniture)_furnitureRoot.GetChild(_standing);
         AssertString(restored.Item!.Id).IsEqual("shelf_unit");
         AssertBool(restored.Pose.X == 4f && restored.Pose.Z == 8f && restored.Pose.QuarterTurns == 0).IsTrue();
     }
@@ -109,10 +113,11 @@ public class FurnitureSaveSceneTest
 
         var reloaded = new NodeSave();
         reloaded.SetOrAddProperty(FurnitureSaveService.RecordsKey, json ?? string.Empty);
+        reloaded.SetOrAddProperty(FurnitureSaveService.WholeLayoutKey, true);
         _save.Load(reloaded);
 
-        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
-        var restored = (PlacedFurniture)_furnitureRoot.GetChild(0);
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(_standing + 1);
+        var restored = (PlacedFurniture)_furnitureRoot.GetChild(_standing);
         AssertBool(restored.Pose.X == 4f && restored.Pose.Z == 8f).IsTrue();
     }
 

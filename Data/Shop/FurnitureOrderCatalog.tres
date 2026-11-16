@@ -1,16 +1,40 @@
 [gd_resource type="Resource" script_class="OrderCatalog" format=3]
 
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/ShelfBox.tscn" id="ShelfBox"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/ProductShelfBox.tscn" id="ProductShelfBox"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/StorageRackBox.tscn" id="StorageRackBox"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/PackingStationBox.tscn" id="PackingStationBox"]
 [ext_resource type="Script" uid="uid://ddvfbixqpsql6" path="res://Scripts/Features/Shop/Models/OrderCatalog.cs" id="OrderCatalogScript"]
 [ext_resource type="Script" uid="uid://d144tmal3smw7" path="res://Scripts/Features/Shop/Models/OrderItem.cs" id="OrderItemScript"]
 
 [sub_resource type="Resource" id="ShelfUnitItem"]
 script = ExtResource("OrderItemScript")
 Id = "shelf_unit"
-DisplayName = "Shelf unit"
+DisplayName = "Card shelf"
 Price = 120
 Scene = ExtResource("ShelfBox")
 
+[sub_resource type="Resource" id="ProductShelfBoxItem"]
+script = ExtResource("OrderItemScript")
+Id = "product_shelf"
+DisplayName = "Product shelf"
+Price = 120
+Scene = ExtResource("ProductShelfBox")
+
+[sub_resource type="Resource" id="StorageRackBoxItem"]
+script = ExtResource("OrderItemScript")
+Id = "storage_rack"
+DisplayName = "Storage rack"
+Price = 150
+Scene = ExtResource("StorageRackBox")
+
+[sub_resource type="Resource" id="PackingStationBoxItem"]
+script = ExtResource("OrderItemScript")
+Id = "bulk_packing_station"
+DisplayName = "Bulk packing station"
+Price = 250
+Scene = ExtResource("PackingStationBox")
+
 [resource]
 script = ExtResource("OrderCatalogScript")
-Items = [SubResource("ShelfUnitItem")]
+Items = [SubResource("ShelfUnitItem"), SubResource("ProductShelfBoxItem"), SubResource("StorageRackBoxItem"), SubResource("PackingStationBoxItem")]

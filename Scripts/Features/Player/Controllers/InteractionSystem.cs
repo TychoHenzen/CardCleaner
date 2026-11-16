@@ -1,19 +1,19 @@
-﻿// Debug version of InteractionSystem with detailed logging
-
-using CardCleaner.Scripts.Core.Interfaces;
+﻿using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Utilities;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Player.Controllers;
 
 /// <summary>
-/// Debug version of InteractionSystem with detailed logging to help identify issues
+///     Finds the interactable on the camera's centre ray, highlights it, and calls its Interact on a left click.
+///     The target is judged again on every scan, so one that goes out of range or stops accepting interaction is
+///     dropped at once: the prompt under the crosshair never offers a click that would do nothing.
 /// </summary>
 public partial class InteractionSystem : Node3D, IDependent
 {
-    // Default values as constants
     private const float DefaultRayLength = 100f;
     private const uint DefaultInteractableCollisionMask = 6; // Layer 2 (cards) + Layer 3 (buttons)
+
     /// <summary>Seconds between target scans (20 Hz). A click only reaches what the last scan picked.</summary>
     public const float RaycastInterval = 0.05f;
 
@@ -24,7 +24,14 @@ public partial class InteractionSystem : Node3D, IDependent
     [Export] public Camera3D? Camera { get; set; }
     [Export] public float RayLength { get; set; } = DefaultRayLength;
     [Export] public uint InteractableCollisionMask { get; set; } = DefaultInteractableCollisionMask;
-    private IInteractable? CurrentTarget { get; set; }
+
+    private IInteractable? _target;
+
+    /// <summary>
+    ///     The interactable a click would use now, or null. A target freed since the last scan reads as null at once,
+    ///     because the HUD reads it every frame.
+    /// </summary>
+    public IInteractable? Target => _target != null && IsAlive(_target) ? _target : null;
 
     public void Inject(IServiceResolver services) => _services = services;
 
@@ -53,12 +60,6 @@ public partial class InteractionSystem : Node3D, IDependent
         if (NodeExports.ExportCheck(Camera, nameof(Camera), this))
             return;
 
-        ILog.Print("Starting up...");
-        ILog.Print("Starting up...");
-        ILog.Print("Starting up...");
-        ILog.Print($"Camera: {Camera}");
-        ILog.Print($"Collision Mask: {InteractableCollisionMask}");
-
         if (_services == null)
         {
             ILog.Error($"{Name} was not injected");
@@ -69,7 +70,6 @@ public partial class InteractionSystem : Node3D, IDependent
         {
             _inputService = input;
             _inputService.RegisterAction(this, "interact", MouseButton.Left, OnInteractPressed);
-            ILog.Print("Registered input action");
         });
     }
 
@@ -81,21 +81,18 @@ public partial class InteractionSystem : Node3D, IDependent
     public override void _PhysicsProcess(double delta)
     {
         _timeSinceLastRaycast += (float)delta;
-        if (_timeSinceLastRaycast >= RaycastInterval)
-        {
-            DetectInteractable();
-            _timeSinceLastRaycast -= RaycastInterval; // Preserve fractional remainder to prevent drift
-        }
+        if (_timeSinceLastRaycast < RaycastInterval)
+            return;
+
+        DetectInteractable();
+        _timeSinceLastRaycast -= RaycastInterval; // Preserve fractional remainder to prevent drift
     }
 
     private void DetectInteractable()
     {
-        if (Camera == null)
-            return;
-
         var hitBody = PerformRaycast();
-        var newTarget = hitBody != null ? FindInteractableInHierarchy(hitBody) : null;
-        UpdateCurrentTarget(newTarget);
+        var candidate = hitBody != null ? FindInteractableInHierarchy(hitBody) : null;
+        UpdateTarget(candidate != null && IsUsable(candidate) ? candidate : null);
     }
 
     private Node3D? PerformRaycast()
@@ -130,47 +127,37 @@ public partial class InteractionSystem : Node3D, IDependent
         return null;
     }
 
-    private void UpdateCurrentTarget(IInteractable? newTarget)
+    private void UpdateTarget(IInteractable? candidate)
     {
-        if (newTarget == CurrentTarget)
+        var current = Target;
+        if (candidate == current)
+        {
+            _target = current;
             return;
+        }
 
-        // Clear previous target
-        CurrentTarget?.ClearHighlight();
-
-        // Keep the new target only while it can be used from here
-        CurrentTarget = newTarget?.CanInteract == true && IsTargetInRange(newTarget) ? newTarget : null;
-        if (CurrentTarget == null)
-            return;
-
-        ILog.Print("Highlighting target");
-        CurrentTarget.Highlight();
+        current?.ClearHighlight();
+        _target = candidate;
+        _target?.Highlight();
     }
+
+    // A freed node (an opened box, a sold card) can still be the last target; it is never touched again.
+    private static bool IsAlive(IInteractable target) => target is not GodotObject node || IsInstanceValid(node);
+
+    private bool IsUsable(IInteractable target) => IsAlive(target) && target.CanInteract && IsTargetInRange(target);
 
     private bool IsTargetInRange(IInteractable target)
     {
         if (Camera == null)
             return false;
         var distanceSquared = Camera.GlobalPosition.DistanceSquaredTo(target.InteractionBody.GlobalPosition);
-        var rangeSquared = target.InteractionRange * target.InteractionRange;
-        ILog.Print($"Target distance²: {distanceSquared}, Range²: {rangeSquared}");
-
-        return distanceSquared <= rangeSquared;
+        return distanceSquared <= target.InteractionRange * target.InteractionRange;
     }
 
     private void OnInteractPressed(bool pressed)
     {
-        if (!pressed || CurrentTarget?.CanInteract != true || Camera == null) return;
-
-        ILog.Print($"Interact pressed on: {CurrentTarget.InteractionBody.Name}");
-
-        if (!IsTargetInRange(CurrentTarget))
-        {
-            ILog.Print($"Too far to interact: range {CurrentTarget.InteractionRange}");
-            return;
-        }
-
-        ILog.Print("Calling Interact()");
-        CurrentTarget.Interact();
+        // Judged again at the click: the target can change between scans.
+        if (pressed && Target is { } target && IsUsable(target))
+            target.Interact();
     }
 }

@@ -37,6 +37,7 @@ grow_vertical = 2
 
 [node name="Title" type="Label" parent="Layout"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 56
 text = "CardCleaner"
 horizontal_alignment = 1
 
@@ -69,14 +70,21 @@ layout_mode = 2
 
 [node name="NewGameDialog" type="ConfirmationDialog" parent="."]
 title = "New game"
-size = Vector2i(400, 160)
-dialog_text = "Name the new save slot."
+size = Vector2i(420, 170)
 
-[node name="NameEdit" type="LineEdit" parent="NewGameDialog"]
-offset_left = 16.0
-offset_top = 60.0
-offset_right = 384.0
-offset_bottom = 92.0
+[node name="Content" type="VBoxContainer" parent="NewGameDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 412.0
+offset_bottom = 113.0
+theme_override_constants/separation = 10
+
+[node name="Prompt" type="Label" parent="NewGameDialog/Content"]
+layout_mode = 2
+text = "Name the new save slot."
+
+[node name="NameEdit" type="LineEdit" parent="NewGameDialog/Content"]
+layout_mode = 2
 placeholder_text = "Save name"
 
 [node name="DeleteDialog" type="ConfirmationDialog" parent="."]

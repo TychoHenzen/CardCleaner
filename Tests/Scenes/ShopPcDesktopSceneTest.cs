@@ -10,7 +10,7 @@ using Godot;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-///     End to end in the shop scene: interacting with the backoffice PC opens its desktop on the screen, the mouse is
+///     End to end in the shop scene: interacting with the backoffice PC opens its desktop fullscreen, the mouse is
 ///     forwarded to the desktop as real input, and the Stock icon opens the Stock app on that screen. Ordering through
 ///     the app is covered by ShopStockAppClickPathSceneTest.
 /// </summary>
@@ -29,6 +29,7 @@ public class ShopPcDesktopSceneTest
     private Button _stockIcon = null!;
     private PcScreen _screen = null!;
     private CursorOwner _cursor = null!;
+    private PcScreenOverlay _overlay = null!;
     private Window _root = null!;
     private Vector2I _originalRootSize;
 
@@ -43,6 +44,7 @@ public class ShopPcDesktopSceneTest
         _stockIcon = _shop.GetNode<Button>($"{DesktopViewportPath}/PcDesktop/Icons/StockIcon");
         _screen = PcScreen.From(_shop);
         _cursor = _shop.GetNode<CursorOwner>("Services/CursorOwner");
+        _overlay = _shop.GetNode<PcScreenOverlay>("World/Markers/PcLocation/PcTerminal/PcScreenOverlay");
         AddNode(_shop);
         _root = _shop.GetTree().Root;
         _originalRootSize = _root.Size;
@@ -61,11 +63,13 @@ public class ShopPcDesktopSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void InteractMakesScreenCameraCurrentAndCursorVisible()
+    public void InteractShowsTheDesktopFullscreenAndCursorVisible()
     {
         _terminal.Interact();
 
         AssertBool(_desktop.Visible).IsTrue();
+        AssertBool(_overlay.Active).IsTrue();
+        AssertBool(_overlay.Visible).IsTrue();
         AssertBool(_screen.Camera.Current).IsTrue();
         AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Visible);
     }
@@ -83,6 +87,7 @@ public class ShopPcDesktopSceneTest
         AssertBool(playerCamera.Current).IsTrue();
         AssertBool(_screen.Camera.Current).IsFalse();
         AssertBool(_desktop.Visible).IsFalse();
+        AssertBool(_overlay.Active).IsFalse();
         AssertBool(_player.ControlEnabled).IsTrue();
         AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Captured);
     }

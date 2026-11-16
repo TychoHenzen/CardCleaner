@@ -66,6 +66,24 @@ public class ArrivalScheduleTest
         }
     }
 
+    [TestCase(6)]
+    [TestCase(13)]
+    [TestCategory("Unit")]
+    public static void EachCustomerArrivesInItsOwnSliceOfTheDay(int count)
+    {
+        var slice = (float)(CloseMinute - ArrivalSchedule.LastEntryMarginMinutes - OpenMinute) / count;
+
+        for (var seed = 0UL; seed < 20UL; seed++)
+        {
+            var schedule = ArrivalSchedule.Build(OpenMinute, CloseMinute, count, new Pcg32Random(seed));
+            for (var i = 0; i < count; i++)
+            {
+                AssertThat(schedule[i] >= OpenMinute + (int)(slice * i)).IsTrue();
+                AssertThat(schedule[i] < OpenMinute + slice * (i + 1)).IsTrue();
+            }
+        }
+    }
+
     [TestCase(1080, 600, 5)]
     [TestCase(600, 600, 5)]
     [TestCase(600, 630, 5)]

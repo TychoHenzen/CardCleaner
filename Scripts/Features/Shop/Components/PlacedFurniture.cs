@@ -9,15 +9,23 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 /// <summary>
 ///     A piece of furniture standing on the shop floor. The wrapper is a StaticBody3D with the item's box as its only
 ///     collider, so the navigation bake sees it as an obstacle (it parses static colliders only). The real scene
-///     is its child named <see cref="ContentName" />.
+///     is its child named <see cref="ContentName" />. A piece is either built by <see cref="Create" /> (a placed
+///     box, a restored record) or authored in a scene with its <see cref="Item" /> and a Content instance; either
+///     way <see cref="_Ready" /> gives it the collider and freezes the content, and its yaw is its quarter turns.
 /// </summary>
 public partial class PlacedFurniture : StaticBody3D
 {
     public const string ContentName = "Content";
 
+    /// <summary>The prefix of a generated piece name; the number after it is the first one free under the root.</summary>
+    public const string NamePrefix = "Furniture";
+
+    private const string FootprintName = "Footprint";
     private const uint FloorCollisionLayer = 1;
 
-    public FurnitureItem? Item { get; private set; }
+    /// <summary>The catalog entry of the piece. Set by <see cref="Create" />, or in the scene for an authored piece.</summary>
+    [Export]
+    public FurnitureItem? Item { get; set; }
 
     public int QuarterTurns { get; private set; }
 
@@ -34,14 +42,18 @@ public partial class PlacedFurniture : StaticBody3D
     public bool IsCarried { get; private set; }
 
     /// <summary>
-    ///     Marks the piece as carried or put down. A carried piece is hidden and leaves the collision layer, so the
-    ///     navigation bake and the physics probes ignore it, yet it stays in the tree and in the saved furniture.
+    ///     Marks the piece as carried or put down. A carried piece is hidden and leaves the physics space, its content's
+    ///     own bodies, slots and price tags included, so the placement probe and the interaction ray pass through the
+    ///     spot it left; it stays in the tree and in the saved furniture. The wrapper also leaves the collision layer,
+    ///     because the navigation bake reads the layer of a node, not its place in the space.
     /// </summary>
     public void SetCarried(bool carried)
     {
         IsCarried = carried;
         Visible = !carried;
         CollisionLayer = carried ? 0 : FloorCollisionLayer;
+        // A disabled CollisionObject3D is removed from the space (its default DisableMode), for every body under it.
+        ProcessMode = carried ? ProcessModeEnum.Disabled : ProcessModeEnum.Inherit;
     }
 
     /// <summary>
@@ -57,32 +69,64 @@ public partial class PlacedFurniture : StaticBody3D
             return null;
         }
 
-        var placed = new PlacedFurniture { Item = item, CollisionLayer = FloorCollisionLayer, CollisionMask = 0 };
-        placed.AddChild(new CollisionShape3D
-        {
-            Shape = new BoxShape3D { Size = new Vector3(item.Width, item.Height, item.Depth) },
-            Position = new Vector3(0f, item.Height / 2f, 0f),
-        });
-
-        if (content is RigidBody3D body)
-        {
-            body.Freeze = true;
-        }
-
+        var placed = new PlacedFurniture { Item = item };
         content.Name = ContentName;
         placed.AddChild(content);
+        placed.Frame();
         placed.Place(pose);
         return placed;
     }
 
-    /// <summary>
-    ///     Adds the piece under <paramref name="root" /> with a name made from its position among the children, so its
-    ///     node path, and with it the save id of every price tag on it, is the same after a reload.
-    /// </summary>
-    public void StandUnder(Node root)
+    public override void _Ready()
     {
-        Name = $"Furniture{root.GetChildCount()}";
+        if (Item == null)
+        {
+            ILog.Error($"{Name} is placed furniture with no Item");
+            return;
+        }
+
+        Frame();
+        QuarterTurns = FurniturePlacementModel.Turn((int)Mathf.Round(Rotation.Y / (Mathf.Pi / 2f)), 0);
+    }
+
+    /// <summary>
+    ///     Adds the piece under <paramref name="root" />. It keeps <paramref name="savedName" /> when that is a valid
+    ///     node name no sibling has, so a restored piece has the node path it was saved with, and with it the save id
+    ///     of every price tag on it. Otherwise it takes the first free <see cref="NamePrefix" /> name.
+    /// </summary>
+    public void StandUnder(Node root, string? savedName = null)
+    {
+        Name = savedName is { Length: > 0 } && savedName.ValidateNodeName() == savedName && !root.HasNode(savedName)
+            ? savedName
+            : FreeName(root);
         root.AddChild(this);
+    }
+
+    private static string FreeName(Node root)
+    {
+        var index = 0;
+        while (root.HasNode($"{NamePrefix}{index}"))
+            index++;
+        return $"{NamePrefix}{index}";
+    }
+
+    // The collider and the frozen content, built once: an authored piece has neither until it is ready.
+    private void Frame()
+    {
+        CollisionLayer = IsCarried ? 0 : FloorCollisionLayer;
+        CollisionMask = 0;
+        if (GetNodeOrNull(FootprintName) == null && Item != null)
+        {
+            AddChild(new CollisionShape3D
+            {
+                Name = FootprintName,
+                Shape = new BoxShape3D { Size = new Vector3(Item.Width, Item.Height, Item.Depth) },
+                Position = new Vector3(0f, Item.Height / 2f, 0f),
+            });
+        }
+
+        if (GetNodeOrNull(ContentName) is RigidBody3D body)
+            body.Freeze = true;
     }
 
     /// <summary>The floor rects of the pieces standing under <paramref name="root" />, not the carried one.</summary>

@@ -30,7 +30,6 @@ public class ShelfPriceTagSceneTest
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const uint InteractableMask = 6;
     private const uint TagLayer = 4;
-    private const int MarkupStep = 10;
 
     [BeforeTest]
     public void Setup()
@@ -69,12 +68,19 @@ public class ShelfPriceTagSceneTest
         await Settle();
 
         AssertThat(pricing.TagLabel!.Text).IsEqual(AskingPrice.Readout(CardValue.MinimumCardPrice, 0));
+        AssertThat(pricing.DetailLabel!.Text).IsEqual(AskingPrice.Detail(CardValue.MinimumCardPrice, 0));
 
+        // A click skips the steps that keep a cheap card's whole-number price, so it lands on the next real price.
         pricing.Interact();
-        AssertThat(pricing.TagLabel.Text).IsEqual(AskingPrice.Readout(CardValue.MinimumCardPrice, MarkupStep));
+        var stepped = AskingPrice.NextMarkup(CardValue.MinimumCardPrice, 0);
+        AssertThat(stepped).IsNotEqual(0);
+        AssertThat(pricing.TagLabel.Text).IsEqual(AskingPrice.Readout(CardValue.MinimumCardPrice, stepped));
+        AssertThat(pricing.DetailLabel.Text).IsEqual(AskingPrice.Detail(CardValue.MinimumCardPrice, stepped));
+        AssertThat(pricing.TagLabel.Text).IsNotEqual(AskingPrice.Readout(CardValue.MinimumCardPrice, 0));
 
         slot.ReleaseCard(card);
         AssertThat(pricing.TagLabel.Text).IsEqual(string.Empty);
+        AssertThat(pricing.DetailLabel.Text).IsEqual(string.Empty);
     }
 
     [TestCase]

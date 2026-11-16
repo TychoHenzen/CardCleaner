@@ -1,6 +1,8 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/FurnitureBox.cs" id="FurnitureBox"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="Material" path="res://Data/Ui/AimHighlightMaterial.tres" id="AimHighlight"]
 
 [sub_resource type="BoxShape3D" id="Shape"]
 size = Vector3(1, 0.6, 0.8)
@@ -12,13 +14,8 @@ albedo_color = Color(0.7, 0.55, 0.35, 1)
 material = SubResource("BodyMaterial")
 size = Vector3(1, 0.6, 0.8)
 
-[sub_resource type="StandardMaterial3D" id="HighlightMaterial"]
-transparency = 1
-shading_mode = 0
-albedo_color = Color(1, 0.95, 0.4, 0.3)
-
 [sub_resource type="BoxMesh" id="HighlightBox"]
-material = SubResource("HighlightMaterial")
+material = ExtResource("AimHighlight")
 size = Vector3(1.04, 0.64, 0.84)
 
 [node name="FurnitureBox" type="RigidBody3D" node_paths=PackedStringArray("HighlightMesh")]
@@ -32,6 +29,13 @@ shape = SubResource("Shape")
 [node name="Body" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 mesh = SubResource("BodyMesh")
+
+[node name="Art" type="Node3D" parent="." node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(2.463, 0, 0, 0, 1.869, 0, 0, 0, 2.564, 0, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonSurvivalTools/SM_Cardboard_Box_01_Closed.fbx"
+ArtOffset = Vector3(-79.873, 0, 0.003)
+Placeholder = NodePath("../Body")
 
 [node name="Highlight" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)

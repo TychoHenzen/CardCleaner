@@ -21,8 +21,12 @@ internal sealed class PlacementSession
 
     public FurnitureItem Item { get; }
 
-    /// <summary>Starts a session that places the item of a delivered box.</summary>
-    public static PlacementSession ForBox(FurnitureItem item, FurnitureBox box) => new(item, box, null);
+    /// <summary>Starts a session that places the item of a delivered box, lifted out of the shop until it ends.</summary>
+    public static PlacementSession ForBox(FurnitureItem item, FurnitureBox box)
+    {
+        box.SetCarried(true);
+        return new PlacementSession(item, box, null);
+    }
 
     /// <summary>Starts a session that moves a placed piece, lifted out of the shop until the session ends.</summary>
     public static PlacementSession ForMove(FurnitureItem item, PlacedFurniture furniture) =>
@@ -31,8 +35,16 @@ internal sealed class PlacementSession
     /// <summary>Where a moved piece stood, else <paramref name="newPiecePose" />.</summary>
     public FurniturePose StartPose(FurniturePose newPiecePose) => _carried?.OldPose ?? newPiecePose;
 
-    /// <summary>Puts a carried piece back where it was; false when none is carried or a load freed it.</summary>
-    public bool PutBack() => _carried?.PutBack() == true;
+    /// <summary>
+    ///     Sets a lifted box down again, or puts a carried piece back where it was. True only when a piece went back,
+    ///     the one case that changes the navigation mesh; false when none is carried or a load freed it.
+    /// </summary>
+    public bool PutBack()
+    {
+        if (GodotObject.IsInstanceValid(_box))
+            _box!.SetCarried(false);
+        return _carried?.PutBack() == true;
+    }
 
     public CommitOutcome Commit(FurniturePose pose, Node3D? root)
     {

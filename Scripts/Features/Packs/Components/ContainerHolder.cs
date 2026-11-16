@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Packs.Components;
@@ -35,6 +36,7 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
 
     private IServiceResolver? _services;
     private IInputService? _inputService;
+    private IControlHints? _hints;
     private Node3D? _handAnchor;
     private CardContainer? _held;
     private uint _savedLayer;
@@ -79,7 +81,20 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
 
     public override void _PhysicsProcess(double delta)
     {
-        _unpackTarget = HeldContainer() != null ? FindUnpackTarget() : null;
+        var held = HeldContainer();
+        _unpackTarget = held != null ? FindUnpackTarget() : null;
+        PublishHints(held);
+    }
+
+    // The board drops repeated identical hints, so publishing every frame costs one comparison.
+    private void PublishHints(CardContainer? held)
+    {
+        if (_hints == null)
+            return;
+        if (held == null)
+            _hints.Clear(this);
+        else
+            _hints.Publish(this, ContainerHints.For(held.Kind, _unpackTarget?.CanUnpack(held) == true));
     }
 
     public override void _Ready()
@@ -95,11 +110,13 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
             _inputService = input;
             _inputService.RegisterAction(this, "container_open", Key.Q, () => OpenHeld());
         });
+        _services.Get<IControlHints>(hints => _hints = hints);
     }
 
     public override void _ExitTree()
     {
         _inputService?.UnregisterAllActions(this);
+        _hints?.Clear(this);
     }
 
     public void SetReferences(Node3D handAnchor)
@@ -130,15 +147,16 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         return true;
     }
 
-    public void Drop()
+    /// <summary>Sets the held container down in front of the hand. False when nothing was released.</summary>
+    public bool Drop()
     {
         var container = HeldContainer();
-        if (container == null || _handAnchor == null) return;
+        if (container == null || _handAnchor == null) return false;
 
         if (_services == null)
         {
             ILog.Error($"{Name} was not injected");
-            return;
+            return false;
         }
 
         var spawnerNode = _services.Get<ICardSpawner>().GetNode();
@@ -153,6 +171,7 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         container.Freeze = false;
         _held = null;
         EmitSignal(SignalName.ContainerDropped, container);
+        return true;
     }
 
     public bool OpenHeld()

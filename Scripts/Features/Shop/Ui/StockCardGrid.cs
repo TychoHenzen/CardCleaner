@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
@@ -11,11 +12,16 @@ namespace CardCleaner.Scripts.Features.Shop.Ui;
 ///     thumbnail (or a placeholder tile), the name, the price and an Add button that reads Level or Unavailable
 ///     while the item is locked.
 /// </summary>
+[SuppressMessage("Reliability", "CA1001:Types that own disposable fields should be disposable",
+    Justification = "AddTo parents every control under the app's column, so the scene tree frees them; " +
+                    "the panel only keeps references.")]
 internal sealed class StockCardGrid
 {
-    private const int CardColumns = 3;
-    private const int CardWidth = 170;
-    private const int TileHeight = 96;
+    private const int CardColumns = 4;
+    private const int CardWidth = 190;
+    private const int TileHeight = 110;
+    private const int CardGap = 12;
+    private static readonly Color PriceColour = new(0.55f, 0.85f, 0.55f);
 
     private readonly List<CardView> _cards = [];
 
@@ -33,6 +39,8 @@ internal sealed class StockCardGrid
     public void AddTo(VBoxContainer column)
     {
         _grid = new GridContainer { Columns = CardColumns };
+        _grid.AddThemeConstantOverride("h_separation", CardGap);
+        _grid.AddThemeConstantOverride("v_separation", CardGap);
         _empty = new Label { Visible = false };
         var scroll = new ScrollContainer
         {
@@ -84,8 +92,15 @@ internal sealed class StockCardGrid
         var column = new VBoxContainer();
         panel.AddChild(column);
         column.AddChild(BuildThumbnail(item));
-        column.AddChild(new Label { Text = item.DisplayName });
-        column.AddChild(new Label { Text = $"{item.Price}" });
+        column.AddChild(new Label
+        {
+            Text = item.DisplayName,
+            AutowrapMode = TextServer.AutowrapMode.WordSmart,
+            CustomMinimumSize = new Vector2(CardWidth - 2 * CardGap, 0)
+        });
+        var price = new Label { Text = $"${item.Price}" };
+        price.AddThemeColorOverride("font_color", PriceColour);
+        column.AddChild(price);
         var button = BuildButton(item, entry, level, onAdd);
         column.AddChild(button);
 

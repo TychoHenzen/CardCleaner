@@ -9,6 +9,7 @@ namespace CardCleaner.Tests.Features.Card.Components;
 public class CardSleepEnforcerTest
 {
     private const string CardShaderScene = "res://Scenes/Components/CardShader.tscn";
+    private const float Step = 1f / 60f;
 
     private CardSleepEnforcer _enforcer = null!;
 
@@ -73,6 +74,51 @@ public class CardSleepEnforcerTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void OneSlowStep_DoesNotFreeze()
+    {
+        // A landing card is slow on the step the floor stops it, while it is still inside the floor.
+        AssertBool(_enforcer.Rest(Vector3.Zero, Vector3.Zero, Step)).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void SlowForTheRestTime_Freezes()
+    {
+        var steps = StepsToRest();
+        for (var i = 1; i < steps; i++)
+            AssertBool(_enforcer.Rest(Vector3.Zero, Vector3.Zero, Step)).IsFalse();
+
+        AssertBool(_enforcer.Rest(Vector3.Zero, Vector3.Zero, Step)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AFastStep_StartsTheRestAgain()
+    {
+        var steps = StepsToRest();
+        for (var i = 1; i < steps; i++)
+            _enforcer.Rest(Vector3.Zero, Vector3.Zero, Step);
+        AssertBool(_enforcer.Rest(Vector3.Down, Vector3.Zero, Step)).IsFalse();
+        AssertBool(_enforcer.Rest(Vector3.Zero, Vector3.Right, Step)).IsFalse();
+
+        for (var i = 1; i < steps; i++)
+            AssertBool(_enforcer.Rest(Vector3.Zero, Vector3.Zero, Step)).IsFalse();
+        AssertBool(_enforcer.Rest(Vector3.Zero, Vector3.Zero, Step)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AfterAFreeze_TheCardRestsAnew()
+    {
+        var steps = StepsToRest();
+        for (var i = 0; i < steps; i++)
+            _enforcer.Rest(Vector3.Zero, Vector3.Zero, Step);
+
+        AssertBool(_enforcer.Rest(Vector3.Zero, Vector3.Zero, Step)).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static void CardShaderScene_SleepEnforcerNodeRunsTheMovedScript()
     {
         // Arrange - not added to the tree: the check needs only the instanced children, not the card's _Ready
@@ -80,5 +126,14 @@ public class CardSleepEnforcerTest
 
         // Assert - the scene's SleepEnforcer node must carry the script from its new folder
         Assertions.AssertBool(card.GetNode("SleepEnforcer") is CardSleepEnforcer).IsTrue();
+    }
+
+    // Whole physics steps until the enforcer's rest time is reached, counted the way it adds them up.
+    private int StepsToRest()
+    {
+        var steps = 0;
+        for (var rested = 0f; rested < _enforcer.RestSeconds; rested += Step)
+            steps++;
+        return steps;
     }
 }

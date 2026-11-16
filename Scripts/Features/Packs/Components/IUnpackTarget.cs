@@ -11,4 +11,10 @@ public interface IUnpackTarget
     ///     kind of container, in which case the holder opens it loose.
     /// </summary>
     bool TryUnpack(CardContainer container);
+
+    /// <summary>
+    ///     True when <see cref="TryUnpack" /> would take this kind of container and has a free place for its contents,
+    ///     so the hint can say what Q will do before it is pressed.
+    /// </summary>
+    bool CanUnpack(CardContainer container);
 }

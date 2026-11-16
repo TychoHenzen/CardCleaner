@@ -64,8 +64,9 @@ public class SlotPricingTest
 
         _pricing.Interact();
 
-        AssertThat(_pricing.MarkupPercent).IsEqual(10);
-        AssertThat(_label.Text).IsEqual(AskingPrice.Readout(CardValue.MinimumCardPrice, 10));
+        // A card at 2 still asks 2 at +10% and +20%, so the click lands on +30%, the first step that asks 3.
+        AssertThat(_pricing.MarkupPercent).IsEqual(30);
+        AssertThat(_label.Text).IsEqual("3");
     }
 
     [TestCase]

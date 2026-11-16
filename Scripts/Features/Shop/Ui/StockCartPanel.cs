@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
@@ -9,6 +10,9 @@ namespace CardCleaner.Scripts.Features.Shop.Ui;
 ///     The cart half of the Stock app: the cart rows, the total, the message line and the Checkout button. It
 ///     shows an <see cref="OrderCart" /> and reports presses back to the app; the rules stay in the cart.
 /// </summary>
+[SuppressMessage("Reliability", "CA1001:Types that own disposable fields should be disposable",
+    Justification = "AddTo parents every control under the app's column, so the scene tree frees them; " +
+                    "the panel only keeps references.")]
 internal sealed class StockCartPanel
 {
     private readonly OrderCart _cart;
@@ -41,7 +45,8 @@ internal sealed class StockCartPanel
     /// <summary>Adds the panel's controls to <paramref name="column" />.</summary>
     public void AddTo(VBoxContainer column)
     {
-        _rows = new VBoxContainer();
+        // The rows take the free height, so the total, message and Checkout sit at the bottom of the cart.
+        _rows = new VBoxContainer { SizeFlagsVertical = Control.SizeFlags.ExpandFill };
         _total = new Label { Text = "Total: 0" };
         _message = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart };
         _checkout = new Button { Text = "Checkout", Disabled = true };

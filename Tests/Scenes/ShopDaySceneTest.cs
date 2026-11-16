@@ -22,6 +22,11 @@ public class ShopDaySceneTest
 {
     private const float SignCentreHeight = 0.6f;
     private const float StandingDistanceToSign = 1.5f;
+    private const string PcTerminalPath = "World/Markers/PcLocation/PcTerminal";
+    private const string WorkshopTerminalPath = "World/Workshop/OrderingRoom/OrderTerminal";
+
+    // Far longer than a shop day, so one tick runs the clock past closing time.
+    private const double PastClosingTimeSeconds = 100000.0;
 
     private Node3D _shop = null!;
     private ShopDayService _service = null!;
@@ -69,6 +74,10 @@ public class ShopDaySceneTest
         AssertBool((_sign.CollisionLayer & 4u) != 0).IsTrue();
         AssertBool((_sign.CollisionLayer & _interaction.InteractableCollisionMask) != 0).IsTrue();
         AssertBool(ReferenceEquals(_sign.DayService, _service)).IsTrue();
+
+        // The screens the day report closes before it shows: the shop PC, the workshop PC and the payment screen.
+        foreach (var path in new[] { PcTerminalPath, WorkshopTerminalPath, "CheckoutUi" })
+            AssertBool(_shop.GetNode(path).IsInGroup(IModalScreen.GroupName)).IsTrue();
     }
 
     [TestCase]
@@ -109,6 +118,33 @@ public class ShopDaySceneTest
         _reportPanel.ContinueButton!.EmitSignal(BaseButton.SignalName.Pressed);
 
         AssertBool(_reportPanel.Visible).IsFalse();
+    }
+
+    // Closing time can come while the player is at the PC. The PC's fullscreen overlay sits above the report and
+    // takes every click, so the report closes the PC before it shows.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ClosingTimeAtThePcClosesThePcAndShowsAUsableReport()
+    {
+        _service.SaveCommand = new FakeSaveGame();
+        var terminal = _shop.GetNode<ScreenTerminal>(PcTerminalPath);
+        var overlay = _shop.GetNode<PcScreenOverlay>($"{PcTerminalPath}/PcScreenOverlay");
+        var player = _shop.GetNode<PlayerController>("Player");
+        _service.OpenShop();
+        terminal.Open();
+        AssertBool(overlay.Active).IsTrue();
+
+        _service.Tick(PastClosingTimeSeconds);
+
+        AssertBool(_service.IsOpen).IsFalse();
+        AssertBool(terminal.IsOpen).IsFalse();
+        AssertBool(overlay.Active).IsFalse();
+        AssertBool(_reportPanel.Visible).IsTrue();
+        AssertBool(player.ControlEnabled).IsFalse();
+
+        _reportPanel.ContinueButton!.EmitSignal(BaseButton.SignalName.Pressed);
+
+        AssertBool(player.ControlEnabled).IsTrue();
     }
 
     // Stands in for the slot writer so the day close writes no file during the scene test.

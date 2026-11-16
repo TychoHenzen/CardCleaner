@@ -6,7 +6,9 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>
 ///     Builds the minutes at which customers arrive during a shop day. Arrivals fall in
-///     [open, close - LastEntryMarginMinutes), so nobody arrives in the last half hour.
+///     [open, close - LastEntryMarginMinutes), so nobody arrives in the last half hour. The window is cut into one
+///     equal slice per customer and each customer arrives at a random minute of its own slice, so the flow is
+///     steady: the first customer comes within the first slice after opening and no two gaps bunch up.
 /// </summary>
 internal static class ArrivalSchedule
 {
@@ -24,12 +26,15 @@ internal static class ArrivalSchedule
             throw new ArgumentOutOfRangeException(nameof(customerCount), customerCount,
                 "Customer count cannot be negative.");
 
-        var lastArrival = closeMinute - LastEntryMarginMinutes - 1;
+        var span = (long)(closeMinute - LastEntryMarginMinutes - openMinute);
         var arrivals = new int[customerCount];
         for (var i = 0; i < customerCount; i++)
-            arrivals[i] = rng.RandiRange(openMinute, lastArrival);
+        {
+            var first = openMinute + (int)(span * i / customerCount);
+            var last = Math.Max(first, openMinute + (int)(span * (i + 1) / customerCount) - 1);
+            arrivals[i] = rng.RandiRange(first, last);
+        }
 
-        Array.Sort(arrivals);
         return arrivals;
     }
 }

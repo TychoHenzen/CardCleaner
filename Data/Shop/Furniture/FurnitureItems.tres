@@ -2,7 +2,10 @@
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Models/FurnitureCatalog.cs" id="FurnitureCatalogScript"]
 [ext_resource type="Resource" path="res://Data/Shop/Furniture/ShelfFurniture.tres" id="ShelfFurniture"]
+[ext_resource type="Resource" path="res://Data/Shop/Furniture/ProductShelfFurniture.tres" id="ProductShelfFurniture"]
+[ext_resource type="Resource" path="res://Data/Shop/Furniture/StorageRackFurniture.tres" id="StorageRackFurniture"]
+[ext_resource type="Resource" path="res://Data/Shop/Furniture/PackingStationFurniture.tres" id="PackingStationFurniture"]
 
 [resource]
 script = ExtResource("FurnitureCatalogScript")
-Items = [ExtResource("ShelfFurniture")]
+Items = [ExtResource("ShelfFurniture"), ExtResource("ProductShelfFurniture"), ExtResource("StorageRackFurniture"), ExtResource("PackingStationFurniture")]

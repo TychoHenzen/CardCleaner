@@ -1,48 +1,32 @@
 [gd_resource type="Resource" script_class="OrderCatalog" format=3 uid="uid://b7um5n4syoyug"]
 
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/CardboardBox.tscn" id="CardboardBox"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Pack.tscn" id="Pack"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Booster.tscn" id="Booster"]
 [ext_resource type="Script" uid="uid://ddvfbixqpsql6" path="res://Scripts/Features/Shop/Models/OrderCatalog.cs" id="OrderCatalogScript"]
 [ext_resource type="Script" uid="uid://d144tmal3smw7" path="res://Scripts/Features/Shop/Models/OrderItem.cs" id="OrderItemScript"]
-[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/PackingStation.tscn" id="PackingStation"]
-[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Shelf.tscn" id="Shelf"]
-[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/ProductShelf.tscn" id="ProductShelf"]
-[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/StorageRack.tscn" id="StorageRack"]
-
-[sub_resource type="Resource" id="ShelfItem"]
-script = ExtResource("OrderItemScript")
-Id = "shelf"
-DisplayName = "Store shelf"
-Price = 120
-Scene = ExtResource("Shelf")
-
-[sub_resource type="Resource" id="PackingStationItem"]
-script = ExtResource("OrderItemScript")
-Id = "bulk_packing_station"
-DisplayName = "Bulk packing station"
-Price = 250
-Scene = ExtResource("PackingStation")
 
 [sub_resource type="Resource" id="CardboardBoxItem"]
 script = ExtResource("OrderItemScript")
 Id = "cardboard_box"
-DisplayName = "Cardboard box (8 booster packs)"
+DisplayName = "Cardboard box (8 packs)"
 Price = 60
 Scene = ExtResource("CardboardBox")
 
-[sub_resource type="Resource" id="ProductShelfItem"]
+[sub_resource type="Resource" id="PackItem"]
 script = ExtResource("OrderItemScript")
-Id = "product_shelf"
-DisplayName = "Product shelf"
-Price = 120
-Scene = ExtResource("ProductShelf")
+Id = "pack"
+DisplayName = "Pack (8 boosters)"
+Price = 10
+Scene = ExtResource("Pack")
 
-[sub_resource type="Resource" id="StorageRackItem"]
+[sub_resource type="Resource" id="BoosterItem"]
 script = ExtResource("OrderItemScript")
-Id = "storage_rack"
-DisplayName = "Storage rack"
-Price = 150
-Scene = ExtResource("StorageRack")
+Id = "booster"
+DisplayName = "Booster (8 cards)"
+Price = 2
+Scene = ExtResource("Booster")
 
 [resource]
 script = ExtResource("OrderCatalogScript")
-Items = [SubResource("ShelfItem"), SubResource("PackingStationItem"), SubResource("CardboardBoxItem"), SubResource("ProductShelfItem"), SubResource("StorageRackItem")]
+Items = [SubResource("CardboardBoxItem"), SubResource("PackItem"), SubResource("BoosterItem")]

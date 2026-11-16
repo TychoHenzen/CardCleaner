@@ -3,20 +3,17 @@ using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
-using Godot;
 using Saveable;
 
 namespace CardCleaner.Scripts.Features.Shop.Services;
 
 /// <summary>
-///     The load half of <see cref="FurnitureSaveService" />: clears the furniture and restores the records.
+///     The load half of <see cref="FurnitureSaveService" />: makes the furniture match the records. A whole-layout
+///     save keeps each standing piece whose record has its name and item and puts it at the saved pose, so its price
+///     tags and stock load onto the same nodes, and frees every piece no record keeps. Boxes are always replaced.
 /// </summary>
 public partial class FurnitureSaveService
 {
-    /// <summary>Height of an unopened box on the shop floor; the boxes are not saved with a height.</summary>
-    // ASSUMPTION: boxes sit on the shop floor at a fixed height; no export records a delivery height (Risk Low).
-    private const float BoxHeight = 0.5f;
-
     public void Load(NodeSave save)
     {
         if (!save.TryGetProperty<string>(RecordsKey, out var json))
@@ -29,9 +26,13 @@ public partial class FurnitureSaveService
         }
 
         var records = FurnitureSaveCodec.Decode(json);
-        ClearFurniture();
+        var wholeLayout = save.TryGetProperty<bool>(WholeLayoutKey, out var whole) && whole;
+        ClearBoxes();
 
-        var placedRects = new List<FurnitureRect>();
+        // An older save (no whole-layout flag) never listed the scene's starting furniture, so that stays standing
+        // and the records are added beside it.
+        var standing = wholeLayout ? StandingByName() : new Dictionary<string, PlacedFurniture>();
+        var placedRects = wholeLayout ? [] : PlacedFurniture.StandingRects(FurnitureRoot);
         var floor = CurrentFloor();
         foreach (var record in records)
         {
@@ -44,25 +45,43 @@ public partial class FurnitureSaveService
             if (record.IsBox)
                 RestoreBox(record);
             else
-                RestorePlaced(record, placedRects, floor);
+                RestorePlaced(record, TakeStanding(standing, record), placedRects, floor);
         }
 
+        foreach (var unclaimed in standing.Values)
+            Discard(unclaimed);
         Navigation?.Rebake();
     }
 
-    private void ClearFurniture()
+    private void ClearBoxes()
     {
-        foreach (var placed in FurnitureRoot!.GetChildren().OfType<PlacedFurniture>().ToList())
-        {
-            FurnitureRoot.RemoveChild(placed);
-            placed.Free();
-        }
-
         foreach (var box in FurnitureBoxes().ToList())
         {
             box.GetParent()?.RemoveChild(box);
             box.Free();
         }
+    }
+
+    private Dictionary<string, PlacedFurniture> StandingByName() =>
+        FurnitureRoot!.GetChildren().OfType<PlacedFurniture>().ToDictionary(placed => placed.Name.ToString());
+
+    /// <summary>The standing piece a placed record keeps: same name and same item. It leaves the pool either way.</summary>
+    private static PlacedFurniture? TakeStanding(Dictionary<string, PlacedFurniture> standing, FurnitureRecord record)
+    {
+        if (record.Name is not { Length: > 0 } name || !standing.Remove(name, out var piece))
+            return null;
+        if (piece.Item?.Id == record.Id)
+            return piece;
+
+        // A piece of another kind under the saved name is not the saved piece; the record makes its own.
+        Discard(piece);
+        return null;
+    }
+
+    private static void Discard(PlacedFurniture piece)
+    {
+        piece.GetParent()?.RemoveChild(piece);
+        piece.Free();
     }
 
     /// <summary>
@@ -71,7 +90,7 @@ public partial class FurnitureSaveService
     ///     one in the Services provider. With the order reversed the lots are not owned yet and a record standing on
     ///     one is skipped with an error (<c>FurnitureSaveServiceTest.ARecordOnAnUnownedLotIsSkipped</c>).
     /// </summary>
-    private FurnitureRect CurrentFloor()
+    private FurnitureFloorArea CurrentFloor()
     {
         if (_services is { } services && services.Has<IShopExpansion>())
             return ExpansionFloor.For(services.Get<IShopExpansion>());
@@ -80,12 +99,19 @@ public partial class FurnitureSaveService
         return FurnitureFloor.Shop;
     }
 
-    private void RestorePlaced(FurnitureRecord record, List<FurnitureRect> placedRects, FurnitureRect floor)
+    /// <summary>
+    ///     Puts the record's piece on the floor: <paramref name="kept" /> moved to the saved pose when the scene
+    ///     already has it, else a new piece. A record that is not in the catalog or no longer fits is skipped with an
+    ///     error, and the kept piece goes with it.
+    /// </summary>
+    private void RestorePlaced(
+        FurnitureRecord record, PlacedFurniture? kept, List<FurnitureRect> placedRects, FurnitureFloorArea floor)
     {
         var item = Furniture!.Find(record.Id);
         if (item == null)
         {
             ILog.Error($"Furniture record '{record.Id}' is not in the furniture catalog; skipped");
+            DiscardIfAny(kept);
             return;
         }
 
@@ -93,6 +119,15 @@ public partial class FurnitureSaveService
         if (!FurniturePlacementModel.IsValid(item.Footprint, pose, placedRects, floor))
         {
             ILog.Error($"Furniture record '{record.Id}' no longer fits the shop floor; skipped");
+            DiscardIfAny(kept);
+            return;
+        }
+
+        if (kept != null)
+        {
+            kept.SetCarried(false);
+            kept.Place(pose);
+            placedRects.Add(kept.Rect);
             return;
         }
 
@@ -103,28 +138,17 @@ public partial class FurnitureSaveService
             return;
         }
 
-        placed.StandUnder(FurnitureRoot!);
+        placed.StandUnder(FurnitureRoot!, record.Name);
         placedRects.Add(placed.Rect);
     }
 
-    private void RestoreBox(FurnitureRecord record)
+    private static void DiscardIfAny(PlacedFurniture? piece)
     {
-        var orderItem = Boxes!.Items.FirstOrDefault(entry => entry.Id == record.Id);
-        if (orderItem?.Scene == null)
-        {
-            ILog.Error($"Furniture box '{record.Id}' is not in the box order catalog; skipped");
-            return;
-        }
-
-        if (orderItem.Scene.Instantiate() is not Node3D box)
-        {
-            ILog.Error($"Furniture box '{record.Id}' is not a 3D scene; skipped");
-            return;
-        }
-
-        BoxRoot!.AddChild(box);
-        box.GlobalPosition = new Vector3(record.X, BoxHeight, record.Z);
-        // Only OrderingService tracked a box when it was delivered; a restored one must count as an occupant too.
-        DeliveryPoint?.Track(box);
+        if (piece != null)
+            Discard(piece);
     }
+
+    // A box that cannot be made is logged by the spawn and skipped.
+    private void RestoreBox(FurnitureRecord record) =>
+        FurnitureBoxSpawn.At(Boxes!, record.Id, BoxRoot!, record.X, record.Z, DeliveryPoint);
 }

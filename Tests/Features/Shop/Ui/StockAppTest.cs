@@ -146,6 +146,5 @@ public class StockAppTest
         }
     }
 
-    // The title is the first label of the app's column; the caller builds the layout first.
-    private static string TitleLabelText(StockApp app) => ((Label)app.GetChild(0).GetChild(0)).Text;
+    private static string TitleLabelText(StockApp app) => app.TitleText;
 }

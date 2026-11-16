@@ -46,7 +46,11 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
     // IInteractable implementation
     public bool CanInteract => !IsHeld;
     public Node3D InteractionBody => this;
-    public float InteractionRange => 50f;
+
+    // Arm's reach, as for boxes and packs (CardContainer); a card across the room is not picked up.
+    public float InteractionRange => 4.5f;
+
+    public string Prompt => "Pick up card";
 
     public void Interact()
     {

@@ -2,6 +2,7 @@ using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
+using CardCleaner.Scripts.Features.Shop.Ui;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
@@ -10,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     A PC the player clicks to open its screen. Open freezes the player and releases the cursor; close
 ///     restores both. Derived terminals supply the screen in <see cref="OnOpening" /> and <see cref="OnClosing" />.
 /// </summary>
-public partial class ScreenTerminal : StaticBody3D, IInteractable, IDependent
+public partial class ScreenTerminal : StaticBody3D, IInteractable, IDependent, IModalScreen
 {
     private const float DefaultInteractionRange = 4.5f;
     // Layer 3, in the InteractionSystem mask
@@ -41,6 +42,8 @@ public partial class ScreenTerminal : StaticBody3D, IInteractable, IDependent
     public virtual bool CanInteract => !IsOpen;
 
     public Node3D InteractionBody => this;
+
+    public string Prompt => "Use the computer";
 
     /// <summary>
     ///     The services this terminal resolves, set by <see cref="Inject" />.
@@ -84,15 +87,16 @@ public partial class ScreenTerminal : StaticBody3D, IInteractable, IDependent
         services.Get<ICursorOwner>(cursor => _cursor = cursor);
     }
 
+    public override void _EnterTree() => AddToGroup(IModalScreen.GroupName);
+
     public override void _ExitTree()
     {
         if (IsOpen)
             Close();
     }
 
-    // Escape must close the PC even while the desktop is open: the desktop
-    // sits in a SubViewport, which does not receive the key, so the terminal
-    // in the main tree handles it itself.
+    // Escape must close the PC even while the desktop is open. The desktop sits in a SubViewport, and the
+    // fullscreen overlay forwards every key to it except Escape, so the terminal in the main tree handles it.
     public override void _UnhandledInput(InputEvent @event)
     {
         if (!IsOpen || !@event.IsActionPressed(CloseAction))

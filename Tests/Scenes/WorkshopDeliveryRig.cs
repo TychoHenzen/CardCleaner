@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -26,14 +27,14 @@ internal sealed class WorkshopDeliveryRig
         PcStock = Shop.GetNode<StockApp>("PcDesktopViewport/StockApp");
         Ui = Workshop.GetNode<OrderTerminalUi>("OrderUi");
         Delivery = Workshop.GetNode<DeliveryMarker>("DeliveryPoint");
-        ShopDelivery = Shop.GetNode<Marker3D>("World/Markers/DeliveryPoint");
+        ShopDelivery = Shop.GetNode<DeliveryMarker>("World/Markers/StockDeliveryPoint");
         Money = Shop.GetNode<MoneyService>("Services/MoneyService");
         var ordering = Shop.GetNode<OrderingService>("Services/OrderingService");
         Presses = new TerminalPresses(ordering, Capacity);
         PcPresses = new StockPresses(PcStock, ordering, Shop.GetNode("World"), Capacity);
     }
 
-    public static int Capacity => OrderingService.SlotColumns * OrderingService.SlotRows;
+    public static int Capacity => DefaultDeliveryGrid.SlotCount;
 
     public Node3D Shop { get; }
     public Node3D Workshop { get; }
@@ -45,7 +46,8 @@ internal sealed class WorkshopDeliveryRig
     public TerminalPresses Presses { get; }
     public StockPresses PcPresses { get; }
     public DeliveryMarker Delivery { get; }
-    public Marker3D ShopDelivery { get; }
+    /// <summary>Where the backoffice Stock app delivers: the shop's stock delivery area.</summary>
+    public DeliveryMarker ShopDelivery { get; }
 
     /// <summary>Waits two physics frames so the scene's bodies are registered with the physics space.</summary>
     public static async Task SettleAsync()

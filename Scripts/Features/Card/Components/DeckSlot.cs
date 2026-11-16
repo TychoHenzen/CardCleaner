@@ -21,12 +21,19 @@ public partial class DeckSlot : Node3D
     private const ShelfKind DefaultKind = ShelfKind.CardShelf;
     private static readonly Vector3 DefaultStackOffset = new(0, 0.02f, 0);
 
+    // ASSUMPTION (Low): a locked body is saved on its seat to float precision, and the seats of different slots lie
+    // far more than this apart, so 5 cm tells a body on a seat from one lying beside the shelf.
+    private const float SeatTolerance = 0.05f;
+
     private readonly List<RigidBody3D> _cards = new();
-    private readonly Dictionary<CardContainer, Action> _exitHandlers = new();
+    private readonly Dictionary<RigidBody3D, Action> _exitHandlers = new();
     private bool _processingEntry;
 
     [Export] public Area3D Area = null!;
     [Export] public float EjectForce = DefaultEjectForce;
+
+    // Where the first locked body sits and how far each next one stacks, both in this slot's own frame, so stock
+    // stays on the tray of a shelf that is turned or moved (see SeatPosition).
     [Export] public Vector3 PositionOffset = Vector3.Zero;
     [Export] public Vector3 StackOffset = DefaultStackOffset;
     [Export] public int Capacity { get; set; } = DefaultCapacity;
@@ -74,12 +81,13 @@ public partial class DeckSlot : Node3D
     {
         if (_processingEntry) return;
 
-        // Only bodies this slot takes lock. Anything else (a box on a card shelf, a card on a storage rack) is
-        // ignored: it is not frozen and reparented into the slot.
-        if (body is not RigidBody3D rigid || !Accepts(rigid) || _cards.Contains(rigid))
+        // Only free bodies this slot takes lock. Anything else (a box on a card shelf, a card on a storage rack) is
+        // ignored: it is not frozen and reparented into the slot. So is a body a slot already holds, this one or
+        // another (see TryLock).
+        if (body is not RigidBody3D rigid || !Accepts(rigid) || _cards.Contains(rigid) || IsHeld(rigid))
             return;
 
-        if (_cards.Count >= Capacity)
+        if (!HasRoom)
         {
             EjectCard(rigid);
             return;
@@ -103,16 +111,38 @@ public partial class DeckSlot : Node3D
     /// Locks a body into this slot when the slot takes that stock and has room. Returns false and leaves the
     /// body alone otherwise.
     /// </summary>
+    /// <remarks>
+    /// The body joins the slot before it is reparented. A reparent reports the body entering every slot trigger it
+    /// overlaps again, at once, so it must already count as held there; and no slot takes a body another slot holds.
+    /// Without both, two slots whose triggers reach the same body take it from each other without end, each steal
+    /// queueing the next, until Godot's deferred-call queue overflows (DeckSlotContainerTest).
+    /// </remarks>
     public bool TryLock(RigidBody3D body)
     {
-        if (!IsInstanceValid(body) || !Accepts(body) || _cards.Contains(body) || _cards.Count >= Capacity)
+        if (!CanTake(body))
             return false;
 
-        LockCard(body);
+        var seat = _cards.Count;
         _cards.Add(body);
+        LockCard(body, seat);
         EmitSignal(SignalName.CardsChanged);
         return true;
     }
+
+    /// <summary>True while the slot holds fewer bodies than its capacity.</summary>
+    public bool HasRoom => _cards.Count < Capacity;
+
+    /// <summary>
+    /// Whether <see cref="TryLock" /> would lock <paramref name="body" /> now: stock it takes, that no slot holds,
+    /// with room.
+    /// </summary>
+    public bool CanTake(RigidBody3D body) =>
+        IsInstanceValid(body) && Accepts(body) && !_cards.Contains(body) && !IsHeld(body) && HasRoom;
+
+    // A slot holds a body it has locked: the body is its child and in its list. A released body stays the slot's
+    // child (see ReleaseCard) but is free again.
+    private static bool IsHeld(RigidBody3D body) =>
+        body.GetParent() is DeckSlot holder && holder._cards.Contains(body);
 
     // A card is a card on a card shelf; a container is taken when this slot's kind accepts its kind.
     private bool Accepts(Node3D body)
@@ -125,62 +155,71 @@ public partial class DeckSlot : Node3D
         };
     }
 
-    private void LockCard(RigidBody3D card)
+    private void LockCard(RigidBody3D card, int seat)
     {
         card.Freeze = true;
         card.LinearVelocity = Vector3.Zero;
         card.AngularVelocity = Vector3.Zero;
         card.Reparent(this);
-        card.GlobalPosition = GlobalPosition + PositionOffset + StackOffset * _cards.Count;
+        card.GlobalPosition = SeatPosition(seat);
         card.GlobalRotation = GlobalRotation;
 
         // Listen for pickup signal
         if (card is CardController cardController) cardController.CardPickedUp += OnCardPickedUp;
 
-        // Subscribed after the reparent above, which leaves the tree and would otherwise release the container at once.
-        if (card is CardContainer container)
-        {
-            Action handler = () => ReleaseContainer(container);
-            _exitHandlers[container] = handler;
-            container.TreeExiting += handler;
-        }
+        // Subscribed after the reparent above, which leaves the tree and would otherwise release the body at once.
+        Action handler = () => Release(card);
+        _exitHandlers[card] = handler;
+        card.TreeExiting += handler;
     }
 
-    // A locked container that leaves the tree (a player picks it up, a restore frees it) frees this slot.
-    private void ReleaseContainer(CardContainer container)
+    // A locked body that leaves the tree (a player picks it up, a load frees it), or a card that reports its pickup,
+    // frees this slot. A freed body that stayed in the list would hold its seat for good.
+    private void Release(RigidBody3D body)
     {
-        Unwatch(container);
-        if (!_cards.Remove(container)) return;
+        Unwatch(body);
+        if (!_cards.Remove(body)) return;
 
         RepositionCards();
         EmitSignal(SignalName.CardsChanged);
     }
 
-    private void OnCardPickedUp(CardController cardController)
-    {
-        if (!_cards.Contains(cardController)) return;
-
-        // Disconnect from pickup signal
-        cardController.CardPickedUp -= OnCardPickedUp;
-
-        // Remove from our collection - the card has already been reparented
-        _cards.Remove(cardController);
-
-        // Reposition remaining cards
-        RepositionCards();
-
-        EmitSignal(SignalName.CardsChanged);
-
-        ILog.Print($"DeckSlot released card due to pickup. {_cards.Count} cards remaining.");
-    }
+    private void OnCardPickedUp(CardController cardController) => Release(cardController);
 
     private void RepositionCards()
     {
         for (var i = 0; i < _cards.Count; i++)
         {
             var card = _cards[i];
-            card.GlobalPosition = GlobalPosition + PositionOffset + StackOffset * i;
+            card.GlobalPosition = SeatPosition(i);
         }
+    }
+
+    /// <summary>
+    /// The world position of the body at <paramref name="index" /> in this slot's stack: <see cref="PositionOffset" />
+    /// plus <paramref name="index" /> times <see cref="StackOffset" />, both turned with the slot.
+    /// </summary>
+    public Vector3 SeatPosition(int index) => GlobalTransform * (PositionOffset + StackOffset * index);
+
+    /// <summary>
+    /// The index of the seat <paramref name="position" /> lies on: the nearest of this slot's seats within 5 cm of it,
+    /// or null when it lies on none.
+    /// </summary>
+    public int? SeatAt(Vector3 position)
+    {
+        int? nearest = null;
+        var nearestDistance = SeatTolerance;
+        for (var index = 0; index < Capacity; index++)
+        {
+            var distance = SeatPosition(index).DistanceTo(position);
+            if (distance > nearestDistance)
+                continue;
+
+            nearest = index;
+            nearestDistance = distance;
+        }
+
+        return nearest;
     }
 
     private void EjectCard(RigidBody3D card)
@@ -189,13 +228,13 @@ public partial class DeckSlot : Node3D
         card.ApplyImpulse(Vector3.Up * EjectForce);
     }
 
-    // Stops listening to a locked body: the pickup signal of a card, the leave-the-tree handler of a container.
+    // Stops listening to a locked body: its leave-the-tree handler, and a card's pickup signal.
     private void Unwatch(RigidBody3D body)
     {
         if (body is CardController cardController) cardController.CardPickedUp -= OnCardPickedUp;
 
-        if (body is CardContainer container && _exitHandlers.Remove(container, out var handler))
-            container.TreeExiting -= handler;
+        if (_exitHandlers.Remove(body, out var handler))
+            body.TreeExiting -= handler;
     }
 
     /// <summary>The bodies currently locked in this slot: cards, and containers on a product shelf or rack.</summary>

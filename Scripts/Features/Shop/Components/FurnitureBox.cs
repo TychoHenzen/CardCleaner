@@ -33,6 +33,8 @@ public partial class FurnitureBox : RigidBody3D, IInteractable, IDependent
 
     public Node3D InteractionBody => this;
 
+    public string Prompt => $"Unbox and place {Item?.DisplayName ?? "furniture"}";
+
     public void Inject(IServiceResolver services) => _services = services;
 
     public override void _EnterTree() => AddToGroup(GroupName);
@@ -51,6 +53,17 @@ public partial class FurnitureBox : RigidBody3D, IInteractable, IDependent
     {
         if (CanInteract)
             _placement!.Begin(this);
+    }
+
+    /// <summary>
+    ///     Lifts the box out of the shop while its piece is being placed, or sets it down again. A lifted box is hidden
+    ///     and out of the physics space (a disabled body leaves the space), so the piece can go down where the box
+    ///     stood; it stays in the tree, so a save meanwhile still records the unopened box.
+    /// </summary>
+    public void SetCarried(bool carried)
+    {
+        Visible = !carried;
+        ProcessMode = carried ? ProcessModeEnum.Disabled : ProcessModeEnum.Inherit;
     }
 
     public void Highlight()

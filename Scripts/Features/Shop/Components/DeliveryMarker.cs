@@ -10,9 +10,9 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     covers from above, and a shape past the last row takes none. An item fits a slot when its shapes stay inside
 ///     <see cref="FloorClearance" /> (when one is set) and overlap no shape of an item in the same height range. It
 ///     goes on the first free ground slot it fits, otherwise on the lowest stack it fits that keeps it under
-///     <see cref="MaxStackHeight" />, and is refused when there is none. The footprint is the solid shapes plus the
-///     triggers under a node in <see cref="FootprintGroup" />, less every shape under a node in
-///     <see cref="NoFootprintGroup" />; other triggers take no space.
+///     <see cref="MaxStackHeight" /> and holds up its whole footprint, and is refused when there is none. The
+///     footprint is the solid shapes plus the triggers under a node in <see cref="FootprintGroup" />, less every
+///     shape under a node in <see cref="NoFootprintGroup" />; other triggers take no space.
 /// </summary>
 public partial class DeliveryMarker : Marker3D
 {
@@ -35,7 +35,47 @@ public partial class DeliveryMarker : Marker3D
     // Overlaps and height gaps shorter than this are touching, not overlapping, so a shared face refuses nothing.
     private const float OverlapEpsilon = 0.001f;
 
+    // How far a stacked item may overhang its support, and how far a support's top may sit below the stack top, in
+    // metres. Delivered bodies settle by a few millimetres, so equal items still stack on each other.
+    private const float SupportTolerance = 0.05f;
+
+    /// <summary>Slot columns along X of a marker that sets no grid of its own.</summary>
+    public const int DefaultColumns = 3;
+
+    /// <summary>Slot rows along Z of a marker that sets no grid of its own.</summary>
+    public const int DefaultRows = 2;
+
+    /// <summary>
+    ///     Cell width (X) of a marker that sets no grid of its own: fits the 2.1 m shelf in one column. A wider
+    ///     footprint, such as an arcade cabinet with its holders, takes the next slot that clears every shape.
+    /// </summary>
+    public const float DefaultCellWidth = 2.3f;
+
+    /// <summary>
+    ///     Cell depth (Z) of a marker that sets no grid of its own: fits the 1 m deep shelf in one row. A deeper
+    ///     footprint takes the next slot that clears every shape.
+    /// </summary>
+    public const float DefaultCellDepth = 1.5f;
+
     private readonly List<Node3D> _delivered = [];
+
+    /// <summary>Slot columns along X, centred on the marker.</summary>
+    [Export]
+    public int Columns { get; set; } = DefaultColumns;
+
+    /// <summary>Slot rows along Z, centred on the marker.</summary>
+    [Export]
+    public int Rows { get; set; } = DefaultRows;
+
+    /// <summary>
+    ///     Width (X) and depth (Z) of one slot's cell, in metres. Size it to the items this area receives: every item
+    ///     takes a whole ground cell, so cells sized for shelves leave no room for small stock.
+    /// </summary>
+    [Export]
+    public Vector2 CellSize { get; set; } = new(DefaultCellWidth, DefaultCellDepth);
+
+    /// <summary>How many ground slots the grid has.</summary>
+    public int SlotCount => Columns * Rows;
 
     /// <summary>
     ///     Clearance above the marker, in metres, that stacked deliveries must stay under. Set it to the room's
@@ -50,6 +90,26 @@ public partial class DeliveryMarker : Marker3D
     /// </summary>
     [Export]
     public Rect2 FloorClearance { get; set; }
+
+    /// <summary>Offset from this marker of slot <paramref name="index" />'s centre in this marker's own grid.</summary>
+    public Vector3 SlotOffset(int index) => GridOffset(index, Columns, Rows, CellSize);
+
+    /// <summary>
+    ///     Offset of slot <paramref name="index" /> in a grid of <paramref name="columns" /> by
+    ///     <paramref name="rows" /> cells centred on the marker, filled row by row.
+    /// </summary>
+    public static Vector3 GridOffset(int index, int columns, int rows, Vector2 cellSize)
+    {
+        var column = index % columns;
+        var row = index / columns;
+        return new Vector3(
+            (column - (columns - 1) / 2f) * cellSize.X,
+            0f,
+            (row - (rows - 1) / 2f) * cellSize.Y);
+    }
+
+    /// <summary>Where the next item should go in this marker's own grid; see the overload below.</summary>
+    public Placement? FindPlacement(Node3D item) => FindPlacement(SlotCount, SlotOffset, CellSize, item);
 
     /// <summary>
     ///     Where the next item should go: the first free ground slot <paramref name="item" /> fits on, otherwise the
@@ -88,12 +148,36 @@ public partial class DeliveryMarker : Marker3D
             var lift = stackTop[slot] + StackGap;
             if (lift + height > MaxStackHeight)
                 return null;
-            if (Fits(local, localBounds, slotOffset(slot) + Vector3.Up * lift, occupants))
+            var offset = slotOffset(slot) + Vector3.Up * lift;
+            if (Supported(local, offset, stackTop[slot], occupants) && Fits(local, localBounds, offset, occupants))
                 return new Placement(slot, lift);
         }
 
         return null;
     }
+
+    /// <summary>
+    ///     Whether an item stacked at <paramref name="offset" /> would rest on something under all of it: seen from
+    ///     above, each of its shapes lies inside a shape whose top is the stack top it rests on, give or take
+    ///     <see cref="SupportTolerance" />. So a shelf box is never stacked on a booster, and nothing hangs in the air.
+    /// </summary>
+    private bool Supported(Aabb[] localShapes, Vector3 offset, float stackTop, IReadOnlyList<Occupant> occupants)
+    {
+        var supports = occupants
+            .SelectMany(occupant => occupant.Shapes)
+            .Where(shape => Mathf.Abs(Mathf.Max(shape.End.Y - GlobalPosition.Y, MinItemHeight) - stackTop)
+                            <= SupportTolerance)
+            .ToArray();
+        return localShapes
+            .Select(box => new Aabb(box.Position + GlobalPosition + offset, box.Size))
+            .All(shape => supports.Any(support => Holds(support, shape)));
+    }
+
+    // Seen from above, the support's top covers the shape, letting the shape overhang by the tolerance on each side.
+    private static bool Holds(Aabb support, Aabb shape) =>
+        shape.Position.X >= support.Position.X - SupportTolerance && shape.End.X <= support.End.X + SupportTolerance
+        && shape.Position.Z >= support.Position.Z - SupportTolerance
+        && shape.End.Z <= support.End.Z + SupportTolerance;
 
     /// <summary>Starts treating <paramref name="item" /> as an occupant of this area.</summary>
     public void Track(Node3D item) => _delivered.Add(item);

@@ -1,0 +1,926 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://Shaders/ceiling_tiles.gdshader" id="CeilingShader"]
+
+[sub_resource type="ShaderMaterial" id="CeilingMaterial"]
+shader = ExtResource("CeilingShader")
+
+[sub_resource type="BoxMesh" id="CeilingMesh"]
+material = SubResource("CeilingMaterial")
+size = Vector3(32.3, 0.1, 20.3)
+
+[sub_resource type="BoxShape3D" id="CeilingShape"]
+size = Vector3(32.3, 0.1, 20.3)
+
+[sub_resource type="StandardMaterial3D" id="RoofMaterial"]
+albedo_color = Color(0.29, 0.3, 0.32, 1)
+roughness = 0.92
+
+[sub_resource type="BoxMesh" id="RoofMesh"]
+material = SubResource("RoofMaterial")
+size = Vector3(32.3, 0.2, 20.3)
+
+[sub_resource type="StandardMaterial3D" id="FasciaMaterial"]
+albedo_color = Color(0.09, 0.27, 0.31, 1)
+roughness = 0.55
+
+[sub_resource type="BoxMesh" id="FasciaLongMesh"]
+material = SubResource("FasciaMaterial")
+size = Vector3(32.7, 0.7, 0.2)
+
+[sub_resource type="BoxMesh" id="FasciaShortMesh"]
+material = SubResource("FasciaMaterial")
+size = Vector3(0.2, 0.7, 20.7)
+
+[sub_resource type="StandardMaterial3D" id="CapMaterial"]
+albedo_color = Color(0.78, 0.79, 0.8, 1)
+metallic = 0.6
+roughness = 0.35
+
+[sub_resource type="BoxMesh" id="CapLongMesh"]
+material = SubResource("CapMaterial")
+size = Vector3(32.8, 0.05, 0.3)
+
+[sub_resource type="BoxMesh" id="CapShortMesh"]
+material = SubResource("CapMaterial")
+size = Vector3(0.3, 0.05, 20.8)
+
+[sub_resource type="StandardMaterial3D" id="PanelMaterial"]
+albedo_color = Color(0.97, 0.97, 0.95, 1)
+emission_enabled = true
+emission = Color(1, 0.96, 0.88, 1)
+emission_energy_multiplier = 2.5
+
+[sub_resource type="BoxMesh" id="PanelMesh"]
+material = SubResource("PanelMaterial")
+size = Vector3(1.2, 0.04, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="FrameMaterial"]
+albedo_color = Color(0.7, 0.71, 0.73, 1)
+metallic = 0.5
+roughness = 0.4
+
+[sub_resource type="BoxMesh" id="FrameMesh"]
+material = SubResource("FrameMaterial")
+size = Vector3(1.28, 0.03, 0.68)
+
+[node name="ShopRoof" type="Node3D"]
+
+[node name="Ceiling" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.55, 2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ceiling"]
+shape = SubResource("CeilingShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="Ceiling"]
+cast_shadow = 0
+mesh = SubResource("CeilingMesh")
+
+[node name="RoofSlab" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.7, 2)
+mesh = SubResource("RoofMesh")
+
+[node name="Fascia" type="Node3D" parent="."]
+
+[node name="Front" type="MeshInstance3D" parent="Fascia"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.6, 12.25)
+mesh = SubResource("FasciaLongMesh")
+
+[node name="FrontCap" type="MeshInstance3D" parent="Fascia"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.975, 12.25)
+mesh = SubResource("CapLongMesh")
+
+[node name="Back" type="MeshInstance3D" parent="Fascia"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.6, -8.25)
+mesh = SubResource("FasciaLongMesh")
+
+[node name="BackCap" type="MeshInstance3D" parent="Fascia"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.975, -8.25)
+mesh = SubResource("CapLongMesh")
+
+[node name="Left" type="MeshInstance3D" parent="Fascia"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.25, 3.6, 2)
+mesh = SubResource("FasciaShortMesh")
+
+[node name="LeftCap" type="MeshInstance3D" parent="Fascia"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.25, 3.975, 2)
+mesh = SubResource("CapShortMesh")
+
+[node name="Right" type="MeshInstance3D" parent="Fascia"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.25, 3.6, 2)
+mesh = SubResource("FasciaShortMesh")
+
+[node name="RightCap" type="MeshInstance3D" parent="Fascia"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.25, 3.975, 2)
+mesh = SubResource("CapShortMesh")
+
+[node name="ShopName" type="Label3D" parent="Fascia"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.6, 12.36)
+pixel_size = 0.004
+modulate = Color(1, 0.93, 0.7, 1)
+text = "OCTARINE CARDS"
+font_size = 110
+outline_size = 18
+outline_modulate = Color(0.03, 0.08, 0.1, 1)
+
+[node name="CeilingLights" type="Node3D" parent="."]
+
+[node name="Storefront_0" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 3.5, 2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storefront_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storefront_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storefront_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storefront_1" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 3.5, 6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storefront_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storefront_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storefront_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storefront_2" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 3.5, 10)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storefront_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storefront_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storefront_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storefront_3" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3.5, 2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storefront_3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storefront_3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storefront_3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storefront_4" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3.5, 6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storefront_4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storefront_4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storefront_4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storefront_5" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3.5, 10)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storefront_5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storefront_5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storefront_5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storefront_6" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3.5, 2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storefront_6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storefront_6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storefront_6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storefront_7" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3.5, 6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storefront_7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storefront_7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storefront_7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storefront_8" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3.5, 10)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storefront_8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storefront_8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storefront_8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storefront_9" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 3.5, 2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storefront_9"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storefront_9"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storefront_9"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storefront_10" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 3.5, 6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storefront_10"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storefront_10"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storefront_10"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storefront_11" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 3.5, 10)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storefront_11"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storefront_11"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storefront_11"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storage_12" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 3.5, -6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storage_12"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storage_12"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storage_12"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storage_13" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 3.5, -2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storage_13"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storage_13"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storage_13"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storage_14" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3.5, -6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storage_14"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storage_14"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storage_14"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Storage_15" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3.5, -2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Storage_15"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Storage_15"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Storage_15"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Backoffice_16" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3.5, -6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Backoffice_16"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Backoffice_16"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Backoffice_16"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Backoffice_17" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3.5, -2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Backoffice_17"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Backoffice_17"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Backoffice_17"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Backoffice_18" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 3.5, -6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Backoffice_18"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Backoffice_18"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Backoffice_18"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="Backoffice_19" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 3.5, -2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/Backoffice_19"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/Backoffice_19"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/Backoffice_19"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="RightStorage_20" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 3.5, -6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/RightStorage_20"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/RightStorage_20"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/RightStorage_20"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="RightStorage_21" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 3.5, -2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/RightStorage_21"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/RightStorage_21"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/RightStorage_21"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="RightStorage_22" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 3.5, 2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/RightStorage_22"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/RightStorage_22"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/RightStorage_22"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="RightStorage_23" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 3.5, 6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/RightStorage_23"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/RightStorage_23"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/RightStorage_23"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="RightStorage_24" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 3.5, 10)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/RightStorage_24"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/RightStorage_24"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/RightStorage_24"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="RightStorage_25" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.5, -6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/RightStorage_25"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/RightStorage_25"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/RightStorage_25"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="RightStorage_26" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.5, -2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/RightStorage_26"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/RightStorage_26"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/RightStorage_26"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="RightStorage_27" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.5, 2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/RightStorage_27"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/RightStorage_27"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/RightStorage_27"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="RightStorage_28" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.5, 6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/RightStorage_28"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/RightStorage_28"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/RightStorage_28"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="RightStorage_29" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.5, 10)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/RightStorage_29"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/RightStorage_29"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/RightStorage_29"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="ExpansionLot_30" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 3.5, -6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_30"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_30"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/ExpansionLot_30"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="ExpansionLot_31" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 3.5, -2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_31"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_31"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/ExpansionLot_31"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="ExpansionLot_32" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 3.5, 2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_32"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_32"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/ExpansionLot_32"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="ExpansionLot_33" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 3.5, 6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_33"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_33"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/ExpansionLot_33"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="ExpansionLot_34" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 3.5, 10)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_34"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_34"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/ExpansionLot_34"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="ExpansionLot_35" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3.5, -6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_35"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_35"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/ExpansionLot_35"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="ExpansionLot_36" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3.5, -2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_36"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_36"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/ExpansionLot_36"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="ExpansionLot_37" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3.5, 2)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_37"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_37"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/ExpansionLot_37"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="ExpansionLot_38" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3.5, 6)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_38"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_38"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/ExpansionLot_38"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2
+
+[node name="ExpansionLot_39" type="Node3D" parent="CeilingLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3.5, 10)
+
+[node name="Frame" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_39"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
+cast_shadow = 0
+mesh = SubResource("FrameMesh")
+
+[node name="Panel" type="MeshInstance3D" parent="CeilingLights/ExpansionLot_39"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+cast_shadow = 0
+mesh = SubResource("PanelMesh")
+
+[node name="Light" type="OmniLight3D" parent="CeilingLights/ExpansionLot_39"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 0.55
+omni_range = 6.5
+omni_attenuation = 1.2

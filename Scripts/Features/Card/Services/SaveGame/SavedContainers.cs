@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
+using Newtonsoft.Json;
 using Saveable.Extensions;
 
 namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
@@ -66,7 +68,41 @@ internal static class SavedContainers
     }
 
     /// <summary>
-    ///     Frees the scene's own containers, then adds one container under <paramref name="world" /> per saved one.
+    ///     Returns the container records of a slot with each readable position passed through <paramref name="move" />.
+    ///     A null result, or a position that cannot be read, keeps the record as it was, so <see cref="Parse" /> still
+    ///     reports a malformed one.
+    /// </summary>
+    internal static List<object> Relocate(List<object> raw, Func<Vector3, Vector3?> move)
+    {
+        var records = SaveExtension.DeserializeObject<List<ContainerRecord>>(SaveExtension.SerializeObject(raw))
+                      ?? new List<ContainerRecord>();
+        foreach (var record in records)
+        {
+            if (TryReadPosition(record) is { } position && move(position) is { } moved)
+                record.Position = moved;
+        }
+
+        return records.Cast<object>().ToList();
+    }
+
+    private static Vector3? TryReadPosition(ContainerRecord record)
+    {
+        if (record.Position == null)
+            return null;
+
+        try
+        {
+            return SavedCardReader.GetVector3FromData(record.Position);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    ///     Frees the scene's own containers, then adds one container under <paramref name="world" /> per saved one, and
+    ///     locks each one saved on a slot's seat back into that slot.
     /// </summary>
     internal static void Restore(SceneTree tree, IEnumerable<Saved> saved, Node3D world)
     {
@@ -81,6 +117,8 @@ internal static class SavedContainers
             existing.QueueFree();
         }
 
+        var slots = SlotsUnder(world).ToList();
+        var seated = new List<(CardContainer Container, DeckSlot Slot, int Seat)>();
         foreach (var record in saved)
         {
             var packed = ResourceLoader.Load<PackedScene>(record.ScenePath);
@@ -99,6 +137,36 @@ internal static class SavedContainers
             container.GlobalRotation = record.Rotation;
             // A failed pick-up leaves the container at its saved position.
             if (record.Held) holder?.TryPickUp(container);
+            else if (SeatOf(slots, record.Position) is { } seat) seated.Add((container, seat.Slot, seat.Index));
+        }
+
+        // Locked now, before any physics step, not by the slot's trigger: a seat lies inside its shelf's solid
+        // collider, which pushes a free container off the seat, and out of the trigger, on the first step. A slot's
+        // lower seats are filled first, so a stack comes back in its saved order.
+        foreach (var (container, slot, _) in seated.OrderBy(entry => entry.Seat))
+            slot.TryLock(container);
+    }
+
+    private static (DeckSlot Slot, int Index)? SeatOf(IEnumerable<DeckSlot> slots, Vector3 position)
+    {
+        foreach (var slot in slots)
+        {
+            if (slot.SeatAt(position) is { } index)
+                return (slot, index);
+        }
+
+        return null;
+    }
+
+    private static IEnumerable<DeckSlot> SlotsUnder(Node node)
+    {
+        foreach (var child in node.GetChildren())
+        {
+            if (child is DeckSlot slot)
+                yield return slot;
+
+            foreach (var nested in SlotsUnder(child))
+                yield return nested;
         }
     }
 

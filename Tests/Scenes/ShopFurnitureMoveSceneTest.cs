@@ -26,6 +26,9 @@ public class ShopFurnitureMoveSceneTest
     private ShopNavigationRegion _region = null!;
     private FurniturePlacementController _controller = null!;
     private Node3D _furnitureRoot = null!;
+
+    // The shop's starting furniture, standing under the furniture root before a case places a piece.
+    private int _standing;
     private Window _root = null!;
 
     [BeforeTest]
@@ -43,6 +46,7 @@ public class ShopFurnitureMoveSceneTest
         uint regionBefore = NavigationServer3D.RegionGetIterationId(_region.GetRid());
         AddNode(_shop);
         _furnitureRoot = _shop.GetNode<Node3D>(FurnitureRootPath);
+        _standing = _furnitureRoot.GetChildCount();
         _root = _shop.GetTree().Root;
         await ShopNavigationRig.WaitForBakeSync(_region, regionBefore);
     }
@@ -66,7 +70,7 @@ public class ShopFurnitureMoveSceneTest
 
         AssertBool(_controller.BeginMove(placed)).IsTrue();
         // The piece stays in the tree while carried, hidden and off the collision layer.
-        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(_standing + 1);
         AssertBool(placed.IsCarried).IsTrue();
         AssertBool(placed.Visible).IsFalse();
         AssertInt((int)placed.CollisionLayer).IsEqual(0);
@@ -75,12 +79,27 @@ public class ShopFurnitureMoveSceneTest
 
         _controller.AimAt(4f, 6f);
         AssertBool(_controller.Confirm()).IsTrue();
-        AssertBool(ReferenceEquals(_furnitureRoot.GetChild(0), placed)).IsTrue();
+        AssertBool(ReferenceEquals(_furnitureRoot.GetChild(_standing), placed)).IsTrue();
         AssertBool(placed.IsCarried).IsFalse();
         AssertBool(placed.Visible).IsTrue();
         AssertInt((int)placed.CollisionLayer).IsEqual(1);
         AssertBool(placed.Position.IsEqualApprox(new Vector3(4f, 0f, 6f))).IsTrue();
         AssertInt(_region.RebakeCount).IsEqual(count + 2);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task APickedUpShelfCanBePutBackWhereItStood()
+    {
+        var placed = await PlaceShelf(4f, 8f);
+
+        AssertBool(_controller.BeginMove(placed)).IsTrue();
+        _controller.AimAt(4f, 8f);
+
+        // The shelf's own body and price tags left the space with it, so its old spot is free.
+        AssertBool(_controller.Confirm()).IsTrue();
+        AssertBool(placed.Position.IsEqualApprox(new Vector3(4f, 0f, 8f))).IsTrue();
+        AssertBool(placed.IsCarried).IsFalse();
     }
 
     [TestCase]
@@ -92,14 +111,14 @@ public class ShopFurnitureMoveSceneTest
         _controller.Rotate();
         AssertBool(_controller.Confirm()).IsTrue();
         await ISceneRunner.SyncPhysicsFrame;
-        var placed = (PlacedFurniture)_furnitureRoot.GetChild(0);
+        var placed = (PlacedFurniture)_furnitureRoot.GetChild(_standing);
         int before = _region.RebakeCount;
 
         AssertBool(_controller.BeginMove(placed)).IsTrue();
         _controller.AimAt(4f, 6f);
         _controller.Cancel();
 
-        AssertBool(ReferenceEquals(_furnitureRoot.GetChild(0), placed)).IsTrue();
+        AssertBool(ReferenceEquals(_furnitureRoot.GetChild(_standing), placed)).IsTrue();
         AssertBool(placed.Position.IsEqualApprox(new Vector3(4f, 0f, 8f))).IsTrue();
         AssertInt(placed.QuarterTurns).IsEqual(1);
         AssertInt(_region.RebakeCount).IsEqual(before + 2);
@@ -118,7 +137,7 @@ public class ShopFurnitureMoveSceneTest
         int count = _region.RebakeCount;
 
         AssertBool(_controller.BeginMove(placed)).IsFalse();
-        AssertBool(ReferenceEquals(_furnitureRoot.GetChild(0), placed)).IsTrue();
+        AssertBool(ReferenceEquals(_furnitureRoot.GetChild(_standing), placed)).IsTrue();
         AssertBool(_controller.IsActive).IsFalse();
         AssertInt(_region.RebakeCount).IsEqual(count);
 
@@ -139,8 +158,9 @@ public class ShopFurnitureMoveSceneTest
 
         AssertBool(save.TryGetProperty<string>(FurnitureSaveService.RecordsKey, out var json)).IsTrue();
         var records = FurnitureSaveCodec.Decode(json);
-        AssertInt(records.Count).IsEqual(1);
-        AssertBool(records[0].X == 4f && records[0].Z == 8f && !records[0].IsBox).IsTrue();
+        AssertInt(records.Count).IsEqual(_standing + 1);
+        var carried = records.Single(record => record.Name == placed.Name.ToString());
+        AssertBool(carried.X == 4f && carried.Z == 8f && !carried.IsBox).IsTrue();
     }
 
     [TestCase]

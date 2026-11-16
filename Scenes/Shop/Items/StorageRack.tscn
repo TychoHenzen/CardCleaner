@@ -25,8 +25,8 @@ shape = SubResource("Shape")
 
 [node name="Art" type="Node3D" parent="." node_paths=PackedStringArray("Placeholder")]
 script = ExtResource("ShopArtSlot")
-ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Prop_RecordShelf_01.fbx"
-ArtScale = 100
+ArtPath = "res://Assets/Synty/PolygonSurvivalWorkshop/SM_Rack_B.fbx"
+ArtOffset = Vector3(-0.005, 0, 0.035)
 Placeholder = NodePath("Placeholder")
 
 [node name="Placeholder" type="MeshInstance3D" parent="Art"]
@@ -34,33 +34,33 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("PlaceholderMesh")
 
 [node name="Slot1" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.2, -0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.41, -0.2)
 Capacity = 1
 
 [node name="Slot2" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.2, -0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.41, -0.2)
 Capacity = 1
 
 [node name="Slot3" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.1, -0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.25, -0.2)
 Capacity = 1
 
 [node name="Slot4" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.1, -0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.25, -0.2)
 Capacity = 1
 
 [node name="Price1" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.36, -0.53)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.4, -0.475)
 Slot = NodePath("../Slot1")
 
 [node name="Price2" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.36, -0.53)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.4, -0.475)
 Slot = NodePath("../Slot2")
 
 [node name="Price3" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.26, -0.53)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.235, -0.475)
 Slot = NodePath("../Slot3")
 
 [node name="Price4" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.26, -0.53)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.235, -0.475)
 Slot = NodePath("../Slot4")

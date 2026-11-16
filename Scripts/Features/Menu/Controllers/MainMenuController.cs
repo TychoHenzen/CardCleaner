@@ -27,7 +27,7 @@ public partial class MainMenuController : Control, IDependent
     private const string QuitPath = "Layout/QuitButton";
     private const string MessagePath = "Layout/MessageLabel";
     private const string NewGameDialogPath = "NewGameDialog";
-    private const string NameEditPath = "NewGameDialog/NameEdit";
+    private const string NameEditPath = "NewGameDialog/Content/NameEdit";
     private const string DeleteDialogPath = "DeleteDialog";
     private const string OptionsPath = "Options";
 
@@ -71,6 +71,8 @@ public partial class MainMenuController : Control, IDependent
         GetNode<SlotListController>(SlotListPath).LoadRequested += OnLoadRequested;
         GetNode<SlotListController>(SlotListPath).DeleteRequested += OnDeleteRequested;
         GetNode<ConfirmationDialog>(NewGameDialogPath).Confirmed += OnNewGameConfirmed;
+        // Enter in the name field confirms, as the OK button does.
+        GetNode<ConfirmationDialog>(NewGameDialogPath).RegisterTextEnter(GetNode<LineEdit>(NameEditPath));
         GetNode<ConfirmationDialog>(DeleteDialogPath).Confirmed += OnDeleteConfirmed;
         GetNode<ConfirmationDialog>(DeleteDialogPath).Canceled += () => _pendingDelete = null;
 
@@ -97,6 +99,7 @@ public partial class MainMenuController : Control, IDependent
         GetNode<LineEdit>(NameEditPath).Text = string.Empty;
         GetNode<Label>(MessagePath).Text = string.Empty;
         GetNode<ConfirmationDialog>(NewGameDialogPath).PopupCentered();
+        GetNode<LineEdit>(NameEditPath).GrabFocus();
     }
 
     private void OnNewGameConfirmed()

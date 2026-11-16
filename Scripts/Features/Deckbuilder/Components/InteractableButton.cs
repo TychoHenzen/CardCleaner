@@ -31,6 +31,7 @@ public partial class InteractableButton : StaticBody3D, IInteractable
 
     public bool CanInteract => Enabled;
     public Node3D InteractionBody => this;
+    public string Prompt => "Press";
 
     public void Interact()
     {

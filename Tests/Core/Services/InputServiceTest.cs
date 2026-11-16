@@ -228,6 +228,35 @@ public class InputServiceTest
     }
 
     [TestCase]
+    [TestCategory("Unit")]
+    public void SuspendedActionsIgnorePressesButStillGetMouseReleases()
+    {
+        _service.RegisterAction(this, "test_action", Key.Space, () => _actionCallCount++);
+        var mouseCalls = 0;
+        _service.RegisterAction(this, "test_mouse", MouseButton.Left, pressed =>
+        {
+            _mouseActionPressed = pressed;
+            mouseCalls++;
+        });
+        _service._Input(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true });
+
+        _service.ActionsSuspended = true;
+        _service._Input(new InputEventKey { Keycode = Key.Space, Pressed = true });
+        _service._Input(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false });
+        _service._Input(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true });
+
+        Assertions.AssertThat(_actionCallCount).IsEqual(0);
+        Assertions.AssertBool(_service.IsActionPressed("test_action")).IsFalse();
+        Assertions.AssertThat(mouseCalls).IsEqual(2);
+        Assertions.AssertBool(_mouseActionPressed).IsFalse();
+
+        _service.ActionsSuspended = false;
+        _service._Input(new InputEventKey { Keycode = Key.Space, Pressed = true });
+
+        Assertions.AssertThat(_actionCallCount).IsEqual(1);
+    }
+
+    [TestCase]
     public void TestKeyEchoIgnored()
     {
         _service.RegisterAction(this, "test_action", Key.Space, () => _actionCallCount++);

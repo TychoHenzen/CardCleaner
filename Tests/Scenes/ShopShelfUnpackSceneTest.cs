@@ -36,8 +36,8 @@ public class ShopShelfUnpackSceneTest
     private const int SettleFrames = 180;
     // Half the 1.8 m capsule in Scenes/Components/player.tscn: the body stands on the floor at the box's height.
     private const float PlayerStandHeight = 0.9f;
-    private const string ProductShelfPath = "World/Storefront/ProductShelf";
-    private const string StorageRackPath = "World/RightStorage/StorageRack";
+    private const string ProductShelfPath = "World/Furniture/ProductShelf/Content";
+    private const string StorageRackPath = "World/Furniture/StorageRack/Content";
 
     private Node3D _shop = null!;
     private PlayerController _player = null!;
@@ -103,8 +103,8 @@ public class ShopShelfUnpackSceneTest
         var box = OrderBox();
         await PhysicsFrames(SettleFrames);
         AssertBool(_holder.TryPickUp(box)).IsTrue();
-        var standAt = shelf.GlobalPosition + new Vector3(0f, PlayerStandHeight, -StandingDistance);
-        Stand(standAt, standAt + new Vector3(0f, 0f, -10f));
+        var standAt = InFrontOf(shelf);
+        Stand(standAt, standAt + FrontOf(shelf) * 10f);
         await PhysicsFrames(AimFrames);
 
         _qPress!.Invoke();
@@ -129,8 +129,7 @@ public class ShopShelfUnpackSceneTest
         var pack = Containers(CardContainerKind.Pack)[0];
         AssertBool(_holder.TryPickUp(pack)).IsTrue();
 
-        Stand(rack.GlobalPosition + new Vector3(0f, PlayerStandHeight, StandingDistance),
-            rack.GlobalPosition + new Vector3(0f, 1.0f, 0f));
+        Stand(InFrontOf(rack), rack.GlobalPosition + new Vector3(0f, 1.0f, 0f));
         await PhysicsFrames(AimFrames);
         _qPress.Invoke();
         await PhysicsFrames(UnpackFrames);
@@ -146,14 +145,20 @@ public class ShopShelfUnpackSceneTest
         var box = OrderBox();
         await PhysicsFrames(SettleFrames);
         AssertBool(_holder.TryPickUp(box)).IsTrue();
-        Stand(shelf.GlobalPosition + new Vector3(0f, PlayerStandHeight, -StandingDistance),
-            shelf.GlobalPosition + new Vector3(0f, 0.5f, 0f));
+        Stand(InFrontOf(shelf), shelf.GlobalPosition + new Vector3(0f, 0.5f, 0f));
         await PhysicsFrames(AimFrames);
 
         _qPress!.Invoke();
         await PhysicsFrames(UnpackFrames);
         return shelf;
     }
+
+    // A shelf's slots and price tags face its local -Z, whichever way the piece is turned in the shop.
+    private static Vector3 FrontOf(CardShelf shelf) => -shelf.GlobalBasis.Z.Normalized();
+
+    // Where the player stands to face a shelf: StandingDistance out from its front, on the floor.
+    private static Vector3 InFrontOf(CardShelf shelf) =>
+        shelf.GlobalPosition + FrontOf(shelf) * StandingDistance + new Vector3(0f, PlayerStandHeight, 0f);
 
     // Puts the player at standAt and turns the camera toward lookAt, so the hand's ray reaches what the player faces.
     private void Stand(Vector3 standAt, Vector3 lookAt)

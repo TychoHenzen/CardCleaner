@@ -19,7 +19,10 @@ public static class PackMaterialCatalog
         ("SimpleShopInterior", "SimpleShopInterior_Texture.png"),
         ("PolygonOffice", "PolygonOffice_Texture_01_A.png"),
         ("PolygonDungeon", "Dungeons_Texture_01.png"),
-        ("PolygonMiniCity", "PolygonMinis_Texture_01.png")
+        ("PolygonMiniCity", "PolygonMinis_Texture_01.png"),
+        ("PolygonSurvivalWorkshop", "PolygonSurvivalWorkshop_Texture.png"),
+        ("PolygonSurvivalTools", "PolygonSurvivalTools_Texture.png"),
+        ("PolygonSurvivalConstruction", "PolygonSurvivalConstruction_Texture.png")
     ];
 
     /// <summary>The atlas file of every known pack.</summary>

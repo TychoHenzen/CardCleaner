@@ -20,8 +20,8 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
 /// Stock on the shop's product shelf and storage rack goes into the shop save and comes back in the same slots after a
-/// reload. The restored stock re-locks through the slot's own body entry, and a container that lies outside every
-/// slot restores without an error. The slot files live in an in-memory file system.
+/// reload. The restored stock is locked back into its slot during the load, before any physics step, and a container
+/// that lies outside every slot restores without an error. The slot files live in an in-memory file system.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -66,8 +66,8 @@ public class ShelfStockSaveTest
         TestServices.Container.RegisterSingleton<SlotStore>(new SlotStore(_files));
         TestServices.Container.RegisterSingleton<ISaveGameCommand>(_saves);
 
-        _product = _shop.GetNode<CardShelf>("World/Storefront/ProductShelf");
-        _rack = _shop.GetNode<CardShelf>("World/RightStorage/StorageRack");
+        _product = _shop.GetNode<CardShelf>("World/Furniture/ProductShelf/Content");
+        _rack = _shop.GetNode<CardShelf>("World/Furniture/StorageRack/Content");
 
         AddNode(_shop, autoFree: false);
         _tree.CurrentScene = _shop;
@@ -104,6 +104,22 @@ public class ShelfStockSaveTest
         AssertThat(_product.StockedCount).IsEqual(1);
         AssertThat(_rack.StockedCount).IsEqual(1);
         AssertThat(UnopenedContainers()).IsEqual(before);
+    }
+
+    // A seat of the product shelf lies inside the shelf's own solid collider, which pushes a free container off the
+    // seat, and out of the slot's trigger, on the first physics step. So the load itself must lock the stock.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void StockIsBackInItsSlotsBeforeAnyPhysicsStep()
+    {
+        AssertBool(_product.Slots.First().TryLock(NewContainer(BoosterScene, BoosterSeed))).IsTrue();
+        AssertBool(_rack.Slots.First().TryLock(NewContainer(BoxScene, BoxSeed))).IsTrue();
+        AssertBool(_saves.ManualSave()).IsTrue();
+
+        _saves.LoadGame();
+
+        AssertThat(_product.Slots.First().Cards.OfType<CardContainer>().Single().ContentSeed).IsEqual(BoosterSeed);
+        AssertThat(_rack.Slots.First().Cards.OfType<CardContainer>().Single().ContentSeed).IsEqual(BoxSeed);
     }
 
     [TestCase]

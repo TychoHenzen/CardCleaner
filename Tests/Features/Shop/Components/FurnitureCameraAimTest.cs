@@ -1,7 +1,9 @@
+using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 
@@ -16,6 +18,7 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 public class FurnitureCameraAimTest
 {
     private const string BoxScenePath = "res://Scenes/Shop/Items/ShelfBox.tscn";
+    private const string BoxCatalogPath = "res://Data/Shop/FurnitureOrderCatalog.tres";
     private const float CameraHeight = 3f;
 
     private InputService _input = null!;
@@ -104,6 +107,53 @@ public class FurnitureCameraAimTest
         AssertBool(_controller.IsActive).IsTrue();
         AssertBool(placed.IsCarried).IsTrue();
         AssertInt(_root.GetChildCount()).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ACameraOnThePlayersOwnBodyStillAimsAtThePiece()
+    {
+        AssertBool(_controller.Begin(NewBox())).IsTrue();
+        _controller.AimAt(8f, 6f);
+        AssertBool(_controller.Confirm()).IsTrue();
+        var placed = (PlacedFurniture)_root.GetChild(0);
+
+        // As in player.tscn: a 1.8 m capsule on layer 1 (the furniture layer) with the camera at its top, so the
+        // ray starts on the player's own body.
+        var player = new CharacterBody3D { CollisionLayer = 1, Position = new Vector3(8f, 0.9f, 9f) };
+        player.AddChild(new CollisionShape3D { Shape = new CapsuleShape3D { Height = 1.8f } });
+        var eye = new Camera3D { Position = new Vector3(0f, 0.9f, 0f) };
+        player.AddChild(eye);
+        AddNode(player);
+        eye.Current = true;
+        eye.LookAt(new Vector3(8f, 0.5f, 6f), Vector3.Up);
+        await ISceneRunner.SyncPhysicsFrame;
+
+        _controller._PhysicsProcess(0.0);
+
+        AssertBool(ReferenceEquals(_controller.AimedFurniture, placed)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ThePackKeyPacksThePieceTheCameraRayHitsIntoItsBox()
+    {
+        _controller.Boxes = GD.Load<OrderCatalog>(BoxCatalogPath);
+        _controller.BoxRoot = _world;
+        AssertBool(_controller.Begin(NewBox())).IsTrue();
+        _controller.AimAt(8f, 6f);
+        AssertBool(_controller.Confirm()).IsTrue();
+        await ISceneRunner.SyncPhysicsFrame;
+
+        Aim(new Vector3(8f, 1.5f, 9f), new Vector3(8f, 0.5f, 6f));
+        _controller._PhysicsProcess(0.0);
+        Press(Key.B);
+
+        AssertInt(_root.GetChildCount()).IsEqual(0);
+        AssertBool(_controller.AimedFurniture == null).IsTrue();
+        var box = _world.GetChildren().OfType<FurnitureBox>().Single(candidate => !candidate.IsQueuedForDeletion());
+        AssertThat(box.Item!.Id).IsEqual("shelf_unit");
+        AssertBool(box.GlobalPosition.X == 8f && box.GlobalPosition.Z == 6f).IsTrue();
     }
 
     [TestCase]

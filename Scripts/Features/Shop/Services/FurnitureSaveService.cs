@@ -17,6 +17,12 @@ public partial class FurnitureSaveService : Node, ILoadsFirst, IDependent
 {
     public const string RecordsKey = "records";
 
+    /// <summary>
+    ///     Set in every save that lists the scene's starting furniture with the rest. A save without it predates the
+    ///     starting shelves being furniture, so its records are added beside them instead of replacing them.
+    /// </summary>
+    public const string WholeLayoutKey = "whole_layout";
+
     private IServiceResolver? _services;
 
     [Export] public FurnitureCatalog? Furniture { get; set; }
@@ -46,7 +52,7 @@ public partial class FurnitureSaveService : Node, ILoadsFirst, IDependent
                 if (placed.Item is not { } item)
                     continue;
                 var pose = placed.Pose;
-                records.Add(new FurnitureRecord(item.Id, pose.X, pose.Z, pose.QuarterTurns, false));
+                records.Add(new FurnitureRecord(item.Id, pose.X, pose.Z, pose.QuarterTurns, false, placed.Name));
             }
         }
 
@@ -59,6 +65,7 @@ public partial class FurnitureSaveService : Node, ILoadsFirst, IDependent
         }
 
         save.SetOrAddProperty(RecordsKey, FurnitureSaveCodec.Encode(records));
+        save.SetOrAddProperty(WholeLayoutKey, true);
     }
 
     /// <summary>Every furniture box in the group while this node is in the tree; none outside it.</summary>

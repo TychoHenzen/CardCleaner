@@ -19,7 +19,7 @@ internal static class StockOutcomeText
     public static string Reason(OrderStatus status) => status switch
     {
         OrderStatus.InsufficientFunds => "Not enough money.",
-        OrderStatus.DeliveryFull => "The delivery area is full.",
+        OrderStatus.DeliveryFull => "The delivery area is full. Move delivered items off it first.",
         OrderStatus.Locked => "An item is locked at your shop level.",
         OrderStatus.InvalidItem => "That item is not sold here.",
         OrderStatus.NoDeliveryPoint => "There is no delivery point.",

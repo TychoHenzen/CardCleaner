@@ -15,6 +15,7 @@ public class DeliveryFootprintExemptionTest
     private const float Tolerance = 0.001f;
     private const float BoxTop = 1f;
     private const float TagTop = 1.05f;
+    private const float ProbeSize = 0.4f;
     private const string ShelfScene = "res://Scenes/Shop/Items/Shelf.tscn";
     private const string ProductShelfScene = "res://Scenes/Shop/Items/ProductShelf.tscn";
     private const string StorageRackScene = "res://Scenes/Shop/Items/StorageRack.tscn";
@@ -34,7 +35,7 @@ public class DeliveryFootprintExemptionTest
     public void ATaggedItemInTheExemptGroupDoesNotRaiseTheStack()
     {
         var marker = NewMarker();
-        var lift = LiftOnTopOf(marker, NewItem(true, groups: DeliveryMarker.NoFootprintGroup));
+        var lift = LiftOnTopOf(marker, NewItem(groups: DeliveryMarker.NoFootprintGroup));
 
         AssertBool(Mathf.Abs(lift - (BoxTop + DeliveryMarker.StackGap)) < Tolerance).IsTrue();
     }
@@ -44,7 +45,7 @@ public class DeliveryFootprintExemptionTest
     public void AnUntaggedGroupItemStillCountsItsSolidTag()
     {
         var marker = NewMarker();
-        var lift = LiftOnTopOf(marker, NewItem(true));
+        var lift = LiftOnTopOf(marker, NewItem());
 
         AssertBool(Mathf.Abs(lift - (TagTop + DeliveryMarker.StackGap)) < Tolerance).IsTrue();
     }
@@ -54,7 +55,7 @@ public class DeliveryFootprintExemptionTest
     public void AnExemptShapeInsideAnExemptNodeIsAlsoIgnored()
     {
         var marker = NewMarker();
-        var lift = LiftOnTopOf(marker, NewItem(true, groupOnRoot: true, groups: DeliveryMarker.NoFootprintGroup));
+        var lift = LiftOnTopOf(marker, NewItem(groupOnRoot: true, groups: DeliveryMarker.NoFootprintGroup));
 
         AssertBool(Mathf.Abs(lift - (BoxTop + DeliveryMarker.StackGap)) < Tolerance).IsTrue();
     }
@@ -66,7 +67,7 @@ public class DeliveryFootprintExemptionTest
         var marker = NewMarker();
         var lift = LiftOnTopOf(
             marker,
-            NewItem(true, areaTag: true, groups: [DeliveryMarker.NoFootprintGroup, DeliveryMarker.FootprintGroup]));
+            NewItem(areaTag: true, groups: [DeliveryMarker.NoFootprintGroup, DeliveryMarker.FootprintGroup]));
 
         AssertBool(Mathf.Abs(lift - (BoxTop + DeliveryMarker.StackGap)) < Tolerance).IsTrue();
     }
@@ -76,7 +77,7 @@ public class DeliveryFootprintExemptionTest
     public void AFootprintGroupTriggerWithoutTheExemptionStillCounts()
     {
         var marker = NewMarker();
-        var lift = LiftOnTopOf(marker, NewItem(true, areaTag: true, groups: DeliveryMarker.FootprintGroup));
+        var lift = LiftOnTopOf(marker, NewItem(areaTag: true, groups: DeliveryMarker.FootprintGroup));
 
         AssertBool(Mathf.Abs(lift - (TagTop + DeliveryMarker.StackGap)) < Tolerance).IsTrue();
     }
@@ -134,25 +135,36 @@ public class DeliveryFootprintExemptionTest
             _world.AddChild(item);
         marker.Track(item);
 
-        var probe = NewItem(false);
+        var probe = NewProbe();
         var placement = marker.FindPlacement(1, _ => Vector3.Zero, Cell, probe);
         probe.Free();
         return placement!.Value.Lift;
     }
 
     /// <summary>
-    /// A delivered item: a solid box of one metre, and optionally a price-tag-sized shape at its top. The tag is
+    /// The item stacked on top: a small solid box, so it rests inside the top of every shelf kind (the product shelf
+    /// is only 0.7 m deep) and its lift depends only on the stack top under it.
+    /// </summary>
+    private static Node3D NewProbe()
+    {
+        var probe = new Node3D();
+        var box = new StaticBody3D { Name = "Box", Position = new Vector3(0f, ProbeSize / 2f, 0f) };
+        box.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = Vector3.One * ProbeSize } });
+        probe.AddChild(box);
+        return probe;
+    }
+
+    /// <summary>
+    /// A delivered item: a solid box of one metre with a price-tag-sized shape at its top. The tag is
     /// solid unless <paramref name="areaTag" /> makes it a trigger. <paramref name="groupOnRoot" /> puts the tag's
     /// shape under a plain node, and <paramref name="groups" /> go on the tag body, or on that node when it is set.
     /// </summary>
-    private static Node3D NewItem(bool tagged, bool areaTag = false, bool groupOnRoot = false, params string[] groups)
+    private static Node3D NewItem(bool areaTag = false, bool groupOnRoot = false, params string[] groups)
     {
         var item = new Node3D();
         var box = new StaticBody3D { Name = "Box", Position = new Vector3(0f, 0.5f, 0f) };
         box.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = Vector3.One } });
         item.AddChild(box);
-        if (!tagged)
-            return item;
 
         Node3D tagParent = item;
         if (groupOnRoot)

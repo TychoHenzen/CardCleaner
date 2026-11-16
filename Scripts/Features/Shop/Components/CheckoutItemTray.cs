@@ -18,10 +18,11 @@ public sealed class CheckoutItemTray(Node3D counter)
     public void FindSpots() => _spots = CheckoutCounterLayout.MarkersNamed(counter, SpotPrefix);
 
     /// <summary>
-    ///     Lays one prop per item on the spots; a prop calls <paramref name="onScan" /> when interacted with.
+    ///     Lays one prop per item on the spots, showing the matching look where there is one; a prop calls
+    ///     <paramref name="onScan" /> when interacted with.
     /// </summary>
-    public void Lay(IReadOnlyList<CheckoutItem> items, Action<int> onScan) =>
-        _props = CheckoutCounterLayout.LayOutItems(counter, _spots, items, onScan);
+    public void Lay(IReadOnlyList<CheckoutItem> items, IReadOnlyList<StockItemLook?> looks, Action<int> onScan) =>
+        _props = CheckoutCounterLayout.LayOutItems(counter, _spots, items, looks, onScan);
 
     /// <summary>Marks the prop of an item scanned. Nothing happens for an item with no prop.</summary>
     public void MarkScanned(int itemId) => _props.FirstOrDefault(prop => prop.ItemId == itemId)?.MarkScanned();

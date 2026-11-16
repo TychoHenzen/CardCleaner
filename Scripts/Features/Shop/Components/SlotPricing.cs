@@ -21,8 +21,13 @@ public partial class SlotPricing : StaticBody3D, IInteractable, ISaveable
 
     private DeckSlot? _slot;
 
+    /// <summary>The large asking price.</summary>
     [Export]
     public Label3D? TagLabel { get; set; }
+
+    /// <summary>The small print under the price: market value and markup.</summary>
+    [Export]
+    public Label3D? DetailLabel { get; set; }
 
     [Export]
     public Node3D? HighlightMesh { get; set; }
@@ -54,6 +59,8 @@ public partial class SlotPricing : StaticBody3D, IInteractable, ISaveable
     public bool CanInteract => MarketValue > 0;
 
     public Node3D InteractionBody => this;
+
+    public string Prompt => AskingPrice.StepPrompt(MarketValue, MarkupPercent);
 
     public override void _Ready()
     {
@@ -88,7 +95,7 @@ public partial class SlotPricing : StaticBody3D, IInteractable, ISaveable
         SetMarkup(percent);
     }
 
-    public void Interact() => SetMarkup(AskingPrice.NextMarkup(MarkupPercent));
+    public void Interact() => SetMarkup(AskingPrice.NextMarkup(MarketValue, MarkupPercent));
 
     public void SetMarkup(int percent)
     {
@@ -109,12 +116,15 @@ public partial class SlotPricing : StaticBody3D, IInteractable, ISaveable
     }
 
     /// <summary>
-    ///     Repaints the label from the current stock. Empty when the slot has nothing with a market price.
+    ///     Repaints the labels from the current stock. Empty when the slot has nothing with a market price.
     /// </summary>
     public void Refresh()
     {
+        var market = MarketValue;
         if (TagLabel != null)
-            TagLabel.Text = MarketValue > 0 ? AskingPrice.Readout(MarketValue, MarkupPercent) : string.Empty;
+            TagLabel.Text = market > 0 ? AskingPrice.Readout(market, MarkupPercent) : string.Empty;
+        if (DetailLabel != null)
+            DetailLabel.Text = market > 0 ? AskingPrice.Detail(market, MarkupPercent) : string.Empty;
     }
 
     private void Subscribe()

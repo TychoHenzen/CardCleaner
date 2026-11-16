@@ -262,6 +262,25 @@ public class CheckoutCounterTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public async Task TheCounterIsAimableOnlyWhileAPaymentIsWaiting()
+    {
+        const uint interactionLayer = 4;
+        AssertThat(_counter.CollisionLayer & interactionLayer).IsEqual(0u);
+
+        _counter.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4));
+        await ISceneRunner.SyncProcessFrame;
+        AssertThat(_counter.CollisionLayer & interactionLayer).IsEqual(0u);
+
+        _counter.Scan(0);
+        _counter.Scan(1);
+        await ISceneRunner.SyncProcessFrame;
+        AssertThat(_counter.CollisionLayer & interactionLayer).IsEqual(interactionLayer);
+        // The physical layer is kept throughout, so the counter still blocks bodies.
+        AssertThat(_counter.CollisionLayer & 1u).IsEqual(1u);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void SameCustomerTwiceIsIgnored()
     {
         var repeated = new FakeCheckoutCustomer(PaymentMethod.Card, 3);
@@ -274,6 +293,26 @@ public class CheckoutCounterTest
         // Queued once, so the later customer is second in line and takes slot 1, not slot 2.
         AssertThat(later.Spots.Count).IsEqual(1);
         AssertThat(later.Spots[0]).IsEqual(SlotSpot(1));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void PropsShowTheCustomersCopiesOfItsItemsAndStackByTheirHeight()
+    {
+        var card = new Node3D();
+        card.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(0.32f, 0.45f, 0.005f) } });
+        var look = StockItemLook.Capture(card)!;
+        card.Free();
+        var customer = new LookingCustomer(new[] { 3, 4, 5 }, look, null);
+
+        _counter.Checkout(customer);
+
+        var props = PropsOf(_counter);
+        AssertThat(ReferenceEquals(PropFor(props, 0).Look, look)).IsTrue();
+        AssertThat(ReferenceEquals(look.Node.GetParent(), PropFor(props, 0))).IsTrue();
+        AssertThat(PropFor(props, 1).Look).IsNull();
+        AssertThat(PropFor(props, 0).Size.Y).IsLess(0.06f);
+        AssertThat(customer.TakeBasketLooks().Count).IsEqual(0);
     }
 
     private QueueSpot SlotSpot(int index)
@@ -289,4 +328,28 @@ public class CheckoutCounterTest
         props.Single(prop => prop.ItemId == itemId);
 
     private static float XzDistance(Vector3 a, Vector3 b) => new Vector2(a.X, a.Z).DistanceTo(new Vector2(b.X, b.Z));
+
+    /// <summary>A card-paying customer that kept a copy of some of its items, as a real customer does.</summary>
+    private sealed class LookingCustomer(int[] prices, params StockItemLook?[] looks) : ICheckoutCustomer, IBasketLooks
+    {
+        private readonly FakeCheckoutCustomer _inner = new(PaymentMethod.Card, prices);
+        private IReadOnlyList<StockItemLook?> _looks = looks;
+
+        public CheckoutBasket Basket => _inner.Basket;
+
+        public PaymentMethod Method => _inner.Method;
+
+        public bool Waiting => _inner.Waiting;
+
+        public void QueueAt(QueueSpot spot) => _inner.QueueAt(spot);
+
+        public void Leave() => _inner.Leave();
+
+        public IReadOnlyList<StockItemLook?> TakeBasketLooks()
+        {
+            var taken = _looks;
+            _looks = new List<StockItemLook?>();
+            return taken;
+        }
+    }
 }

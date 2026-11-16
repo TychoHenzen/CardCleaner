@@ -12,7 +12,8 @@ public interface IContainerHolder
     bool IsHolding { get; }
 
     bool TryPickUp(CardContainer container);
-    void Drop();
+    /// <summary>Sets the held container down. False when nothing was released.</summary>
+    bool Drop();
     bool OpenHeld();
     void SetReferences(Node3D handAnchor);
 

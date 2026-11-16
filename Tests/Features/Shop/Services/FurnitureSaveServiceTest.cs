@@ -246,15 +246,15 @@ public class FurnitureSaveServiceTest
     public void ARestoredBoxCountsAsAnOccupantOfTheDeliveryArea()
     {
         // Slot 0 of the delivery grid is centred on this offset from the marker, which stands at the origin.
-        var slotZero = OrderingService.SlotOffset(0);
+        var slotZero = DefaultDeliveryGrid.SlotOffset(0);
         var save = SaveWith(new FurnitureRecord("shelf_unit", slotZero.X, slotZero.Z, 0, true));
         _service.Load(save);
         var incoming = GD.Load<PackedScene>(BoxScenePath).Instantiate<Node3D>();
 
         var placement = _delivery.FindPlacement(
             6,
-            OrderingService.SlotOffset,
-            new Vector2(OrderingService.SlotSpacingX, OrderingService.SlotSpacingZ),
+            DefaultDeliveryGrid.SlotOffset,
+            new Vector2(DefaultDeliveryGrid.CellWidth, DefaultDeliveryGrid.CellDepth),
             incoming);
         incoming.Free();
 
@@ -286,19 +286,116 @@ public class FurnitureSaveServiceTest
         AssertInt(_boxRoot.GetChildren().OfType<FurnitureBox>().Count()).IsEqual(0);
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void EveryPieceKeepsItsNameThroughASaveAndLoad()
+    {
+        var first = Place(4f, 3f, 0);
+        Place(8f, 3f, 0);
+        _furnitureRoot.RemoveChild(first);
+        first.Free();
+        Place(12f, 3f, 0);
+        Place(8f, 8f, 0, "StarterShelf");
+        var names = PlacedNames();
+        var save = new NodeSave();
+        _service.Save(save);
+        ClearPlaced();
+
+        _service.Load(save);
+
+        AssertThat(string.Join(",", names)).IsEqual("Furniture1,Furniture0,StarterShelf");
+        AssertThat(string.Join(",", PlacedNames())).IsEqual(string.Join(",", names));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ALoadKeepsTheStandingPieceItsRecordNamesAndMovesIt()
+    {
+        var starter = Place(8f, 6f, 0, "StarterShelf");
+        var save = SaveWith(new FurnitureRecord("shelf_unit", 4f, 3f, 1, false, "StarterShelf"));
+
+        _service.Load(save);
+
+        // The same node, so its price tags and stock load onto it, at the saved pose.
+        AssertBool(GodotObject.IsInstanceValid(starter)).IsTrue();
+        AssertThat(string.Join(",", PlacedNames())).IsEqual("StarterShelf");
+        AssertBool(starter.Pose == new FurniturePose(4f, 3f, 1)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ALoadFreesAStandingPieceThatNoRecordKeeps()
+    {
+        Place(8f, 6f, 0, "StarterShelf");
+        var save = SaveWith(new FurnitureRecord("shelf_unit", 4f, 3f, 0, true));
+
+        _service.Load(save);
+
+        // A packed starting shelf stays packed: its box comes back and the shelf does not.
+        AssertInt(PlacedNames().Count).IsEqual(0);
+        AssertInt(_boxRoot.GetChildren().OfType<FurnitureBox>().Count()).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void APieceOfAnotherKindUnderTheSavedNameIsReplaced()
+    {
+        var item = GD.Load<FurnitureCatalog>(CatalogPath).Find("product_shelf")!;
+        var other = PlacedFurniture.Create(item, new FurniturePose(8f, 6f, 0))!;
+        other.StandUnder(_furnitureRoot, "StarterShelf");
+        var save = SaveWith(new FurnitureRecord("shelf_unit", 8f, 6f, 0, false, "StarterShelf"));
+
+        _service.Load(save);
+
+        var restored = _furnitureRoot.GetChildren().OfType<PlacedFurniture>().Single();
+        AssertThat(restored.Name.ToString()).IsEqual("StarterShelf");
+        AssertThat(restored.Item!.Id).IsEqual("shelf_unit");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ASaveFromBeforeTheWholeLayoutKeepsTheStartingFurniture()
+    {
+        Place(8f, 6f, 0, "StarterShelf");
+        var save = SaveWith(new FurnitureRecord("shelf_unit", 4f, 3f, 0, false));
+        save.Properties.Remove(FurnitureSaveService.WholeLayoutKey);
+
+        _service.Load(save);
+
+        AssertThat(string.Join(",", PlacedNames())).IsEqual("StarterShelf,Furniture0");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AnOlderRecordOverlappingTheStartingFurnitureIsSkipped()
+    {
+        Place(8f, 6f, 0, "StarterShelf");
+        var save = SaveWith(new FurnitureRecord("shelf_unit", 8f, 6f, 0, false));
+        save.Properties.Remove(FurnitureSaveService.WholeLayoutKey);
+
+        _service.Load(save);
+
+        AssertThat(string.Join(",", PlacedNames())).IsEqual("StarterShelf");
+    }
+
     private static NodeSave SaveWith(params FurnitureRecord[] records)
     {
         var save = new NodeSave();
         save.SetOrAddProperty(FurnitureSaveService.RecordsKey, FurnitureSaveCodec.Encode(records));
+        save.SetOrAddProperty(FurnitureSaveService.WholeLayoutKey, true);
         return save;
     }
 
-    private void Place(float x, float z, int turns)
+    private PlacedFurniture Place(float x, float z, int turns, string? name = null)
     {
         var item = GD.Load<FurnitureCatalog>(CatalogPath).Find("shelf_unit")!;
         var placed = PlacedFurniture.Create(item, new FurniturePose(x, z, turns))!;
-        _furnitureRoot.AddChild(placed);
+        placed.StandUnder(_furnitureRoot, name);
+        return placed;
     }
+
+    private List<string> PlacedNames() =>
+        _furnitureRoot.GetChildren().OfType<PlacedFurniture>().Select(p => p.Name.ToString()).ToList();
 
     private void ClearPlaced()
     {

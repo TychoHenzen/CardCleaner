@@ -149,6 +149,9 @@ async function start(options) {
   const dir = sessionDir(name);
   if (!options['keep-data']) fs.rmSync(path.join(dir, 'appdata'), { recursive: true, force: true });
   fs.mkdirSync(path.join(dir, 'shots'), { recursive: true });
+  // Godot imports every image under the project folder; screenshots in reports/ are output, so keep the editor and
+  // `--import` out of that folder (an import of hundreds of shots crashed while packing them).
+  fs.writeFileSync(path.join(root, 'reports', '.gdignore'), '');
   for (const f of ['godot.log', 'breaches.jsonl', 'launcher.out', 'launcher.err']) fs.rmSync(path.join(dir, f), { force: true });
 
   ensureLauncher();

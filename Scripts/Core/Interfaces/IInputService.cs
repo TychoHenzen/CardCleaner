@@ -16,6 +16,12 @@ public interface IInputService
     bool IsActionJustPressed(string actionName);
     bool IsActionJustReleased(string actionName);
 
+    /// <summary>
+    ///     While true (a menu or screen holds the cursor), a press fires no registered action, so nothing acts behind
+    ///     it. Releases still reach mouse actions, so an earlier press ends cleanly; raw events and movement do not.
+    /// </summary>
+    bool ActionsSuspended { get; set; }
+
     // Action registration system
     void RegisterAction(object owner, string actionName, Key key, Action callback);
     void RegisterAction(object owner, string actionName, MouseButton button, Action<bool> callback); // bool = pressed

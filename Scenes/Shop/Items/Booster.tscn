@@ -1,6 +1,7 @@
 [gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Packs/Components/CardContainer.cs" id="CardContainer"]
+[ext_resource type="Material" path="res://Data/Ui/AimHighlightMaterial.tres" id="AimHighlight"]
 
 [sub_resource type="BoxShape3D" id="Shape"]
 size = Vector3(0.25, 0.03, 0.35)
@@ -12,13 +13,8 @@ albedo_color = Color(0.8, 0.35, 0.55, 1)
 material = SubResource("PlaceholderMaterial")
 size = Vector3(0.25, 0.03, 0.35)
 
-[sub_resource type="StandardMaterial3D" id="HighlightMaterial"]
-transparency = 1
-shading_mode = 0
-albedo_color = Color(1, 0.95, 0.4, 0.3)
-
 [sub_resource type="BoxMesh" id="HighlightMesh"]
-material = SubResource("HighlightMaterial")
+material = ExtResource("AimHighlight")
 size = Vector3(0.29, 0.07, 0.39)
 
 [node name="Booster" type="RigidBody3D" node_paths=PackedStringArray("HighlightMesh")]

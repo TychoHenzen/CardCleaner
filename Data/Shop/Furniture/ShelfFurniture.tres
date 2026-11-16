@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("FurnitureItemScript")
 Id = "shelf_unit"
-DisplayName = "Shelf unit"
+DisplayName = "Card shelf"
 Scene = ExtResource("Shelf")
 Width = 2.13
 Depth = 1.0

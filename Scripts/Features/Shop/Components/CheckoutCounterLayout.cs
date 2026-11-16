@@ -7,27 +7,40 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
-/// <summary>Places a checkout counter's item props and marker spots, and formats its status label.</summary>
+/// <summary>Places a checkout counter's item props and marker spots.</summary>
 public static class CheckoutCounterLayout
 {
-    private const float PropStackHeight = 0.07f;
+    private const float StackGap = 0.01f;
 
-    /// <summary>Adds one prop per item to <paramref name="counter" />, stacked on the item spots in order.</summary>
-    public static List<CheckoutItemProp> LayOutItems(
-        Node3D counter, Marker3D[] itemSpots, IReadOnlyList<CheckoutItem> items, Action<int> onScan)
+    /// <summary>
+    ///     Adds one prop per item to <paramref name="counter" />, stacked on the item spots in order. Item i shows
+    ///     <paramref name="looks" />[i] when there is one; every look that gets no prop is discarded.
+    /// </summary>
+    public static List<CheckoutItemProp> LayOutItems(Node3D counter, Marker3D[] itemSpots,
+        IReadOnlyList<CheckoutItem> items, IReadOnlyList<StockItemLook?> looks, Action<int> onScan)
     {
         var props = new List<CheckoutItemProp>();
-        var stacked = new int[Math.Max(itemSpots.Length, 1)];
-        foreach (var item in items)
+        var stacked = new float[Math.Max(itemSpots.Length, 1)];
+        for (var index = 0; index < items.Count; index++)
         {
+            var item = items[index];
             var spot = itemSpots.Length == 0 ? 0 : item.Id % itemSpots.Length;
-            var prop = new CheckoutItemProp { ItemId = item.Id, OnScan = onScan };
+            var prop = new CheckoutItemProp
+            {
+                ItemId = item.Id,
+                Price = item.AskingPrice,
+                OnScan = onScan,
+                Look = index < looks.Count ? looks[index] : null
+            };
             counter.AddChild(prop);
             var origin = itemSpots.Length == 0 ? counter.GlobalPosition : itemSpots[spot].GlobalPosition;
-            prop.GlobalPosition = origin + Vector3.Up * (PropStackHeight * stacked[spot]);
-            stacked[spot]++;
+            prop.GlobalPosition = origin + Vector3.Up * stacked[spot];
+            stacked[spot] += prop.Size.Y + StackGap;
             props.Add(prop);
         }
+
+        for (var index = items.Count; index < looks.Count; index++)
+            looks[index]?.Discard();
 
         return props;
     }
@@ -45,13 +58,6 @@ public static class CheckoutCounterLayout
         .OrderBy(pair => pair.Index)
         .Select(pair => pair.Marker)
         .ToArray();
-
-    /// <summary>The balance line, then the last message on a second line when there is one.</summary>
-    public static string StatusText(IMoneyService? money, string message)
-    {
-        var balance = money is null ? "Balance: -" : $"Balance: {money.Balance}";
-        return string.IsNullOrEmpty(message) ? balance : $"{balance}\n{message}";
-    }
 
     private static int IndexAfter(StringName name, string prefix)
     {

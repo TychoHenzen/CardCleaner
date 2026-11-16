@@ -177,6 +177,9 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         ILog.Print($"Clearing {existingCards.Count} existing cards");
         foreach (var card in existingCards)
         {
+            // RemoveChild leaves the tree at once, so a slot holding the card frees its seat now, before the saved
+            // cards respawn into it, not when Godot frees the card.
+            card.GetParent()?.RemoveChild(card);
             card.QueueFree();
         }
         
@@ -312,7 +315,7 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         try
         {
             var root = GetTree().CurrentScene;
-            SaveSystem.LoadTreeFromJson(result.Envelope!.Payload, root);
+            SaveSystem.LoadTreeFromJson(LegacyShelfSaveMigration.Migrate(result.Envelope!.Payload, root), root);
             ILog.Print("📁 Game loaded from save file");
         }
         catch (System.Exception ex)

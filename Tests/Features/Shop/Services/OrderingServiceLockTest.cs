@@ -85,7 +85,7 @@ public class OrderingServiceLockTest
     {
         _ordering.Progression = null;
 
-        var result = _ordering.Order(MakeItem("shelf", ItemPrice));
+        var result = _ordering.Order(MakeItem("shelf_unit", ItemPrice));
 
         AssertThat(result.Status).IsEqual(OrderStatus.Locked);
         AssertThat(_money.Balance).IsEqual(StartingBalance);

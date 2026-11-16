@@ -6,13 +6,12 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     Shows the first expansion lot as sealed or open. The lot is sealed by <see cref="SealingWall" />; once the
-///     expansion service owns the lot this node turns that wall's collision and art off and rebakes the navigation,
-///     so the lot is reachable. It holds no purchase logic: it only reads <see cref="IShopExpansion" />.
+///     expansion service owns the lot this node turns that wall's collision and art off, hides <see cref="Sign" />
+///     and rebakes the navigation, so the lot is reachable. It holds no purchase logic: it only reads
+///     <see cref="IShopExpansion" />.
 /// </summary>
 public partial class ExpansionLotView : Node3D, IDependent
 {
-    private const string OpenSign = "Expansion lot (open)";
-
     private IServiceResolver? _services;
     private IShopExpansion? _expansion;
     private bool _open;
@@ -23,6 +22,7 @@ public partial class ExpansionLotView : Node3D, IDependent
     /// <summary>The wall between the storefront and the lot. It stays in the scene; opening switches it off.</summary>
     [Export] public StaticBody3D? SealingWall { get; set; }
 
+    /// <summary>The notice on the sealing wall that says how to buy the lot; hidden once the lot is open.</summary>
     [Export] public Label3D? Sign { get; set; }
 
     [Export] public ShopNavigationRegion? Navigation { get; set; }
@@ -92,7 +92,7 @@ public partial class ExpansionLotView : Node3D, IDependent
 
         SealingWall.Visible = false;
         if (Sign != null)
-            Sign.Text = OpenSign;
+            Sign.Visible = false;
         Navigation?.Rebake();
     }
 }
