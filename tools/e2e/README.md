@@ -26,7 +26,7 @@ save data, so several can run at once.
 | Verb | What it does |
 |------|--------------|
 | `start [--scene res://..tscn] [--resolution 1280x720] [--no-build] [--keep-data] [--timeout-min 120]` | Builds the launcher (when stale) and the game, starts Godot on a hidden desktop, waits for the agent to answer `ping` (up to 180 s). Without `--keep-data` the session's save data is wiped first. `--timeout-min` kills the game after that long. |
-| `send <cmd> [json \| key=value ...]` | Sends one command and prints the reply. `key=value` values are parsed as JSON when they can be (`yaw=90`, `target=[1,0,2]`), else kept as strings. Exits 1 when the reply is an error. |
+| `send <cmd> [json \| key=value ...]` | Sends one command and prints the reply. `key=value` values are parsed as JSON when they can be (`yaw=90`, `target=[1,0,2]`), else kept as strings, so a digit key needs the JSON form (`send key '{"key":"1"}'`; `key=1` sends a number and is refused). Exits 1 when the reply is an error. |
 | `shot <name> [width]` | `screenshot` into the session's `shots/` folder. |
 | `run <script.json>` | Runs a JSON array of `{"cmd": ..., ...args}` steps and stops at the first error. A `screenshot` step may give `name` instead of `path`. |
 | `status` | Prints the session record, whether the launcher is still running, and any breaches. |

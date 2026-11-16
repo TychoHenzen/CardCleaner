@@ -14,10 +14,15 @@ public static class PlacementHints
         new("C", "Cancel"),
     ];
 
-    /// <summary>The key while the player aims at a placed piece; a shelf that holds stock cannot be moved.</summary>
+    /// <summary>
+    ///     The keys while the player aims at a placed piece: G moves it and B packs it into its box. A shelf that holds
+    ///     stock can be neither, so it gets one hint that says so.
+    /// </summary>
     public static IReadOnlyList<ControlHint> Aimed(string name, bool canMove)
     {
         var piece = name.ToLowerInvariant();
-        return [new ControlHint("G", canMove ? $"Move this {piece}" : $"Empty this {piece} to move it")];
+        if (!canMove)
+            return [new ControlHint("G", $"Empty this {piece} to move or pack it")];
+        return [new ControlHint("G", $"Move this {piece}"), new ControlHint("B", $"Pack this {piece} into its box")];
     }
 }

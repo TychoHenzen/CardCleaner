@@ -31,16 +31,19 @@ public static class FurniturePlacementModel
     }
 
     /// <summary>
-    ///     True when the footprint at the pose lies inside the floor and overlaps none of the placed rectangles.
+    ///     True when the footprint at the pose lies inside one room of the floor and overlaps none of the placed
+    ///     rectangles.
     /// </summary>
     public static bool IsValid(
         FurnitureFootprint footprint,
         FurniturePose pose,
         IReadOnlyList<FurnitureRect> placed,
-        FurnitureRect floor)
+        FurnitureFloorArea floor)
     {
+        ArgumentNullException.ThrowIfNull(floor);
+
         var rect = RectOf(footprint, pose);
-        if (!floor.Contains(rect))
+        if (!floor.Holds(rect))
             return false;
         foreach (var other in placed)
         {

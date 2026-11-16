@@ -66,8 +66,8 @@ public class ShelfStockSaveTest
         TestServices.Container.RegisterSingleton<SlotStore>(new SlotStore(_files));
         TestServices.Container.RegisterSingleton<ISaveGameCommand>(_saves);
 
-        _product = _shop.GetNode<CardShelf>("World/Storefront/ProductShelf");
-        _rack = _shop.GetNode<CardShelf>("World/RightStorage/StorageRack");
+        _product = _shop.GetNode<CardShelf>("World/Furniture/ProductShelf/Content");
+        _rack = _shop.GetNode<CardShelf>("World/Furniture/StorageRack/Content");
 
         AddNode(_shop, autoFree: false);
         _tree.CurrentScene = _shop;

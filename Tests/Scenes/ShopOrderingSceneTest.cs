@@ -25,11 +25,12 @@ public class ShopOrderingSceneTest
 {
     private const uint InteractionMask = 6;
     private const float StandingDistanceToPc = 2.9f;
-    private const int ShelvesUntilFull = 18;
-    private const float ShelfHeight = 1.07f;
+    // Only bounds an order loop that never fills; boxes stack in layers, so far more than one grid of them fit.
+    private const int OrderBound = 200;
+    private const float BoxHeight = 0.35f;
     private const float HeightTolerance = 0.001f;
     private static readonly string[] ExpectedItems =
-        ["shelf", "bulk_packing_station", "cardboard_box", "product_shelf", "storage_rack"];
+        ["cardboard_box", "pack", "booster"];
 
     private Node3D _shop = null!;
     private PlayerController _player = null!;
@@ -62,8 +63,7 @@ public class ShopOrderingSceneTest
         TestServices.Container.RegisterSingleton<IOrderingService>(ordering);
         TestServices.Container.RegisterSingleton<ICursorOwner>(_cursor);
 
-        // Shelves stack in layers, so more of them fit than one grid holds; the bound is the expected count.
-        _presses = new StockPresses(_stock, ordering, _shop.GetNode("World"), ShelvesUntilFull);
+        _presses = new StockPresses(_stock, ordering, _shop.GetNode("World"), OrderBound);
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
@@ -78,7 +78,7 @@ public class ShopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TerminalCatalogOffersFiveItems()
+    public void TerminalCatalogOffersTheStockItems()
     {
         AssertThat(_stock.Catalog!.Items.Select(i => i.Id).ToArray()).IsEqual(ExpectedItems);
         AssertThat(_stock.CardGrid.Count).IsEqual(ExpectedItems.Length);
@@ -203,7 +203,6 @@ public class ShopOrderingSceneTest
     [TestCategory("Unit")]
     public void OrderingEachItemChargesTheBalanceAndDeliversItToTheDeliveryPoint()
     {
-        _progression.AwardCheckout(500); // level 2 unlocks bulk_packing_station
         var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
         var balance = _money.Balance;
         _terminal.Interact();
@@ -243,22 +242,21 @@ public class ShopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ShelvesFillTheGridAndStackOnTheShelfBoxNotOnItsCardHolders()
+    public void BoxesFillTheGridAndStackOnTheBoxBelow()
     {
         var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
-        var shelf = _stock.Catalog!.Items.ToList().FindIndex(item => item.Id == "shelf");
-        _money.Add(_stock.Catalog.Items[shelf].Price * 2 * ShelvesUntilFull);
+        var box = _stock.Catalog!.Items.ToList().FindIndex(item => item.Id == "cardboard_box");
+        _money.Add(_stock.Catalog.Items[box].Price * OrderBound);
         _terminal.Interact();
 
-        var delivered = _presses.OrderUntilFull(shelf);
+        var delivered = _presses.OrderUntilFull(box);
 
         AssertBool(_stock.CartPanel.MessageText.Contains("delivery area is full")).IsTrue();
-        AssertThat(delivered.Count).IsEqual(ShelvesUntilFull);
-        // The first shelf of the second layer rests on the shelf box below it. Its card holders' triggers reach above
-        // the box, so a footprint that counted them would lift it higher.
-        var firstStacked = delivered[OrderingService.SlotColumns * OrderingService.SlotRows];
-        AssertFloat(firstStacked.GlobalPosition.Y - delivery.Y)
-            .IsEqualApprox(ShelfHeight + DeliveryMarker.StackGap, HeightTolerance);
+        var perLayer = OrderingService.SlotColumns * OrderingService.SlotRows;
+        AssertThat(delivered.Count).IsGreater(perLayer);
+        // The first box of the second layer rests on the box below it.
+        AssertFloat(delivered[perLayer].GlobalPosition.Y - delivery.Y)
+            .IsEqualApprox(BoxHeight + DeliveryMarker.StackGap, HeightTolerance);
     }
 
     [TestCase]

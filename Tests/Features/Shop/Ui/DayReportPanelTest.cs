@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Ui;
@@ -18,22 +20,36 @@ public class DayReportPanelTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ShowsReportLines()
+    public void ShowsTheSheetAsATitleAFigureTableAndComplaints()
     {
         var panel = new DayReportPanel { Cursor = new FakeCursorOwner() };
         AddNode(panel);
+        var report = SampleReport();
+
+        panel.ShowReport(report);
+
+        AssertThat(panel.TitleLabel!.Text).IsEqual(DayReportSheet.Title(report));
+        var cells = panel.FiguresGrid!.GetChildren().OfType<Label>().Select(label => label.Text).ToArray();
+        var expected = DayReportSheet.Figures(report).SelectMany(row => new[] { row.Label, row.Value }).ToArray();
+        AssertThat(cells.SequenceEqual(expected)).IsTrue();
+        var complaints = panel.ComplaintsBox!.GetChildren().OfType<Label>().Select(label => label.Text);
+        AssertThat(complaints.SequenceEqual(DayReportSheet.Complaints(report))).IsTrue();
+        AssertThat(panel.Visible).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ASecondReportReplacesTheRowsOfTheFirst()
+    {
+        var panel = new DayReportPanel { Cursor = new FakeCursorOwner() };
+        AddNode(panel);
+        var quiet = new DayReport(4, 0, new BillSettlement(0, 0, 0, 0, Array.Empty<BillLine>()), []);
 
         panel.ShowReport(SampleReport());
+        panel.ShowReport(quiet);
 
-        var text = panel.ReportLabel!.Text;
-        AssertThat(text.Contains("Day 3")).IsTrue();
-        AssertThat(text.Contains("Takings: 137")).IsTrue();
-        AssertThat(text.Contains("Debt carried in: 41")).IsTrue();
-        AssertThat(text.Contains("Rent: 153")).IsTrue();
-        AssertThat(text.Contains("Power: 50")).IsTrue();
-        AssertThat(text.Contains("Unpaid (new debt): 53")).IsTrue();
-        AssertThat(text.Contains("Complaint: Too slow x6")).IsTrue();
-        AssertThat(panel.Visible).IsTrue();
+        AssertThat(panel.FiguresGrid!.GetChildren().Count).IsEqual(DayReportSheet.Figures(quiet).Count * 2);
+        AssertThat(panel.ComplaintsBox!.GetChildren().Count).IsEqual(1);
     }
 
     [TestCase]

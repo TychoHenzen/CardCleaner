@@ -18,16 +18,14 @@ namespace CardCleaner.Tests.Scenes;
 public class FurnitureAppSceneTest
 {
     private const string DesktopViewportPath = "PcDesktopViewport";
-    private const string ShelfUnitName = "Shelf unit";
+    private const string ShelfUnitName = "Card shelf";
     private const string ShelfUnitId = "shelf_unit";
-    private const string RawShelfId = "shelf";
     private const int UnaffordableBalance = 50;
     private static readonly Vector2I RootWindowSize = new(1280, 720);
 
     private Node3D _shop = null!;
     private ScreenTerminal _terminal = null!;
     private StockApp _furnitureApp = null!;
-    private StockApp _stockApp = null!;
     private Button _furnitureIcon = null!;
     private PcScreen _screen = null!;
     private MoneyService _money = null!;
@@ -42,7 +40,6 @@ public class FurnitureAppSceneTest
         _shop = ShopOrderingRig.LoadShopWithServices();
         _terminal = _shop.GetNode<ScreenTerminal>("World/Markers/PcLocation/PcTerminal");
         _furnitureApp = _shop.GetNode<StockApp>($"{DesktopViewportPath}/FurnitureApp");
-        _stockApp = _shop.GetNode<StockApp>($"{DesktopViewportPath}/StockApp");
         _furnitureIcon = _shop.GetNode<Button>($"{DesktopViewportPath}/PcDesktop/Icons/FurnitureIcon");
         _screen = PcScreen.From(_shop);
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
@@ -114,14 +111,6 @@ public class FurnitureAppSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TheStockAppStillSellsTheRawShelf()
-    {
-        // D3: the raw "shelf" row stays in the Stock app's catalog; the Furniture app sells shelf_unit instead.
-        AssertBool(_stockApp.Catalog!.Items.Any(item => item.Id == RawShelfId)).IsTrue();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
     public async Task BuyThenPlaceEndsWithARealShelf()
     {
         var world = _shop.GetNode("World");
@@ -129,6 +118,7 @@ public class FurnitureAppSceneTest
         // The camera aim is not driven headless, so the pose is set with AimAt.
         _controller.AimOverride = true;
         var before = world.GetChildCount();
+        var standing = furniture.GetChildCount();
 
         await OpenFurnitureApp();
         await AddAndCheckOutShelfUnit();
@@ -141,8 +131,8 @@ public class FurnitureAppSceneTest
         _controller.AimAt(4f, 8f);
         AssertBool(_controller.Confirm()).IsTrue();
 
-        AssertThat(furniture.GetChildCount()).IsEqual(1);
-        var placed = (PlacedFurniture)furniture.GetChild(0);
+        AssertThat(furniture.GetChildCount()).IsEqual(standing + 1);
+        var placed = (PlacedFurniture)furniture.GetChild(standing);
         AssertBool(placed.GetNodeOrNull<CardShelf>(PlacedFurniture.ContentName) != null).IsTrue();
         await ISceneRunner.SyncPhysicsFrame;
         await ISceneRunner.SyncPhysicsFrame;

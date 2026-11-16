@@ -63,9 +63,17 @@ public partial class CardShelf : RigidBody3D, IUnpackTarget
     {
         AddToGroup(IsStorage ? StorageGroupName : SalesGroupName);
 
-        foreach (var slot in Slots) slot.Kind = Kind;
+        foreach (var slot in Slots.ToList())
+        {
+            slot.Kind = Kind;
+            ShelfSlotTarget.Cover(this, slot);
+        }
+
         CollisionLayer |= ContainerHolder.UnpackLayerBit;
     }
+
+    /// <summary>The click targets of this shelf's slots, one per slot.</summary>
+    public IEnumerable<ShelfSlotTarget> SlotTargets => GetChildren().OfType<ShelfSlotTarget>();
 
     /// <summary>
     ///     Unpacks a box or pack into this shelf's free slots, when the shelf takes the items it holds (a box or pack

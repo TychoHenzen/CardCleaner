@@ -4,4 +4,7 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 public enum RefusalReason
 {
     PriceTooHigh,
+
+    /// <summary>The customer looked around and found nothing on the sales shelves it could take.</summary>
+    NothingInStock,
 }

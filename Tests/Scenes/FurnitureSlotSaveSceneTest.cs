@@ -35,6 +35,9 @@ public class FurnitureSlotSaveSceneTest
     private GameSaveService _saves = null!;
     private Node3D _furnitureRoot = null!;
 
+    // The shop's starting furniture, standing under the furniture root before a case places a piece.
+    private int _standing;
+
     [BeforeTest]
     public async Task Setup()
     {
@@ -65,6 +68,7 @@ public class FurnitureSlotSaveSceneTest
         AddNode(_shop, autoFree: false);
         _tree.CurrentScene = _shop;
         _furnitureRoot = _shop.GetNode<Node3D>(FurnitureRootPath);
+        _standing = _furnitureRoot.GetChildCount();
         await ShopNavigationRig.WaitForBakeSync(_region, regionBefore);
     }
 
@@ -89,8 +93,8 @@ public class FurnitureSlotSaveSceneTest
         _saves.LoadGame();
         await Settle();
 
-        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
-        var restored = (PlacedFurniture)_furnitureRoot.GetChild(0);
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(_standing + 1);
+        var restored = (PlacedFurniture)_furnitureRoot.GetChild(_standing);
         AssertString(restored.Item!.Id).IsEqual("shelf_unit");
         AssertBool(restored.Pose.X == 4f && restored.Pose.Z == 8f && restored.Pose.QuarterTurns == 0).IsTrue();
     }
@@ -127,8 +131,8 @@ public class FurnitureSlotSaveSceneTest
         // The load freed the carried piece; the cancel must cope with that and leave the restored shelf alone.
         _controller.Cancel();
 
-        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
-        var restored = (PlacedFurniture)_furnitureRoot.GetChild(0);
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(_standing + 1);
+        var restored = (PlacedFurniture)_furnitureRoot.GetChild(_standing);
         AssertBool(restored.IsCarried).IsFalse();
         AssertBool(restored.Pose.X == 4f && restored.Pose.Z == 8f).IsTrue();
     }
@@ -146,8 +150,8 @@ public class FurnitureSlotSaveSceneTest
         _saves.LoadGame();
         await Settle();
 
-        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(1);
-        AssertInt(TagOf((PlacedFurniture)_furnitureRoot.GetChild(0)).MarkupPercent).IsEqual(30);
+        AssertInt(_furnitureRoot.GetChildCount()).IsEqual(_standing + 1);
+        AssertInt(TagOf((PlacedFurniture)_furnitureRoot.GetChild(_standing)).MarkupPercent).IsEqual(30);
     }
 
     [TestCase]
@@ -163,7 +167,7 @@ public class FurnitureSlotSaveSceneTest
         _saves.LoadGame();
         await Settle();
 
-        AssertInt(TagOf((PlacedFurniture)_furnitureRoot.GetChild(0)).MarkupPercent).IsEqual(40);
+        AssertInt(TagOf((PlacedFurniture)_furnitureRoot.GetChild(_standing)).MarkupPercent).IsEqual(40);
     }
 
     private static SlotPricing TagOf(PlacedFurniture placed)

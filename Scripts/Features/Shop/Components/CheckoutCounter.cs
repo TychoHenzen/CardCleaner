@@ -25,7 +25,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     private readonly CheckoutItemTray _tray;
     private readonly CheckoutQueueSpots _queueSpots;
     private readonly CheckoutClaim _claim = new();
-    private readonly CheckoutStatusLine _status = new();
+    private readonly CheckoutStatusLine _status;
     private IServiceResolver? _services;
 
     [Export]
@@ -54,13 +54,14 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     public event Action? SessionEnded;
 
     /// <summary>Injected at startup through the service resolver; assignable directly in tests.</summary>
-    public IMoneyService? Money
-    {
-        get => _status.Money;
-        set => _status.Link(value);
-    }
+    public IMoneyService? Money { get; set; }
 
-    public bool CanInteract => Session is { State: CheckoutState.AwaitingPayment };
+    /// <summary>
+    ///     True while the front customer's items are all scanned and the player, not the cashier, takes the payment.
+    ///     The counter is on the interaction layer only then, so at any other time the aim passes through it to the
+    ///     scan props and to whatever lies on it.
+    /// </summary>
+    public bool CanInteract => !IsClaimed && Session is { State: CheckoutState.AwaitingPayment };
 
     /// <summary>True while an automated operator holds the front customer's sale.</summary>
     public bool IsClaimed => _claim.IsHeld;
@@ -78,22 +79,18 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     {
         _tray = new CheckoutItemTray(this);
         _queueSpots = new CheckoutQueueSpots(this);
+        _status = new CheckoutStatusLine(() => Session, () => _claim.IsHeld);
     }
 
     public override void _Ready()
     {
-        CollisionLayer |= InteractableLayerBit;
+        RefreshInteractable();
         ClearHighlight();
         _queueSpots.Find();
         _tray.FindSpots();
         ResolveServices();
         _status.Update();
     }
-
-    // A counter that re-enters the tree listens again and shows the current balance.
-    public override void _EnterTree() => _status.Relink();
-
-    public override void _ExitTree() => _status.Unlink();
 
     public override void _Process(double delta)
     {
@@ -117,7 +114,11 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     {
         ArgumentNullException.ThrowIfNull(claimant);
         var claimable = Session is { ScannedCount: 0 } && Front is { Waiting: true };
-        return claimable && _claim.TryTake(claimant);
+        if (!claimable || !_claim.TryTake(claimant))
+            return false;
+
+        RefreshInteractable();
+        return true;
     }
 
     /// <summary>Gives the claim back. A caller that does not hold the claim releases nothing.</summary>
@@ -125,6 +126,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     {
         ArgumentNullException.ThrowIfNull(claimant);
         _claim.Release(claimant);
+        RefreshInteractable();
     }
 
     /// <summary>Marks an item of the current basket scanned. False for an unknown, repeated or finished item.</summary>
@@ -134,6 +136,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
             return false;
 
         _tray.MarkScanned(itemId);
+        RefreshInteractable();
         if (session.State == CheckoutState.AwaitingPayment && !_claim.IsHeld)
             PaymentReady?.Invoke(session);
 
@@ -268,11 +271,22 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
             StartSession(front);
 
         _status.Update();
+        RefreshInteractable();
+    }
+
+    // Puts the counter on the interaction layer exactly while CanInteract holds. Every change of the claim or of the
+    // scan state calls it at once, so an aim in the same frame sees it.
+    private void RefreshInteractable()
+    {
+        var layer = CanInteract ? CollisionLayer | InteractableLayerBit : CollisionLayer & ~InteractableLayerBit;
+        if (layer != CollisionLayer)
+            CollisionLayer = layer;
     }
 
     private void StartSession(ICheckoutCustomer customer)
     {
         var items = CheckoutCounterLayout.ItemsOf(customer);
+        var looks = (customer as IBasketLooks)?.TakeBasketLooks() ?? Array.Empty<StockItemLook?>();
         try
         {
             Session = new CheckoutSession(items, customer.Method);
@@ -280,13 +294,15 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         catch (ArgumentException ex)
         {
             ILog.Warning($"{Name} sent a basket that cannot be checked out: {ex.Message}");
+            foreach (var look in looks)
+                look?.Discard();
             customer.Leave();
             _queue.Remove(customer);
             Refresh();
             return;
         }
 
-        _tray.Lay(items, itemId => Scan(itemId));
+        _tray.Lay(items, looks, itemId => Scan(itemId));
     }
 
     // Ends the session: its props are freed, then listeners hear it and the message is shown.
@@ -295,6 +311,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         _tray.Clear();
         Session = null;
         _claim.Clear();
+        RefreshInteractable();
         SessionEnded?.Invoke();
         _status.Say(message);
     }

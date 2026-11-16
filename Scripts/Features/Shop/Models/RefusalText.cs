@@ -6,10 +6,12 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 public static class RefusalText
 {
     public const string PriceTooHigh = "price too high";
+    public const string NothingInStock = "nothing in stock";
 
     public static string For(RefusalReason reason) => reason switch
     {
         RefusalReason.PriceTooHigh => PriceTooHigh,
+        RefusalReason.NothingInStock => NothingInStock,
         _ => throw new ArgumentOutOfRangeException(nameof(reason), reason, "Unknown refusal reason."),
     };
 }

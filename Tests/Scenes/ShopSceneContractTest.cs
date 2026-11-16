@@ -158,9 +158,10 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
         AssertThat(furnitureApp.Title).IsEqual("Furniture");
         AssertBool(furnitureApp.Catalog!.Items.Any(item => item.Id == "shelf_unit")).IsTrue();
 
-        // The raw shelf stays on the Stock app: the Furniture app does not replace it (D3).
+        // Furniture is sold boxed by the Furniture app only; the Stock app sells the stock that goes on it.
         var stockApp = _shop.GetNode<StockApp>("PcDesktopViewport/StockApp");
-        AssertBool(stockApp.Catalog!.Items.Any(item => item.Id == "shelf")).IsTrue();
+        var furnitureIds = furnitureApp.Catalog.Items.Select(item => item.Id).ToHashSet();
+        AssertBool(stockApp.Catalog!.Items.Any(item => furnitureIds.Contains(item.Id))).IsFalse();
     }
 
     private bool IsInsideAnyArea(Vector3 position) =>

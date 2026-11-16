@@ -11,14 +11,17 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// The shop scene's wiring contract: the sidelined player is the seams' target, the shelf kinds join their groups,
-/// the backoffice catalog orders the new furniture and the customer spawner is wired under the services. The
+/// the starting shelves are placed furniture, the furniture catalog sells each piece as its box and the customer
+/// spawner is wired under the services. The
 /// geometry contract is in <see cref="ShopSceneContractTest"/>.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class ShopSceneStockContractTest
 {
-    private const string BackofficeCatalogPath = "res://Data/Shop/BackofficeCatalog.tres";
+    private const string FurnitureCatalogPath = "res://Data/Shop/FurnitureOrderCatalog.tres";
+    // The capsule radius in Scenes/Shop/Customer.tscn.
+    private const float CustomerRadius = 0.25f;
 
     private Node3D _shop = null!;
 
@@ -74,15 +77,62 @@ public class ShopSceneStockContractTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void BackofficeCatalogOrdersTheProductShelfAndTheStorageRack()
+    public static void FurnitureCatalogSellsEveryFurnitureItemAsItsBox()
     {
-        var items = GD.Load<OrderCatalog>(BackofficeCatalogPath).Items;
+        var items = GD.Load<OrderCatalog>(FurnitureCatalogPath).Items;
 
-        foreach (var id in new[] { "product_shelf", "storage_rack" })
+        foreach (var id in new[] { "shelf_unit", "product_shelf", "storage_rack", "bulk_packing_station" })
         {
             var item = items.FirstOrDefault(entry => entry.Id == id);
-            AssertThat(item).IsNotNull();
-            AssertThat(item!.Scene).IsNotNull();
+            AssertThat(item?.Scene).IsNotNull();
+            var box = item!.Scene!.Instantiate();
+            AssertThat(box).IsInstanceOf<FurnitureBox>();
+            AssertThat(((FurnitureBox)box).Item?.Id).IsEqual(id);
+            box.Free();
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TheStartingShelvesArePlacedFurnitureThatFitsTheFloor()
+    {
+        // Placed furniture can be moved, packed and saved like a bought piece, so the starting shelves are too.
+        var pieces = _shop.GetNode("World/Furniture").GetChildren().OfType<PlacedFurniture>().ToList();
+        AssertThat(pieces.Select(piece => piece.Name.ToString()))
+            .ContainsExactly("CardShelf", "ProductShelf", "StorageRack");
+
+        var standing = new List<FurnitureRect>();
+        foreach (var piece in pieces)
+        {
+            AssertThat(piece.GetNodeOrNull<CardShelf>(PlacedFurniture.ContentName)).IsNotNull();
+            AssertBool(FurniturePlacementModel.IsValid(piece.Item!.Footprint, piece.Pose, standing, FurnitureFloor.Shop))
+                .IsTrue();
+            standing.Add(piece.Rect);
+        }
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void NoStartingFurnitureStandsInTheCheckoutQueue()
+    {
+        // Waiting customers step from queue spot to queue spot, so the lane from the first spot to the last, as wide as
+        // a customer, has to be clear of furniture.
+        var counter = _shop.GetNode<Node3D>("World/Storefront/CheckoutCounter");
+        var spots = counter.GetChildren().OfType<Marker3D>()
+            .Where(marker => marker.Name.ToString().StartsWith("QueueSlot", System.StringComparison.Ordinal))
+            .OrderBy(marker => marker.Name.ToString(), System.StringComparer.Ordinal)
+            .Select(marker => marker.GlobalPosition)
+            .ToArray();
+        var pieces = _shop.GetNode("World/Furniture").GetChildren().OfType<PlacedFurniture>().ToList();
+
+        AssertThat(spots.Length).IsGreater(1);
+        for (var i = 0; i + 1 < spots.Length; i++)
+        {
+            var lane = Lane(spots[i], spots[i + 1]);
+            foreach (var piece in pieces)
+                AssertBool(piece.Rect.Overlaps(lane))
+                    .OverrideFailureMessage($"{piece.Name} stands in the queue between spots {i} and {i + 1}")
+                    .IsFalse();
         }
     }
 
@@ -105,6 +155,11 @@ public class ShopSceneStockContractTest
         AssertThat(customer.CollisionMask).IsEqual(0u);
         customer.Free();
     }
+
+    // The floor a customer covers walking straight from one spot to the next.
+    private static FurnitureRect Lane(Vector3 from, Vector3 to) => new(
+        Mathf.Min(from.X, to.X) - CustomerRadius, Mathf.Min(from.Z, to.Z) - CustomerRadius,
+        Mathf.Max(from.X, to.X) + CustomerRadius, Mathf.Max(from.Z, to.Z) + CustomerRadius);
 
     private static IEnumerable<Node> Descendants(Node root)
     {

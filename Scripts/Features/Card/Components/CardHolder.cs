@@ -48,6 +48,9 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
     public int HeldCount => _heldCards.Count;
     public bool HasCards => _heldCards.Count > 0;
 
+    /// <summary>The card a single drop or a stock click takes first, or null when the hand is empty.</summary>
+    public RigidBody3D? TopCard => _heldCards.Count > 0 ? _heldCards[^1] : null;
+
     public void Inject(IServiceResolver services) => _services = services;
 
     public void SetReferences(Node3D handAnchor)
@@ -93,6 +96,24 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
 
         PositionCardsForDrop();
         EmitSignal(SignalName.CardRemoved, card);
+    }
+
+    /// <summary>
+    ///     Gives a held card to a holder that locks it at once, such as a shelf slot. Unlike <see cref="RemoveCard" />
+    ///     it stays frozen where it is, with its collision back on: the new holder reparents and places it, and no
+    ///     deferred unfreeze can drop it out of that holder. False when the hand does not hold the card.
+    /// </summary>
+    public bool HandOver(RigidBody3D card)
+    {
+        if (!_heldCards.Remove(card)) return false;
+
+        var shape = card.GetNodeOrNull<CollisionShape3D>("CardCollision");
+        if (shape != null) shape.Disabled = false;
+        card.CollisionLayer = CardCollisionLayer;
+
+        PositionCards();
+        EmitSignal(SignalName.CardRemoved, card);
+        return true;
     }
 
     private void EnablePhysicsDeferred(RigidBody3D card)

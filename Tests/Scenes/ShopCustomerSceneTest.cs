@@ -23,7 +23,7 @@ public class ShopCustomerSceneTest
     private const float TakeLeaveTolerance = 1.0f;
     private const float SpawnTolerance = 0.01f;
     private const string CardShelfScene = "res://Scenes/Shop/Items/Shelf.tscn";
-    private const string ProductPricePath = "World/Storefront/ProductShelf/Price1";
+    private const string ProductPricePath = "World/Furniture/ProductShelf/Content/Price1";
 
     private ShopCustomerRig _rig = null!;
 
@@ -93,6 +93,33 @@ public class ShopCustomerSceneTest
         await WaitUntil(() => Gone(first) && Gone(second));
 
         AssertThat(_rig.Money.Balance).IsEqual(balanceBefore + 4);
+        AssertThat(string.Join("|", _rig.Complaints.Reasons)).IsEqual("nothing in stock");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ACustomerInAnEmptyShopLooksAtAShelfComplainsAndLeaves()
+    {
+        var browsePoints = new ShelfOfferIndex(_rig.Shop.GetTree()).BrowsePoints();
+        AssertBool(browsePoints.Count > 0).IsTrue();
+
+        var customer = _rig.Spawner.SpawnNow()!;
+        var nearest = float.MaxValue;
+        var lookedFrames = 0;
+        for (var i = 0; i < FrameBudget && !Gone(customer); i++)
+        {
+            var position = customer.GlobalPosition;
+            nearest = Mathf.Min(nearest, browsePoints.Min(point => XzDistance(position, point)));
+            if (customer.State == CustomerState.Browsing && customer.Velocity.IsZeroApprox())
+                lookedFrames++;
+            await ISceneRunner.SyncPhysicsFrame;
+        }
+
+        AssertBool(Gone(customer)).IsTrue();
+        AssertBool(nearest <= TakeLeaveTolerance).IsTrue();
+        // At 60 physics frames a second, a two-second look is about 120 frames; half of it is enough to prove a pause.
+        AssertBool(lookedFrames >= 60).IsTrue();
+        AssertThat(string.Join("|", _rig.Complaints.Reasons)).IsEqual("nothing in stock");
     }
 
     [TestCase]

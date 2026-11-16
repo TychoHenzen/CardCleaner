@@ -1,7 +1,10 @@
 using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Pause.Components;
 using CardCleaner.Scripts.Features.Pause.Models;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Pause.Components;
 
@@ -80,6 +83,38 @@ public class CursorOwnerTest
 
         AssertBool(owner.HasClaimOtherThan(new object())).IsTrue();
         AssertBool(owner.HasClaimOtherThan(claimant)).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void AClaimSuspendsTheWorldActionsUntilTheLastRelease()
+    {
+        // The test's own input service replaces the app's for this case; the reset at the end drops it again, as the
+        // scene suites that register their own input service do in their teardown.
+        var input = AddNode(new InputService());
+        TestServices.Container.RegisterSingleton<IInputService>(input);
+        try
+        {
+            var owner = AddNode(new CursorOwner());
+            var first = new object();
+            var second = new object();
+
+            owner.Claim(first);
+            owner.Claim(second);
+            owner.Release(first);
+            AssertBool(input.ActionsSuspended).IsTrue();
+
+            owner.Release(second);
+            AssertBool(input.ActionsSuspended).IsFalse();
+
+            owner.Claim(first);
+            owner.GetParent().RemoveChild(owner);
+            AssertBool(input.ActionsSuspended).IsFalse();
+        }
+        finally
+        {
+            TestServices.Reset();
+        }
     }
 
     [TestCase]

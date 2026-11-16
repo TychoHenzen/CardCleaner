@@ -21,6 +21,11 @@ internal sealed class CarriedStock
     /// <summary>The offers of everything carried, in the order it was taken.</summary>
     public IReadOnlyList<ShelfOffer> Offers() => _items.Select(item => item.Offer).ToList();
 
+    /// <summary>A still copy of every carried item, in the order of <see cref="Offers" />.</summary>
+    public List<StockItemLook?> Looks() => _items
+        .Select(item => GodotObject.IsInstanceValid(item.Body) ? StockItemLook.Capture(item.Body) : null)
+        .ToList();
+
     /// <summary>Takes the slot's first card. False when the slot does not give it up.</summary>
     public bool TryTake(DeckSlot slot, ShelfOffer offer)
     {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
@@ -7,10 +8,19 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>The checkout side of a customer: the basket it hands over and how it waits in line.</summary>
-public partial class Customer
+public partial class Customer : IBasketLooks
 {
+    private List<StockItemLook?> _looks = new();
+
     /// <summary>The items handed over at the counter; empty until the customer hands its basket over.</summary>
     public CheckoutBasket Basket { get; private set; } = new(Array.Empty<ShelfOffer>());
+
+    public IReadOnlyList<StockItemLook?> TakeBasketLooks()
+    {
+        var looks = _looks;
+        _looks = new List<StockItemLook?>();
+        return looks;
+    }
 
     /// <summary>How the customer pays. Set by the spawner before the customer enters the tree.</summary>
     public PaymentMethod Method { get; set; } = PaymentMethod.Card;
@@ -45,8 +55,16 @@ public partial class Customer
         }
 
         Basket = new CheckoutBasket(_carried.Offers());
+        _looks = _carried.Looks();
         _carried.Free();
         State = CustomerState.Queued;
         Handoff.Checkout(this);
+    }
+
+    // Copies the counter never took (the customer left first) are not in the tree and would leak.
+    private void DiscardLooks()
+    {
+        foreach (var look in TakeBasketLooks())
+            look?.Discard();
     }
 }

@@ -1,14 +1,13 @@
 using System.Linq;
-using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 
 /// <summary>
-/// The backoffice catalog is data: items, prices and scenes come from the resource, and each item
-/// scene keeps working (placeholder visible) when the licensed pack files are not imported.
+/// The backoffice catalog is the Stock app's data: it sells stock only (a box, a pack, a booster), each a container the
+/// player carries to a shelf. Furniture is sold boxed by the Furniture app (<see cref="FurnitureOrderCatalogTest"/>).
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -17,7 +16,7 @@ public class BackofficeCatalogTest
     private const string CatalogPath = "res://Data/Shop/BackofficeCatalog.tres";
 
     private static readonly string[] ExpectedIds =
-        ["shelf", "bulk_packing_station", "cardboard_box", "product_shelf", "storage_rack"];
+        ["cardboard_box", "pack", "booster"];
 
     private OrderCatalog _catalog = null!;
 
@@ -29,7 +28,7 @@ public class BackofficeCatalogTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void CatalogListsShelvesPackingStationBoxAndRack()
+    public void CatalogListsTheBoxThePackAndTheBooster()
     {
         AssertThat(_catalog).IsNotNull();
         AssertThat(_catalog.Items.Select(i => i.Id).ToArray()).IsEqual(ExpectedIds);
@@ -59,7 +58,7 @@ public class BackofficeCatalogTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void EveryItemSceneIsAPhysicalBodyWithCollisionAndAnArtSlot()
+    public void EveryItemSceneIsAContainerThePlayerCanCarry()
     {
         foreach (var item in _catalog.Items)
         {
@@ -67,57 +66,15 @@ public class BackofficeCatalogTest
             AddNode(instance);
 
             AssertThat(instance).IsInstanceOf<RigidBody3D>();
-            AssertThat(instance.GetNodeOrNull<CollisionShape3D>("CollisionShape3D")).IsNotNull();
-            var slot = instance.GetNode<ShopArtSlot>("Art");
-            AssertBool(slot.ArtLoaded || slot.Placeholder!.Visible).IsTrue();
+            AssertThat(instance).IsInstanceOf<CardContainer>();
         }
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void EveryItemArtPathExistsInTheAssetsSubmodule()
+    public void EveryItemHasAnUnlockRow()
     {
         foreach (var item in _catalog.Items)
-        {
-            var instance = item.Scene!.Instantiate<Node3D>();
-            var slot = instance.GetNode<ShopArtSlot>("Art");
-            AssertBool(slot.ArtPath.StartsWith(SyntyAssets.Root)).IsTrue();
-            AssertBool(SyntyAssets.Exists(slot.ArtPath[SyntyAssets.Root.Length..])).IsTrue();
-            instance.Free();
-        }
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void ItemSceneKeepsItsPlaceholderWhenThePackFileIsMissing()
-    {
-        foreach (var item in _catalog.Items)
-        {
-            var instance = item.Scene!.Instantiate<Node3D>();
-            var slot = instance.GetNode<ShopArtSlot>("Art");
-            slot.ArtPath = SyntyAssets.Root + "DoesNotExist/Missing.fbx";
-            AddNode(instance);
-
-            AssertBool(slot.ArtLoaded).IsFalse();
-            AssertBool(slot.Placeholder!.Visible).IsTrue();
-        }
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void ItemSceneShowsThePackMeshAndHidesItsPlaceholderWhenTheFileIsImported()
-    {
-        foreach (var item in _catalog.Items)
-        {
-            var instance = item.Scene!.Instantiate<Node3D>();
-            var slot = instance.GetNode<ShopArtSlot>("Art");
-            AddNode(instance);
-
-            // The pack files come from the private Assets submodule, which may be missing or unimported here, so
-            // this machine either swaps in the pack mesh or keeps the placeholder.
-            var imported = ResourceLoader.Exists(slot.ArtPath);
-            AssertBool(slot.ArtLoaded).IsEqual(imported);
-            AssertBool(slot.Placeholder!.Visible).IsEqual(!imported);
-        }
+            AssertThat(UnlockCatalog.Default.RequiredLevel(item.Id)).IsNotNull();
     }
 }

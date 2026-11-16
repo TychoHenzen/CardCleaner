@@ -1,7 +1,9 @@
+using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 
@@ -16,6 +18,7 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 public class FurnitureCameraAimTest
 {
     private const string BoxScenePath = "res://Scenes/Shop/Items/ShelfBox.tscn";
+    private const string BoxCatalogPath = "res://Data/Shop/FurnitureOrderCatalog.tres";
     private const float CameraHeight = 3f;
 
     private InputService _input = null!;
@@ -104,6 +107,28 @@ public class FurnitureCameraAimTest
         AssertBool(_controller.IsActive).IsTrue();
         AssertBool(placed.IsCarried).IsTrue();
         AssertInt(_root.GetChildCount()).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ThePackKeyPacksThePieceTheCameraRayHitsIntoItsBox()
+    {
+        _controller.Boxes = GD.Load<OrderCatalog>(BoxCatalogPath);
+        _controller.BoxRoot = _world;
+        AssertBool(_controller.Begin(NewBox())).IsTrue();
+        _controller.AimAt(8f, 6f);
+        AssertBool(_controller.Confirm()).IsTrue();
+        await ISceneRunner.SyncPhysicsFrame;
+
+        Aim(new Vector3(8f, 1.5f, 9f), new Vector3(8f, 0.5f, 6f));
+        _controller._PhysicsProcess(0.0);
+        Press(Key.B);
+
+        AssertInt(_root.GetChildCount()).IsEqual(0);
+        AssertBool(_controller.AimedFurniture == null).IsTrue();
+        var box = _world.GetChildren().OfType<FurnitureBox>().Single(candidate => !candidate.IsQueuedForDeletion());
+        AssertThat(box.Item!.Id).IsEqual("shelf_unit");
+        AssertBool(box.GlobalPosition.X == 8f && box.GlobalPosition.Z == 6f).IsTrue();
     }
 
     [TestCase]

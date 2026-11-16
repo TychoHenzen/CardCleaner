@@ -12,6 +12,9 @@ namespace CardCleaner.Scripts.Features.Shop.Ui;
 public partial class ShopHud : Control, IDependent
 {
     private const int MarginPixels = 16;
+    private const int BackingPadding = 10;
+    private const int BackingCorner = 6;
+    private static readonly Color BackingColour = new(0.05f, 0.06f, 0.08f, 0.6f);
 
     private IShopDayService? _dayService;
     private IMoneyService? _money;
@@ -57,12 +60,17 @@ public partial class ShopHud : Control, IDependent
     {
         MouseFilter = MouseFilterEnum.Ignore;
 
-        var box = new VBoxContainer
+        // A dark backing keeps the white text readable against the lit ceiling.
+        var backing = new PanelContainer
         {
+            Name = "Backing",
             Position = new Vector2(MarginPixels, MarginPixels),
             MouseFilter = MouseFilterEnum.Ignore,
         };
-        AddChild(box);
+        backing.AddThemeStyleboxOverride("panel", BackingStyle());
+        AddChild(backing);
+        var box = new VBoxContainer { MouseFilter = MouseFilterEnum.Ignore };
+        backing.AddChild(box);
 
         MoneyLabel = new Label { Name = "MoneyLabel", MouseFilter = MouseFilterEnum.Ignore };
         DayLabel = new Label { Name = "DayLabel", MouseFilter = MouseFilterEnum.Ignore };
@@ -83,6 +91,14 @@ public partial class ShopHud : Control, IDependent
 
         RefreshMoney();
         RefreshDay();
+    }
+
+    private static StyleBoxFlat BackingStyle()
+    {
+        var style = new StyleBoxFlat { BgColor = BackingColour };
+        style.SetCornerRadiusAll(BackingCorner);
+        style.SetContentMarginAll(BackingPadding);
+        return style;
     }
 
     public override void _EnterTree()

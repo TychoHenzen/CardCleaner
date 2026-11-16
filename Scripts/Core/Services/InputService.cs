@@ -30,6 +30,8 @@ public partial class InputService : Node, IInputService
     // Movement input (polled)
     public Vector2 MovementInput { get; private set; }
 
+    public bool ActionsSuspended { get; set; }
+
     public void RegisterAction(object owner, string actionName, Key key, Action callback)
     {
         var action = new InputAction
@@ -221,6 +223,8 @@ public partial class InputService : Node, IInputService
     private void HandleMouseButton(InputEventMouseButton mouse)
     {
         MouseButtonChanged?.Invoke(mouse.ButtonIndex, mouse.Pressed);
+        if (mouse.Pressed && ActionsSuspended)
+            return;
 
         // Check registered actions - O(1) dictionary lookup instead of LINQ
         if (_mouseActions.TryGetValue(mouse.ButtonIndex, out var actions))
@@ -236,6 +240,8 @@ public partial class InputService : Node, IInputService
     private void HandleKeyboard(InputEventKey key)
     {
         KeyChanged?.Invoke(key.Keycode, key.Pressed);
+        if (key.Pressed && ActionsSuspended)
+            return;
 
         // Check registered actions - O(1) dictionary lookup instead of LINQ
         if (_keyActions.TryGetValue(key.Keycode, out var actions))

@@ -49,9 +49,30 @@ public sealed class ShelfOfferIndex
     public Vector3? ApproachPointFor(string offerId)
     {
         var slot = SlotFor(offerId);
-        if (slot?.GetParent() is not CardShelf shelf)
-            return null;
+        return slot?.GetParent() is CardShelf shelf ? Approach(shelf, slot) : null;
+    }
 
+    /// <summary>
+    ///     The approach point of every slot of every shown sales shelf, stocked or not, in tree order: where a
+    ///     customer with nothing to buy stands to look. A shelf being carried (hidden) has none.
+    /// </summary>
+    public IReadOnlyList<Vector3> BrowsePoints()
+    {
+        var points = new List<Vector3>();
+        foreach (var node in _tree.GetNodesInGroup(CardShelf.SalesGroupName))
+        {
+            if (node is not CardShelf shelf || !shelf.IsVisibleInTree())
+                continue;
+
+            foreach (var slot in shelf.Slots)
+                points.Add(Approach(shelf, slot));
+        }
+
+        return points;
+    }
+
+    private static Vector3 Approach(CardShelf shelf, DeckSlot slot)
+    {
         var point = slot.GlobalPosition - shelf.GlobalBasis.Z * ApproachMeters;
         return new Vector3(point.X, shelf.GlobalPosition.Y, point.Z);
     }

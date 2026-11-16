@@ -32,10 +32,25 @@ public static class AskingPrice
         return IndexOf(markupPercent) >= 0 ? markupPercent : DefaultMarkupPercent;
     }
 
-    public static string Readout(int marketValue, int markupPercent)
+    /// <summary>The asking price as printed large on a price tag.</summary>
+    public static string Readout(int marketValue, int markupPercent) => $"{For(marketValue, markupPercent)}";
+
+    /// <summary>The small print under the price on a tag: the market value and the markup that sets the price.</summary>
+    public static string Detail(int marketValue, int markupPercent)
     {
         var sign = markupPercent >= 0 ? "+" : "";
-        return $"Ask {For(marketValue, markupPercent)} (market {marketValue}, {sign}{markupPercent}%)";
+        return $"market {marketValue} {sign}{markupPercent}%";
+    }
+
+    /// <summary>
+    ///     What a click on a price tag does: names the price the next ladder step sets and the price now. At the top
+    ///     of the ladder the next step wraps to the bottom, so the prompt then names a lower price.
+    /// </summary>
+    public static string StepPrompt(int marketValue, int markupPercent)
+    {
+        var next = NextMarkup(markupPercent);
+        var sign = next >= 0 ? "+" : "";
+        return $"Set price to {For(marketValue, next)} ({sign}{next}%), now {For(marketValue, markupPercent)}";
     }
 
     private static int IndexOf(int markupPercent)

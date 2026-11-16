@@ -47,10 +47,20 @@ public class AskingPriceTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void ReadoutNamesAskMarketAndMarkup()
+    public static void ReadoutIsTheAskAndTheDetailNamesMarketAndMarkup()
     {
-        AssertThat(AskingPrice.Readout(10, 20)).IsEqual("Ask 12 (market 10, +20%)");
-        AssertThat(AskingPrice.Readout(10, -10)).IsEqual("Ask 9 (market 10, -10%)");
-        AssertThat(AskingPrice.Readout(10, 0)).IsEqual("Ask 10 (market 10, +0%)");
+        AssertThat(AskingPrice.Readout(10, 20)).IsEqual("12");
+        AssertThat(AskingPrice.Detail(10, 20)).IsEqual("market 10 +20%");
+        AssertThat(AskingPrice.Readout(10, -10)).IsEqual("9");
+        AssertThat(AskingPrice.Detail(10, -10)).IsEqual("market 10 -10%");
+        AssertThat(AskingPrice.Detail(10, 0)).IsEqual("market 10 +0%");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void StepPromptNamesTheNextPriceAndWrapsToTheLowest()
+    {
+        AssertThat(AskingPrice.StepPrompt(10, 0)).IsEqual("Set price to 11 (+10%), now 10");
+        AssertThat(AskingPrice.StepPrompt(10, 50)).IsEqual("Set price to 8 (-20%), now 15");
     }
 }

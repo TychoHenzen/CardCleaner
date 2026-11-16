@@ -52,6 +52,11 @@
 [ext_resource type="PackedScene" path="res://Scenes/Shop/ShopRoof.tscn" id="ShopRoof"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/ProductShelf.tscn" id="ProductShelf"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/StorageRack.tscn" id="StorageRack"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Shelf.tscn" id="CardShelf"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/PlacedFurniture.cs" id="PlacedFurniture"]
+[ext_resource type="Resource" path="res://Data/Shop/Furniture/ShelfFurniture.tres" id="CardShelfFurniture"]
+[ext_resource type="Resource" path="res://Data/Shop/Furniture/ProductShelfFurniture.tres" id="ProductShelfFurniture"]
+[ext_resource type="Resource" path="res://Data/Shop/Furniture/StorageRackFurniture.tres" id="StorageRackFurniture"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Restocker.tscn" id="RestockerScene"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/PcScreenOverlay.cs" id="PcScreenOverlay"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/PcDesktopLink.cs" id="PcDesktopLink"]
@@ -701,11 +706,12 @@ visible = false
 mesh = SubResource("RegisterHighlightMesh")
 
 [node name="StatusLabel" type="Label3D" parent="World/Storefront/CheckoutCounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.85, 0)
 billboard = 1
+pixel_size = 0.002
 text = "Balance: -"
 font_size = 48
-outline_size = 12
+outline_size = 8
 
 [node name="QueueSlot0" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.4)
@@ -1360,12 +1366,6 @@ Placeholder = NodePath("Placeholder")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
 mesh = SubResource("WallBoxMesh")
 
-[node name="ProductShelf" parent="World/Storefront" instance=ExtResource("ProductShelf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 10.5)
-
-[node name="StorageRack" parent="World/RightStorage" instance=ExtResource("StorageRack")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, -6.5)
-
 [node name="Restocker" parent="World/RightStorage" instance=ExtResource("RestockerScene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, -3)
 
@@ -1524,7 +1524,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.875, 0)
 mesh = SubResource("WallBoxMesh")
 
 [node name="Cards" type="Node3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, 6)
 script = ExtResource("Card_3_6nqof")
 OffsetRange = Vector3(1, 1, 1)
 
@@ -1641,6 +1641,33 @@ navigation_mesh = SubResource("ShopNavigationMesh")
 
 [node name="Furniture" type="Node3D" parent="World" groups=["shop_navigation"]]
 
+[node name="CardShelf" type="StaticBody3D" parent="World/Furniture"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 8, 0, 1)
+collision_mask = 0
+script = ExtResource("PlacedFurniture")
+Item = ExtResource("CardShelfFurniture")
+
+[node name="Content" parent="World/Furniture/CardShelf" instance=ExtResource("CardShelf")]
+freeze = true
+
+[node name="ProductShelf" type="StaticBody3D" parent="World/Furniture"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.7, 0, 5)
+collision_mask = 0
+script = ExtResource("PlacedFurniture")
+Item = ExtResource("ProductShelfFurniture")
+
+[node name="Content" parent="World/Furniture/ProductShelf" instance=ExtResource("ProductShelf")]
+freeze = true
+
+[node name="StorageRack" type="StaticBody3D" parent="World/Furniture"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 20, 0, -7)
+collision_mask = 0
+script = ExtResource("PlacedFurniture")
+Item = ExtResource("StorageRackFurniture")
+
+[node name="Content" parent="World/Furniture/StorageRack" instance=ExtResource("StorageRack")]
+freeze = true
+
 [node name="Services" type="Node" parent="."]
 script = ExtResource("AutoServiceProvider")
 
@@ -1652,10 +1679,13 @@ Catalog = ExtResource("ExpansionLots")
 script = ExtResource("StaffService")
 Catalog = ExtResource("StaffCatalog")
 
-[node name="FurniturePlacement" type="Node" parent="Services" node_paths=PackedStringArray("FurnitureRoot", "Navigation")]
+[node name="FurniturePlacement" type="Node" parent="Services" node_paths=PackedStringArray("FurnitureRoot", "Navigation", "BoxRoot", "DeliveryPoint")]
 script = ExtResource("FurniturePlacementController")
 FurnitureRoot = NodePath("../../World/Furniture")
 Navigation = NodePath("../../World/Navigation")
+Boxes = ExtResource("FurnitureOrderCatalog")
+BoxRoot = NodePath("../../World")
+DeliveryPoint = NodePath("../../World/Markers/DeliveryPoint")
 
 [node name="FurnitureSave" type="Node" parent="Services" node_paths=PackedStringArray("FurnitureRoot", "BoxRoot", "Navigation", "DeliveryPoint")]
 script = ExtResource("FurnitureSaveService")

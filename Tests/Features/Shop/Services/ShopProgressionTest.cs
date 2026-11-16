@@ -9,7 +9,7 @@ public class ShopProgressionTest
 {
     [TestCase]
     [TestCategory("Unit")]
-    public void FreshProgressionStartsAtLevelOneWithNoXp()
+    public static void FreshProgressionStartsAtLevelOneWithNoXp()
     {
         var progression = AutoFree(new ShopProgression());
 
@@ -21,7 +21,7 @@ public class ShopProgressionTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void AwardingACheckoutAddsItsXpAndRaisesProgressChangedOnce()
+    public static void AwardingACheckoutAddsItsXpAndRaisesProgressChangedOnce()
     {
         var progression = AutoFree(new ShopProgression());
         var changes = 0;
@@ -36,7 +36,7 @@ public class ShopProgressionTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ANonPositiveCheckoutEarnsNothingAndRaisesNothing()
+    public static void ANonPositiveCheckoutEarnsNothingAndRaisesNothing()
     {
         var progression = AutoFree(new ShopProgression());
         var changes = 0;
@@ -51,7 +51,7 @@ public class ShopProgressionTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void LevelTwoItemUnlocksExactlyAtItsThreshold()
+    public static void LevelTwoItemUnlocksExactlyAtItsThreshold()
     {
         var progression = AutoFree(new ShopProgression());
 
@@ -64,7 +64,7 @@ public class ShopProgressionTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void UnknownIdIsLockedAndHasNoRequiredLevel()
+    public static void UnknownIdIsLockedAndHasNoRequiredLevel()
     {
         var progression = AutoFree(new ShopProgression());
 
@@ -74,17 +74,17 @@ public class ShopProgressionTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void LevelOneItemIsUnlockedFromTheStart()
+    public static void LevelOneItemIsUnlockedFromTheStart()
     {
         var progression = AutoFree(new ShopProgression());
 
-        AssertThat(progression.RequiredLevel("shelf")).IsEqual(1);
-        AssertBool(progression.IsUnlocked("shelf")).IsTrue();
+        AssertThat(progression.RequiredLevel("shelf_unit")).IsEqual(1);
+        AssertBool(progression.IsUnlocked("shelf_unit")).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ReachingTheTopLevelStopsTheCurveThere()
+    public static void ReachingTheTopLevelStopsTheCurveThere()
     {
         var progression = AutoFree(new ShopProgression());
 

@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Controllers;
@@ -9,7 +10,8 @@ using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
-public partial class CardHighlighter : Node3D, IDependent
+[Service(typeof(IStockHand))]
+public partial class CardHighlighter : Node3D, IDependent, IStockHand
 {
     private IInputService _inputService = null!;
     private IControlHints? _hints;
@@ -165,6 +167,29 @@ public partial class CardHighlighter : Node3D, IDependent
         if (CardHolder.HasCards || CardDropper.IsPreparingDrop) return;
 
         _containerHolder.TryPickUp(container);
+    }
+
+    public RigidBody3D? Offered
+    {
+        get
+        {
+            // Before _Ready (or when an export is missing) the holders are not wired, so the hand offers nothing.
+            if (_containerHolder == null || CardDropper.IsPreparingDrop) return null;
+            return _containerHolder.Held ?? CardHolder.TopCard;
+        }
+    }
+
+    public bool TryStock(DeckSlot slot)
+    {
+        var body = Offered;
+        if (body == null || !slot.CanTake(body)) return false;
+
+        if (body is CardContainer)
+            _containerHolder.Drop();
+        else if (!CardHolder.HandOver(body))
+            return false;
+
+        return slot.TryLock(body);
     }
 
     private void OnRightPress(bool pressed)

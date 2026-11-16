@@ -21,10 +21,15 @@ public class OrderingServiceTest
     private const float BeltHeight = 0.2f;
     private const float TileHeight = 0.1f;
     private const float ArmCube = 0.5f;
-    private const float PostWidth = 0.4f;
+    // The post's right edge stops 0.02 m short of the neighbour's left edge (slot 1 at 2.3 m less half of 3 m), and
+    // the hat overhangs the post by 0.04 m, inside the 0.05 m a stacked item may overhang, so the hat reaches over the
+    // neighbour while the post does not.
+    private const float PostWidth = 1.56f;
     private const float PostHeight = 1f;
+    private const float TallWidth = 0.4f;
     private const float TallHeight = 2f;
-    private const float HatWidth = 2f;
+    private const float HatWidth = 1.64f;
+    private const float SlabWidth = 2f;
     private const float HatHeight = 0.3f;
     private const float HatCentreY = 0.05f;
     private const float SlabDepth = 1f;
@@ -433,23 +438,44 @@ public class OrderingServiceTest
         ground.FloorClearance = new Rect2(-6f, -1.5f, 12f, 4.5f);
         var reacher = MakeReacher();
 
-        // The reach of slots 3 to 5 runs past the clearance's far edge (z 3.0), so the third order stacks on slot 0.
+        // The reach of slots 3 to 5 runs past the clearance's far edge (z 3.0), so no third ground slot is left. A
+        // stacked reacher's reach boxes would hang in the air above the low reach boxes below, so it cannot stack.
         var firstAt = DeliveredAt(_ordering.Order(reacher, ground), "first");
         var secondAt = DeliveredAt(_ordering.Order(reacher, ground), "second");
-        var thirdAt = DeliveredAt(_ordering.Order(reacher, ground), "third");
+        var third = _ordering.Order(reacher, ground);
 
         var firstSlot = ground.GlobalPosition + OrderingService.SlotOffset(0);
         var secondSlot = ground.GlobalPosition + OrderingService.SlotOffset(2);
-        // The reacher's cube is 1 m tall, so the third order rests on the first one's top plus the stack gap.
-        var stacked = firstSlot + Vector3.Up * (1f + DeliveryMarker.StackGap);
         AssertBool(firstAt.IsEqualApprox(firstSlot))
             .OverrideFailureMessage($"first order landed at {firstAt}, expected {firstSlot}")
             .IsTrue();
         AssertBool(secondAt.IsEqualApprox(secondSlot))
             .OverrideFailureMessage($"second order landed at {secondAt}, expected {secondSlot}")
             .IsTrue();
-        AssertBool(thirdAt.IsEqualApprox(stacked))
-            .OverrideFailureMessage($"third order landed at {thirdAt}, expected {stacked}")
+        AssertThat(third.Status).IsEqual(OrderStatus.DeliveryFull);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AnItemIsStackedOnlyOnItemsThatHoldUpItsWholeFootprint()
+    {
+        _money.Add(10000);
+        var ground = AddGroundMarker();
+        var spool = MakeBoxItem("spool", 1, 0.46f, SpoolHeight);
+        for (var order = 0; order < OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+            DeliveredAt(_ordering.Order(spool, ground), $"spool {order}");
+        var balance = _money.Balance;
+
+        // Like a shelf's furniture box after six boosters: every ground slot is taken and no spool holds it up.
+        var slab = _ordering.Order(MakeBoxItem("slab", 1, SlabWidth, SpoolHeight), ground);
+        var spoolOnTop = DeliveredAt(_ordering.Order(spool, ground), "stacked spool");
+
+        AssertThat(slab.Status).IsEqual(OrderStatus.DeliveryFull);
+        AssertThat(_money.Balance).IsEqual(balance - 1);
+        var expected = ground.GlobalPosition + OrderingService.SlotOffset(0)
+                       + Vector3.Up * (SpoolHeight + DeliveryMarker.StackGap);
+        AssertBool(spoolOnTop.IsEqualApprox(expected))
+            .OverrideFailureMessage($"stacked spool landed at {spoolOnTop}, expected {expected}")
             .IsTrue();
     }
 
@@ -480,10 +506,14 @@ public class OrderingServiceTest
     {
         _money.Add(10000);
         var ground = AddGroundMarker();
-        DeliveredAt(_ordering.Order(MakeBoxItem("post", 1, PostWidth, PostHeight), ground), "post");
+        var post = MakeShapesItem(
+            "post",
+            1,
+            (new Vector3(0f, PostHeight / 2f, 0f), new Vector3(PostWidth, PostHeight, SlabDepth)));
+        DeliveredAt(_ordering.Order(post, ground), "post");
 
         // Five tall items fill slots 1 to 5; the one on slot 1 is removed below to open that slot.
-        var tall = MakeBoxItem("tall", 1, PostWidth, TallHeight);
+        var tall = MakeBoxItem("tall", 1, TallWidth, TallHeight);
         var slotOne = _ordering.Order(tall, ground);
         var slotOneAt = DeliveredAt(slotOne, "tall on slot 1");
         AssertBool(slotOneAt.IsEqualApprox(ground.GlobalPosition + OrderingService.SlotOffset(1)))
@@ -530,13 +560,14 @@ public class OrderingServiceTest
         var leftArm = MakeArm("left_arm", -OrderingService.SlotSpacingX);
 
         // The right arm stacks on slot 0 and reaches over slot 1. On slot 2, the next lowest stack, the left arm would
-        // reach over slot 1 at the same height, so it goes on slot 3.
+        // reach over slot 1 at the same height; on slot 3 its reach would hang past the grid with no tile under it. So
+        // it goes on slot 4 and reaches over slot 3's tile.
         var rightAt = DeliveredAt(_ordering.Order(rightArm, ground), "right arm");
         var leftAt = DeliveredAt(_ordering.Order(leftArm, ground), "left arm");
 
         var lift = Vector3.Up * (TileHeight + DeliveryMarker.StackGap);
         var rightSlot = ground.GlobalPosition + OrderingService.SlotOffset(0) + lift;
-        var leftSlot = ground.GlobalPosition + OrderingService.SlotOffset(3) + lift;
+        var leftSlot = ground.GlobalPosition + OrderingService.SlotOffset(4) + lift;
         AssertBool(rightAt.IsEqualApprox(rightSlot))
             .OverrideFailureMessage($"right arm landed at {rightAt}, expected {rightSlot}")
             .IsTrue();

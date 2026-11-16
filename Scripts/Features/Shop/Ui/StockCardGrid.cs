@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
@@ -11,6 +12,9 @@ namespace CardCleaner.Scripts.Features.Shop.Ui;
 ///     thumbnail (or a placeholder tile), the name, the price and an Add button that reads Level or Unavailable
 ///     while the item is locked.
 /// </summary>
+[SuppressMessage("Reliability", "CA1001:Types that own disposable fields should be disposable",
+    Justification = "AddTo parents every control under the app's column, so the scene tree frees them; " +
+                    "the panel only keeps references.")]
 internal sealed class StockCardGrid
 {
     private const int CardColumns = 4;

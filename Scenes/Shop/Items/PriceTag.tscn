@@ -1,31 +1,51 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/SlotPricing.cs" id="SlotPricing"]
 [ext_resource type="Material" path="res://Data/Ui/AimHighlightMaterial.tres" id="AimHighlight"]
 
 [sub_resource type="BoxShape3D" id="TagShape"]
-size = Vector3(0.3, 0.1, 0.04)
+size = Vector3(0.3, 0.11, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="PaperMaterial"]
+albedo_color = Color(0.96, 0.94, 0.86, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="PaperMesh"]
+material = SubResource("PaperMaterial")
+size = Vector3(0.3, 0.11, 0.01)
 
 [sub_resource type="BoxMesh" id="HighlightMesh"]
 material = ExtResource("AimHighlight")
-size = Vector3(0.34, 0.14, 0.08)
+size = Vector3(0.34, 0.15, 0.06)
 
-[node name="PriceTag" type="StaticBody3D" node_paths=PackedStringArray("TagLabel", "HighlightMesh") groups=["delivery_no_footprint"]]
+[node name="PriceTag" type="StaticBody3D" node_paths=PackedStringArray("TagLabel", "DetailLabel", "HighlightMesh") groups=["delivery_no_footprint"]]
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("SlotPricing")
 TagLabel = NodePath("Label")
+DetailLabel = NodePath("Detail")
 HighlightMesh = NodePath("Highlight")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("TagShape")
 
+[node name="Paper" type="MeshInstance3D" parent="."]
+mesh = SubResource("PaperMesh")
+
 [node name="Label" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
-billboard = 1
-font_size = 32
-outline_size = 12
-pixel_size = 0.001
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.014, -0.006)
+modulate = Color(0.08, 0.08, 0.1, 1)
+outline_size = 0
+font_size = 128
+pixel_size = 0.0005
+text = ""
+
+[node name="Detail" type="Label3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, -0.038, -0.006)
+modulate = Color(0.25, 0.25, 0.28, 1)
+outline_size = 0
+font_size = 44
+pixel_size = 0.0005
 text = ""
 
 [node name="Highlight" type="MeshInstance3D" parent="."]

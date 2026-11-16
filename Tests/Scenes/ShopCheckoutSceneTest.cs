@@ -13,7 +13,8 @@ using Godot;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// End to end in the shop scene: the checkout counter is reachable by the player's interaction ray, scanning
+/// End to end in the shop scene: the checkout counter is reachable by the player's interaction ray while a
+/// payment waits, scanning
 /// the basket and paying by card or cash through the payment screen adds the total to the balance once, and a
 /// wrong entry or a cancelled screen takes nothing.
 /// </summary>
@@ -22,6 +23,7 @@ namespace CardCleaner.Tests.Scenes;
 public class ShopCheckoutSceneTest
 {
     private const float StandingDistanceToCounter = 2.9f;
+    private const uint InteractableLayerBit = 4;
     private const string CounterArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Prop_CheckoutCounter_01.fbx";
 
     private ShopCheckoutRig _rig = null!;
@@ -43,7 +45,8 @@ public class ShopCheckoutSceneTest
     public void CounterHasItsStatusLabelMarkersAndAPaymentScreenWiredToIt()
     {
         AssertThat(_rig.Counter.StatusLabel).IsNotNull();
-        AssertThat(_rig.Counter.StatusLabel!.Text).Contains($"Balance: {_rig.Money.Balance}");
+        // With nobody at the counter the sign says nothing; the money is on the HUD.
+        AssertThat(_rig.Counter.StatusLabel!.Text).IsEqual(string.Empty);
         AssertThat(CheckoutCounterLayout.MarkersNamed(_rig.Counter, "QueueSlot").Length).IsEqual(4);
         AssertThat(CheckoutCounterLayout.MarkersNamed(_rig.Counter, "ItemSpot").Length).IsEqual(4);
         AssertThat(_rig.Ui.Counter).IsEqual(_rig.Counter);
@@ -216,20 +219,34 @@ public class ShopCheckoutSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void PlayerInteractionRayCanReachTheCounterFromInFrontOfIt()
+    public async Task PlayerInteractionRayReachesTheCounterFromInFrontOfItOnlyWhileAPaymentWaits()
+    {
+        var from = _rig.Counter.GlobalPosition + new Vector3(0f, 1.0f, StandingDistanceToCounter);
+
+        AssertThat(AimedFromTheFront(from)).IsNotEqual(_rig.Counter);
+
+        _rig.Counter.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4));
+        _rig.ScanAll();
+        await ISceneRunner.SyncProcessFrame;
+
+        AssertBool(_rig.Counter.CanInteract).IsTrue();
+        AssertThat(_rig.Counter.CollisionLayer & InteractableLayerBit).IsEqual(InteractableLayerBit);
+        AssertThat(AimedFromTheFront(from)).IsEqual(_rig.Counter);
+        AssertBool(from.DistanceTo(_rig.Counter.GlobalPosition) <= _rig.Counter.InteractionRange).IsTrue();
+    }
+
+    // The first body the player's interaction ray meets on its way from a standing spot to the counter's middle.
+    private GodotObject? AimedFromTheFront(Vector3 from)
     {
         var player = _rig.Shop.GetNode<PlayerController>("Player");
         var interaction = player.GetNode<InteractionSystem>("Head/Camera3D/InteractionSystem");
-        var from = _rig.Counter.GlobalPosition + new Vector3(0f, 1.0f, StandingDistanceToCounter);
-        var to = _rig.Counter.GlobalPosition + new Vector3(0f, 1.0f, 0f);
-
         var hit = _rig.Shop.GetWorld3D().DirectSpaceState.IntersectRay(new PhysicsRayQueryParameters3D
         {
-            From = from, To = to, CollideWithBodies = true, CollisionMask = interaction.InteractableCollisionMask
+            From = from,
+            To = _rig.Counter.GlobalPosition + new Vector3(0f, 1.0f, 0f),
+            CollideWithBodies = true,
+            CollisionMask = interaction.InteractableCollisionMask
         });
-
-        AssertThat(hit.Count).IsGreater(0);
-        AssertThat(hit["collider"].Obj).IsEqual(_rig.Counter);
-        AssertBool(from.DistanceTo(_rig.Counter.GlobalPosition) <= _rig.Counter.InteractionRange).IsTrue();
+        return hit.Count == 0 ? null : hit["collider"].Obj as GodotObject;
     }
 }

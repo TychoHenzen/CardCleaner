@@ -107,6 +107,25 @@ public class ShelfOfferIndexTest
         AssertBool(_index.ApproachPointFor("/root/none") is null).IsTrue();
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task BrowsePoints_cover_every_shown_sales_slot_and_skip_racks_and_hidden_shelves()
+    {
+        var rack = AddNode(GD.Load<PackedScene>(StorageRackScene).Instantiate<CardShelf>());
+        await Frames(2);
+
+        var points = _index.BrowsePoints();
+
+        AssertThat(points.Count).IsEqual(_shelf.Slots.Count());
+        var firstSlot = _shelf.Slots.First();
+        AssertBool(points[0].DistanceTo(_index.ApproachPointFor(firstSlot.GetPath().ToString())!.Value) < 0.001f)
+            .IsTrue();
+
+        _shelf.Visible = false;
+        AssertThat(_index.BrowsePoints().Count).IsEqual(0);
+        AssertBool(rack.IsInsideTree()).IsTrue();
+    }
+
     private async Task Stock(DeckSlot slot)
     {
         var booster = MakeContainer();

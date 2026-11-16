@@ -37,6 +37,18 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     [Export]
     public ShopNavigationRegion? Navigation { get; set; }
 
+    /// <summary>The box of every furniture item, by the item's id; a packed piece goes back into its box.</summary>
+    [Export]
+    public OrderCatalog? Boxes { get; set; }
+
+    /// <summary>Where a packed piece's box is added.</summary>
+    [Export]
+    public Node3D? BoxRoot { get; set; }
+
+    /// <summary>The delivery area that counts a packed box as an occupant, so a new order is not put on top of it.</summary>
+    [Export]
+    public DeliveryMarker? DeliveryPoint { get; set; }
+
     /// <summary>Resolved through the injected service resolver at startup; assignable directly in tests.</summary>
     public IShopExpansion? Expansion { get; set; }
 
@@ -62,7 +74,8 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
             return;
         }
 
-        _keys = new PlacementKeys(this, new PlacementActions(() => Rotate(), () => Confirm(), Cancel, TryPickUpAimed));
+        _keys = new PlacementKeys(
+            this, new PlacementActions(() => Rotate(), () => Confirm(), Cancel, TryPickUpAimed, TryPackAimed));
         _services.Get<IShopExpansion>(expansion => Expansion ??= expansion);
         _services.Get<IInputService>(_keys.Bind);
         _services.Get<IControlHints>(hints => _hints = hints);
@@ -188,10 +201,50 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
         EndSession();
     }
 
+    /// <summary>
+    ///     Packs a placed piece back into its box: the box appears where the piece stood and the piece leaves the
+    ///     shop. A shelf that holds stock is refused, as for a move, and so is a piece whose box cannot be made.
+    /// </summary>
+    public bool Pack(PlacedFurniture furniture)
+    {
+        if (IsActive)
+            return false;
+        if (!furniture.CanPickUp)
+        {
+            ILog.Warning("Empty the shelf before packing it.");
+            return false;
+        }
+
+        if (Boxes == null || BoxRoot == null || furniture.Item is not { } item)
+        {
+            ILog.Error($"{Name} cannot pack {furniture.Name}");
+            return false;
+        }
+
+        // The box is made first, so a piece whose box cannot be made stays standing.
+        var pose = furniture.Pose;
+        if (FurnitureBoxSpawn.At(Boxes, item.Id, BoxRoot, pose.X, pose.Z, DeliveryPoint) == null)
+            return false;
+
+        // Out of the tree at once, so the rebake and the next floor check no longer see it.
+        furniture.GetParent()?.RemoveChild(furniture);
+        furniture.QueueFree();
+        if (AimedFurniture == furniture)
+            AimedFurniture = null;
+        Navigation?.Rebake();
+        return true;
+    }
+
     private void TryPickUpAimed()
     {
         if (!IsActive && AimedFurniture != null)
             BeginMove(AimedFurniture);
+    }
+
+    private void TryPackAimed()
+    {
+        if (!IsActive && AimedFurniture != null)
+            Pack(AimedFurniture);
     }
 
     private void Start(PlacementSession session)

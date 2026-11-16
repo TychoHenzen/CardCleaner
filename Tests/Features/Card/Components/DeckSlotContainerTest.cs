@@ -94,6 +94,25 @@ public class DeckSlotContainerTest
         AssertBool(slot.HasCards).IsFalse();
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public void CanTakeAnswersWhatTryLockWouldDo()
+    {
+        var slot = MakeSlot(ShelfKind.ProductShelf);
+        var booster = MakeContainer(BoosterScene);
+        var box = MakeContainer(BoxScene);
+
+        AssertBool(slot.HasRoom).IsTrue();
+        AssertBool(slot.CanTake(booster)).IsTrue();
+        AssertBool(slot.CanTake(box)).IsFalse();
+
+        AssertBool(slot.TryLock(booster)).IsTrue();
+
+        AssertBool(slot.HasRoom).IsFalse();
+        AssertBool(slot.CanTake(booster)).IsFalse();
+        AssertBool(slot.CanTake(MakeContainer(BoosterScene))).IsFalse();
+    }
+
     private static DeckSlot MakeSlot(ShelfKind kind)
     {
         var slot = GD.Load<PackedScene>(SlotScene).Instantiate<DeckSlot>();

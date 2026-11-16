@@ -56,8 +56,8 @@ public abstract class RestockerTestBase
         _day = _shop.GetNode<ShopDayService>("Services/ShopDayService");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
-        _rack = _shop.GetNode<CardShelf>("World/RightStorage/StorageRack");
-        _product = _shop.GetNode<CardShelf>("World/Storefront/ProductShelf");
+        _rack = _shop.GetNode<CardShelf>("World/Furniture/StorageRack/Content");
+        _product = _shop.GetNode<CardShelf>("World/Furniture/ProductShelf/Content");
         var region = _region = _shop.GetNode<ShopNavigationRegion>("World/Navigation");
 
         var bills = new DailyBillBook(new IDailyBillSource[] { new RentBillSource(), new StaffWageBillSource(_staff) });

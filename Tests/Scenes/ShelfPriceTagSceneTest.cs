@@ -69,12 +69,15 @@ public class ShelfPriceTagSceneTest
         await Settle();
 
         AssertThat(pricing.TagLabel!.Text).IsEqual(AskingPrice.Readout(CardValue.MinimumCardPrice, 0));
+        AssertThat(pricing.DetailLabel!.Text).IsEqual(AskingPrice.Detail(CardValue.MinimumCardPrice, 0));
 
         pricing.Interact();
         AssertThat(pricing.TagLabel.Text).IsEqual(AskingPrice.Readout(CardValue.MinimumCardPrice, MarkupStep));
+        AssertThat(pricing.DetailLabel.Text).IsEqual(AskingPrice.Detail(CardValue.MinimumCardPrice, MarkupStep));
 
         slot.ReleaseCard(card);
         AssertThat(pricing.TagLabel.Text).IsEqual(string.Empty);
+        AssertThat(pricing.DetailLabel.Text).IsEqual(string.Empty);
     }
 
     [TestCase]

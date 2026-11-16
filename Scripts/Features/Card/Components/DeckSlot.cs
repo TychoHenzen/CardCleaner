@@ -79,7 +79,7 @@ public partial class DeckSlot : Node3D
         if (body is not RigidBody3D rigid || !Accepts(rigid) || _cards.Contains(rigid))
             return;
 
-        if (_cards.Count >= Capacity)
+        if (!HasRoom)
         {
             EjectCard(rigid);
             return;
@@ -105,7 +105,7 @@ public partial class DeckSlot : Node3D
     /// </summary>
     public bool TryLock(RigidBody3D body)
     {
-        if (!IsInstanceValid(body) || !Accepts(body) || _cards.Contains(body) || _cards.Count >= Capacity)
+        if (!CanTake(body))
             return false;
 
         LockCard(body);
@@ -113,6 +113,13 @@ public partial class DeckSlot : Node3D
         EmitSignal(SignalName.CardsChanged);
         return true;
     }
+
+    /// <summary>True while the slot holds fewer bodies than its capacity.</summary>
+    public bool HasRoom => _cards.Count < Capacity;
+
+    /// <summary>Whether <see cref="TryLock" /> would lock <paramref name="body" /> now: stock it takes, with room.</summary>
+    public bool CanTake(RigidBody3D body) =>
+        IsInstanceValid(body) && Accepts(body) && !_cards.Contains(body) && HasRoom;
 
     // A card is a card on a card shelf; a container is taken when this slot's kind accepts its kind.
     private bool Accepts(Node3D body)

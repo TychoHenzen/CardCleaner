@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
@@ -30,10 +32,19 @@ public class PlacementHintsTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void AnAimedPieceOffersAMoveOnlyWhenEmpty()
+    public static void AnAimedPieceOffersAMoveAndAPackOnlyWhenEmpty()
     {
-        AssertThat(PlacementHints.Aimed("Card Shelf", canMove: true)[0].Action).IsEqual("Move this card shelf");
-        AssertThat(PlacementHints.Aimed("Card Shelf", canMove: false)[0].Action)
-            .IsEqual("Empty this card shelf to move it");
+        AssertThat(Lines(PlacementHints.Aimed("Card Shelf", canMove: true))).IsEqual(new[]
+        {
+            "G: Move this card shelf",
+            "B: Pack this card shelf into its box",
+        });
+        AssertThat(Lines(PlacementHints.Aimed("Card Shelf", canMove: false))).IsEqual(new[]
+        {
+            "G: Empty this card shelf to move or pack it",
+        });
     }
+
+    private static string[] Lines(IEnumerable<ControlHint> hints) =>
+        hints.Select(hint => $"{hint.Key}: {hint.Action}").ToArray();
 }

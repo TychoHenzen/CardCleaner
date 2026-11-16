@@ -37,11 +37,12 @@ public sealed class UnlockCatalog
     /// </summary>
     public static UnlockCatalog Default => new UnlockCatalog(new[]
     {
-        // ASSUMPTION: level 1 for the seven ids that are open today keeps today's behavior; the levels are data.
-        new UnlockEntry("shelf", UnlockKind.Furniture, 1),
-        // ASSUMPTION (Low): level 1 like the raw shelf; retune in data.
+        // ASSUMPTION: level 1 for the ids that were open before levels existed keeps that behavior; levels are data.
         new UnlockEntry("shelf_unit", UnlockKind.Furniture, 1),
         new UnlockEntry("cardboard_box", UnlockKind.Product, 1),
+        // ASSUMPTION (Low): a single pack or booster is open from the start like the box; retune in data.
+        new UnlockEntry("pack", UnlockKind.Product, 1),
+        new UnlockEntry("booster", UnlockKind.Product, 1),
         // ASSUMPTION: bulk_packing_station is the one row at level 2, per the issue's C2 rule; retune in data.
         new UnlockEntry("bulk_packing_station", UnlockKind.Furniture, 2),
         new UnlockEntry("product_shelf", UnlockKind.Furniture, 1),

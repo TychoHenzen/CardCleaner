@@ -174,6 +174,8 @@ public class ShopExpansionSceneTest
     {
         _rig.MeetTheLotRequirements();
         await _rig.BuyAsync();
+        // Counted before the lot shelf, because the second shop loads the save as it starts.
+        var standing = _rig.FurnitureRoot.GetChildCount();
         await _rig.PlaceShelfAsync(-4f, 6f);
         AssertBool(_rig.Saves.ManualSave()).IsTrue();
         _rig.Close();
@@ -182,9 +184,10 @@ public class ShopExpansionSceneTest
         _second.Saves.LoadGame();
         await ShopExpansionRig.SettleAsync();
 
-        AssertInt(_second.FurnitureRoot.GetChildCount()).IsEqual(1);
-        var restored = (PlacedFurniture)_second.FurnitureRoot.GetChild(0);
-        AssertBool(restored.Pose.X == -4f && restored.Pose.Z == 6f).IsTrue();
+        // The starting furniture comes back beside the shelf on the lot.
+        AssertInt(_second.FurnitureRoot.GetChildCount()).IsEqual(standing + 1);
+        AssertInt(_second.FurnitureRoot.GetChildren().OfType<PlacedFurniture>()
+            .Count(placed => placed.Pose.X == -4f && placed.Pose.Z == 6f)).IsEqual(1);
     }
 
     // Every node of the shop scene that is named like a door, doorway or portal.

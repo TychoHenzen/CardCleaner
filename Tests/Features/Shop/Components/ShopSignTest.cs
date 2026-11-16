@@ -103,7 +103,8 @@ public class ShopSignTest
         public event Action? Opened;
         public event Action<DayReport>? Closed;
         public event Action? Restored;
-        public event Action<int, int>? TimeChanged;
+        // The sign never listens for the time, so the fake has nothing to raise.
+        public event Action<int, int>? TimeChanged { add { } remove { } }
 
         public void OpenShop() => OpenCalls++;
 

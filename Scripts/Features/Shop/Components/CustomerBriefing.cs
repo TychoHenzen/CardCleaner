@@ -18,6 +18,7 @@ internal sealed class CustomerBriefing
     private readonly HashSet<string> _claimed = new(StringComparer.Ordinal);
     private readonly Func<SceneTree> _tree;
     private readonly Func<IRandom> _random;
+    private int _browseTurn;
 
     /// <param name="tree">The tree whose shelves the customers shop at.</param>
     /// <param name="random">The random source for wishes, rolls and the payment method.</param>
@@ -35,7 +36,15 @@ internal sealed class CustomerBriefing
         // of each customer is unchanged.
         customer.Method = rng.RandiRange(0, 1) == 0 ? PaymentMethod.Card : PaymentMethod.Cash;
         Claim(customer, plan);
-        customer.Begin(plan, offers, counter, exit);
+        customer.Begin(plan, offers, counter, exit, plan.Count == 0 ? NextBrowsePoint(offers) : null);
+    }
+
+    // ASSUMPTION (Low): customers with nothing to buy take the shelf slots in turn rather than a random one, so
+    // the plan draws of later customers stay what they were before browsing existed.
+    private Vector3? NextBrowsePoint(ShelfOfferIndex offers)
+    {
+        var points = offers.BrowsePoints();
+        return points.Count == 0 ? null : points[_browseTurn++ % points.Count];
     }
 
     private void Claim(Customer customer, IReadOnlyList<PlannedPick> plan)

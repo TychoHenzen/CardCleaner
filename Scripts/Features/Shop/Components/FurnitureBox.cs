@@ -55,6 +55,17 @@ public partial class FurnitureBox : RigidBody3D, IInteractable, IDependent
             _placement!.Begin(this);
     }
 
+    /// <summary>
+    ///     Lifts the box out of the shop while its piece is being placed, or sets it down again. A lifted box is hidden
+    ///     and out of the physics space (a disabled body leaves the space), so the piece can go down where the box stood;
+    ///     it stays in the tree, so a save meanwhile still records the unopened box.
+    /// </summary>
+    public void SetCarried(bool carried)
+    {
+        Visible = !carried;
+        ProcessMode = carried ? ProcessModeEnum.Disabled : ProcessModeEnum.Inherit;
+    }
+
     public void Highlight()
     {
         if (HighlightMesh != null)

@@ -10,9 +10,9 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     covers from above, and a shape past the last row takes none. An item fits a slot when its shapes stay inside
 ///     <see cref="FloorClearance" /> (when one is set) and overlap no shape of an item in the same height range. It
 ///     goes on the first free ground slot it fits, otherwise on the lowest stack it fits that keeps it under
-///     <see cref="MaxStackHeight" />, and is refused when there is none. The footprint is the solid shapes plus the
-///     triggers under a node in <see cref="FootprintGroup" />, less every shape under a node in
-///     <see cref="NoFootprintGroup" />; other triggers take no space.
+///     <see cref="MaxStackHeight" /> and holds up its whole footprint, and is refused when there is none. The
+///     footprint is the solid shapes plus the triggers under a node in <see cref="FootprintGroup" />, less every
+///     shape under a node in <see cref="NoFootprintGroup" />; other triggers take no space.
 /// </summary>
 public partial class DeliveryMarker : Marker3D
 {
@@ -34,6 +34,10 @@ public partial class DeliveryMarker : Marker3D
 
     // Overlaps and height gaps shorter than this are touching, not overlapping, so a shared face refuses nothing.
     private const float OverlapEpsilon = 0.001f;
+
+    // How far a stacked item may overhang its support, and how far a support's top may sit below the stack top, in
+    // metres. Delivered bodies settle by a few millimetres, so equal items still stack on each other.
+    private const float SupportTolerance = 0.05f;
 
     private readonly List<Node3D> _delivered = [];
 
@@ -88,12 +92,36 @@ public partial class DeliveryMarker : Marker3D
             var lift = stackTop[slot] + StackGap;
             if (lift + height > MaxStackHeight)
                 return null;
-            if (Fits(local, localBounds, slotOffset(slot) + Vector3.Up * lift, occupants))
+            var offset = slotOffset(slot) + Vector3.Up * lift;
+            if (Supported(local, offset, stackTop[slot], occupants) && Fits(local, localBounds, offset, occupants))
                 return new Placement(slot, lift);
         }
 
         return null;
     }
+
+    /// <summary>
+    ///     Whether an item stacked at <paramref name="offset" /> would rest on something under all of it: seen from
+    ///     above, each of its shapes lies inside a shape whose top is the stack top it rests on, give or take
+    ///     <see cref="SupportTolerance" />. So a shelf box is never stacked on a booster, and nothing hangs in the air.
+    /// </summary>
+    private bool Supported(Aabb[] localShapes, Vector3 offset, float stackTop, IReadOnlyList<Occupant> occupants)
+    {
+        var supports = occupants
+            .SelectMany(occupant => occupant.Shapes)
+            .Where(shape => Mathf.Abs(Mathf.Max(shape.End.Y - GlobalPosition.Y, MinItemHeight) - stackTop)
+                            <= SupportTolerance)
+            .ToArray();
+        return localShapes
+            .Select(box => new Aabb(box.Position + GlobalPosition + offset, box.Size))
+            .All(shape => supports.Any(support => Holds(support, shape)));
+    }
+
+    // Seen from above, the support's top covers the shape, letting the shape overhang by the tolerance on each side.
+    private static bool Holds(Aabb support, Aabb shape) =>
+        shape.Position.X >= support.Position.X - SupportTolerance && shape.End.X <= support.End.X + SupportTolerance
+        && shape.Position.Z >= support.Position.Z - SupportTolerance
+        && shape.End.Z <= support.End.Z + SupportTolerance;
 
     /// <summary>Starts treating <paramref name="item" /> as an occupant of this area.</summary>
     public void Track(Node3D item) => _delivered.Add(item);

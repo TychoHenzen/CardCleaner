@@ -12,6 +12,8 @@ public partial class CheckoutKeypadPanel : VBoxContainer
 {
     private const int LastDigit = 9;
     private const int Columns = 3;
+    private const int ReadoutFontSize = 26;
+    private static readonly Vector2 KeySize = new(110, 48);
 
     private readonly Dictionary<int, Button> _digits = new();
     private Label _readout = null!;
@@ -36,10 +38,12 @@ public partial class CheckoutKeypadPanel : VBoxContainer
 
     public override void _Ready()
     {
-        _readout = new Label();
+        _readout = new Label { HorizontalAlignment = HorizontalAlignment.Center };
+        _readout.AddThemeFontSizeOverride("font_size", ReadoutFontSize);
         AddChild(_readout);
 
-        var grid = new GridContainer { Columns = Columns };
+        // Every key has the same minimum size and expands, so the three columns stay equally wide.
+        var grid = new GridContainer { Columns = Columns, SizeFlagsHorizontal = SizeFlags.ExpandFill };
         AddChild(grid);
         for (var digit = 1; digit <= LastDigit; digit++)
             grid.AddChild(Digit(digit));
@@ -54,7 +58,8 @@ public partial class CheckoutKeypadPanel : VBoxContainer
     /// <summary>Shows the digits typed so far and the total they are paid against.</summary>
     public void ShowEntry(string typed, int total)
     {
-        _readout.Text = $"Typed: {typed}   Total: {total}";
+        var entered = typed.Length == 0 ? "-" : typed;
+        _readout.Text = $"Due {total}   Entered {entered}";
     }
 
     private Button Digit(int digit)
@@ -66,7 +71,10 @@ public partial class CheckoutKeypadPanel : VBoxContainer
 
     private static Button Plain(string text, Action onPressed)
     {
-        var button = new Button { Text = text };
+        var button = new Button
+        {
+            Text = text, CustomMinimumSize = KeySize, SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
         button.Pressed += onPressed;
         return button;
     }

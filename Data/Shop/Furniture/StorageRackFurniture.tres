@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="FurnitureItem" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Models/FurnitureItem.cs" id="FurnitureItemScript"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/StorageRack.tscn" id="StorageRack"]
+
+[resource]
+script = ExtResource("FurnitureItemScript")
+Id = "storage_rack"
+DisplayName = "Storage rack"
+Scene = ExtResource("StorageRack")
+Width = 2.13
+Depth = 1.0
+Height = 2.0

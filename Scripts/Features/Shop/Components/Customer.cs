@@ -10,12 +10,16 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 /// <summary>
 ///     A shop customer. It walks its planned picks on the baked navigation mesh (through a
 ///     <see cref="CustomerNavigator" />), takes or refuses each one, hands its basket to the checkout through
-///     <see cref="Handoff" />, waits in line, walks to the despawn point and frees itself.
+///     <see cref="Handoff" />, waits in line, walks to the despawn point and frees itself. A customer with nothing
+///     to buy walks to its browse point first and looks for <see cref="BrowseSeconds" />. Every customer that
+///     leaves empty-handed says why: the price complaint of a refused pick, or "nothing in stock" when it found
+///     nothing it could take.
 /// </summary>
 public partial class Customer : CharacterBody3D, ICheckoutCustomer
 {
     private const float DefaultSpeed = 1.6f;
     private const float DefaultStuckSeconds = 8f;
+    private const float DefaultBrowseSeconds = 2f;
 
     private readonly CarriedStock _carried = new();
     private IReadOnlyList<PlannedPick> _plan = Array.Empty<PlannedPick>();
@@ -23,15 +27,20 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
     private CustomerNavigator? _navigator;
     private Vector3 _counter;
     private Vector3 _despawn;
+    private Vector3? _browse;
     private Walk _walk = Walk.None;
     private int _next;
     private int _visited;
+    private double _lookLeft;
+    private bool _looking;
+    private bool _complained;
     private bool _finishedRaised;
 
     private enum Walk
     {
         None,
         ToPick,
+        ToBrowse,
         ToCounter,
         ToQueue,
         ToDespawn,
@@ -42,6 +51,10 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
 
     [Export]
     public float StuckSeconds { get; set; } = DefaultStuckSeconds;
+
+    /// <summary>How long a customer with nothing to buy stands at its browse point before it gives up.</summary>
+    [Export]
+    public float BrowseSeconds { get; set; } = DefaultBrowseSeconds;
 
     /// <summary>Set by the spawner before the customer enters the tree.</summary>
     public ICheckoutHandoff? Handoff { get; set; }
@@ -63,18 +76,23 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
     public override void _ExitTree()
     {
         _carried.Free();
+        DiscardLooks();
         RaiseFinished();
     }
 
     /// <summary>
-    ///     Starts the visit: walk the picks in order, then the counter when carrying, then the despawn point.
+    ///     Starts the visit: walk the picks in order, then the counter when carrying, then the despawn point. With no
+    ///     pick to visit, the customer looks at <paramref name="browse" /> first (when given), then complains and
+    ///     leaves.
     /// </summary>
-    public void Begin(IReadOnlyList<PlannedPick> plan, ShelfOfferIndex offers, Vector3 counter, Vector3 despawn)
+    public void Begin(
+        IReadOnlyList<PlannedPick> plan, ShelfOfferIndex offers, Vector3 counter, Vector3 despawn, Vector3? browse)
     {
         _plan = plan;
         _offers = offers;
         _counter = counter;
         _despawn = despawn;
+        _browse = browse;
         _next = 0;
         _visited = 0;
         WalkToNextPick();
@@ -83,6 +101,7 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
     /// <summary>Ends the visit now: carried items go back to their slots, then the customer leaves.</summary>
     public void GiveUp()
     {
+        _looking = false;
         _carried.ReturnToSlots();
         if (State == CustomerState.Leaving)
         {
@@ -97,6 +116,11 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
     {
         if (_walk != Walk.None)
             _navigator?.Step(delta, Speed, StuckSeconds);
+        else if (_looking && (_lookLeft -= delta) <= 0)
+        {
+            _looking = false;
+            LeaveEmptyHanded();
+        }
     }
 
     private void StartWalk(Walk walk, Vector3 target)
@@ -132,7 +156,28 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
             return;
         }
 
+        if (_visited == 0 && _browse is { } browse)
+        {
+            _browse = null;
+            State = CustomerState.Browsing;
+            StartWalk(Walk.ToBrowse, browse);
+            return;
+        }
+
+        LeaveEmptyHanded();
+    }
+
+    private void LeaveEmptyHanded()
+    {
+        if (!_complained)
+            Complain(RefusalReason.NothingInStock);
         StartLeaving();
+    }
+
+    private void Complain(RefusalReason reason)
+    {
+        _complained = true;
+        Complaints?.Add(RefusalText.For(reason));
     }
 
     private void Arrived()
@@ -148,6 +193,10 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
                 _next++;
                 WalkToNextPick();
                 break;
+            case Walk.ToBrowse:
+                _lookLeft = BrowseSeconds;
+                _looking = true;
+                break;
             case Walk.ToCounter:
                 HandOverBasket();
                 break;
@@ -159,7 +208,7 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
         }
     }
 
-    // A slot whose stock is gone is skipped with no purchase and no complaint.
+    // A slot whose stock is gone is skipped with no purchase; the customer complains only if it ends up with nothing.
     private void TryPick(PlannedPick pick)
     {
         var slot = _offers!.SlotFor(pick.Offer.OfferId);
@@ -168,7 +217,7 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
 
         if (!pick.Outcome.Buys)
         {
-            Complaints?.Add(RefusalText.For(pick.Outcome.Reason ?? RefusalReason.PriceTooHigh));
+            Complain(pick.Outcome.Reason ?? RefusalReason.PriceTooHigh);
             return;
         }
 

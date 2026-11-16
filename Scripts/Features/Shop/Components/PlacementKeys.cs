@@ -20,6 +20,7 @@ internal sealed class PlacementKeys
         input.RegisterAction(_owner, "furniture_confirm", Key.E, _actions.Confirm);
         input.RegisterAction(_owner, "furniture_cancel", Key.C, _actions.Cancel);
         input.RegisterAction(_owner, "furniture_pickup", Key.G, _actions.PickUp);
+        input.RegisterAction(_owner, "furniture_pack", Key.B, _actions.Pack);
     }
 
     public void Unbind() => _input?.UnregisterAllActions(_owner);
