@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
@@ -43,8 +44,10 @@ internal static class FurnitureProbe
     {
         var from = camera.GlobalPosition;
         var to = from - camera.GlobalBasis.Z * PickUpReach;
-        var result = world.DirectSpaceState.IntersectRay(
-            PhysicsRayQueryParameters3D.Create(from, to, FurnitureLayerMask));
+        var query = PhysicsRayQueryParameters3D.Create(from, to, FurnitureLayerMask);
+        // The player's capsule is on the furniture layer too and the camera sits on its top.
+        query.Exclude = CameraRay.OwnBodies(camera);
+        var result = world.DirectSpaceState.IntersectRay(query);
         if (result.Count == 0 || result["collider"].Obj is not Node3D hit)
             return null;
 

@@ -39,7 +39,43 @@ public partial class DeliveryMarker : Marker3D
     // metres. Delivered bodies settle by a few millimetres, so equal items still stack on each other.
     private const float SupportTolerance = 0.05f;
 
+    /// <summary>Slot columns along X of a marker that sets no grid of its own.</summary>
+    public const int DefaultColumns = 3;
+
+    /// <summary>Slot rows along Z of a marker that sets no grid of its own.</summary>
+    public const int DefaultRows = 2;
+
+    /// <summary>
+    ///     Cell width (X) of a marker that sets no grid of its own: fits the 2.1 m shelf in one column. A wider
+    ///     footprint, such as an arcade cabinet with its holders, takes the next slot that clears every shape.
+    /// </summary>
+    public const float DefaultCellWidth = 2.3f;
+
+    /// <summary>
+    ///     Cell depth (Z) of a marker that sets no grid of its own: fits the 1 m deep shelf in one row. A deeper
+    ///     footprint takes the next slot that clears every shape.
+    /// </summary>
+    public const float DefaultCellDepth = 1.5f;
+
     private readonly List<Node3D> _delivered = [];
+
+    /// <summary>Slot columns along X, centred on the marker.</summary>
+    [Export]
+    public int Columns { get; set; } = DefaultColumns;
+
+    /// <summary>Slot rows along Z, centred on the marker.</summary>
+    [Export]
+    public int Rows { get; set; } = DefaultRows;
+
+    /// <summary>
+    ///     Width (X) and depth (Z) of one slot's cell, in metres. Size it to the items this area receives: every item
+    ///     takes a whole ground cell, so cells sized for shelves leave no room for small stock.
+    /// </summary>
+    [Export]
+    public Vector2 CellSize { get; set; } = new(DefaultCellWidth, DefaultCellDepth);
+
+    /// <summary>How many ground slots the grid has.</summary>
+    public int SlotCount => Columns * Rows;
 
     /// <summary>
     ///     Clearance above the marker, in metres, that stacked deliveries must stay under. Set it to the room's
@@ -54,6 +90,26 @@ public partial class DeliveryMarker : Marker3D
     /// </summary>
     [Export]
     public Rect2 FloorClearance { get; set; }
+
+    /// <summary>Offset from this marker of slot <paramref name="index" />'s centre in this marker's own grid.</summary>
+    public Vector3 SlotOffset(int index) => GridOffset(index, Columns, Rows, CellSize);
+
+    /// <summary>
+    ///     Offset of slot <paramref name="index" /> in a grid of <paramref name="columns" /> by
+    ///     <paramref name="rows" /> cells centred on the marker, filled row by row.
+    /// </summary>
+    public static Vector3 GridOffset(int index, int columns, int rows, Vector2 cellSize)
+    {
+        var column = index % columns;
+        var row = index / columns;
+        return new Vector3(
+            (column - (columns - 1) / 2f) * cellSize.X,
+            0f,
+            (row - (rows - 1) / 2f) * cellSize.Y);
+    }
+
+    /// <summary>Where the next item should go in this marker's own grid; see the overload below.</summary>
+    public Placement? FindPlacement(Node3D item) => FindPlacement(SlotCount, SlotOffset, CellSize, item);
 
     /// <summary>
     ///     Where the next item should go: the first free ground slot <paramref name="item" /> fits on, otherwise the

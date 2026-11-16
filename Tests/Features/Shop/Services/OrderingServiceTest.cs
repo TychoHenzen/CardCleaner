@@ -3,6 +3,7 @@ using System.Linq;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Services;
@@ -69,7 +70,7 @@ public class OrderingServiceTest
         AssertThat(_money.Balance).IsEqual(StartingBalance - 100);
         AssertThat(result.Spawned).IsNotNull();
         AssertThat(result.Spawned!.GetParent()).IsEqual(_world);
-        AssertBool(result.Spawned.GlobalPosition.IsEqualApprox(DeliveryPosition + OrderingService.SlotOffset(0)))
+        AssertBool(result.Spawned.GlobalPosition.IsEqualApprox(DeliveryPosition + DefaultDeliveryGrid.SlotOffset(0)))
             .IsTrue();
     }
 
@@ -172,7 +173,7 @@ public class OrderingServiceTest
         _money.Add(10000);
         var spool = MakeBoxItem("spool", 1, 0.46f, SpoolHeight);
         var positions = new List<Vector3>();
-        for (var order = 0; order < 3 * OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+        for (var order = 0; order < 3 * DefaultDeliveryGrid.SlotCount; order++)
         {
             var result = _ordering.Order(spool);
             AssertBool(result.Succeeded).IsTrue();
@@ -183,8 +184,8 @@ public class OrderingServiceTest
         for (var j = i + 1; j < positions.Count; j++)
         {
             var apart = positions[i] - positions[j];
-            var separated = Mathf.Abs(apart.X) >= OrderingService.SlotSpacingX - 0.001f
-                            || Mathf.Abs(apart.Z) >= OrderingService.SlotSpacingZ - 0.001f
+            var separated = Mathf.Abs(apart.X) >= DefaultDeliveryGrid.CellWidth - 0.001f
+                            || Mathf.Abs(apart.Z) >= DefaultDeliveryGrid.CellDepth - 0.001f
                             || Mathf.Abs(apart.Y) >= SpoolHeight;
             AssertBool(separated).IsTrue();
         }
@@ -196,7 +197,7 @@ public class OrderingServiceTest
     {
         _money.Add(10000);
         var cheap = MakeItem("cheap", 1);
-        var perLayer = OrderingService.SlotColumns * OrderingService.SlotRows;
+        var perLayer = DefaultDeliveryGrid.SlotCount;
         var spawned = Enumerable.Range(0, perLayer + 1).Select(_ => _ordering.Order(cheap).Spawned!.GlobalPosition)
             .ToList();
         var firstLayer = spawned.Take(perLayer).ToList();
@@ -221,15 +222,15 @@ public class OrderingServiceTest
         var elsewhereAgain = _ordering.Order(_crate, other);
 
         AssertBool(elsewhere.Spawned!.GlobalPosition.IsEqualApprox(
-            other.GlobalPosition + OrderingService.SlotOffset(0)))
+            other.GlobalPosition + DefaultDeliveryGrid.SlotOffset(0)))
             .IsTrue();
         AssertBool(elsewhereAgain.Spawned!.GlobalPosition.IsEqualApprox(
-            other.GlobalPosition + OrderingService.SlotOffset(1)))
+            other.GlobalPosition + DefaultDeliveryGrid.SlotOffset(1)))
             .IsTrue();
         AssertBool(first.Spawned!.GlobalPosition.IsEqualApprox(
-            DeliveryPosition + OrderingService.SlotOffset(0))).IsTrue();
+            DeliveryPosition + DefaultDeliveryGrid.SlotOffset(0))).IsTrue();
         AssertBool(second.Spawned!.GlobalPosition.IsEqualApprox(
-            DeliveryPosition + OrderingService.SlotOffset(1))).IsTrue();
+            DeliveryPosition + DefaultDeliveryGrid.SlotOffset(1))).IsTrue();
         AssertThat(_ordering.DeliveredCount).IsEqual(4);
     }
 
@@ -240,12 +241,12 @@ public class OrderingServiceTest
         _money.Add(10000);
         var ground = AddGroundMarker();
         var cabinet = MakeBoxItem("cabinet", 1, CabinetWidth, CabinetHeight);
-        for (var order = 0; order < OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+        for (var order = 0; order < DefaultDeliveryGrid.SlotCount; order++)
         {
             var delivered = _ordering.Order(cabinet, ground);
             AssertBool(delivered.Succeeded).IsTrue();
             AssertBool(delivered.Spawned!.GlobalPosition.IsEqualApprox(
-                ground.GlobalPosition + OrderingService.SlotOffset(order))).IsTrue();
+                ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(order))).IsTrue();
         }
 
         var balance = _money.Balance;
@@ -267,7 +268,7 @@ public class OrderingServiceTest
         _money.Add(10000);
         var ground = AddGroundMarker();
         var spool = MakeBoxItem("spool", 1, 0.46f, SpoolHeight);
-        var perLayer = OrderingService.SlotColumns * OrderingService.SlotRows;
+        var perLayer = DefaultDeliveryGrid.SlotCount;
 
         for (var order = 0; order < ManyDeliveries; order++)
         {
@@ -297,7 +298,7 @@ public class OrderingServiceTest
 
         var result = _ordering.Order(spool, ground);
 
-        AssertBool(delivered > OrderingService.SlotColumns * OrderingService.SlotRows).IsTrue();
+        AssertBool(delivered > DefaultDeliveryGrid.SlotCount).IsTrue();
         AssertThat(result.Status).IsEqual(OrderStatus.DeliveryFull);
         AssertThat(_money.Balance).IsEqual(balance);
     }
@@ -309,7 +310,7 @@ public class OrderingServiceTest
         _money.Add(10000);
         var ground = AddGroundMarker();
         var cheap = MakeItem("cheap", 1);
-        var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
+        var delivered = Enumerable.Range(0, DefaultDeliveryGrid.SlotCount)
             .Select(_ => _ordering.Order(cheap, ground).Spawned!).ToList();
 
         delivered[2].QueueFree();
@@ -317,7 +318,7 @@ public class OrderingServiceTest
 
         AssertBool(replacement.Succeeded).IsTrue();
         AssertBool(replacement.Spawned!.GlobalPosition.IsEqualApprox(
-            ground.GlobalPosition + OrderingService.SlotOffset(2))).IsTrue();
+            ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(2))).IsTrue();
     }
 
     [TestCase]
@@ -327,7 +328,7 @@ public class OrderingServiceTest
         _money.Add(10000);
         var ground = AddGroundMarker();
         var cheap = MakeItem("cheap", 1);
-        var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
+        var delivered = Enumerable.Range(0, DefaultDeliveryGrid.SlotCount)
             .Select(_ => _ordering.Order(cheap, ground).Spawned!).ToList();
 
         delivered[0].GlobalPosition += new Vector3(30f, 0f, 0f);
@@ -335,7 +336,7 @@ public class OrderingServiceTest
 
         AssertBool(replacement.Succeeded).IsTrue();
         AssertBool(replacement.Spawned!.GlobalPosition.IsEqualApprox(
-            ground.GlobalPosition + OrderingService.SlotOffset(0))).IsTrue();
+            ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(0))).IsTrue();
     }
 
     [TestCase]
@@ -345,7 +346,7 @@ public class OrderingServiceTest
         _money.Add(10000);
         var ground = AddGroundMarker();
         var cabinet = MakeBoxItem("cabinet", 1, CabinetWidth, CabinetHeight);
-        var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
+        var delivered = Enumerable.Range(0, DefaultDeliveryGrid.SlotCount)
             .Select(_ => _ordering.Order(cabinet, ground).Spawned!).ToList();
 
         // Past half the slot depth, yet the 1.3 m collider still reaches into the slot.
@@ -362,13 +363,13 @@ public class OrderingServiceTest
         _money.Add(10000);
         var ground = AddGroundMarker();
         var cabinet = MakeBoxItem("cabinet", 1, CabinetWidth, CabinetHeight);
-        var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
+        var delivered = Enumerable.Range(0, DefaultDeliveryGrid.SlotCount)
             .Select(_ => _ordering.Order(cabinet, ground).Spawned!).ToList();
 
         // Slot 0 and slot 1 sit side by side; park the first item on their shared edge and carry slot 1's own item
         // away: both stay taken.
-        delivered[0].GlobalPosition = ground.GlobalPosition + OrderingService.SlotOffset(0)
-                                      + new Vector3(OrderingService.SlotSpacingX / 2f, 0f, 0f);
+        delivered[0].GlobalPosition = ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(0)
+                                      + new Vector3(DefaultDeliveryGrid.CellWidth / 2f, 0f, 0f);
         delivered[1].GlobalPosition += new Vector3(30f, 0f, 0f);
         var result = _ordering.Order(cabinet, ground);
 
@@ -382,7 +383,7 @@ public class OrderingServiceTest
         _money.Add(10000);
         var ground = AddGroundMarker();
         var cheap = MakeItem("cheap", 1);
-        var delivered = Enumerable.Range(0, OrderingService.SlotColumns * OrderingService.SlotRows)
+        var delivered = Enumerable.Range(0, DefaultDeliveryGrid.SlotCount)
             .Select(_ => _ordering.Order(cheap, ground).Spawned!).ToList();
 
         _world.RemoveChild(delivered[4]);
@@ -390,7 +391,7 @@ public class OrderingServiceTest
 
         AssertBool(replacement.Succeeded).IsTrue();
         AssertBool(replacement.Spawned!.GlobalPosition.IsEqualApprox(
-            ground.GlobalPosition + OrderingService.SlotOffset(4))).IsTrue();
+            ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(4))).IsTrue();
         delivered[4].Free();
     }
 
@@ -401,7 +402,7 @@ public class OrderingServiceTest
         _money.Add(10000);
         var ground = AddGroundMarker();
         var cabinet = MakeBoxItem("cabinet", 1, CabinetWidth, CabinetHeight);
-        for (var order = 0; order <= OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+        for (var order = 0; order <= DefaultDeliveryGrid.SlotCount; order++)
             _ordering.Order(cabinet, ground);
 
         AssertBool(_ordering.Order(MakeItem("cheap", 1)).Succeeded).IsTrue();
@@ -422,7 +423,7 @@ public class OrderingServiceTest
             var delivered = _ordering.Order(reacher, ground);
             AssertBool(delivered.Succeeded).IsTrue();
             var at = delivered.Spawned!.GlobalPosition;
-            var expected = ground.GlobalPosition + OrderingService.SlotOffset(expectedSlots[order]);
+            var expected = ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(expectedSlots[order]);
             AssertBool(at.IsEqualApprox(expected))
                 .OverrideFailureMessage($"reacher {order} landed at {at}, expected {expected}")
                 .IsTrue();
@@ -444,8 +445,8 @@ public class OrderingServiceTest
         var secondAt = DeliveredAt(_ordering.Order(reacher, ground), "second");
         var third = _ordering.Order(reacher, ground);
 
-        var firstSlot = ground.GlobalPosition + OrderingService.SlotOffset(0);
-        var secondSlot = ground.GlobalPosition + OrderingService.SlotOffset(2);
+        var firstSlot = ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(0);
+        var secondSlot = ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(2);
         AssertBool(firstAt.IsEqualApprox(firstSlot))
             .OverrideFailureMessage($"first order landed at {firstAt}, expected {firstSlot}")
             .IsTrue();
@@ -462,7 +463,7 @@ public class OrderingServiceTest
         _money.Add(10000);
         var ground = AddGroundMarker();
         var spool = MakeBoxItem("spool", 1, 0.46f, SpoolHeight);
-        for (var order = 0; order < OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+        for (var order = 0; order < DefaultDeliveryGrid.SlotCount; order++)
             DeliveredAt(_ordering.Order(spool, ground), $"spool {order}");
         var balance = _money.Balance;
 
@@ -472,7 +473,7 @@ public class OrderingServiceTest
 
         AssertThat(slab.Status).IsEqual(OrderStatus.DeliveryFull);
         AssertThat(_money.Balance).IsEqual(balance - 1);
-        var expected = ground.GlobalPosition + OrderingService.SlotOffset(0)
+        var expected = ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(0)
                        + Vector3.Up * (SpoolHeight + DeliveryMarker.StackGap);
         AssertBool(spoolOnTop.IsEqualApprox(expected))
             .OverrideFailureMessage($"stacked spool landed at {spoolOnTop}, expected {expected}")
@@ -487,13 +488,13 @@ public class OrderingServiceTest
         var ground = AddGroundMarker();
         // Like the workshop conveyor, whose tilted belt has axis-aligned bounds that dip below the item's origin.
         var belt = MakeShapesItem("belt", 1, (new Vector3(0f, BeltCentre, 0f), new Vector3(1f, BeltHeight, 1f)));
-        for (var order = 0; order < OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+        for (var order = 0; order < DefaultDeliveryGrid.SlotCount; order++)
             DeliveredAt(_ordering.Order(belt, ground), $"ground order {order}");
 
         var stackedAt = DeliveredAt(_ordering.Order(belt, ground), "stacked");
 
         var beltTop = BeltCentre + BeltHeight / 2f;
-        var expected = ground.GlobalPosition + OrderingService.SlotOffset(0)
+        var expected = ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(0)
                        + Vector3.Up * (beltTop + DeliveryMarker.StackGap);
         AssertBool(stackedAt.IsEqualApprox(expected))
             .OverrideFailureMessage($"stacked belt landed at {stackedAt}, expected {expected}")
@@ -516,10 +517,10 @@ public class OrderingServiceTest
         var tall = MakeBoxItem("tall", 1, TallWidth, TallHeight);
         var slotOne = _ordering.Order(tall, ground);
         var slotOneAt = DeliveredAt(slotOne, "tall on slot 1");
-        AssertBool(slotOneAt.IsEqualApprox(ground.GlobalPosition + OrderingService.SlotOffset(1)))
+        AssertBool(slotOneAt.IsEqualApprox(ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(1)))
             .OverrideFailureMessage($"tall landed at {slotOneAt}, expected slot 1")
             .IsTrue();
-        for (var order = 2; order < OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+        for (var order = 2; order < DefaultDeliveryGrid.SlotCount; order++)
             DeliveredAt(_ordering.Order(tall, ground), $"tall {order}");
 
         // The hat's box dips 0.1 m below its feet, so it stacks on the post at the usual lift.
@@ -528,7 +529,7 @@ public class OrderingServiceTest
             1,
             (new Vector3(0f, HatCentreY, 0f), new Vector3(HatWidth, HatHeight, SlabDepth)));
         var hatAt = DeliveredAt(_ordering.Order(hat, ground), "hat");
-        var hatFeet = ground.GlobalPosition + OrderingService.SlotOffset(0)
+        var hatFeet = ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(0)
                       + Vector3.Up * (PostHeight + DeliveryMarker.StackGap);
         AssertBool(hatAt.IsEqualApprox(hatFeet))
             .OverrideFailureMessage($"hat landed at {hatAt}, expected {hatFeet}")
@@ -541,7 +542,7 @@ public class OrderingServiceTest
             1,
             (new Vector3(0f, NeighbourHeight / 2f, 0f), new Vector3(NeighbourWidth, NeighbourHeight, SlabDepth)));
         var neighbourAt = DeliveredAt(_ordering.Order(neighbour, ground), "neighbour");
-        var slotOneGround = ground.GlobalPosition + OrderingService.SlotOffset(1);
+        var slotOneGround = ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(1);
         AssertBool(neighbourAt.IsEqualApprox(slotOneGround))
             .OverrideFailureMessage($"neighbour landed at {neighbourAt}, expected {slotOneGround}")
             .IsTrue();
@@ -554,10 +555,10 @@ public class OrderingServiceTest
         _money.Add(10000);
         var ground = AddGroundMarker();
         var tile = MakeBoxItem("tile", 1, ArmCube, TileHeight);
-        for (var order = 0; order < OrderingService.SlotColumns * OrderingService.SlotRows; order++)
+        for (var order = 0; order < DefaultDeliveryGrid.SlotCount; order++)
             DeliveredAt(_ordering.Order(tile, ground), $"tile {order}");
-        var rightArm = MakeArm("right_arm", OrderingService.SlotSpacingX);
-        var leftArm = MakeArm("left_arm", -OrderingService.SlotSpacingX);
+        var rightArm = MakeArm("right_arm", DefaultDeliveryGrid.CellWidth);
+        var leftArm = MakeArm("left_arm", -DefaultDeliveryGrid.CellWidth);
 
         // The right arm stacks on slot 0 and reaches over slot 1. On slot 2, the next lowest stack, the left arm would
         // reach over slot 1 at the same height; on slot 3 its reach would hang past the grid with no tile under it. So
@@ -566,8 +567,8 @@ public class OrderingServiceTest
         var leftAt = DeliveredAt(_ordering.Order(leftArm, ground), "left arm");
 
         var lift = Vector3.Up * (TileHeight + DeliveryMarker.StackGap);
-        var rightSlot = ground.GlobalPosition + OrderingService.SlotOffset(0) + lift;
-        var leftSlot = ground.GlobalPosition + OrderingService.SlotOffset(4) + lift;
+        var rightSlot = ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(0) + lift;
+        var leftSlot = ground.GlobalPosition + DefaultDeliveryGrid.SlotOffset(4) + lift;
         AssertBool(rightAt.IsEqualApprox(rightSlot))
             .OverrideFailureMessage($"right arm landed at {rightAt}, expected {rightSlot}")
             .IsTrue();

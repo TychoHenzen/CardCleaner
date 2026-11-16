@@ -23,6 +23,9 @@ namespace CardCleaner.Tests.Scenes;
 public class ShopCheckoutSceneTest
 {
     private const float StandingDistanceToCounter = 2.9f;
+
+    // The player's eyes above the floor: the body's origin stands 0.9 m up and its Head 0.9 m above that.
+    private const float EyeHeight = 1.8f;
     private const uint InteractableLayerBit = 4;
     private const string CounterArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Prop_CheckoutCounter_01.fbx";
 
@@ -104,7 +107,11 @@ public class ShopCheckoutSceneTest
         _rig.Counter.Checkout(customer);
         _rig.ScanAll();
 
+        // The player reads what is owed back on the screen itself: 7 due, 10 handed over, 3 to give back.
+        AssertThat(_rig.Ui.ChangePanel.Readout.Text).IsEqual("Due 7   Handed 10\nGive back 3   Picked 0");
+
         await ShopCheckoutRig.Click(_rig.Ui.ChangePanel.DenominationButton(1));
+        AssertThat(_rig.Ui.ChangePanel.Readout.Text).IsEqual("Due 7   Handed 10\nGive back 3   Picked 1");
         await ShopCheckoutRig.Click(_rig.Ui.ChangePanel.DenominationButton(1));
         await ShopCheckoutRig.Click(_rig.Ui.ChangePanel.DenominationButton(1));
         await ShopCheckoutRig.Click(_rig.Ui.ChangePanel.ConfirmButton);
@@ -221,7 +228,7 @@ public class ShopCheckoutSceneTest
     [TestCategory("Unit")]
     public async Task PlayerInteractionRayReachesTheCounterFromInFrontOfItOnlyWhileAPaymentWaits()
     {
-        var from = _rig.Counter.GlobalPosition + new Vector3(0f, 1.0f, StandingDistanceToCounter);
+        var from = _rig.Counter.GlobalPosition + new Vector3(0f, EyeHeight, StandingDistanceToCounter);
 
         AssertThat(AimedFromTheFront(from)).IsNotEqual(_rig.Counter);
 
@@ -235,7 +242,8 @@ public class ShopCheckoutSceneTest
         AssertBool(from.DistanceTo(_rig.Counter.GlobalPosition) <= _rig.Counter.InteractionRange).IsTrue();
     }
 
-    // The first body the player's interaction ray meets on its way from a standing spot to the counter's middle.
+    // The first body the player's interaction ray meets on its way from a standing spot to the middle of the
+    // counter's deck (its main collision shape), which is where a player looks to use the counter.
     private GodotObject? AimedFromTheFront(Vector3 from)
     {
         var player = _rig.Shop.GetNode<PlayerController>("Player");
@@ -243,7 +251,7 @@ public class ShopCheckoutSceneTest
         var hit = _rig.Shop.GetWorld3D().DirectSpaceState.IntersectRay(new PhysicsRayQueryParameters3D
         {
             From = from,
-            To = _rig.Counter.GlobalPosition + new Vector3(0f, 1.0f, 0f),
+            To = _rig.Counter.GetNode<CollisionShape3D>("CollisionShape3D").GlobalPosition,
             CollideWithBodies = true,
             CollisionMask = interaction.InteractableCollisionMask
         });

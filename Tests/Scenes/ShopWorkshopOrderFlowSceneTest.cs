@@ -47,7 +47,7 @@ public class ShopWorkshopOrderFlowSceneTest
         var replacement = _rig.Presses.PressForDelivery(_rig.Terminal, cabinet);
 
         AssertBool(replacement.GlobalPosition.IsEqualApprox(
-                _rig.Delivery.GlobalPosition + OrderingService.SlotOffset(0)))
+                _rig.Delivery.GlobalPosition + DefaultDeliveryGrid.SlotOffset(0)))
             .IsTrue();
         AssertThat(_rig.Ui.MessageText.Contains("Ordered")).IsTrue();
     }
@@ -102,7 +102,7 @@ public class ShopWorkshopOrderFlowSceneTest
         var stacked = _rig.Presses.PressForDelivery(_rig.Terminal, conveyor);
 
         var offset = stacked.GlobalPosition - _rig.Delivery.GlobalPosition;
-        var slot = OrderingService.SlotOffset(0);
+        var slot = DefaultDeliveryGrid.SlotOffset(0);
         AssertBool(Mathf.IsEqualApprox(offset.X, slot.X) && Mathf.IsEqualApprox(offset.Z, slot.Z) && offset.Y > 0f)
             .OverrideFailureMessage($"the stacked conveyor is at {offset} from the marker, expected above slot 0")
             .IsTrue();
@@ -121,7 +121,7 @@ public class ShopWorkshopOrderFlowSceneTest
         _rig.Pc.Interact();
         var spawned = _rig.PcPresses.PressForDelivery(0);
         AssertBool(spawned.GlobalPosition.IsEqualApprox(
-                _rig.ShopDelivery.GlobalPosition + OrderingService.SlotOffset(0)))
+                _rig.ShopDelivery.GlobalPosition + _rig.ShopDelivery.SlotOffset(0)))
             .IsTrue();
     }
 
@@ -144,7 +144,7 @@ public class ShopWorkshopOrderFlowSceneTest
             expected -= wiringPrice;
             AssertThat(_rig.Money.Balance).IsEqual(expected);
             AssertBool(workshopItem.GlobalPosition.IsEqualApprox(
-                _rig.Delivery.GlobalPosition + OrderingService.SlotOffset(round))).IsTrue();
+                _rig.Delivery.GlobalPosition + DefaultDeliveryGrid.SlotOffset(round))).IsTrue();
 
             _rig.Pc.Interact();
             var shopItem = _rig.PcPresses.PressForDelivery(boxIndex);
@@ -152,7 +152,7 @@ public class ShopWorkshopOrderFlowSceneTest
             expected -= boxPrice;
             AssertThat(_rig.Money.Balance).IsEqual(expected);
             AssertBool(shopItem.GlobalPosition.IsEqualApprox(
-                _rig.ShopDelivery.GlobalPosition + OrderingService.SlotOffset(round))).IsTrue();
+                _rig.ShopDelivery.GlobalPosition + _rig.ShopDelivery.SlotOffset(round))).IsTrue();
 
             AssertThat(_rig.PcStock.BalanceText).IsEqual($"Balance: {expected}");
             AssertThat(_rig.Ui.BalanceText).IsEqual($"Balance: {expected}");

@@ -69,7 +69,8 @@ public partial class CheckoutKeypadPanel : VBoxContainer
         return button;
     }
 
-    private static Button Plain(string text, Action onPressed)
+    /// <summary>A payment key of the shared size that grows with its row; the change panel uses it too.</summary>
+    internal static Button Plain(string text, Action onPressed)
     {
         var button = new Button
         {

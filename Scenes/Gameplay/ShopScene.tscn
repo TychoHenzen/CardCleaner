@@ -110,7 +110,13 @@ material = SubResource("GrayMaterial")
 size = Vector3(40, 0.1, 4)
 
 [sub_resource type="BoxShape3D" id="CounterShape"]
-size = Vector3(3.1, 1.1, 1.3)
+size = Vector3(3.12, 0.64, 0.8)
+
+[sub_resource type="BoxShape3D" id="CounterRegisterShape"]
+size = Vector3(0.8, 1.04, 0.3)
+
+[sub_resource type="BoxShape3D" id="CounterDisplayShape"]
+size = Vector3(1.25, 1, 0.48)
 
 [sub_resource type="BoxShape3D" id="PcShape"]
 size = Vector3(1.96, 1.3, 0.88)
@@ -194,10 +200,6 @@ size = Vector3(1.5, 0.55, 0.3)
 
 [sub_resource type="BoxShape3D" id="ArmFloorShape"]
 size = Vector3(8, 0.2, 20)
-
-[sub_resource type="BoxMesh" id="LotFloorMesh"]
-material = SubResource("GrayMaterial")
-size = Vector3(8, 0.1, 20)
 
 [sub_resource type="BoxShape3D" id="StreetNearShape"]
 size = Vector3(8, 3, 0.3)
@@ -605,11 +607,12 @@ Sign = NodePath("Sign")
 Navigation = NodePath("../Navigation")
 
 [node name="Sign" type="Label3D" parent="World/ExpansionLot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, 2)
-billboard = 1
-text = "Expansion lot (locked)"
-font_size = 48
-outline_size = 8
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.2, 2.3, 8)
+pixel_size = 0.004
+text = "Side wing for sale
+Buy it on the PC: Expansions"
+font_size = 40
+outline_size = 10
 
 [node name="Floor" type="StaticBody3D" parent="World/ExpansionLot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.1, 2)
@@ -617,9 +620,127 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.1, 2)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="World/ExpansionLot/Floor"]
 shape = SubResource("ArmFloorShape")
 
-[node name="FloorMesh" type="MeshInstance3D" parent="World/ExpansionLot/Floor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
-mesh = SubResource("LotFloorMesh")
+[node name="FloorArt" type="Node3D" parent="World/ExpansionLot"]
+
+[node name="Tile_0_0" type="Node3D" parent="World/ExpansionLot/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -8)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Tint = Color(1, 0.84, 0.64, 1)
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/ExpansionLot/FloorArt/Tile_0_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_0_1" type="Node3D" parent="World/ExpansionLot/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -4)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Tint = Color(1, 0.84, 0.64, 1)
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/ExpansionLot/FloorArt/Tile_0_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_0_2" type="Node3D" parent="World/ExpansionLot/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Tint = Color(1, 0.84, 0.64, 1)
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/ExpansionLot/FloorArt/Tile_0_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_0_3" type="Node3D" parent="World/ExpansionLot/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 4)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Tint = Color(1, 0.84, 0.64, 1)
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/ExpansionLot/FloorArt/Tile_0_3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_0_4" type="Node3D" parent="World/ExpansionLot/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 8)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Tint = Color(1, 0.84, 0.64, 1)
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/ExpansionLot/FloorArt/Tile_0_4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_1_0" type="Node3D" parent="World/ExpansionLot/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -8)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Tint = Color(1, 0.84, 0.64, 1)
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/ExpansionLot/FloorArt/Tile_1_0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_1_1" type="Node3D" parent="World/ExpansionLot/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -4)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Tint = Color(1, 0.84, 0.64, 1)
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/ExpansionLot/FloorArt/Tile_1_1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_1_2" type="Node3D" parent="World/ExpansionLot/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Tint = Color(1, 0.84, 0.64, 1)
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/ExpansionLot/FloorArt/Tile_1_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_1_3" type="Node3D" parent="World/ExpansionLot/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Tint = Color(1, 0.84, 0.64, 1)
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/ExpansionLot/FloorArt/Tile_1_3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
+
+[node name="Tile_1_4" type="Node3D" parent="World/ExpansionLot/FloorArt" node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 8)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Env_Floor_01.fbx"
+ArtScale = 80
+Tint = Color(1, 0.84, 0.64, 1)
+Placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="World/ExpansionLot/FloorArt/Tile_1_4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
+mesh = SubResource("FloorBoxMesh")
 
 [node name="Backoffice" type="Node3D" parent="World" groups=["shop_navigation"]]
 
@@ -687,8 +808,16 @@ HighlightMesh = NodePath("Highlight")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 6)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="World/Storefront/CheckoutCounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, -0.24)
 shape = SubResource("CounterShape")
+
+[node name="RegisterShape" type="CollisionShape3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0.52, -0.49)
+shape = SubResource("CounterRegisterShape")
+
+[node name="DisplayShape" type="CollisionShape3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.5, 0.4)
+shape = SubResource("CounterDisplayShape")
 
 [node name="CounterArt" type="Node3D" parent="World/Storefront/CheckoutCounter" node_paths=PackedStringArray("Placeholder")]
 script = ExtResource("ShopArtSlot")
@@ -726,16 +855,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.8)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
 
 [node name="ItemSpot0" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 1.15, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.62, -0.1)
 
 [node name="ItemSpot1" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 1.15, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.62, -0.2)
 
 [node name="ItemSpot2" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 1.15, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.62, -0.2)
 
 [node name="ItemSpot3" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.15, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.62, -0.2)
 
 [node name="CashierSpot" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.9)
@@ -1541,6 +1670,28 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 9)
 script = ExtResource("DeliveryMarker")
 MaxStackHeight = 3.6
 
+[node name="Sign" type="Label3D" parent="World/Markers/DeliveryPoint"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3.85, 2.4, 0)
+pixel_size = 0.004
+text = "Furniture deliveries"
+font_size = 40
+outline_size = 10
+
+[node name="StockDeliveryPoint" type="Marker3D" parent="World/Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, 4.5)
+script = ExtResource("DeliveryMarker")
+Columns = 4
+Rows = 3
+CellSize = Vector2(0.9, 0.9)
+MaxStackHeight = 1.5
+
+[node name="Sign" type="Label3D" parent="World/Markers/StockDeliveryPoint"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.85, 2.4, 0)
+pixel_size = 0.004
+text = "Stock deliveries"
+font_size = 40
+outline_size = 10
+
 [node name="ShelfSlotsArea" type="Marker3D" parent="World/Markers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 7)
 
@@ -1756,7 +1907,7 @@ FurnitureApp = NodePath("../FurnitureApp")
 ExpansionsApp = NodePath("../ExpansionsApp")
 StaffApp = NodePath("../StaffApp")
 
-[node name="StockApp" type="Control" parent="PcDesktopViewport"]
+[node name="StockApp" type="Control" parent="PcDesktopViewport" node_paths=PackedStringArray("DeliveryPoint")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -1769,6 +1920,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("StockApp")
 Catalog = ExtResource("BackofficeCatalog")
+DeliveryPoint = NodePath("../../World/Markers/StockDeliveryPoint")
 
 [node name="BillsApp" type="Control" parent="PcDesktopViewport"]
 layout_mode = 3

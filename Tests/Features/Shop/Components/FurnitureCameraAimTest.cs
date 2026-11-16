@@ -111,6 +111,31 @@ public class FurnitureCameraAimTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public async Task ACameraOnThePlayersOwnBodyStillAimsAtThePiece()
+    {
+        AssertBool(_controller.Begin(NewBox())).IsTrue();
+        _controller.AimAt(8f, 6f);
+        AssertBool(_controller.Confirm()).IsTrue();
+        var placed = (PlacedFurniture)_root.GetChild(0);
+
+        // As in player.tscn: a 1.8 m capsule on layer 1 (the furniture layer) with the camera at its top, so the
+        // ray starts on the player's own body.
+        var player = new CharacterBody3D { CollisionLayer = 1, Position = new Vector3(8f, 0.9f, 9f) };
+        player.AddChild(new CollisionShape3D { Shape = new CapsuleShape3D { Height = 1.8f } });
+        var eye = new Camera3D { Position = new Vector3(0f, 0.9f, 0f) };
+        player.AddChild(eye);
+        AddNode(player);
+        eye.Current = true;
+        eye.LookAt(new Vector3(8f, 0.5f, 6f), Vector3.Up);
+        await ISceneRunner.SyncPhysicsFrame;
+
+        _controller._PhysicsProcess(0.0);
+
+        AssertBool(ReferenceEquals(_controller.AimedFurniture, placed)).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public async Task ThePackKeyPacksThePieceTheCameraRayHitsIntoItsBox()
     {
         _controller.Boxes = GD.Load<OrderCatalog>(BoxCatalogPath);

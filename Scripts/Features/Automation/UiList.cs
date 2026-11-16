@@ -20,21 +20,23 @@ public static class UiList
     public static async Task<JsonNode?> Press(AutomationCommands commands, JsonObject args)
     {
         var button = Find(commands.Tree, args);
+        // Read before pressing: a press that changes the scene (New game, Quit to menu) frees the button.
+        var path = button.GetPath().ToString();
         if (button.Disabled)
-            throw new AutomationException($"{button.GetPath()} is disabled");
+            throw new AutomationException($"{path} is disabled");
         if (button.GetViewport() == commands.Tree.Root)
         {
             var centre = button.GetGlobalRect().GetCenter();
             await commands.Mouse.MoveTo(commands, centre);
             await VirtualPointer.Button(commands, MouseButton.Left, centre, false);
-            return new JsonObject { ["clicked"] = button.GetPath().ToString(), ["at"] = VariantJson.ToJson(centre) };
+            return new JsonObject { ["clicked"] = path, ["at"] = VariantJson.ToJson(centre) };
         }
 
         // A button drawn into a SubViewport (the shop PC screen) is reached through the 3D screen in a real run;
         // pressing it directly keeps this command independent of where that screen is.
         button.EmitSignal(BaseButton.SignalName.Pressed);
         await commands.NextFrame();
-        return new JsonObject { ["pressed"] = button.GetPath().ToString(), ["via"] = "signal" };
+        return new JsonObject { ["pressed"] = path, ["via"] = "signal" };
     }
 
     private static BaseButton Find(SceneTree tree, JsonObject args)

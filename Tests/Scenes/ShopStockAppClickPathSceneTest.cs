@@ -26,7 +26,6 @@ public class ShopStockAppClickPathSceneTest
     private Button _stockIcon = null!;
     private PcScreen _screen = null!;
     private MoneyService _money = null!;
-    private ShopProgression _progression = null!;
     private Window _root = null!;
     private Vector2I _originalRootSize;
 
@@ -39,7 +38,6 @@ public class ShopStockAppClickPathSceneTest
         _stockIcon = _shop.GetNode<Button>($"{DesktopViewportPath}/PcDesktop/Icons/StockIcon");
         _screen = PcScreen.From(_shop);
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
-        _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
         AddNode(_shop);
         _root = _shop.GetTree().Root;
         _originalRootSize = _root.Size;
@@ -65,7 +63,7 @@ public class ShopStockAppClickPathSceneTest
         // The cardboard box unlocks at shop level 1, which a new shop already is, so its Add button is enabled here.
         var box = _stockApp.Catalog!.Items.First(item => item.Id == BoxId);
         var world = _shop.GetNode("World");
-        var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
+        var delivery = _shop.GetNode<DeliveryMarker>("World/Markers/StockDeliveryPoint");
         var balance = _money.Balance;
         var before = world.GetChildCount();
 
@@ -121,14 +119,16 @@ public class ShopStockAppClickPathSceneTest
         AssertThat(closeRequests).IsEqual(1);
     }
 
-    // Each box lands in its own delivery slot. Placed through a float32 transform, so the position differs from
-    // the expected one by rounding; the 1 cm tolerance matches ShopCarryingSceneTest.
-    private static void AssertDeliveredInSlots(Node world, int before, Vector3 delivery)
+    // Each box lands in its own slot of the stock delivery area. Placed through a float32 transform, so the position
+    // differs from the expected one by rounding; the 1 cm tolerance matches ShopCarryingSceneTest.
+    private static void AssertDeliveredInSlots(Node world, int before, DeliveryMarker delivery)
     {
         var delivered = world.GetChildren().Skip(before).Cast<Node3D>().ToList();
         for (var slot = 0; slot < delivered.Count; slot++)
-            AssertBool(delivered[slot].GlobalPosition.DistanceTo(delivery + OrderingService.SlotOffset(slot)) < 0.01f)
-                .IsTrue();
+        {
+            var expected = delivery.GlobalPosition + delivery.SlotOffset(slot);
+            AssertBool(delivered[slot].GlobalPosition.DistanceTo(expected) < 0.01f).IsTrue();
+        }
     }
 
     // The Add button of the card whose title label reads displayName. Found again after every click, because a

@@ -2,7 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
-using static CardCleaner.Scripts.Features.Shop.Services.OrderingService;
+using static CardCleaner.Tests.TestUtilities.DefaultDeliveryGrid;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
 using Godot;

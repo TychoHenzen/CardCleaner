@@ -189,8 +189,11 @@ public partial class CheckoutPaymentUi : CanvasLayer, IDependent
         if (_session == null)
             return;
 
-        _keypad.ShowEntry(_typed, _session.Total);
-        _change.ShowPicked(_picks.Sum());
+        // Only the visible panel is refreshed: a card session hands over no cash, so it has no change to show.
+        if (_session.Method == PaymentMethod.Card)
+            _keypad.ShowEntry(_typed, _session.Total);
+        else
+            _change.ShowChange(_picks.Sum(), _session.Total, _session.Tendered);
     }
 
     private void BuildLayout()

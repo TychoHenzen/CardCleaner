@@ -246,15 +246,15 @@ public class FurnitureSaveServiceTest
     public void ARestoredBoxCountsAsAnOccupantOfTheDeliveryArea()
     {
         // Slot 0 of the delivery grid is centred on this offset from the marker, which stands at the origin.
-        var slotZero = OrderingService.SlotOffset(0);
+        var slotZero = DefaultDeliveryGrid.SlotOffset(0);
         var save = SaveWith(new FurnitureRecord("shelf_unit", slotZero.X, slotZero.Z, 0, true));
         _service.Load(save);
         var incoming = GD.Load<PackedScene>(BoxScenePath).Instantiate<Node3D>();
 
         var placement = _delivery.FindPlacement(
             6,
-            OrderingService.SlotOffset,
-            new Vector2(OrderingService.SlotSpacingX, OrderingService.SlotSpacingZ),
+            DefaultDeliveryGrid.SlotOffset,
+            new Vector2(DefaultDeliveryGrid.CellWidth, DefaultDeliveryGrid.CellDepth),
             incoming);
         incoming.Free();
 

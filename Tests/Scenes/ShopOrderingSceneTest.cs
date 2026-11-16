@@ -201,9 +201,9 @@ public class ShopOrderingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void OrderingEachItemChargesTheBalanceAndDeliversItToTheDeliveryPoint()
+    public void OrderingEachItemChargesTheBalanceAndDeliversItToTheStockDeliveryArea()
     {
-        var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
+        var delivery = StockDelivery;
         var balance = _money.Balance;
         _terminal.Interact();
 
@@ -217,24 +217,25 @@ public class ShopOrderingSceneTest
 
             AssertThat(_money.Balance).IsEqual(balance - item.Price);
             AssertThat(_stock.BalanceText).IsEqual($"Balance: {_money.Balance}");
-            AssertBool(spawned.GlobalPosition.IsEqualApprox(delivery + OrderingService.SlotOffset(i))).IsTrue();
+            AssertBool(spawned.GlobalPosition.IsEqualApprox(delivery.GlobalPosition + delivery.SlotOffset(i)))
+                .IsTrue();
         }
     }
 
-    [TestCase]
+    // The furniture area takes shelf-sized cells; the stock area takes cells that fit the 0.61 x 0.83 m cardboard box.
+    [TestCase("World/Markers/DeliveryPoint", 2.13f, 1.0f)]
+    [TestCase("World/Markers/StockDeliveryPoint", 0.61f, 0.83f)]
     [TestCategory("Unit")]
-    public void FirstLayerOfDeliverySlotsFitsInsideTheRightStorageFloor()
+    public void FirstLayerOfDeliverySlotsFitsInsideTheRightStorageFloor(string markerPath, float widestItem,
+        float deepestItem)
     {
         var storage = _shop.GetNode<StaticBody3D>("World/RightStorage/Floor");
         var shape = (BoxShape3D)storage.GetNode<CollisionShape3D>("CollisionShape3D").Shape;
-        var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
-        const float widestItem = 2.13f;
-        const float deepestItem = 1.0f;
-        var perLayer = OrderingService.SlotColumns * OrderingService.SlotRows;
+        var delivery = _shop.GetNode<DeliveryMarker>(markerPath);
 
-        for (var i = 0; i < perLayer; i++)
+        for (var i = 0; i < delivery.SlotCount; i++)
         {
-            var local = delivery + OrderingService.SlotOffset(i) - storage.GlobalPosition;
+            var local = delivery.GlobalPosition + delivery.SlotOffset(i) - storage.GlobalPosition;
             AssertBool(Mathf.Abs(local.X) + widestItem / 2f < shape.Size.X / 2f).IsTrue();
             AssertBool(Mathf.Abs(local.Z) + deepestItem / 2f < shape.Size.Z / 2f).IsTrue();
         }
@@ -244,7 +245,7 @@ public class ShopOrderingSceneTest
     [TestCategory("Unit")]
     public void BoxesFillTheGridAndStackOnTheBoxBelow()
     {
-        var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;
+        var delivery = StockDelivery;
         var box = _stock.Catalog!.Items.ToList().FindIndex(item => item.Id == "cardboard_box");
         _money.Add(_stock.Catalog.Items[box].Price * OrderBound);
         _terminal.Interact();
@@ -252,12 +253,37 @@ public class ShopOrderingSceneTest
         var delivered = _presses.OrderUntilFull(box);
 
         AssertBool(_stock.CartPanel.MessageText.Contains("delivery area is full")).IsTrue();
-        var perLayer = OrderingService.SlotColumns * OrderingService.SlotRows;
+        var perLayer = delivery.SlotCount;
         AssertThat(delivered.Count).IsGreater(perLayer);
         // The first box of the second layer rests on the box below it.
-        AssertFloat(delivered[perLayer].GlobalPosition.Y - delivery.Y)
+        AssertFloat(delivered[perLayer].GlobalPosition.Y - delivery.GlobalPosition.Y)
             .IsEqualApprox(BoxHeight + DeliveryMarker.StackGap, HeightTolerance);
     }
+
+    // In play, six small stock orders took all six shelf-sized cells of the one delivery area, and the next furniture
+    // order was refused as "The delivery area is full". Stock now has an area of its own.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void StockOrdersLeaveTheFurnitureDeliveryAreaFree()
+    {
+        var furniture = _shop.GetNode<StockApp>("PcDesktopViewport/FurnitureApp");
+        var ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
+        var furniturePresses = new StockPresses(furniture, ordering, _shop.GetNode("World"), OrderBound);
+        var furnitureDelivery = _shop.GetNode<DeliveryMarker>("World/Markers/DeliveryPoint");
+        var booster = _stock.Catalog!.Items.ToList().FindIndex(item => item.Id == "booster");
+        var shelf = furniture.Catalog!.Items.ToList().FindIndex(item => item.Id == "shelf_unit");
+        _money.Add(10000);
+        _terminal.Interact();
+
+        for (var order = 0; order < furnitureDelivery.SlotCount; order++)
+            _presses.PressForDelivery(booster);
+        var shelfBox = furniturePresses.PressForDelivery(shelf);
+
+        AssertBool(shelfBox.GlobalPosition.IsEqualApprox(
+            furnitureDelivery.GlobalPosition + furnitureDelivery.SlotOffset(0))).IsTrue();
+    }
+
+    private DeliveryMarker StockDelivery => _shop.GetNode<DeliveryMarker>("World/Markers/StockDeliveryPoint");
 
     [TestCase]
     [TestCategory("Unit")]

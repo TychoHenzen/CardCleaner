@@ -117,7 +117,7 @@ public class ShopWorkshopRealServicesSceneTest
 
         var card = ShopTestCards.Create(new CardSignature().With(Element.Febris, 0.4f));
         workshop.AddChild(card);
-        card.GlobalPosition = cards.GlobalPosition + cards.PositionOffset;
+        card.GlobalPosition = cards.SeatPosition(0);
         await WorkshopSceneRig.Settle();
         AssertBool(button.Enabled).IsTrue();
 

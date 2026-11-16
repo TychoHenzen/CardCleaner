@@ -170,7 +170,7 @@ public class MainMenuSceneTest : MainMenuSceneTestBase
     private void SubmitNewGameName(string raw)
     {
         Press(Get<Button>("Layout/NewGameButton"));
-        Get<LineEdit>("NewGameDialog/NameEdit").Text = raw;
+        Get<LineEdit>("NewGameDialog/Content/NameEdit").Text = raw;
         Get<ConfirmationDialog>("NewGameDialog").EmitSignal("confirmed");
     }
 }

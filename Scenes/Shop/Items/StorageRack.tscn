@@ -34,19 +34,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("PlaceholderMesh")
 
 [node name="Slot1" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.41, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.41, -0.2)
 Capacity = 1
 
 [node name="Slot2" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.41, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.41, -0.2)
 Capacity = 1
 
 [node name="Slot3" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.25, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.25, -0.2)
 Capacity = 1
 
 [node name="Slot4" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.25, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.25, -0.2)
 Capacity = 1
 
 [node name="Price1" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]

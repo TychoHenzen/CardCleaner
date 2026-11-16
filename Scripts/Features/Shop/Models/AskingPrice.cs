@@ -18,11 +18,24 @@ public static class AskingPrice
         return Math.Max(1, (int)Math.Round(marketValue * (100 + markupPercent) / 100.0, MidpointRounding.AwayFromZero));
     }
 
-    /// <summary>The ladder entry after <paramref name="markupPercent" />, wrapping around at the top.</summary>
-    public static int NextMarkup(int markupPercent)
+    /// <summary>
+    ///     The first ladder entry after <paramref name="markupPercent" /> (wrapping around at the top) that asks a
+    ///     different price for <paramref name="marketValue" />. Prices are whole numbers, so on a cheap item several
+    ///     steps round to the same price (a booster at 4 asks 4 at -10%, 0% and +10%); those are skipped, so every
+    ///     click on a price tag changes the price. When no step changes it, the plain next entry is returned.
+    /// </summary>
+    public static int NextMarkup(int marketValue, int markupPercent)
     {
         var index = IndexOf(markupPercent);
         if (index < 0) return DefaultMarkupPercent;
+
+        var now = For(marketValue, markupPercent);
+        for (var step = 1; step < MarkupLadder.Count; step++)
+        {
+            var next = MarkupLadder[(index + step) % MarkupLadder.Count];
+            if (For(marketValue, next) != now) return next;
+        }
+
         return MarkupLadder[(index + 1) % MarkupLadder.Count];
     }
 
@@ -43,12 +56,12 @@ public static class AskingPrice
     }
 
     /// <summary>
-    ///     What a click on a price tag does: names the price the next ladder step sets and the price now. At the top
-    ///     of the ladder the next step wraps to the bottom, so the prompt then names a lower price.
+    ///     What a click on a price tag does: names the price the next price-changing ladder step sets and the price
+    ///     now. At the top of the ladder the next step wraps to the bottom, so the prompt then names a lower price.
     /// </summary>
     public static string StepPrompt(int marketValue, int markupPercent)
     {
-        var next = NextMarkup(markupPercent);
+        var next = NextMarkup(marketValue, markupPercent);
         var sign = next >= 0 ? "+" : "";
         return $"Set price to {For(marketValue, next)} ({sign}{next}%), now {For(marketValue, markupPercent)}";
     }

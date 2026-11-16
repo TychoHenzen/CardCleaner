@@ -42,7 +42,7 @@ public class ShopProgressionSceneTest
         _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
         _furniture = _shop.GetNode<StockApp>("PcDesktopViewport/FurnitureApp");
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
-        var capacity = OrderingService.SlotColumns * OrderingService.SlotRows;
+        var capacity = DefaultDeliveryGrid.SlotCount;
         _stockPresses = new StockPresses(_stock, _ordering, _shop.GetNode("World"), capacity);
         _furniturePresses = new StockPresses(_furniture, _ordering, _shop.GetNode("World"), capacity);
 

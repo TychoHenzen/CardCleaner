@@ -163,7 +163,7 @@ public class ShopWorkshopOrderingSceneTest
             var spawned = (Node3D)world.GetChildren().Last();
             delivered.Add(spawned);
             AssertBool(spawned.GlobalPosition.IsEqualApprox(
-                _delivery.GlobalPosition + OrderingService.SlotOffset(i))).IsTrue();
+                _delivery.GlobalPosition + DefaultDeliveryGrid.SlotOffset(i))).IsTrue();
             AssertFloat(spawned.GlobalPosition.Y - _delivery.GlobalPosition.Y)
                 .OverrideFailureMessage($"{item.Id} was delivered at {spawned.GlobalPosition}, not on the floor")
                 .IsEqualApprox(0f, FloorTolerance);

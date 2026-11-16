@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Text.Json.Nodes;
+using CardCleaner.Scripts.Core.Utilities;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Automation;
@@ -63,15 +64,7 @@ public static class AutomationView
         var from = camera.GlobalPosition;
         var query = PhysicsRayQueryParameters3D.Create(from, from + Forward(camera) * LookRayMeters, mask);
         query.CollideWithAreas = true;
-        // The camera sits inside the player's own body; skip every body the camera hangs under.
-        var exclude = new Godot.Collections.Array<Rid>();
-        for (var node = camera.GetParent(); node != null; node = node.GetParent())
-        {
-            if (node is CollisionObject3D body)
-                exclude.Add(body.GetRid());
-        }
-
-        query.Exclude = exclude;
+        query.Exclude = CameraRay.OwnBodies(camera);
         var hit = camera.GetWorld3D().DirectSpaceState.IntersectRay(query);
         return hit.Count == 0 ? null : hit;
     }

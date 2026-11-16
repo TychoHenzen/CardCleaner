@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using Godot;
@@ -41,6 +42,13 @@ public partial class StockApp : Control, IDependent
     /// </summary>
     [Export]
     public OrderCatalog? Catalog { get; set; }
+
+    /// <summary>
+    ///     Where this app's orders are delivered. Unset, they go to the ordering service's own delivery point. The
+    ///     Stock app has an area of small cells of its own, so boosters and packs never fill the furniture area.
+    /// </summary>
+    [Export]
+    public DeliveryMarker? DeliveryPoint { get; set; }
 
     /// <summary>
     ///     The heading shown above the balance. The default is "Stock"; the Furniture app sets "Furniture".
@@ -194,7 +202,7 @@ public partial class StockApp : Control, IDependent
     }
 
     private OrderStatus OrderOne(IOrderingService ordering, string id) =>
-        _items.TryGetValue(id, out var item) ? ordering.Order(item).Status : OrderStatus.InvalidItem;
+        _items.TryGetValue(id, out var item) ? ordering.Order(item, DeliveryPoint).Status : OrderStatus.InvalidItem;
 
     private string NameOf(string? id) =>
         _cart.Lines.FirstOrDefault(line => line.Entry.Id == id)?.Entry.Name ?? id ?? string.Empty;

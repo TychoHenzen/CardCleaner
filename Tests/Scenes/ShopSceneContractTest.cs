@@ -16,7 +16,8 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
 {
     private static readonly string[] ShopMarkerNames =
         [
-            "PcLocation", "SeamLocation", "DeliveryPoint", "ShelfSlotsArea", "ExpansionLot1", "CustomerCounter",
+            "PcLocation", "SeamLocation", "DeliveryPoint", "StockDeliveryPoint", "ShelfSlotsArea", "ExpansionLot1",
+            "CustomerCounter",
         ];
     private static readonly string[] StreetMarkerNames = ["CustomerSpawn", "CustomerDespawn"];
 

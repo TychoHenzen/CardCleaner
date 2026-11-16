@@ -104,7 +104,7 @@ public sealed class WorkshopSceneRig
     {
         var card = ShopTestCards.Create(signature);
         Workshop.AddChild(card);
-        card.GlobalPosition = holder.GlobalPosition + holder.PositionOffset;
+        card.GlobalPosition = holder.SeatPosition(0);
         await Settle();
         return card;
     }

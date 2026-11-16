@@ -95,7 +95,7 @@ public partial class SlotPricing : StaticBody3D, IInteractable, ISaveable
         SetMarkup(percent);
     }
 
-    public void Interact() => SetMarkup(AskingPrice.NextMarkup(MarkupPercent));
+    public void Interact() => SetMarkup(AskingPrice.NextMarkup(MarketValue, MarkupPercent));
 
     public void SetMarkup(int percent)
     {

@@ -11,29 +11,14 @@ namespace CardCleaner.Scripts.Features.Shop.Services;
 ///     The marker decides where each delivery goes: it tracks its own occupancy, fills its ground slots first, then
 ///     stacks on the lowest stack. It skips a slot where the item would leave its floor clearance or overlap an
 ///     occupant, and refuses the order when no slot is left under its ceiling clearance. Each marker keeps its own
-///     slots, so two terminals with different markers never share a grid.
+///     slots and its own grid (<see cref="DeliveryMarker.Columns" />, <see cref="DeliveryMarker.CellSize" />), so two
+///     terminals with different markers never share a grid, and small stock can get cells of its own size.
 ///     An item is refused as <see cref="OrderStatus.Locked" /> before anything is charged when the shop level is below
 ///     its unlock level, its id has no unlock row, or no progression service is present.
 /// </summary>
 [Service(typeof(IOrderingService))]
 public partial class OrderingService : Node, IOrderingService, IDependent
 {
-    public const int SlotColumns = 3;
-    public const int SlotRows = 2;
-
-    /// <summary>
-    ///     Fits the 2.1 m shelf in one column. A wider footprint, such as an arcade cabinet with its holders, takes the
-    ///     next slot that clears every shape.
-    /// </summary>
-    public const float SlotSpacingX = 2.3f;
-
-    /// <summary>
-    ///     Fits the 1 m deep shelf in one row. A deeper footprint takes the next slot that clears every shape.
-    /// </summary>
-    public const float SlotSpacingZ = 1.5f;
-
-    private const int SlotCount = SlotColumns * SlotRows;
-
     private IServiceResolver? _services;
 
     /// <summary>Where ordered items appear when the ordering terminal names no area of its own.</summary>
@@ -103,7 +88,7 @@ public partial class OrderingService : Node, IOrderingService, IDependent
             return Fail(item, OrderStatus.InvalidItem);
         }
 
-        var placement = point.FindPlacement(SlotCount, SlotOffset, new Vector2(SlotSpacingX, SlotSpacingZ), instance);
+        var placement = point.FindPlacement(instance);
         if (placement is not { } place)
         {
             instance.Free();
@@ -117,25 +102,12 @@ public partial class OrderingService : Node, IOrderingService, IDependent
         }
 
         parent.AddChild(instance);
-        instance.GlobalPosition = point.GlobalPosition + SlotOffset(place.Slot) + Vector3.Up * place.Lift;
+        instance.GlobalPosition = point.GlobalPosition + point.SlotOffset(place.Slot) + Vector3.Up * place.Lift;
         point.Track(instance);
         DeliveredCount++;
 
         ILog.Print($"Order succeeded: {item.Id} for {item.Price}, balance now {money.Balance}");
         return new OrderResult(OrderStatus.Success, instance);
-    }
-
-    /// <summary>
-    ///     Offset from the delivery point of slot <paramref name="index" />: a grid centred on the marker.
-    /// </summary>
-    public static Vector3 SlotOffset(int index)
-    {
-        var column = index % SlotColumns;
-        var row = index / SlotColumns;
-        return new Vector3(
-            (column - (SlotColumns - 1) / 2f) * SlotSpacingX,
-            0f,
-            (row - (SlotRows - 1) / 2f) * SlotSpacingZ);
     }
 
     private static OrderResult Fail(OrderItem item, OrderStatus status)

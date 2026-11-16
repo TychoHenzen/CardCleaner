@@ -61,7 +61,7 @@ public class ShopWorkshopDeliverySceneTest
 
         for (var slot = 0; slot < WorkshopDeliveryRig.Capacity; slot++)
         {
-            var feet = _rig.Delivery.GlobalPosition + OrderingService.SlotOffset(slot);
+            var feet = _rig.Delivery.GlobalPosition + DefaultDeliveryGrid.SlotOffset(slot);
             var query = new PhysicsShapeQueryParameters3D
             {
                 Shape = box,
@@ -132,7 +132,7 @@ public class ShopWorkshopDeliverySceneTest
             .IsEqual(CabinetSlots.Length);
         for (var i = 0; i < cabinets.Count; i++)
         {
-            var expected = _rig.Delivery.GlobalPosition + OrderingService.SlotOffset(CabinetSlots[i]);
+            var expected = _rig.Delivery.GlobalPosition + DefaultDeliveryGrid.SlotOffset(CabinetSlots[i]);
             AssertBool(cabinets[i].GlobalPosition.IsEqualApprox(expected))
                 .OverrideFailureMessage(
                     $"cabinet {i} is at {cabinets[i].GlobalPosition}, expected slot {CabinetSlots[i]}")

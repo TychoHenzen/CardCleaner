@@ -15,13 +15,21 @@ public class ShelfOfferIndexTest
     private const string StorageRackScene = "res://Scenes/Shop/Items/StorageRack.tscn";
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
 
+    // How far in front of a slot a customer stands, as ShelfOfferIndex sets it.
+    private const float ApproachMeters = 0.8f;
+    private const float Tolerance = 0.001f;
+
     private CardShelf _shelf = null!;
     private ShelfOfferIndex _index = null!;
 
     [BeforeTest]
     public async Task Setup()
     {
-        _shelf = AddNode(GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>());
+        // Frozen as PlacedFurniture freezes every shelf in the shop. A loose shelf would fall, and a frozen booster
+        // locked into its slot lies inside the shelf's collision box, so it would push the shelf away.
+        _shelf = GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>();
+        _shelf.Freeze = true;
+        AddNode(_shelf);
         await Frames(2);
         _index = new ShelfOfferIndex(_shelf.GetTree());
     }
@@ -101,9 +109,10 @@ public class ShelfOfferIndexTest
         var point = _index.ApproachPointFor(offerId);
 
         AssertBool(point.HasValue).IsTrue();
-        // The shelf is a RigidBody3D that settles a little under y 0, so y is compared to the shelf's own height.
-        var expected = new Vector3(-0.7f, _shelf.GlobalPosition.Y, -1.0f);
-        AssertBool(point!.Value.DistanceTo(expected) < 0.001f).IsTrue();
+        // The shelf stands at the origin unturned, so the slot's own position in the shelf is its world X and Z, and
+        // the point lies ApproachMeters in front of it (towards -Z), on the floor the shelf stands on.
+        var expected = new Vector3(slot.Position.X, 0f, slot.Position.Z - ApproachMeters);
+        AssertVector(point!.Value).IsEqualApprox(expected, new Vector3(Tolerance, Tolerance, Tolerance));
         AssertBool(_index.ApproachPointFor("/root/none") is null).IsTrue();
     }
 
