@@ -22,11 +22,12 @@ public partial class ShopArtSlot : Node3D
     private const float PackMaterialRoughness = 0.9f;
     private const string ArtNodeName = "Art";
 
-    // One material per atlas, shared by every slot of that pack.
-    private static readonly Dictionary<string, StandardMaterial3D> PackMaterials = [];
+    // One material per atlas and tint, shared by every slot of that pack with that tint.
+    private static readonly Dictionary<(string Atlas, Color Tint), StandardMaterial3D> PackMaterials = [];
 
     private string _artPath = string.Empty;
     private float _artScale = DefaultArtScale;
+    private Color _tint = Colors.White;
 
     /// <summary>Resource path of the imported pack mesh, for example an .fbx under Assets/Synty.</summary>
     [Export(PropertyHint.File, "*.fbx,*.tscn")]
@@ -48,6 +49,21 @@ public partial class ShopArtSlot : Node3D
         set
         {
             _artScale = value;
+            ReloadInEditor();
+        }
+    }
+
+    /// <summary>
+    ///     Colour multiplied into the pack atlas, so one pack piece can be painted (a warm wall, a wooden floor)
+    ///     and still keep the atlas detail. White leaves the atlas as it is.
+    /// </summary>
+    [Export]
+    public Color Tint
+    {
+        get => _tint;
+        set
+        {
+            _tint = value;
             ReloadInEditor();
         }
     }
@@ -112,9 +128,9 @@ public partial class ShopArtSlot : Node3D
             Placeholder.Visible = !ArtLoaded;
     }
 
-    private static StandardMaterial3D? PackMaterial(string atlasPath)
+    private static StandardMaterial3D? PackMaterial(string atlasPath, Color tint)
     {
-        if (PackMaterials.TryGetValue(atlasPath, out var cached) && IsInstanceValid(cached))
+        if (PackMaterials.TryGetValue((atlasPath, tint), out var cached) && IsInstanceValid(cached))
             return cached;
 
         if (!ResourceLoader.Exists(atlasPath) || ResourceLoader.Load<Texture2D>(atlasPath) is not { } atlas)
@@ -123,18 +139,19 @@ public partial class ShopArtSlot : Node3D
         var material = new StandardMaterial3D
         {
             AlbedoTexture = atlas,
+            AlbedoColor = tint,
             CullMode = BaseMaterial3D.CullModeEnum.Disabled,
             TextureFilter = BaseMaterial3D.TextureFilterEnum.NearestWithMipmaps,
             Roughness = PackMaterialRoughness
         };
-        PackMaterials[atlasPath] = material;
+        PackMaterials[(atlasPath, tint)] = material;
         return material;
     }
 
     private bool ApplyPackMaterial(Node3D art)
     {
         var atlasPath = PackMaterialCatalog.AtlasPathFor(ArtPath);
-        if (atlasPath == null || PackMaterial(atlasPath) is not { } material)
+        if (atlasPath == null || PackMaterial(atlasPath, Tint) is not { } material)
             return false;
 
         var textured = false;

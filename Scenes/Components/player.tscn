@@ -32,8 +32,6 @@ current = true
 [node name="SpotLight3D" type="SpotLight3D" parent="Head/Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.520677, -0.145628, 0)
 
-[node name="OmniLight3D" type="OmniLight3D" parent="Head/Camera3D"]
-
 [node name="InteractionSystem" type="Node3D" parent="Head/Camera3D" node_paths=PackedStringArray("Camera")]
 script = ExtResource("2_3smsa")
 Camera = NodePath("..")

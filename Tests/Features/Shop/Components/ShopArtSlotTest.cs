@@ -55,6 +55,30 @@ public class ShopArtSlotTest
         }
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TintIsMultipliedIntoTheAtlasPerTint()
+    {
+        var tint = new Color(1f, 0.9f, 0.8f);
+        var scene = RegisterArtScene(MeshArtPath, new MeshInstance3D());
+        try
+        {
+            var tinted = AddNode(new ShopArtSlot { ArtPath = MeshArtPath, Tint = tint });
+            var plain = AddNode(new ShopArtSlot { ArtPath = MeshArtPath });
+
+            var tintedMaterial = (StandardMaterial3D)tinted.GetNode<MeshInstance3D>("Art").MaterialOverride;
+            var plainMaterial = (StandardMaterial3D)plain.GetNode<MeshInstance3D>("Art").MaterialOverride;
+            AssertThat(tintedMaterial.AlbedoColor).IsEqual(tint);
+            AssertThat(tintedMaterial.AlbedoTexture).IsNotNull();
+            AssertThat(plainMaterial.AlbedoColor).IsEqual(Colors.White);
+            AssertThat(tintedMaterial).IsNotSame(plainMaterial);
+        }
+        finally
+        {
+            UnregisterArtScene(scene);
+        }
+    }
+
     private static PackedScene RegisterArtScene(string path, Node3D root)
     {
         var scene = new PackedScene();

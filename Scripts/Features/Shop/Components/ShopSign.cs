@@ -13,8 +13,10 @@ public partial class ShopSign : StaticBody3D, IInteractable, IDependent
 {
     private const float DefaultInteractionRange = 4.5f;
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
-    private const string OpenText = "Open - interact to close";
-    private const string ClosedText = "Closed - interact to open";
+    private const string OpenText = "OPEN";
+    private const string ClosedText = "CLOSED";
+    private static readonly Color OpenColour = new(0.35f, 0.95f, 0.45f);
+    private static readonly Color ClosedColour = new(1f, 0.38f, 0.32f);
 
     private IShopDayService? _dayService;
     private IServiceResolver? _services;
@@ -125,6 +127,9 @@ public partial class ShopSign : StaticBody3D, IInteractable, IDependent
     {
         if (StatusLabel == null)
             return;
-        StatusLabel.Text = _dayService is { IsOpen: true } ? OpenText : ClosedText;
+        // The click prompt under the crosshair says what a click does, so the sign only shows the state.
+        var open = _dayService is { IsOpen: true };
+        StatusLabel.Text = open ? OpenText : ClosedText;
+        StatusLabel.Modulate = open ? OpenColour : ClosedColour;
     }
 }

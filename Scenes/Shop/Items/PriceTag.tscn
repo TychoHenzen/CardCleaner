@@ -1,19 +1,13 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/SlotPricing.cs" id="SlotPricing"]
+[ext_resource type="Material" path="res://Data/Ui/AimHighlightMaterial.tres" id="AimHighlight"]
 
 [sub_resource type="BoxShape3D" id="TagShape"]
 size = Vector3(0.3, 0.1, 0.04)
 
-[sub_resource type="StandardMaterial3D" id="HighlightMaterial"]
-transparency = 1
-albedo_color = Color(1, 1, 0.4, 0.25)
-emission_enabled = true
-emission = Color(1, 1, 0.4, 1)
-emission_energy_multiplier = 0.4
-
 [sub_resource type="BoxMesh" id="HighlightMesh"]
-material = SubResource("HighlightMaterial")
+material = ExtResource("AimHighlight")
 size = Vector3(0.34, 0.14, 0.08)
 
 [node name="PriceTag" type="StaticBody3D" node_paths=PackedStringArray("TagLabel", "HighlightMesh") groups=["delivery_no_footprint"]]

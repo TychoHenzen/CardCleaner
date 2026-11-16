@@ -11,8 +11,8 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 [RequireGodotRuntime]
 public class ShopSignTest
 {
-    private const string OpenText = "Open - interact to close";
-    private const string ClosedText = "Closed - interact to open";
+    private const string OpenText = "OPEN";
+    private const string ClosedText = "CLOSED";
 
     private FakeShopDayService _days = null!;
     private Label3D _label = null!;
@@ -60,13 +60,18 @@ public class ShopSignTest
     {
         AssertThat(_label.Text).IsEqual(ClosedText);
 
+        var closedColour = _label.Modulate;
+
         _days.IsOpen = true;
         _days.RaiseOpened();
         AssertThat(_label.Text).IsEqual(OpenText);
+        // Open and closed read apart at a glance by colour as well as by word.
+        AssertThat(_label.Modulate).IsNotEqual(closedColour);
 
         _days.IsOpen = false;
         _days.RaiseClosed();
         AssertThat(_label.Text).IsEqual(ClosedText);
+        AssertThat(_label.Modulate).IsEqual(closedColour);
     }
 
     [TestCase]
