@@ -86,7 +86,10 @@ applies a region iteration also builds the map from it.
 `CardFloorRestTest` on the real card scene). Jolt lets resting bodies sink into each other by the slop, 0.02 m by
 default, and a card is 5 mm thick, so the default hid cards under the shop floor. The card's `CardSleepEnforcer` also
 freezes a card only after it has stayed below its thresholds for `RestSeconds` (0.5 s, the rest time Jolt waits before it
-lets a body sleep): freezing on the first slow frame froze a landing card inside the floor, before Jolt had pushed it out.
+lets a body sleep): freezing on the first slow frame froze a landing card inside the floor, before Jolt had pushed it out. It also freezes
+a card as soon as Jolt puts it to sleep (`SleepingStateChanged`). A sleeping body gets no more `IntegrateForces` calls,
+so when Jolt's own half second ran out first, the enforcer's count never finished and the card lay unfrozen, which
+failed `CardFloorRestTest` on some CI runs and not others (`ACardJoltPutsToSleepIsFrozen` pins it).
 
 CI scope: pull requests and pushes to `master` run only the Unit suites (`-Fast`). The full suite runs on the weekly
 schedule (Sunday 03:00 UTC) and on a manual dispatch with `full=true`, for example `gh workflow run ci.yml --ref

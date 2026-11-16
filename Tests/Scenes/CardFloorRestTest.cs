@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
@@ -24,6 +25,9 @@ public class CardFloorRestTest
 
     // How far the card's top face must stay above the floor: more than half its 5 mm, so it never hides under it.
     private const float MinimumTopClearance = 0.003f;
+
+    // Far longer than the test runs, so the enforcer's own rest count never finishes.
+    private const float UnreachableRestSeconds = 1000f;
 
     [TestCase]
     [TestCategory("Unit")]
@@ -57,6 +61,24 @@ public class CardFloorRestTest
         // The state a landing card is in on the frame the floor stops it: still, and partly inside the floor.
         AddFloor();
         var card = AddCard(new Vector3(0f, -0.001f, 0f), Vector3.Zero);
+
+        AssertThat(await BoundedWait.PhysicsFrames(SettleFrames)).IsNull();
+
+        AssertRestsOnTop(card);
+    }
+
+    // Jolt puts a resting card to sleep after its own half-second sleep time, the same as the enforcer's rest time, and
+    // a sleeping body gets no more IntegrateForces calls. When Jolt's count finished first, the enforcer's count never
+    // did, and the card lay unfrozen. With the enforcer's own count out of reach, only Jolt's sleep can freeze it.
+    [TestCase]
+    [TestCategory("Unit")]
+    public static async Task ACardJoltPutsToSleepIsFrozen()
+    {
+        AddFloor();
+        var card = GD.Load<PackedScene>(CardScene).Instantiate<CardController>();
+        card.GetNode<CardSleepEnforcer>("SleepEnforcer").RestSeconds = UnreachableRestSeconds;
+        card.Position = new Vector3(0f, 0.5f, 0f);
+        AddNode(card);
 
         AssertThat(await BoundedWait.PhysicsFrames(SettleFrames)).IsNull();
 

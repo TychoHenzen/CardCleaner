@@ -4,9 +4,10 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Card.Components;
 
 /// <summary>
-///     Freezes the card once it has stayed below the motion thresholds for <see cref="RestSeconds" />, so a card at
-///     rest is not woken by other cards landing on it. A landing card is stopped by the floor a few frames before Jolt
-///     has pushed it back out of the floor, so freezing on the first slow frame left cards sunk out of sight.
+///     Freezes the card once it has stayed below the motion thresholds for <see cref="RestSeconds" />, or once Jolt
+///     puts it to sleep, so a card at rest is not woken by other cards landing on it. A landing card is stopped by the
+///     floor a few frames before Jolt has pushed it back out of the floor, so freezing on the first slow frame left
+///     cards sunk out of sight.
 /// </summary>
 public partial class CardSleepEnforcer : Node, IPhysicsComponent
 {
@@ -27,7 +28,20 @@ public partial class CardSleepEnforcer : Node, IPhysicsComponent
     /// <summary>How long the card must stay below both thresholds before it is frozen, in seconds.</summary>
     [Export] public float RestSeconds = DefaultRestSeconds;
 
-    public void Setup(Node cardRoot) => _body = (cardRoot as RigidBody3D)!;
+    public void Setup(Node cardRoot)
+    {
+        _body = (cardRoot as RigidBody3D)!;
+        if (_body != null)
+            _body.SleepingStateChanged += OnSleepingStateChanged;
+    }
+
+    // Jolt sleeps a body that has rested for its own sleep time, as long as RestSeconds, and a sleeping body gets no
+    // more IntegrateForces calls, so when Jolt's count ends first the one above never does. A card asleep has rested.
+    private void OnSleepingStateChanged()
+    {
+        if (_body.Sleeping)
+            _body.Freeze = true;
+    }
 
     public void IntegrateForces(PhysicsDirectBodyState3D state)
     {
