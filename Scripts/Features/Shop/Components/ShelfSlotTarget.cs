@@ -84,9 +84,19 @@ public partial class ShelfSlotTarget : StaticBody3D, IInteractable, IDependent
     {
         CollisionMask = 0;
         _services?.Get<IStockHand>(hand => _hand = hand);
-        if (_slot != null)
-            _slot.CardsChanged += RefreshLayer;
         RefreshLayer();
+    }
+
+    // Subscribed on every entry, not in _Ready, so a target that is reparented (exit, then enter, no second _Ready)
+    // keeps hearing its slot.
+    public override void _EnterTree()
+    {
+        if (_slot == null)
+            return;
+        _slot.CardsChanged -= RefreshLayer;
+        _slot.CardsChanged += RefreshLayer;
+        if (IsNodeReady())
+            RefreshLayer();
     }
 
     public override void _ExitTree()

@@ -25,8 +25,13 @@ public partial class InteractionSystem : Node3D, IDependent
     [Export] public float RayLength { get; set; } = DefaultRayLength;
     [Export] public uint InteractableCollisionMask { get; set; } = DefaultInteractableCollisionMask;
 
-    /// <summary>The interactable a click would use now, or null.</summary>
-    public IInteractable? Target { get; private set; }
+    private IInteractable? _target;
+
+    /// <summary>
+    ///     The interactable a click would use now, or null. A target freed since the last scan reads as null at once,
+    ///     because the HUD reads it every frame.
+    /// </summary>
+    public IInteractable? Target => _target != null && IsAlive(_target) ? _target : null;
 
     public void Inject(IServiceResolver services) => _services = services;
 
@@ -124,14 +129,16 @@ public partial class InteractionSystem : Node3D, IDependent
 
     private void UpdateTarget(IInteractable? candidate)
     {
-        if (Target != null && !IsAlive(Target))
-            Target = null;
-        if (candidate == Target)
+        var current = Target;
+        if (candidate == current)
+        {
+            _target = current;
             return;
+        }
 
-        Target?.ClearHighlight();
-        Target = candidate;
-        Target?.Highlight();
+        current?.ClearHighlight();
+        _target = candidate;
+        _target?.Highlight();
     }
 
     // A freed node (an opened box, a sold card) can still be the last target; it is never touched again.

@@ -184,9 +184,8 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
         var body = Offered;
         if (body == null || !slot.CanTake(body)) return false;
 
-        if (body is CardContainer)
-            _containerHolder.Drop();
-        else if (!CardHolder.HandOver(body))
+        var released = body is CardContainer ? _containerHolder.Drop() : CardHolder.HandOver(body);
+        if (!released)
             return false;
 
         return slot.TryLock(body);

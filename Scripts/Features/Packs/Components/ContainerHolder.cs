@@ -147,15 +147,16 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         return true;
     }
 
-    public void Drop()
+    /// <summary>Sets the held container down in front of the hand. False when nothing was released.</summary>
+    public bool Drop()
     {
         var container = HeldContainer();
-        if (container == null || _handAnchor == null) return;
+        if (container == null || _handAnchor == null) return false;
 
         if (_services == null)
         {
             ILog.Error($"{Name} was not injected");
-            return;
+            return false;
         }
 
         var spawnerNode = _services.Get<ICardSpawner>().GetNode();
@@ -170,6 +171,7 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         container.Freeze = false;
         _held = null;
         EmitSignal(SignalName.ContainerDropped, container);
+        return true;
     }
 
     public bool OpenHeld()
