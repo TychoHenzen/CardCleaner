@@ -4,11 +4,11 @@ using Godot;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-///     The backoffice PC screen as a test sees it: the desktop viewport, the quad that shows it and the camera
-///     that looks at the quad. Turns a control on the desktop into the window pixel where a mouse click hits it,
-///     and sends real input to the nodes.
+///     The backoffice PC screen as a test sees it: the desktop viewport, drawn fullscreen by the screen overlay while
+///     the PC is open, and the camera that looks at the monitor. Turns a control on the desktop into the window pixel
+///     where a mouse click hits it, and sends real input to the nodes.
 /// </summary>
-internal sealed class PcScreen(SubViewport viewport, MeshInstance3D quad, Camera3D camera)
+internal sealed class PcScreen(SubViewport viewport, Camera3D camera)
 {
     private const string ViewportPath = "PcDesktopViewport";
     private const string TerminalPath = "World/Markers/PcLocation/PcTerminal";
@@ -17,21 +17,17 @@ internal sealed class PcScreen(SubViewport viewport, MeshInstance3D quad, Camera
 
     public static PcScreen From(Node shop) => new(
         shop.GetNode<SubViewport>(ViewportPath),
-        shop.GetNode<MeshInstance3D>($"{TerminalPath}/ScreenQuad"),
         shop.GetNode<Camera3D>($"{TerminalPath}/ScreenCamera"));
 
-    // Maps a control on the desktop viewport to the window pixel where the mouse must click to hit it. The control's
-    // pixel becomes a point on the screen quad, and the screen camera projects that point back to the window.
+    // Maps a control on the desktop viewport to the window pixel where the mouse must click to hit it. The overlay
+    // scales the desktop to fit the window and centres it, so the control's pixel is scaled and offset the same way.
     public Vector2 PositionOf(Control control)
     {
         Vector2 pixel = control.GetGlobalRect().GetCenter();
-        Vector2 viewportSize = new(viewport.Size.X, viewport.Size.Y);
-        var quadSize = ((QuadMesh)quad.Mesh).Size;
-        var local = new Vector3(
-            (pixel.X / viewportSize.X - 0.5f) * quadSize.X,
-            (0.5f - pixel.Y / viewportSize.Y) * quadSize.Y,
-            0f);
-        return camera.UnprojectPosition(quad.GlobalTransform * local);
+        Vector2 window = camera.GetTree().Root.GetVisibleRect().Size;
+        Vector2 size = new(viewport.Size.X, viewport.Size.Y);
+        float scale = Mathf.Min(window.X / size.X, window.Y / size.Y);
+        return (window - size * scale) / 2f + pixel * scale;
     }
 
     public Task Click(Control control) => ClickAt(PositionOf(control));

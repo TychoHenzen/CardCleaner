@@ -14,7 +14,6 @@ public class PcDesktopStaffTest
     private const string DesktopScene = "res://Scenes/Shop/PcDesktop.tscn";
     private const string IconPath = "Icons/StaffIcon";
     private static readonly Vector2I ScreenSize = new(1280, 720);
-    private static readonly Vector2 QuadSize = new(1f, 1f);
 
     [TestCase]
     [TestCategory("Unit")]
@@ -70,13 +69,13 @@ public class PcDesktopStaffTest
     [TestCategory("Unit")]
     public static async Task ForwardedHome()
     {
-        var (desktop, staffApp, pointer, camera) = await BuildForwardedDesktop();
+        var (desktop, staffApp, overlay) = await BuildForwardedDesktop();
 
-        Click(pointer, camera, Centre(desktop.GetNode<Button>(IconPath)));
+        Click(overlay, Centre(desktop.GetNode<Button>(IconPath)));
         await WaitForFrames(1);
         AssertThat(staffApp.Visible).IsTrue();
 
-        Click(pointer, camera, Centre(desktop.GetNode<Button>("Taskbar/HomeButton")));
+        Click(overlay, Centre(desktop.GetNode<Button>("Taskbar/HomeButton")));
         await WaitForFrames(1);
 
         AssertThat(staffApp.Visible).IsFalse();
@@ -103,59 +102,41 @@ public class PcDesktopStaffTest
     }
 
     /// <summary>
-    ///     Builds the desktop inside a 1280 x 720 SubViewport with the Staff app assigned, and a camera 2 m in front
-    ///     of a 1 x 1 m quad that shows that SubViewport, wired to a <see cref="PcScreenPointer" />.
+    ///     Builds the desktop inside a 1280 x 720 SubViewport with the Staff app assigned, and an active
+    ///     <see cref="PcScreenOverlay" /> that shows it in a 1280 x 720 host viewport, so a window position is the
+    ///     same SubViewport pixel.
     /// </summary>
-    private static async Task<(PcDesktop Desktop, Control StaffApp, PcScreenPointer Pointer, Camera3D Camera)>
-        BuildForwardedDesktop()
+    private static async Task<(PcDesktop Desktop, Control StaffApp, PcScreenOverlay Overlay)> BuildForwardedDesktop()
     {
-        Node3D world = AddNode(new Node3D());
-        world.GetTree().Root.Size = ScreenSize;
+        Node world = AddNode(new Node());
 
         var screen = new SubViewport { Size = ScreenSize };
         var (desktop, _, staffApp) = InstantiateDesktop(assignStaff: true);
         screen.AddChild(desktop);
         world.AddChild(screen);
 
-        var camera = new Camera3D { Position = new Vector3(0f, 0f, 2f) };
-        var quad = new MeshInstance3D { Mesh = new QuadMesh { Size = QuadSize } };
-        var host = new SubViewport();
-        var pointer = new PcScreenPointer
-        {
-            ScreenCamera = camera,
-            ScreenQuad = quad,
-            Viewport = screen,
-            Active = true
-        };
-        world.AddChild(camera);
-        world.AddChild(quad);
+        var host = new SubViewport { Size = ScreenSize };
+        var overlay = new PcScreenOverlay { Viewport = screen };
         world.AddChild(host);
-        host.AddChild(pointer);
+        host.AddChild(overlay);
+        overlay.Activate(0f);
 
         await WaitForFrames(2);
-        return (desktop, staffApp, pointer, camera);
+        return (desktop, staffApp, overlay);
     }
 
-    /// <summary>Sends a left press and release at a screen position, as a player's click would arrive.</summary>
-    private static void Click(PcScreenPointer pointer, Camera3D camera, Vector2 pixel)
+    /// <summary>Sends a left press and release at a window position, as a player's click would arrive.</summary>
+    private static void Click(PcScreenOverlay overlay, Vector2 position)
     {
-        Vector2 screenPosition = ScreenPositionOf(camera, pixel);
         foreach (var pressed in new[] { true, false })
         {
-            pointer._Input(new InputEventMouseButton
+            overlay._Input(new InputEventMouseButton
             {
                 ButtonIndex = MouseButton.Left,
                 Pressed = pressed,
-                Position = screenPosition
+                Position = position
             });
         }
-    }
-
-    /// <summary>Maps a SubViewport pixel to the quad point showing it, then projects it to the screen.</summary>
-    private static Vector2 ScreenPositionOf(Camera3D camera, Vector2 pixel)
-    {
-        var quadPoint = new Vector3(pixel.X / ScreenSize.X - 0.5f, 0.5f - pixel.Y / ScreenSize.Y, 0f);
-        return camera.UnprojectPosition(quadPoint);
     }
 
     /// <summary>The SubViewport pixel at the centre of a control.</summary>

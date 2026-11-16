@@ -62,6 +62,10 @@ ui/toolbar/run_overall=true
 settings/test/test_lookup_folder="Tests"
 ui/inspector/tree_view_mode=1
 
+[gui]
+
+theme/custom="res://Data/Ui/GameTheme.tres"
+
 [importer_defaults]
 
 texture={

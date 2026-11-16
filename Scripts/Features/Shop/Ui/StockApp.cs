@@ -15,6 +15,11 @@ namespace CardCleaner.Scripts.Features.Shop.Ui;
 /// </summary>
 public partial class StockApp : Control, IDependent
 {
+    private const int Gap = 16;
+    private const int CartWidth = 360;
+    private const int TitleFontSize = 30;
+    private const int HeadingFontSize = 22;
+
     private readonly OrderCart _cart = new();
     private readonly Dictionary<string, OrderItem> _items = new();
     private readonly StockCardGrid _cards = new();
@@ -229,6 +234,15 @@ public partial class StockApp : Control, IDependent
     /// <summary>Runs the checkout, as the Checkout button does.</summary>
     internal void PressCheckout() => Checkout();
 
+    internal string TitleText
+    {
+        get
+        {
+            EnsureLayout();
+            return _titleLabel.Text;
+        }
+    }
+
     internal string BalanceText
     {
         get
@@ -248,12 +262,33 @@ public partial class StockApp : Control, IDependent
 
         var column = new VBoxContainer();
         column.SetAnchorsPreset(LayoutPreset.FullRect);
+        column.AddThemeConstantOverride("separation", Gap);
         AddChild(column);
-        _titleLabel = new Label { Text = _title };
-        column.AddChild(_titleLabel);
-        _balanceLabel = new Label();
-        column.AddChild(_balanceLabel);
-        _cards.AddTo(column);
-        _cartPanel.AddTo(column);
+
+        var header = new HBoxContainer();
+        column.AddChild(header);
+        _titleLabel = new Label { Text = _title, SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        _titleLabel.AddThemeFontSizeOverride("font_size", TitleFontSize);
+        header.AddChild(_titleLabel);
+        _balanceLabel = new Label { VerticalAlignment = VerticalAlignment.Center };
+        _balanceLabel.AddThemeFontSizeOverride("font_size", HeadingFontSize);
+        header.AddChild(_balanceLabel);
+
+        var body = new HBoxContainer { SizeFlagsVertical = SizeFlags.ExpandFill };
+        body.AddThemeConstantOverride("separation", Gap);
+        column.AddChild(body);
+        var catalog = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        body.AddChild(catalog);
+        _cards.AddTo(catalog);
+
+        var cartFrame = new PanelContainer { CustomMinimumSize = new Vector2(CartWidth, 0) };
+        body.AddChild(cartFrame);
+        var cart = new VBoxContainer();
+        cart.AddThemeConstantOverride("separation", Gap / 2);
+        cartFrame.AddChild(cart);
+        var cartHeading = new Label { Text = "Cart" };
+        cartHeading.AddThemeFontSizeOverride("font_size", HeadingFontSize);
+        cart.AddChild(cartHeading);
+        _cartPanel.AddTo(cart);
     }
 }

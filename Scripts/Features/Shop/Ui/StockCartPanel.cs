@@ -41,7 +41,8 @@ internal sealed class StockCartPanel
     /// <summary>Adds the panel's controls to <paramref name="column" />.</summary>
     public void AddTo(VBoxContainer column)
     {
-        _rows = new VBoxContainer();
+        // The rows take the free height, so the total, message and Checkout sit at the bottom of the cart.
+        _rows = new VBoxContainer { SizeFlagsVertical = Control.SizeFlags.ExpandFill };
         _total = new Label { Text = "Total: 0" };
         _message = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart };
         _checkout = new Button { Text = "Checkout", Disabled = true };

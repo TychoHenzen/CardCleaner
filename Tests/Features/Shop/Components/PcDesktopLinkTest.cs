@@ -43,13 +43,13 @@ public class PcDesktopLinkTest
     public void OpenWithDesktopMakesScreenCameraCurrentAndRestoresOnClose()
     {
         var playerCamera = AddPlayerCamera();
-        var (desktop, screenCamera, pointer) = BuildDesktopPc();
+        var (desktop, screenCamera, overlay) = BuildDesktopPc();
 
         _terminal.Interact();
 
         AssertBool(screenCamera.Current).IsTrue();
         AssertBool(playerCamera.Current).IsFalse();
-        AssertBool(pointer.Active).IsTrue();
+        AssertBool(overlay.Active).IsTrue();
         AssertBool(desktop.Visible).IsTrue();
         AssertBool(_terminal.IsOpen).IsTrue();
         // ASSUMPTION: this fixture is a bare ScreenTerminal with no Ui, so opening it raised no overlay.
@@ -60,7 +60,7 @@ public class PcDesktopLinkTest
 
         AssertBool(playerCamera.Current).IsTrue();
         AssertBool(screenCamera.Current).IsFalse();
-        AssertBool(pointer.Active).IsFalse();
+        AssertBool(overlay.Active).IsFalse();
         AssertBool(desktop.Visible).IsFalse();
         AssertBool(_cursor.Claims.HasClaims).IsFalse();
     }
@@ -141,7 +141,7 @@ public class PcDesktopLinkTest
     }
 
     // A PC built the way the shop scene builds it: the desktop from its scene, a plain Control as its stock app,
-    // a screen camera and a pointer, all wired by a PcDesktopLink child of the terminal.
+    // a screen camera and a screen overlay, all wired by a PcDesktopLink child of the terminal.
     private DesktopPc BuildDesktopPc()
     {
         var desktop = GD.Load<PackedScene>(DesktopScene).Instantiate<PcDesktop>();
@@ -150,15 +150,15 @@ public class PcDesktopLinkTest
         desktop.StockApp = stockApp;
         desktop.Visible = false;
         var screenCamera = new Camera3D();
-        var pointer = new PcScreenPointer();
-        var link = new PcDesktopLink { Desktop = desktop, ScreenCamera = screenCamera, ScreenPointer = pointer };
+        var overlay = new PcScreenOverlay();
+        var link = new PcDesktopLink { Desktop = desktop, ScreenCamera = screenCamera, ScreenOverlay = overlay };
 
         _world.AddChild(desktop);
         _world.AddChild(screenCamera);
-        _world.AddChild(pointer);
+        _world.AddChild(overlay);
         _terminal.AddChild(link);
-        return new DesktopPc(desktop, screenCamera, pointer);
+        return new DesktopPc(desktop, screenCamera, overlay);
     }
 
-    private sealed record DesktopPc(PcDesktop Desktop, Camera3D ScreenCamera, PcScreenPointer Pointer);
+    private sealed record DesktopPc(PcDesktop Desktop, Camera3D ScreenCamera, PcScreenOverlay Overlay);
 }

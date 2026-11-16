@@ -13,9 +13,11 @@ namespace CardCleaner.Scripts.Features.Shop.Ui;
 /// </summary>
 internal sealed class StockCardGrid
 {
-    private const int CardColumns = 3;
-    private const int CardWidth = 170;
-    private const int TileHeight = 96;
+    private const int CardColumns = 4;
+    private const int CardWidth = 190;
+    private const int TileHeight = 110;
+    private const int CardGap = 12;
+    private static readonly Color PriceColour = new(0.55f, 0.85f, 0.55f);
 
     private readonly List<CardView> _cards = [];
 
@@ -33,6 +35,8 @@ internal sealed class StockCardGrid
     public void AddTo(VBoxContainer column)
     {
         _grid = new GridContainer { Columns = CardColumns };
+        _grid.AddThemeConstantOverride("h_separation", CardGap);
+        _grid.AddThemeConstantOverride("v_separation", CardGap);
         _empty = new Label { Visible = false };
         var scroll = new ScrollContainer
         {
@@ -84,8 +88,15 @@ internal sealed class StockCardGrid
         var column = new VBoxContainer();
         panel.AddChild(column);
         column.AddChild(BuildThumbnail(item));
-        column.AddChild(new Label { Text = item.DisplayName });
-        column.AddChild(new Label { Text = $"{item.Price}" });
+        column.AddChild(new Label
+        {
+            Text = item.DisplayName,
+            AutowrapMode = TextServer.AutowrapMode.WordSmart,
+            CustomMinimumSize = new Vector2(CardWidth - 2 * CardGap, 0)
+        });
+        var price = new Label { Text = $"${item.Price}" };
+        price.AddThemeColorOverride("font_color", PriceColour);
+        column.AddChild(price);
         var button = BuildButton(item, entry, level, onAdd);
         column.AddChild(button);
 

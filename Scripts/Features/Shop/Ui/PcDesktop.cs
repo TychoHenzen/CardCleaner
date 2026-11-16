@@ -7,14 +7,15 @@ namespace CardCleaner.Scripts.Features.Shop.Ui;
 ///     The desktop on the backoffice PC screen. The Stock, Furniture, Bills, Expansions and Staff icons open
 ///     the apps assigned to <see cref="StockApp" />, <see cref="FurnitureApp" />, <see cref="BillsApp" />,
 ///     <see cref="ExpansionsApp" /> and <see cref="StaffApp" />. An icon whose app is unassigned stays disabled.
-///     The Home button returns to the desktop, and the taskbar Close button raises
-///     <see cref="CloseRequested" />. The nodes live in the scene.
+///     An open app sits on the AppWindow frame, which covers the icons. The Home button returns to the desktop, and
+///     the taskbar Close button raises <see cref="CloseRequested" />. The nodes live in the scene.
 /// </summary>
 public partial class PcDesktop : Control
 {
     private const string NotInstalledTooltip = "Not installed";
 
     private Button _closeButton = null!;
+    private Control? _window;
 
     /// <summary>
     ///     The app the Stock icon opens. Unassigned keeps that icon disabled.
@@ -52,6 +53,7 @@ public partial class PcDesktop : Control
     public override void _Ready()
     {
         _closeButton = GetNode<Button>("Taskbar/CloseButton");
+        _window = GetNodeOrNull<Control>("AppWindow");
 
         foreach (var (path, app) in IconRows())
         {
@@ -75,6 +77,8 @@ public partial class PcDesktop : Control
     /// </summary>
     public void ResetToDesktop()
     {
+        if (_window != null)
+            _window.Visible = false;
         foreach (var (_, app) in IconRows())
         {
             if (app != null)
@@ -95,6 +99,8 @@ public partial class PcDesktop : Control
     private void ShowApp(Control app)
     {
         ResetToDesktop();
+        if (_window != null)
+            _window.Visible = true;
         app.Visible = true;
     }
 }
