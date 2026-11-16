@@ -20,7 +20,8 @@ public class CardControllerStateTest : CardControllerTestBase
         // Assert - IInteractable implementation
         Assertions.AssertBool(_cardController.CanInteract).IsTrue();
         Assertions.AssertThat(_cardController.InteractionBody).IsEqual(_cardController);
-        Assertions.AssertFloat(_cardController.InteractionRange).IsEqual(50f);
+        // Arm's reach: a card across the room is not offered for pickup.
+        Assertions.AssertFloat(_cardController.InteractionRange).IsEqual(4.5f);
     }
 
     [TestCase]

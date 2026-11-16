@@ -19,7 +19,8 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     public const float StartX = 8f;
     public const float StartZ = 6f;
 
-        private IServiceResolver? _services;
+    private IServiceResolver? _services;
+    private IControlHints? _hints;
     private readonly PlacementPreview _preview;
     private PlacementKeys? _keys;
     private PlacementSession? _session;
@@ -64,11 +65,13 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
         _keys = new PlacementKeys(this, new PlacementActions(() => Rotate(), () => Confirm(), Cancel, TryPickUpAimed));
         _services.Get<IShopExpansion>(expansion => Expansion ??= expansion);
         _services.Get<IInputService>(_keys.Bind);
+        _services.Get<IControlHints>(hints => _hints = hints);
     }
 
     public override void _ExitTree()
     {
         _keys?.Unbind();
+        _hints?.Clear(this);
         // A controller leaving the tree mid-move puts the carried piece back, so it is never left hidden.
         _session?.PutBack();
     }
@@ -76,12 +79,27 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
     public override void _PhysicsProcess(double delta)
     {
         AimedFurniture = IsActive ? null : PlacementAim.Furniture(GetViewport());
-        if (!IsActive)
-            return;
-        if (!AimOverride && PlacementAim.FloorPoint(GetViewport()) is var (x, z))
-            AimAt(x, z);
+        if (IsActive)
+        {
+            if (!AimOverride && PlacementAim.FloorPoint(GetViewport()) is var (x, z))
+                AimAt(x, z);
+            ProbePhysics();
+        }
 
-        ProbePhysics();
+        PublishHints();
+    }
+
+    // The board drops repeated identical hints, so publishing every frame costs one comparison.
+    private void PublishHints()
+    {
+        if (_hints == null)
+            return;
+        if (IsActive)
+            _hints.Publish(this, PlacementHints.Carrying(CurrentValid));
+        else if (AimedFurniture is { Item: { } item } aimed)
+            _hints.Publish(this, PlacementHints.Aimed(item.DisplayName, aimed.CanPickUp));
+        else
+            _hints.Clear(this);
     }
 
     public bool Begin(FurnitureBox box)

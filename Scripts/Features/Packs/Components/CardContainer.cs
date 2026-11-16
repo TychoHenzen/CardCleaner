@@ -81,6 +81,8 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     public Node3D InteractionBody => this;
 
+    public string Prompt => $"Pick up {CardContainerKindText.NameOf(Kind)}";
+
     // A booster with no test Generator, no seed and no injected IRandom stays closed, as it did before seeds existed.
     private bool HasContents =>
         Kind == CardContainerKind.Booster

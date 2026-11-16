@@ -45,6 +45,8 @@ public partial class ShopSign : StaticBody3D, IInteractable, IDependent
 
     public Node3D InteractionBody => this;
 
+    public string Prompt => DayService?.IsOpen == true ? "Close the shop" : "Open the shop";
+
     public void Inject(IServiceResolver services) => _services = services;
 
     public override void _Ready()

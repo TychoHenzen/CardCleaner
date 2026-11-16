@@ -34,6 +34,8 @@ public partial class CheckoutItemProp : StaticBody3D, IInteractable
 
     public Node3D InteractionBody => this;
 
+    public string Prompt => "Scan item";
+
     public override void _Ready()
     {
         CollisionLayer |= InteractableLayerBit;

@@ -74,10 +74,16 @@ public partial class CardShelf : RigidBody3D, IUnpackTarget
     /// </summary>
     public bool TryUnpack(CardContainer container)
     {
-        var childKind = CardContainerLayout.ChildKind(container.Kind);
-        if (childKind is not { } kind || !ShelfPlacementRule.Accepts(Kind, ShelfPlacementRule.From(kind)))
+        if (!TakesContentsOf(container))
             return false;
 
         return container.OpenOnto(Slots.Where(slot => !slot.HasCards).ToList());
     }
+
+    public bool CanUnpack(CardContainer container) =>
+        TakesContentsOf(container) && Slots.Any(slot => !slot.HasCards);
+
+    private bool TakesContentsOf(CardContainer container) =>
+        CardContainerLayout.ChildKind(container.Kind) is { } kind
+        && ShelfPlacementRule.Accepts(Kind, ShelfPlacementRule.From(kind));
 }

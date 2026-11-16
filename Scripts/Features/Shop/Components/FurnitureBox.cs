@@ -33,6 +33,8 @@ public partial class FurnitureBox : RigidBody3D, IInteractable, IDependent
 
     public Node3D InteractionBody => this;
 
+    public string Prompt => $"Unbox and place {Item?.DisplayName ?? "furniture"}";
+
     public void Inject(IServiceResolver services) => _services = services;
 
     public override void _EnterTree() => AddToGroup(GroupName);

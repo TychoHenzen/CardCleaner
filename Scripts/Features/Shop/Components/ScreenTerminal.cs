@@ -42,6 +42,8 @@ public partial class ScreenTerminal : StaticBody3D, IInteractable, IDependent
 
     public Node3D InteractionBody => this;
 
+    public string Prompt => "Use the computer";
+
     /// <summary>
     ///     The services this terminal resolves, set by <see cref="Inject" />.
     /// </summary>
@@ -90,9 +92,8 @@ public partial class ScreenTerminal : StaticBody3D, IInteractable, IDependent
             Close();
     }
 
-    // Escape must close the PC even while the desktop is open: the desktop
-    // sits in a SubViewport, which does not receive the key, so the terminal
-    // in the main tree handles it itself.
+    // Escape must close the PC even while the desktop is open. The desktop sits in a SubViewport, and the
+    // fullscreen overlay forwards every key to it except Escape, so the terminal in the main tree handles it.
     public override void _UnhandledInput(InputEvent @event)
     {
         if (!IsOpen || !@event.IsActionPressed(CloseAction))

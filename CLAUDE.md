@@ -534,7 +534,7 @@ All art and models live in the private repo `TychoHenzen/cardcleaner-assets`, a 
 - Clone with `git clone --recurse-submodules`, or run `git submodule update --init` in an existing clone. An empty `Assets/` means the submodule is not initialised.
 - Changing an asset is two commits: commit and push inside `Assets/` first, then commit the updated `Assets` pointer in this repo. Pushing the pointer before the submodule commit breaks CI.
 - CI fetches the submodule with the read-only deploy key in the `ASSETS_DEPLOY_KEY` secret (`.github/actions/checkout-assets`). The project cannot load without `Assets/`, so the step fails when the key is unavailable; fork and Dependabot pull requests cannot read the secret and fail there.
-- `Z:\Tycho\Projects\Assets` is our internal asset collection and the Asset Manager workspace. Whenever new assets are needed, look there first. Assets are added with the Asset Manager editor tab (`addons/asset_manager`): it exports to `res://Assets/<Type>/` (export roots under `[asset_manager]` in `project.godot`). Export the individual assets you need; never copy a whole source pack into the repo. The Synty packs are under `Z:\Tycho\Projects\Assets\CardCleanerAssets` (mostly zips).
+- `Z:\Tycho\Projects\Assets` is our internal asset collection and the Asset Manager workspace. Whenever new assets are needed, look there first. Assets are added with the Asset Manager editor tab (`addons/asset_manager`): it exports to `res://Assets/<Type>/` (export roots under `[asset_manager]` in `project.godot`). Export the individual assets you need; never copy a whole source pack into the repo. The Synty packs are under `Z:\Tycho\Projects\Assets\_extracted\3d` (one `POLY_*` folder per pack, each a converted Godot project; the source FBX files of the NewYork and Megapolis packs sit in its `.godot\unidot_temp`, and several packs hold only imported `.scn` caches).
 
 ### Main Menu and Options
 
@@ -558,6 +558,21 @@ becomes a `PlacedFurniture` under `World/Furniture`, and `FurnitureProbe` holds 
 `ShopNavigationRegion`. A piece being moved stays in the tree, hidden and off the collision layer
 (`PlacedFurniture.SetCarried`), so a save during the move keeps it at its old pose. `FurnitureSaveCodec` skips a
 record it cannot read with a logged error and keeps the rest. The raw Stock-app `shelf` row stays.
+
+### Aim HUD and Control Hints
+
+The player scene (`Scenes/Components/player.tscn`) has an `AimHud` CanvasLayer (layer 5) holding `InteractionHud`
+(`Scripts/Features/Player/Ui`): a crosshair dot, a gold ring while something is aimed at, the click prompt under it
+(`LMB` plus `IInteractable.Prompt` of `InteractionSystem.Target`) and a row of key chips at the bottom of the screen.
+It hides while any other owner holds `ICursorOwner` (a menu, the PC, the payment screen). `InteractionSystem.Target`
+is only an interactable a click would use now: it is judged again on every 0.05 s scan (alive, `CanInteract`, within
+`InteractionRange`), so the prompt never offers a click that does nothing. An interactable names its click in
+`Prompt` (default "Use"); a card's reach is 4.5 m. The key chips come from `IControlHints` (`ControlHintBoard`, a
+Godot-free `[Service]` in `Scripts/Core/Services`): each source publishes its own list (`Publish(source, hints)`, an
+empty list or `Clear(source)` removes it) and the board shows them in publishing order. The sources are
+`CardHighlighter` (cards in hand, `CardHandHints`), `ContainerHolder` (a held box, pack or booster, `ContainerHints`,
+which says "Unpack" only when `IUnpackTarget.CanUnpack` takes that container) and `FurniturePlacementController`
+(`PlacementHints`). A new held-item mode publishes its keys the same way and clears them in `_ExitTree`.
 
 ### Backoffice PC Ordering
 

@@ -55,6 +55,9 @@ public partial class SlotPricing : StaticBody3D, IInteractable, ISaveable
 
     public Node3D InteractionBody => this;
 
+    public string Prompt =>
+        $"Raise price: now {AskingPrice.Readout(MarketValue, MarkupPercent)}";
+
     public override void _Ready()
     {
         CollisionLayer |= InteractableLayerBit;

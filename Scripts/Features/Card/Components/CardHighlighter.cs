@@ -1,6 +1,7 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Player.Controllers;
@@ -11,6 +12,7 @@ namespace CardCleaner.Scripts.Features.Card.Components;
 public partial class CardHighlighter : Node3D, IDependent
 {
     private IInputService _inputService = null!;
+    private IControlHints? _hints;
     private IServiceResolver? _services;
     [Export] public InteractionSystem InteractionSystem = null!;
     [Export] public CardDropper CardDropper = null!;
@@ -60,6 +62,8 @@ public partial class CardHighlighter : Node3D, IDependent
             _inputService = input;
             _inputService.RegisterAction(this, "card_drop_prepare", MouseButton.Right, OnRightPress);
         });
+
+        _services.Get<IControlHints>(hints => _hints = hints);
 
         // Listen for card interaction requests from the generic system
         ConnectToCardInteractions(_services);
@@ -123,6 +127,7 @@ public partial class CardHighlighter : Node3D, IDependent
     public override void _ExitTree()
     {
         _inputService?.UnregisterAllActions(this);
+        _hints?.Clear(this);
 
         // Disconnect from card signals
         var cards = GetTree().GetNodesInGroup("Cards");
@@ -140,6 +145,9 @@ public partial class CardHighlighter : Node3D, IDependent
     {
         // Update drop preview while preparing drop
         if (CardDropper.IsPreparingDrop) CardDropper.UpdateDropPreview();
+
+        // The board drops repeated identical hints, so publishing every frame costs one comparison.
+        _hints?.Publish(this, CardHandHints.For(CardHolder.HeldCount, CardDropper.IsPreparingDrop));
     }
 
     private void OnCardInteractionRequested(CardController card)

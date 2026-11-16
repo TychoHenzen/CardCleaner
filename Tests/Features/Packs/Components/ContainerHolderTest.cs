@@ -450,6 +450,8 @@ public partial class ContainerHolderTest
             Calls++;
             return Accepts;
         }
+
+        public bool CanUnpack(CardContainer container) => Accepts;
     }
 
     private sealed class RecordingLog : ILog

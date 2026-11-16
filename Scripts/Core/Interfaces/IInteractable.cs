@@ -36,4 +36,9 @@ public interface IInteractable
     /// Maximum distance from which this object can be interacted with.
     /// </summary>
     float InteractionRange { get; }
+
+    /// <summary>
+    /// What a click does now, shown under the crosshair while the player aims at this object ("Pick up card").
+    /// </summary>
+    string Prompt => "Use";
 }

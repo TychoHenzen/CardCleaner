@@ -67,6 +67,8 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
 
     public Node3D InteractionBody => this;
 
+    public string Prompt => "Take payment";
+
     /// <summary>Injected at startup through the service resolver; assignable directly in tests.</summary>
     public IShopProgression? Progression { get; set; }
 
