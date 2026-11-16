@@ -522,7 +522,10 @@ A card or container saved on a slot's seat (`DeckSlot.SeatAt`, the nearest seat 
 slot while the save loads (`SavedContainers.Restore`, `SavedCardRespawner`), before any physics step, lower seats first.
 The slot's trigger cannot do it: a seat can lie inside its shelf's solid collider (the product shelf's does), which
 pushes a free body off the seat, and out of the trigger, on the first step.
-`ShelfStockSaveTest.StockIsBackInItsSlotsBeforeAnyPhysicsStep` pins it.
+`ShelfStockSaveTest.StockIsBackInItsSlotsBeforeAnyPhysicsStep` pins it. The load first takes the scene's own cards and
+containers out of the tree at once (`RemoveChild`, then `QueueFree`), and a slot releases any locked body that leaves the
+tree, so a card-shelf slot, which holds one card, is free again before the saved copy of its card respawns
+(`GameSaveServiceLoadTest.ReloadingPutsTheSavedCopyOfAShelvedCardIntoItsOneCardSlot`).
 
 The starting product shelf and storage rack used to stand under `World/Storefront/ProductShelf` and
 `World/RightStorage/StorageRack`, so a save from that layout keys their price tags by those paths and keeps their stock

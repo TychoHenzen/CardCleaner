@@ -138,6 +138,36 @@ public class GameSaveServiceLoadTest
         AssertBool(beside.Freeze).IsFalse();
     }
 
+    // A reload into the same scene frees the shelved card and respawns its saved copy. The freed card must leave the
+    // slot before the copy respawns: a card-shelf slot holds one card, so a freed card still counted in it would keep
+    // the copy out.
+    [TestCase]
+    [TestCategory("Unit")]
+    public static async Task ReloadingPutsTheSavedCopyOfAShelvedCardIntoItsOneCardSlot()
+    {
+        using var scene = new SaveWorld("GameSaveShelvedWorld");
+        var slot = GD.Load<PackedScene>(CardSlotScene).Instantiate<DeckSlot>();
+        slot.Capacity = 1;
+        scene.World.AddChild(slot);
+        var shelved = new CardController { Name = "Shelved", Signature = new CardSignature() };
+        scene.World.AddChild(shelved);
+        var service = scene.Add(new GameSaveService(new InMemorySlotFileSystem(), SaveWorld.SlotNamed("a"))
+            { AutoLoadOnStart = false });
+        AddNode(scene.World, autoFree: false);
+        scene.Enter();
+        await scene.World.ToSignal(scene.Tree, SceneTree.SignalName.ProcessFrame);
+        AssertBool(slot.TryLock(shelved)).IsTrue();
+
+        var save = new NodeSave();
+        service.Save(save);
+        service.Load(save);
+        await scene.TwoFrames();
+
+        AssertThat(scene.Spawner.Spawned).HasSize(1);
+        AssertThat(slot.Cards.Count).IsEqual(1);
+        AssertObject(slot.Cards[0]).IsSame(scene.Spawner.Spawned[0].Card);
+    }
+
     [TestCase]
     [TestCategory("Unit")]
     public static void MalformedContainerRecordLeavesTheSceneContainersInPlace()

@@ -26,7 +26,7 @@ public partial class DeckSlot : Node3D
     private const float SeatTolerance = 0.05f;
 
     private readonly List<RigidBody3D> _cards = new();
-    private readonly Dictionary<CardContainer, Action> _exitHandlers = new();
+    private readonly Dictionary<RigidBody3D, Action> _exitHandlers = new();
     private bool _processingEntry;
 
     [Export] public Area3D Area = null!;
@@ -167,42 +167,24 @@ public partial class DeckSlot : Node3D
         // Listen for pickup signal
         if (card is CardController cardController) cardController.CardPickedUp += OnCardPickedUp;
 
-        // Subscribed after the reparent above, which leaves the tree and would otherwise release the container at once.
-        if (card is CardContainer container)
-        {
-            Action handler = () => ReleaseContainer(container);
-            _exitHandlers[container] = handler;
-            container.TreeExiting += handler;
-        }
+        // Subscribed after the reparent above, which leaves the tree and would otherwise release the body at once.
+        Action handler = () => Release(card);
+        _exitHandlers[card] = handler;
+        card.TreeExiting += handler;
     }
 
-    // A locked container that leaves the tree (a player picks it up, a restore frees it) frees this slot.
-    private void ReleaseContainer(CardContainer container)
+    // A locked body that leaves the tree (a player picks it up, a load frees it), or a card that reports its pickup,
+    // frees this slot. A freed body that stayed in the list would hold its seat for good.
+    private void Release(RigidBody3D body)
     {
-        Unwatch(container);
-        if (!_cards.Remove(container)) return;
+        Unwatch(body);
+        if (!_cards.Remove(body)) return;
 
         RepositionCards();
         EmitSignal(SignalName.CardsChanged);
     }
 
-    private void OnCardPickedUp(CardController cardController)
-    {
-        if (!_cards.Contains(cardController)) return;
-
-        // Disconnect from pickup signal
-        cardController.CardPickedUp -= OnCardPickedUp;
-
-        // Remove from our collection - the card has already been reparented
-        _cards.Remove(cardController);
-
-        // Reposition remaining cards
-        RepositionCards();
-
-        EmitSignal(SignalName.CardsChanged);
-
-        ILog.Print($"DeckSlot released card due to pickup. {_cards.Count} cards remaining.");
-    }
+    private void OnCardPickedUp(CardController cardController) => Release(cardController);
 
     private void RepositionCards()
     {
@@ -246,13 +228,13 @@ public partial class DeckSlot : Node3D
         card.ApplyImpulse(Vector3.Up * EjectForce);
     }
 
-    // Stops listening to a locked body: the pickup signal of a card, the leave-the-tree handler of a container.
+    // Stops listening to a locked body: its leave-the-tree handler, and a card's pickup signal.
     private void Unwatch(RigidBody3D body)
     {
         if (body is CardController cardController) cardController.CardPickedUp -= OnCardPickedUp;
 
-        if (body is CardContainer container && _exitHandlers.Remove(container, out var handler))
-            container.TreeExiting -= handler;
+        if (_exitHandlers.Remove(body, out var handler))
+            body.TreeExiting -= handler;
     }
 
     /// <summary>The bodies currently locked in this slot: cards, and containers on a product shelf or rack.</summary>
