@@ -1,3 +1,4 @@
+using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
@@ -84,7 +85,8 @@ public partial class DayReportPanel : Control, IDependent
     }
 
     /// <summary>
-    ///     Fills the report with the day's figures, shows it, and takes the cursor and the player's controls.
+    ///     Fills the report with the day's figures, closes any open modal screen, shows the report, and takes the
+    ///     cursor and the player's controls.
     /// </summary>
     public void ShowReport(DayReport report)
     {
@@ -92,18 +94,26 @@ public partial class DayReportPanel : Control, IDependent
             return;
 
         Fill(report);
+        if (IsInsideTree())
+            CloseModalScreens();
+
         Visible = true;
         Cursor?.Claim(this);
 
         if (IsInsideTree())
         {
-            // ASSUMPTION (Low): if the PC order screen is open at closing time, closing that screen re-enables
-            // player control while this report is still up. The report's cursor claim keeps the button usable;
-            // not handled.
             _player = GetTree().GetFirstNodeInGroup(PlayerGroup) as PlayerController;
             if (_player != null)
                 _player.ControlEnabled = false;
         }
+    }
+
+    // Closing time can come while the PC or the payment screen is open. The PC overlay draws above this report and
+    // takes every click, and each screen gives the player's controls back as it closes, so they close first.
+    private void CloseModalScreens()
+    {
+        foreach (var screen in GetTree().GetNodesInGroup(IModalScreen.GroupName).OfType<IModalScreen>())
+            screen.Close();
     }
 
     // The panel sizes itself to its rows, centred on the screen, so a long bill list or many complaints never

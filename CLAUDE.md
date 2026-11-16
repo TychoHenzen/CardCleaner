@@ -515,6 +515,13 @@ their price tags and cards load. A restored piece keeps its saved name under `Wo
 stable, and restored boxes are tracked by the `DeliveryMarker` so a new order avoids them. Cards stocked on a placed shelf are saved by `GameSaveService` as
 cards and are not part of the furniture record (ASSUMPTION Medium: they re-seat as they do on a scene-placed shelf).
 
+The starting product shelf and storage rack used to stand under `World/Storefront/ProductShelf` and
+`World/RightStorage/StorageRack`, so a save from that layout keys their price tags by those paths and keeps their stock
+at the old seats. `GameSaveService.LoadGame` passes every payload through `LegacyShelfSaveMigration.Migrate` first:
+when the payload holds a price id under an old path, the price ids move to the tags under `World/Furniture/<piece>/Content`
+and a container saved within 0.25 m of an old seat moves to the same slot's seat on the moved shelf, which locks it on
+load. A payload with no such id loads unchanged. Moving or renaming a saved node again needs the same kind of step.
+
 ### Feature Organization
 
 Code is organized by feature under `Scripts/Features/`:
@@ -628,7 +635,7 @@ XP comes from completed customer checkouts: `CheckoutXp.For` gives max(1, paid /
 - Sources: `DailyBillBook` is the one aggregate of bill sources. Its constructor takes `RentBillSource`, `ExpansionRentBillSource` (one "Rent: [lot]" line per owned expansion lot, the only path that charges lot rent) and `StaffWageBillSource` (one "[Role] wage" line per hired role, the only path that charges wages). A later source is one more constructor parameter there, and nothing enumerates `IDailyBillSource`.
 - Carried debt: unpaid bills become the day's debt. The debt is charged first at the next close, and nothing else carries it.
 - Close order: the settlement is paid, the debt is updated, and the day advances with `ShopClock.StartNextDay`. Only then is the game saved through `ISaveGameCommand.ManualSave`, because the save serializes the whole tree. A save that fails or is unavailable logs a warning and does not roll the day back. `Closed` is raised either way.
-- Report: `DayReport` is the plain record of a close. `DayReportSheet` turns it into the lines a reader sees: the title, a column of signed figures (takings with a plus; the carried debt and each bill with a minus; the unpaid debt only when there is some; the day's net) and one line per complaint reason. `DayReportPanel` shows that sheet when `Closed` is raised, claims the cursor and holds player control until Continue is pressed, then releases both.
+- Report: `DayReport` is the plain record of a close. `DayReportSheet` turns it into the lines a reader sees: the title, a column of signed figures (takings with a plus; the carried debt and each bill with a minus; the unpaid debt only when there is some; the day's net) and one line per complaint reason. `DayReportPanel` shows that sheet when `Closed` is raised, claims the cursor and holds player control until Continue is pressed, then releases both. Before it shows, it closes every open `IModalScreen` (`Scripts/Features/Shop/Ui`, group `modal_screens`): the shop and workshop PCs (`ScreenTerminal`) and the payment screen (`CheckoutPaymentUi`). The PC overlay draws above the report and takes every click, and each screen gives the player's controls back as it closes, so they must close before the report freezes the player. A new screen that claims the cursor and freezes the player implements `IModalScreen` and joins the group in `_EnterTree`.
 - Arrivals: `ArrivalSchedule.Build` cuts the day from opening to half an hour before closing into one equal slice per customer and draws each arrival inside its own slice, so the first customer comes soon after opening and arrivals never bunch up.
 - Load: a saved `shop_day` (day and debt) restores the clock closed at opening time, so a load never reopens the shop or shows the report again. A save with no `shop_day` entry loads as day 1 with no debt. Missing or malformed values log an error and fall back to day 1 with no debt. Out-of-range values are clamped and logged as a warning. `DayState` does the parsing.
 - Godot-free models: `ShopClock`, `DailyBills`, `DayReport`, `DayState`, `DailyBillBook`, `RentBillSource` and the interfaces name no Godot or Node type. `ShopDayService`, `ShopSign`, `ShopHud` and `DayReportPanel` are the Godot-facing parts.

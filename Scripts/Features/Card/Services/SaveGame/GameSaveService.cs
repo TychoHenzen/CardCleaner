@@ -312,7 +312,7 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         try
         {
             var root = GetTree().CurrentScene;
-            SaveSystem.LoadTreeFromJson(result.Envelope!.Payload, root);
+            SaveSystem.LoadTreeFromJson(LegacyShelfSaveMigration.Migrate(result.Envelope!.Payload, root), root);
             ILog.Print("📁 Game loaded from save file");
         }
         catch (System.Exception ex)

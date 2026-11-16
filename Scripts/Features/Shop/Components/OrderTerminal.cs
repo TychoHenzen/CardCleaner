@@ -69,7 +69,11 @@ public partial class OrderTerminal : ScreenTerminal
 
     // _Ready runs once, but a terminal can leave and re-enter the tree, so the
     // subscriptions that _ExitTree drops are restored on every entry.
-    public override void _EnterTree() => Subscribe();
+    public override void _EnterTree()
+    {
+        base._EnterTree();
+        Subscribe();
+    }
 
     public override void _ExitTree()
     {

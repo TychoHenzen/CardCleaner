@@ -10,7 +10,7 @@ namespace CardCleaner.Tests.Features.Shop.Ui;
 
 [TestSuite]
 [RequireGodotRuntime]
-public class DayReportPanelTest
+public partial class DayReportPanelTest
 {
     private static DayReport SampleReport() => new(
         3,
@@ -69,6 +69,35 @@ public class DayReportPanelTest
         AssertThat(cursor.Releases.Count).IsEqual(1);
         AssertThat(ReferenceEquals(cursor.Releases[0], panel)).IsTrue();
         AssertThat(panel.Visible).IsFalse();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TheReportClosesAnOpenModalScreenBeforeItTakesTheCursor()
+    {
+        var cursor = new FakeCursorOwner();
+        var screen = new RecordingModalScreen { Cursor = cursor };
+        AddNode(screen);
+        var panel = new DayReportPanel { Cursor = cursor };
+        AddNode(panel);
+
+        panel.ShowReport(SampleReport());
+
+        AssertThat(screen.ClaimsWhenClosed).IsEqual(0);
+        AssertThat(cursor.Claims.Count).IsEqual(1);
+        AssertThat(panel.Visible).IsTrue();
+    }
+
+    /// <summary>A modal screen that records how many cursor claims had been made when it was closed.</summary>
+    private sealed partial class RecordingModalScreen : Node, IModalScreen
+    {
+        public FakeCursorOwner? Cursor { get; init; }
+
+        public int? ClaimsWhenClosed { get; private set; }
+
+        public override void _EnterTree() => AddToGroup(IModalScreen.GroupName);
+
+        public void Close() => ClaimsWhenClosed = Cursor?.Claims.Count;
     }
 
     /// <summary>Records which owners claimed and released the cursor.</summary>

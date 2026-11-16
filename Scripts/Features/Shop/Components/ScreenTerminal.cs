@@ -2,6 +2,7 @@ using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
+using CardCleaner.Scripts.Features.Shop.Ui;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
@@ -10,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     A PC the player clicks to open its screen. Open freezes the player and releases the cursor; close
 ///     restores both. Derived terminals supply the screen in <see cref="OnOpening" /> and <see cref="OnClosing" />.
 /// </summary>
-public partial class ScreenTerminal : StaticBody3D, IInteractable, IDependent
+public partial class ScreenTerminal : StaticBody3D, IInteractable, IDependent, IModalScreen
 {
     private const float DefaultInteractionRange = 4.5f;
     // Layer 3, in the InteractionSystem mask
@@ -85,6 +86,8 @@ public partial class ScreenTerminal : StaticBody3D, IInteractable, IDependent
 
         services.Get<ICursorOwner>(cursor => _cursor = cursor);
     }
+
+    public override void _EnterTree() => AddToGroup(IModalScreen.GroupName);
 
     public override void _ExitTree()
     {

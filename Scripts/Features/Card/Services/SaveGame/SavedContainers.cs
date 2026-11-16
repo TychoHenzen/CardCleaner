@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
+using Newtonsoft.Json;
 using Saveable.Extensions;
 
 namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
@@ -63,6 +64,39 @@ internal static class SavedContainers
         var records = SaveExtension.DeserializeObject<List<ContainerRecord>>(SaveExtension.SerializeObject(raw))
                       ?? new List<ContainerRecord>();
         return records.Select(ParseOne).ToList();
+    }
+
+    /// <summary>
+    ///     Returns the container records of a slot with each readable position passed through <paramref name="move" />.
+    ///     A null result, or a position that cannot be read, keeps the record as it was, so <see cref="Parse" /> still
+    ///     reports a malformed one.
+    /// </summary>
+    internal static List<object> Relocate(List<object> raw, Func<Vector3, Vector3?> move)
+    {
+        var records = SaveExtension.DeserializeObject<List<ContainerRecord>>(SaveExtension.SerializeObject(raw))
+                      ?? new List<ContainerRecord>();
+        foreach (var record in records)
+        {
+            if (TryReadPosition(record) is { } position && move(position) is { } moved)
+                record.Position = moved;
+        }
+
+        return records.Cast<object>().ToList();
+    }
+
+    private static Vector3? TryReadPosition(ContainerRecord record)
+    {
+        if (record.Position == null)
+            return null;
+
+        try
+        {
+            return SavedCardReader.GetVector3FromData(record.Position);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 
     /// <summary>
