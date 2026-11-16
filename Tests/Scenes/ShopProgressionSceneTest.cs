@@ -12,8 +12,8 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 ///     The shop's progression in the real shop scene: the progression node is the one the scene's services hand
-///     out, a fresh shop starts at level one, and the backoffice PC refuses the level-locked item until a checkout
-///     has earned the level it needs.
+///     out, a fresh shop starts at level one, and the backoffice PC's Furniture app refuses the level-locked packing
+///     station until a checkout has earned the level it needs. Everything else on the PC orders at level one.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -25,10 +25,12 @@ public class ShopProgressionSceneTest
     private Node3D _shop = null!;
     private ScreenTerminal _terminal = null!;
     private StockApp _stock = null!;
+    private StockApp _furniture = null!;
     private MoneyService _money = null!;
     private ShopProgression _progression = null!;
     private OrderingService _ordering = null!;
-    private StockPresses _presses = null!;
+    private StockPresses _stockPresses = null!;
+    private StockPresses _furniturePresses = null!;
 
     [BeforeTest]
     public async Task Setup()
@@ -38,9 +40,11 @@ public class ShopProgressionSceneTest
         _stock = _shop.GetNode<StockApp>("PcDesktopViewport/StockApp");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _progression = _shop.GetNode<ShopProgression>("Services/ShopProgression");
+        _furniture = _shop.GetNode<StockApp>("PcDesktopViewport/FurnitureApp");
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
-        _presses = new StockPresses(_stock, _ordering, _shop.GetNode("World"),
-            OrderingService.SlotColumns * OrderingService.SlotRows);
+        var capacity = OrderingService.SlotColumns * OrderingService.SlotRows;
+        _stockPresses = new StockPresses(_stock, _ordering, _shop.GetNode("World"), capacity);
+        _furniturePresses = new StockPresses(_furniture, _ordering, _shop.GetNode("World"), capacity);
 
         AddNode(_shop);
         await ISceneRunner.SyncPhysicsFrame;
@@ -89,10 +93,10 @@ public class ShopProgressionSceneTest
         var balance = _money.Balance;
         _terminal.Interact();
 
-        // The Stock app shows a level-locked item as a disabled card naming the level, so it never reaches the cart.
-        AssertBool(_stock.CardGrid.IsLocked(index)).IsTrue();
-        AssertThat(_stock.CardGrid.ButtonText(index)).IsEqual("Level 2");
-        _presses.PressForRefusal(index, "cart is empty");
+        // The app shows a level-locked item as a disabled card naming the level, so it never reaches the cart.
+        AssertBool(_furniture.CardGrid.IsLocked(index)).IsTrue();
+        AssertThat(_furniture.CardGrid.ButtonText(index)).IsEqual("Level 2");
+        _furniturePresses.PressForRefusal(index, "cart is empty");
         AssertThat(_money.Balance).IsEqual(balance);
     }
 
@@ -101,13 +105,13 @@ public class ShopProgressionSceneTest
     public void ReachingLevelTwoDeliversThatItem()
     {
         var index = LockedIndex();
-        var price = _stock.Catalog!.Items[index].Price;
+        var price = _furniture.Catalog!.Items[index].Price;
         _progression.AwardCheckout(LevelTwoXp);
         _money.Add(price);
         var balance = _money.Balance;
         _terminal.Interact();
 
-        _presses.PressForDelivery(index);
+        _furniturePresses.PressForDelivery(index);
 
         AssertThat(_money.Balance).IsEqual(balance - price);
     }
@@ -116,24 +120,29 @@ public class ShopProgressionSceneTest
     [TestCategory("Unit")]
     public void EveryOtherBackofficeItemOrdersAtLevelOne()
     {
-        var items = _stock.Catalog!.Items;
         _terminal.Interact();
 
-        for (var i = 0; i < items.Length; i++)
+        var expected = 0;
+        foreach (var (app, presses) in new[] { (_stock, _stockPresses), (_furniture, _furniturePresses) })
         {
-            if (items[i].Id == LockedId)
-                continue;
+            var items = app.Catalog!.Items;
+            for (var i = 0; i < items.Length; i++)
+            {
+                if (items[i].Id == LockedId)
+                    continue;
 
-            _money.Add(items[i].Price);
-            _presses.PressForDelivery(i);
+                _money.Add(items[i].Price);
+                presses.PressForDelivery(i);
+                expected++;
+            }
         }
 
-        AssertThat(_ordering.DeliveredCount).IsEqual(items.Length - 1);
+        AssertThat(_ordering.DeliveredCount).IsEqual(expected);
     }
 
     private int LockedIndex()
     {
-        var index = _stock.Catalog!.Items.ToList().FindIndex(item => item.Id == LockedId);
+        var index = _furniture.Catalog!.Items.ToList().FindIndex(item => item.Id == LockedId);
         AssertBool(index >= 0).OverrideFailureMessage($"catalog has no {LockedId} row").IsTrue();
         return index;
     }

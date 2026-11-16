@@ -27,6 +27,7 @@ public partial class ShopArtSlot : Node3D
 
     private string _artPath = string.Empty;
     private float _artScale = DefaultArtScale;
+    private Vector3 _artOffset = Vector3.Zero;
     private Color _tint = Colors.White;
 
     /// <summary>Resource path of the imported pack mesh, for example an .fbx under Assets/Synty.</summary>
@@ -49,6 +50,21 @@ public partial class ShopArtSlot : Node3D
         set
         {
             _artScale = value;
+            ReloadInEditor();
+        }
+    }
+
+    /// <summary>
+    ///     Where the imported mesh's origin sits in this node's space. Some pack models are authored far from their
+    ///     origin; this moves them back onto the slot (it is not multiplied by <see cref="ArtScale" />).
+    /// </summary>
+    [Export]
+    public Vector3 ArtOffset
+    {
+        get => _artOffset;
+        set
+        {
+            _artOffset = value;
             ReloadInEditor();
         }
     }
@@ -176,6 +192,7 @@ public partial class ShopArtSlot : Node3D
         var art = scene.Instantiate<Node3D>();
         art.Name = ArtNodeName;
         art.Scale = Vector3.One * ArtScale;
+        art.Position = ArtOffset;
         ArtTextured = ApplyPackMaterial(art);
         AddChild(art);
         return true;

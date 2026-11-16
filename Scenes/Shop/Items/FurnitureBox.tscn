@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/FurnitureBox.cs" id="FurnitureBox"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
 [ext_resource type="Material" path="res://Data/Ui/AimHighlightMaterial.tres" id="AimHighlight"]
 
 [sub_resource type="BoxShape3D" id="Shape"]
@@ -28,6 +29,13 @@ shape = SubResource("Shape")
 [node name="Body" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 mesh = SubResource("BodyMesh")
+
+[node name="Art" type="Node3D" parent="." node_paths=PackedStringArray("Placeholder")]
+transform = Transform3D(2.463, 0, 0, 0, 1.869, 0, 0, 0, 2.564, 0, 0, 0)
+script = ExtResource("ShopArtSlot")
+ArtPath = "res://Assets/Synty/PolygonSurvivalTools/SM_Cardboard_Box_01_Closed.fbx"
+ArtOffset = Vector3(-79.873, 0, 0.003)
+Placeholder = NodePath("../Body")
 
 [node name="Highlight" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)

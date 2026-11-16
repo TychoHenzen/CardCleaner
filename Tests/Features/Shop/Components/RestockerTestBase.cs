@@ -129,16 +129,19 @@ public abstract class RestockerTestBase
         return (ordered[0], ordered[1]);
     }
 
-    // Two more product shelves beside the scene's one, so nine product slots are free and the real box threshold
-    // (8) can be met. Each is checked to be reachable from the rack before a test relies on it.
+    // Two more product shelves beside the scene's one, in line along its width and turned the same way, so nine
+    // product slots are free and the real box threshold (8) can be met. Each is checked to be reachable from the rack
+    // before a test relies on it.
     private protected List<CardShelf> AddProductShelves()
     {
         var shelves = new List<CardShelf> { _product };
+        var basis = _product.GlobalTransform.Basis;
+        var along = basis.X.Normalized();
         foreach (var offset in new[] { -ShelfSpacing, ShelfSpacing })
         {
             var shelf = GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>();
             _product.GetParent().AddChild(shelf);
-            shelf.GlobalPosition = _product.GlobalPosition + new Vector3(offset, 0f, 0f);
+            shelf.GlobalTransform = new Transform3D(basis, _product.GlobalPosition + along * offset);
             AssertBool(Reaches(_rack, shelf)).IsTrue();
             shelves.Add(shelf);
         }
