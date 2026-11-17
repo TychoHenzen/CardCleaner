@@ -35,18 +35,17 @@ internal sealed class VisibleParts
         }
     }
 
-    /// <summary>The box around the copied meshes, or null when there is none. A label adds nothing to it.</summary>
-    public Aabb? Bounds()
-    {
-        Aabb? bounds = null;
-        foreach (var mesh in _meshes)
-        {
-            var box = mesh.Transform * mesh.Mesh.GetAabb();
-            bounds = bounds?.Merge(box) ?? box;
-        }
+    /// <summary>Whether a visible mesh was copied; a body that shows only labels has no look.</summary>
+    public bool HasMesh => _meshes.Count > 0;
 
-        return bounds;
-    }
+    /// <summary>
+    ///     The box around the copied meshes, of which there must be one (<see cref="HasMesh" />). A label adds nothing
+    ///     to it.
+    /// </summary>
+    public Aabb Bounds() =>
+        _meshes.Skip(1).Aggregate(BoxOf(_meshes[0]), (bounds, mesh) => bounds.Merge(BoxOf(mesh)));
+
+    private static Aabb BoxOf(MeshInstance3D mesh) => mesh.Transform * mesh.Mesh.GetAabb();
 
     /// <summary>
     ///     Puts every copy under a new "Look" root, through a "Laid" node placed at <paramref name="placed" />.

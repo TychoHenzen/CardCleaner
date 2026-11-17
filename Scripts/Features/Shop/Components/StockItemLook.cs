@@ -30,12 +30,13 @@ public sealed class StockItemLook
     {
         var parts = new VisibleParts();
         parts.Collect(body, Transform3D.Identity);
-        if (parts.Bounds() is not { } bounds)
+        if (!parts.HasMesh)
         {
             parts.FreeCopies();
             return null;
         }
 
+        var bounds = parts.Bounds();
         var lay = new Transform3D(LayFlat(bounds.Size), Vector3.Zero);
         var laid = lay * bounds;
         var centre = laid.GetCenter();
