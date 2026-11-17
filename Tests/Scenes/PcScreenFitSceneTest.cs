@@ -58,6 +58,40 @@ public class PcScreenFitSceneTest
     }
 
     /// <summary>
+    ///     Without the monitor art the slot shows its grey placeholder box instead. The quad must lie on that box's
+    ///     front face too, inside its outline, or the opaque box hides the desktop in that fallback.
+    /// </summary>
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void TheDesktopQuadLiesOnTheFallbackMonitorBox()
+    {
+        var shop = ShopOrderingRig.LoadShopWithServices();
+        AddNode(shop);
+        try
+        {
+            var terminal = shop.GetNode<Node3D>(TerminalPath);
+            var placeholder = terminal.GetNode<MeshInstance3D>("MonitorArt/Placeholder");
+            var box = terminal.GlobalTransform.AffineInverse() * placeholder.GlobalTransform * placeholder.Mesh.GetAabb();
+
+            var quad = terminal.GetNode<MeshInstance3D>("ScreenQuad");
+            var size = ((QuadMesh)quad.Mesh).Size;
+            var centre = quad.Position;
+
+            var gap = centre.Z - box.End.Z;
+            AssertThat(gap).IsGreaterEqual(0f);
+            AssertThat(gap).IsLessEqual(MaxGap);
+            AssertThat(centre.X - size.X / 2).IsGreaterEqual(box.Position.X);
+            AssertThat(centre.X + size.X / 2).IsLessEqual(box.End.X);
+            AssertThat(centre.Y - size.Y / 2).IsGreaterEqual(box.Position.Y);
+            AssertThat(centre.Y + size.Y / 2).IsLessEqual(box.End.Y);
+        }
+        finally
+        {
+            TestServices.Reset();
+        }
+    }
+
+    /// <summary>
     ///     Opening the PC swings the screen camera to its home pose and then draws the desktop over the whole window.
     ///     The home pose looks straight at the quad from the distance where the quad fills the view height, so the
     ///     swing ends on the same picture the overlay starts with.
