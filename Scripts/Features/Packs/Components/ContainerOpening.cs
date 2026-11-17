@@ -91,7 +91,9 @@ internal sealed class ContainerOpening
         return IsOver;
     }
 
-    /// <summary>Ends the opening at once: every item still inside appears at its spot and every rising one lands there.</summary>
+    /// <summary>
+    ///     Ends the opening at once: every item still inside appears at its spot and every rising one lands there.
+    /// </summary>
     public void Finish()
     {
         _time = _plan.Duration;
@@ -102,7 +104,9 @@ internal sealed class ContainerOpening
         PoseWrapper();
     }
 
-    /// <summary>Lets the rising items go where they are, for a wrapper that leaves the tree before it is done.</summary>
+    /// <summary>
+    ///     Lets the rising items go where they are, for a wrapper that leaves the tree before it is done.
+    /// </summary>
     public void Abandon()
     {
         foreach (var item in _rising)

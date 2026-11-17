@@ -8,20 +8,39 @@ namespace CardCleaner.Scripts.Features.Packs.Models;
 ///     released <see cref="ReleaseStep" /> after the one before and rising for <see cref="Rise" />), and then the empty
 ///     wrapper shrinks away (<see cref="Vanish" />).
 /// </summary>
-public sealed record ContainerOpeningPlan(
-    float Settle,
-    float Unseal,
-    float ReleaseStep,
-    float Rise,
-    float Vanish,
-    int Items)
+public sealed class ContainerOpeningPlan
 {
     private const float Gravity = 9.8f;
 
     // ASSUMPTION (Low): a drop from higher than about 2.4 m is cut short, so opening never keeps the player waiting.
     private const float LongestFall = 0.7f;
 
-    /// <summary>The plan for a container of <paramref name="kind" /> that falls <paramref name="fallHeight" /> metres.</summary>
+    private ContainerOpeningPlan(float settle, float unseal, float releaseStep, float rise, float vanish, int items)
+    {
+        Settle = settle;
+        Unseal = unseal;
+        ReleaseStep = releaseStep;
+        Rise = rise;
+        Vanish = vanish;
+        Items = items;
+    }
+
+    public float Settle { get; }
+
+    public float Unseal { get; }
+
+    public float ReleaseStep { get; }
+
+    public float Rise { get; }
+
+    public float Vanish { get; }
+
+    public int Items { get; }
+
+    /// <summary>
+    ///     The plan for a container of <paramref name="kind" /> holding <paramref name="items" /> that falls
+    ///     <paramref name="fallHeight" /> metres.
+    /// </summary>
     public static ContainerOpeningPlan For(CardContainerKind kind, float fallHeight, int items)
     {
         var settle = FallSeconds(fallHeight);
@@ -34,7 +53,9 @@ public sealed record ContainerOpeningPlan(
         };
     }
 
-    /// <summary>The seconds a free fall of <paramref name="height" /> metres takes, at most <see cref="LongestFall" />.</summary>
+    /// <summary>
+    ///     The seconds a free fall of <paramref name="height" /> metres takes, at most <see cref="LongestFall" />.
+    /// </summary>
     public static float FallSeconds(float height) =>
         height <= 0f ? 0f : Math.Min(LongestFall, MathF.Sqrt(2f * height / Gravity));
 
