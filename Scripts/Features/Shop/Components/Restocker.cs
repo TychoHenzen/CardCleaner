@@ -31,6 +31,7 @@ public partial class Restocker : CharacterBody3D, IDependent
     private IShopDayService? _day;
     private CustomerNavigator? _navigator;
     private RestockerHands? _hands;
+    private HumanFigure? _figure;
     private RestockerScan? _scan;
     private Vector3 _home;
     private double _sinceScan;
@@ -68,6 +69,7 @@ public partial class Restocker : CharacterBody3D, IDependent
 
         _home = GlobalPosition;
         _hands = new RestockerHands(this, GetNode<Node3D>("Hand"));
+        _figure = GetNodeOrNull<HumanFigure>("Figure");
         _navigator = new CustomerNavigator(this, GetNode<NavigationAgent3D>("Agent"), OnArrived, OnBlocked);
         _scan = new RestockerScan(GetTree(), PickupRadius);
         _services.Get<IStaffService>(staff =>
@@ -85,7 +87,11 @@ public partial class Restocker : CharacterBody3D, IDependent
             _staff.Changed -= RefreshVisible;
     }
 
-    public override void _PhysicsProcess(double delta) => Step(delta);
+    public override void _PhysicsProcess(double delta)
+    {
+        Step(delta);
+        _figure?.Follow(this, Velocity, delta);
+    }
 
     /// <summary>Advances the restocker by one physics step. Public so tests can drive it by hand.</summary>
     public void Step(double delta)
@@ -124,6 +130,7 @@ public partial class Restocker : CharacterBody3D, IDependent
         _putBackSlot = null;
         _homing = false;
         _job.Cancel();
+        Velocity = Vector3.Zero;
     }
 
     private void PlanNext()

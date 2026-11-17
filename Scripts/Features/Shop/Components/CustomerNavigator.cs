@@ -5,7 +5,8 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     Walks a body along the baked navigation mesh toward one target at a time. It calls back once when the body
-///     arrives and once when it can make no progress.
+///     arrives and once when it can make no progress, and stops the body before either call, so a figure that follows
+///     the body's velocity stands still.
 /// </summary>
 internal sealed class CustomerNavigator
 {
@@ -52,12 +53,14 @@ internal sealed class CustomerNavigator
         var next = _agent.GetNextPathPosition();
         if (Flat(_target - _body.GlobalPosition).Length() <= ArriveMeters)
         {
+            _body.Velocity = Vector3.Zero;
             _arrived();
             return;
         }
 
         if (_framesSinceTarget > PathSettleFrames && _agent.IsNavigationFinished())
         {
+            _body.Velocity = Vector3.Zero;
             _blocked();
             return;
         }
@@ -84,6 +87,7 @@ internal sealed class CustomerNavigator
         }
         else if (_stuckElapsed >= stuckSeconds)
         {
+            _body.Velocity = Vector3.Zero;
             _blocked();
         }
     }

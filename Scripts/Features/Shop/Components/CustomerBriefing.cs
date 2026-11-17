@@ -35,6 +35,8 @@ internal sealed class CustomerBriefing
         // ASSUMPTION (Low): about half of the customers pay by card; the draw comes after the plan draws so the plan
         // of each customer is unchanged.
         customer.Method = rng.RandiRange(0, 1) == 0 ? PaymentMethod.Card : PaymentMethod.Cash;
+        // ASSUMPTION (Low): the look is drawn last for the same reason, so it changes no earlier draw.
+        customer.Figure?.Dress(rng);
         Claim(customer, plan);
         customer.Begin(plan, offers, counter, exit, plan.Count == 0 ? NextBrowsePoint(offers) : null);
     }

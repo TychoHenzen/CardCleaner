@@ -61,6 +61,13 @@ public partial class Customer : IBasketLooks
         Handoff.Checkout(this);
     }
 
+    // A counter with a place in the world is faced while handing over and waiting; a test stand-in has none.
+    private void FaceCounter()
+    {
+        if (Handoff is Node3D counter)
+            _figure?.FaceToward(counter.GlobalPosition);
+    }
+
     // Copies the counter never took (the customer left first) are not in the tree and would leak.
     private void DiscardLooks()
     {
