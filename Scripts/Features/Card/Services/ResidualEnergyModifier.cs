@@ -1,4 +1,5 @@
 ﻿using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Resources;
 using CardCleaner.Scripts.Core.Utilities;
 using Godot;
 
@@ -6,7 +7,7 @@ namespace CardCleaner.Scripts.Features.Card.Services;
 
 [Tool]
 [GlobalClass]
-public partial class ResidualEnergyModifier : Resource
+public partial class ResidualEnergyModifier : PinnedResource
 {
     // Default values as constants
     private const string DefaultName = "";

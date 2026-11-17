@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
@@ -7,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 ///     <see cref="StaffRole" /> record that the roster and the cashier rules use.
 /// </summary>
 [GlobalClass]
-public partial class StaffRoleData : Resource
+public partial class StaffRoleData : PinnedResource
 {
     /// <summary>Stable identifier, unique in the staff catalog.</summary>
     [Export]

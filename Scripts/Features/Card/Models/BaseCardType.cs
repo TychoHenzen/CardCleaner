@@ -1,5 +1,6 @@
 ﻿using System;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 using Godot.Collections;
 
@@ -7,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Card.Models;
 
 [Tool]
 [GlobalClass]
-public partial class BaseCardType : Resource
+public partial class BaseCardType : PinnedResource
 {
     // Default values as constants
     private const string DefaultTypeName = "";

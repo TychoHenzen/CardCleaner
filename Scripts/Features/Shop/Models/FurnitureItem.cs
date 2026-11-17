@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
@@ -7,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 ///     The price lives in the Furniture app's order item, not here.
 /// </summary>
 [GlobalClass]
-public partial class FurnitureItem : Resource
+public partial class FurnitureItem : PinnedResource
 {
     /// <summary>Stable identifier, matched by the order item and the unlock row.</summary>
     [Export]

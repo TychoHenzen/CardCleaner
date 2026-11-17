@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
@@ -10,7 +11,7 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 ///     <see cref="ToRoles" /> keys them by id for the staff service.
 /// </summary>
 [GlobalClass]
-public partial class StaffCatalog : Resource
+public partial class StaffCatalog : PinnedResource
 {
     /// <summary>The roles, in any order. An empty or repeated id is skipped when the catalog is read.</summary>
     [Export]

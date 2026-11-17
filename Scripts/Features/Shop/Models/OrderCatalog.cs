@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
@@ -7,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 ///     (for example the workshop terminal) can offer different items without code changes.
 /// </summary>
 [GlobalClass]
-public partial class OrderCatalog : Resource
+public partial class OrderCatalog : PinnedResource
 {
     [Export]
     public OrderItem[] Items { get; set; } = [];

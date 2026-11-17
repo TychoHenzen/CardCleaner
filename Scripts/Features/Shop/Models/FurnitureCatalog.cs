@@ -1,11 +1,12 @@
 using System;
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>The furniture the shop knows about, looked up by item id.</summary>
 [GlobalClass]
-public partial class FurnitureCatalog : Resource
+public partial class FurnitureCatalog : PinnedResource
 {
     [Export]
     public FurnitureItem[] Items { get; set; } = [];

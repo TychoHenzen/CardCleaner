@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
@@ -7,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 ///     engine-free <see cref="ExpansionLot" /> record.
 /// </summary>
 [GlobalClass]
-public partial class ExpansionLotData : Resource
+public partial class ExpansionLotData : PinnedResource
 {
     /// <summary>Stable identifier, unique in the lots table.</summary>
     [Export]

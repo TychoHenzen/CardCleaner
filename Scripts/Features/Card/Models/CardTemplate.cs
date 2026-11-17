@@ -1,9 +1,10 @@
 ﻿using System.Linq;
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
 
-public partial class CardTemplate : Resource
+public partial class CardTemplate : PinnedResource
 {
     // --- Front & back base templates ---
     public LayerData CardBase { get; } = new() { RenderOnFront = true, RenderOnBack = true };
