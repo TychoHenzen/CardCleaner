@@ -71,16 +71,16 @@ public class ScriptedResourceRevivalTest
     public async Task AResourceMadeInCodeIsNotKept()
     {
         var made = MakeAndLetGo();
-        await NextFrame();
+        await DeferredCallsRan();
         RunFinalizers();
         AssertBool(made.IsAlive).OverrideFailureMessage("A probe made with new was kept alive.").IsFalse();
     }
 
-    // Loads the probe, lets go of it, and waits one frame so the pin, which waits for the end of the frame, has run.
+    // Loads the probe, lets go of it, and waits until the pin, a deferred call, has run.
     private static async Task<WeakReference> LoadAndLetGo(string path)
     {
         var wrapper = Load(path);
-        await NextFrame();
+        await DeferredCallsRan();
         return wrapper;
     }
 
@@ -109,9 +109,12 @@ public class ScriptedResourceRevivalTest
         GC.WaitForPendingFinalizers();
     }
 
-    private static async Task NextFrame()
+    // A test resumes inside the process_frame signal, before that frame flushes its deferred calls, so a call queued
+    // after the previous frame's last flush is still waiting one frame later. After two frames it has run.
+    private static async Task DeferredCallsRan()
     {
         var tree = (SceneTree)Engine.GetMainLoop();
+        await tree.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
         await tree.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
     }
 }

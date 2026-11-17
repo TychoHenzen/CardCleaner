@@ -1,4 +1,5 @@
 using System;
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
@@ -9,7 +10,7 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 ///     scene that uses this still loads when the asset files are missing; the figure then shows its placeholder.
 /// </summary>
 [GlobalClass]
-public partial class FigureLooks : Resource
+public partial class FigureLooks : PinnedResource
 {
     /// <summary>One model file (a .glb or a scene) per look.</summary>
     [Export]
