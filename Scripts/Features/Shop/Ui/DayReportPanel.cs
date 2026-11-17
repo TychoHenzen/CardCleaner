@@ -120,24 +120,8 @@ public partial class DayReportPanel : Control, IDependent
     // spill out of it.
     private void BuildPanel()
     {
-        var centre = new CenterContainer { MouseFilter = MouseFilterEnum.Ignore };
-        centre.SetAnchorsPreset(LayoutPreset.FullRect);
-        AddChild(centre);
-
-        var panel = new PanelContainer
-        {
-            MouseFilter = MouseFilterEnum.Stop, CustomMinimumSize = new Vector2(PanelWidth, 0)
-        };
-        centre.AddChild(panel);
-
-        var margin = new MarginContainer();
-        foreach (var side in new[] { "margin_left", "margin_right", "margin_top", "margin_bottom" })
-            margin.AddThemeConstantOverride(side, Padding);
-        panel.AddChild(margin);
-
-        var box = new VBoxContainer();
+        var box = ScreenPanel.AddTo(this, PanelWidth, Padding);
         box.AddThemeConstantOverride("separation", RowGap);
-        margin.AddChild(box);
 
         TitleLabel = new Label { Name = "Title", HorizontalAlignment = HorizontalAlignment.Center };
         TitleLabel.AddThemeFontSizeOverride("font_size", TitleFontSize);

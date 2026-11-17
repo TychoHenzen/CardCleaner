@@ -111,27 +111,7 @@ public partial class OrderTerminalUi : CanvasLayer
             return;
         _layoutBuilt = true;
 
-        var panel = new PanelContainer
-        {
-            CustomMinimumSize = new Vector2(PanelWidth, 0),
-            AnchorLeft = 0.5f,
-            AnchorRight = 0.5f,
-            AnchorTop = 0.5f,
-            AnchorBottom = 0.5f,
-            OffsetLeft = -PanelWidth / 2f,
-            OffsetRight = PanelWidth / 2f,
-            GrowHorizontal = Control.GrowDirection.Both,
-            GrowVertical = Control.GrowDirection.Both
-        };
-        AddChild(panel);
-
-        var margin = new MarginContainer();
-        foreach (var side in new[] { "margin_left", "margin_right", "margin_top", "margin_bottom" })
-            margin.AddThemeConstantOverride(side, Margin);
-        panel.AddChild(margin);
-
-        var column = new VBoxContainer();
-        margin.AddChild(column);
+        var column = ScreenPanel.AddTo(this, PanelWidth, Margin);
 
         column.AddChild(new Label { Text = "Order supplies" });
         _balanceLabel = new Label();
