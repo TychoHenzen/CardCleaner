@@ -40,6 +40,17 @@ internal static class SavedContainers
         public bool Held { get; set; }
     }
 
+    /// <summary>
+    ///     Ends every opening in progress in <paramref name="tree" /> (<see cref="CardContainer.FinishOpening" />), so
+    ///     a save finds every item at its spot instead of losing the ones still inside an opening wrapper.
+    /// </summary>
+    internal static void FinishOpenings(SceneTree tree)
+    {
+        foreach (var container in tree.GetNodesInGroup("card_containers").OfType<CardContainer>()
+                     .Where(container => container.IsOpened).ToList())
+            container.FinishOpening();
+    }
+
     /// <summary>The records to write for the sealed containers in <paramref name="tree" />.</summary>
     internal static List<object> Capture(SceneTree tree)
     {

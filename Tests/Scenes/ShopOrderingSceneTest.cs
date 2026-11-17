@@ -27,7 +27,7 @@ public class ShopOrderingSceneTest
     private const float StandingDistanceToPc = 2.9f;
     // Only bounds an order loop that never fills; boxes stack in layers, so far more than one grid of them fit.
     private const int OrderBound = 200;
-    private const float BoxHeight = 0.35f;
+    private const float BoxHeight = 0.6f;
     private const float HeightTolerance = 0.001f;
     private static readonly string[] ExpectedItems =
         ["cardboard_box", "pack", "booster"];
@@ -222,9 +222,9 @@ public class ShopOrderingSceneTest
         }
     }
 
-    // The furniture area takes shelf-sized cells; the stock area takes cells that fit the 0.61 x 0.83 m cardboard box.
+    // The furniture area takes shelf-sized cells; the stock area takes cells that fit the 0.80 x 0.86 m cardboard box.
     [TestCase("World/Markers/DeliveryPoint", 2.13f, 1.0f)]
-    [TestCase("World/Markers/StockDeliveryPoint", 0.61f, 0.83f)]
+    [TestCase("World/Markers/StockDeliveryPoint", 0.8f, 0.86f)]
     [TestCategory("Unit")]
     public void FirstLayerOfDeliverySlotsFitsInsideTheRightStorageFloor(string markerPath, float widestItem,
         float deepestItem)

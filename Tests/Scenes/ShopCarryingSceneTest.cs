@@ -19,6 +19,7 @@ using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using NSubstitute;
 using CardCleaner.Tests.TestUtilities;
+using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 using System;
 
 namespace CardCleaner.Tests.Scenes;
@@ -36,7 +37,6 @@ public class ShopCarryingSceneTest
     private const string CardScene = "res://Scenes/Components/CardShader.tscn";
     private const ulong Seed = 4242;
     private const float StandingDistance = 2.0f;
-    private const int OpenFrames = 12;
     private const int SettleFrames = 180;
     // InteractionSystem raycasts once per 0.05 s of physics time (about three frames at 60 Hz), so the aim has to
     // outlast one full interval before the click, or the target is still the one from before the aim.
@@ -155,10 +155,10 @@ public class ShopCarryingSceneTest
         _leftClick!.Invoke(true);
 
         _qPress!.Invoke();
-        await Frames(OpenFrames);
 
         AssertBool(_holder.IsHolding).IsFalse();
         AssertBool(box.IsOpened).IsTrue();
+        await UntilOpened(box);
         var packs = Containers(CardContainerKind.Pack);
         AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
     }
@@ -276,11 +276,5 @@ public class ShopCarryingSceneTest
     {
         for (var i = 0; i < count; i++)
             await ISceneRunner.SyncPhysicsFrame;
-    }
-
-    private static async Task Frames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncProcessFrame;
     }
 }

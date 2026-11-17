@@ -127,6 +127,7 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
     
     public void Save(NodeSave save)
     {
+        SavedContainers.FinishOpenings(GetTree());
         var cardData = CaptureCards();
         save.SetOrAddProperty("cards", cardData);
         ILog.Print($"Saved {cardData.Count} cards to persistence data");
@@ -231,7 +232,7 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
             GetTree(),
             _cardSpawningService,
             worldNode,
-            (card, camera) => CallDeferred(MethodName.ReparentToCamera, card, camera));
+            (card, camera) => Callable.From(() => ReparentToCamera(card, camera)).CallDeferred());
 
         var recreatedCount = 0;
         foreach (var cardDataObj in _pendingCardData)
@@ -263,15 +264,18 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         }
     }
 
-    private void ReparentToCamera(CardController card, Camera3D camera)
+    private static void ReparentToCamera(CardController card, Camera3D camera)
     {
+        // Deferred, so the card or the camera may have been freed in between (a scene change).
+        if (!IsInstanceValid(card) || !IsInstanceValid(camera))
+            return;
         if (card.GetParent() != camera)
         {
             card.GetParent()?.RemoveChild(card);
             camera.AddChild(card);
         }
     }
-    
+
     // The autosave timer's Timeout handler; the bool result is for ManualSave only.
     public void SaveGame() => TrySave();
 

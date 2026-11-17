@@ -26,6 +26,28 @@ public class BoundedWaitTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public static async Task ExpectReturnsOnceTheConditionHolds()
+    {
+        var checks = 0;
+
+        await BoundedWait.Expect(() => ++checks >= 3, "the third check", 1);
+
+        AssertThat(checks).IsEqual(3);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static async Task ProcessFramesWaitsAtLeastThatManyProcessFrames()
+    {
+        var first = Godot.Engine.GetProcessFrames();
+
+        await BoundedWait.ProcessFrames(3);
+
+        AssertThat(Godot.Engine.GetProcessFrames() - first).IsGreaterEqual(3ul);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static async Task TheNextCaseStillRunsAfterABoundedWaitFailed()
     {
         await BoundedWait.Until(() => false, "never", 0.1);

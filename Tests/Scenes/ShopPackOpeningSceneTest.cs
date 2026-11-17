@@ -17,6 +17,7 @@ using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using NSubstitute;
 using CardCleaner.Tests.TestUtilities;
+using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -30,7 +31,6 @@ public class ShopPackOpeningSceneTest
 {
     private const ulong Seed = 4242;
     private const float StandingDistance = 2.0f;
-    private const int OpenFrames = 12;
     private const int SettleFrames = 180;
     private const float FallLimitY = -0.5f;
 
@@ -94,18 +94,18 @@ public class ShopPackOpeningSceneTest
     {
         var box = OrderBox();
         box.Open();
-        await Frames(OpenFrames);
+        await UntilOpened(box);
 
         var packs = Containers(CardContainerKind.Pack);
         AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
 
         packs[0].Open();
-        await Frames(OpenFrames);
+        await UntilOpened(packs[0]);
         var boosters = Containers(CardContainerKind.Booster);
         AssertThat(boosters.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
 
         boosters[0].Open();
-        await Frames(OpenFrames);
+        await UntilOpened(boosters[0]);
         var cards = _world.GetChildren().OfType<CardController>().ToArray();
 
         var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBooster();
@@ -121,7 +121,7 @@ public class ShopPackOpeningSceneTest
         var box = OrderBox();
         await PhysicsFrames(SettleFrames);
         box.Open();
-        await Frames(OpenFrames);
+        await UntilOpened(box);
         await PhysicsFrames(SettleFrames);
 
         var packs = Containers(CardContainerKind.Pack);
@@ -154,11 +154,5 @@ public class ShopPackOpeningSceneTest
     {
         for (var i = 0; i < count; i++)
             await ISceneRunner.SyncPhysicsFrame;
-    }
-
-    private static async Task Frames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncProcessFrame;
     }
 }

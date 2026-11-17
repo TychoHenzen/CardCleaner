@@ -34,6 +34,37 @@ public class StockItemLookTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public static void PrintedLabelsAreCopiedWithTheirTextButAddNothingToTheSize()
+    {
+        var size = new Vector3(0.3f, 0.2f, 0.25f);
+        var body = new Node3D();
+        body.AddChild(Mesh(size));
+        body.AddChild(new Label3D { Text = "OCTARINE CARDS", FontSize = 52, Position = new Vector3(0f, 0.1f, 0.2f) });
+        body.AddChild(Hidden(new Label3D { Text = "HIDDEN" }));
+
+        var look = StockItemLook.Capture(body)!;
+
+        var labels = LabelsIn(look.Node);
+        AssertThat(labels.Select(label => label.Text).ToArray()).ContainsExactly("OCTARINE CARDS");
+        AssertThat(labels[0].FontSize).IsEqual(52);
+        AssertThat(look.Size.IsEqualApprox(size)).IsTrue();
+        look.Node.Free();
+        body.Free();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void AnItemShowingOnlyALabelHasNoLook()
+    {
+        var body = new Node3D();
+        body.AddChild(new Label3D { Text = "8 CARDS" });
+
+        AssertThat(StockItemLook.Capture(body)).IsNull();
+        body.Free();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public static void AFlatItemIsLaidOnItsWidestFaceWithItsBaseAtTheOrigin()
     {
         var body = new Node3D();
@@ -97,6 +128,10 @@ public class StockItemLookTest
         node.Visible = false;
         return node;
     }
+
+    private static System.Collections.Generic.List<Label3D> LabelsIn(Node node) =>
+        node.GetChildren().SelectMany(child =>
+            child is Label3D label ? [label, .. LabelsIn(child)] : LabelsIn(child)).ToList();
 
     private static int MeshesIn(Node node) =>
         node.GetChildren().Sum(child => (child is MeshInstance3D ? 1 : 0) + MeshesIn(child));

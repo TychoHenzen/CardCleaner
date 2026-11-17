@@ -14,6 +14,7 @@ using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 using NSubstitute;
+using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -21,7 +22,8 @@ namespace CardCleaner.Tests.Scenes;
 /// End to end in the shop scene: a carried box or pack, aimed at a product shelf or storage rack, unpacks into the
 /// shelf's free slots when Q is pressed.
 /// The input service is replaced so the scene's Q callback is captured and invoked directly; the unpack target is
-/// found by the hand's real ray because the camera is aimed at the shelf.
+/// found by the hand's real ray because the camera is aimed at the shelf. An opening plays out over real seconds, so
+/// each case waits for the opened container to be freed before it counts what came out.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -32,7 +34,6 @@ public class ShopShelfUnpackSceneTest
     // InteractionSystem raycasts once per 0.05 s of physics time (about three frames at 60 Hz), so the aim has to
     // outlast one full interval before the press, or the target is still the one from before the aim.
     private const int AimFrames = 4;
-    private const int UnpackFrames = 20;
     private const int SettleFrames = 180;
     // Half the 1.8 m capsule in Scenes/Components/player.tscn: the body stands on the floor at the box's height.
     private const float PlayerStandHeight = 0.9f;
@@ -108,7 +109,7 @@ public class ShopShelfUnpackSceneTest
         await PhysicsFrames(AimFrames);
 
         _qPress!.Invoke();
-        await PhysicsFrames(UnpackFrames);
+        await UntilOpened(box);
 
         AssertThat(shelf.StockedCount).IsEqual(0);
         AssertThat(Containers(CardContainerKind.Pack).Length).IsEqual(CardContainerLayout.ItemsPerContainer);
@@ -124,7 +125,7 @@ public class ShopShelfUnpackSceneTest
         AssertBool(_holder.TryPickUp(box)).IsTrue();
         // Q with no unpack target drops the box and opens it loose, which leaves loose packs to carry.
         _qPress!.Invoke();
-        await PhysicsFrames(UnpackFrames);
+        await UntilOpened(box);
         await PhysicsFrames(SettleFrames);
         var pack = Containers(CardContainerKind.Pack)[0];
         AssertBool(_holder.TryPickUp(pack)).IsTrue();
@@ -132,7 +133,7 @@ public class ShopShelfUnpackSceneTest
         Stand(InFrontOf(rack), rack.GlobalPosition + new Vector3(0f, 1.0f, 0f));
         await PhysicsFrames(AimFrames);
         _qPress.Invoke();
-        await PhysicsFrames(UnpackFrames);
+        await UntilOpened(pack);
 
         AssertThat(rack.StockedCount).IsEqual(rack.SlotCount);
         AssertBool(rack.StockedCards.All(c => c is CardContainer { Kind: CardContainerKind.Booster })).IsTrue();
@@ -149,7 +150,7 @@ public class ShopShelfUnpackSceneTest
         await PhysicsFrames(AimFrames);
 
         _qPress!.Invoke();
-        await PhysicsFrames(UnpackFrames);
+        await UntilOpened(box);
         return shelf;
     }
 
