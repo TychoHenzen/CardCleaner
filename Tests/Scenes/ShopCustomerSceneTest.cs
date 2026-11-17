@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
@@ -23,7 +25,6 @@ public class ShopCustomerSceneTest
     private const float TakeLeaveTolerance = 1.0f;
     private const float SpawnTolerance = 0.01f;
     private const string CardShelfScene = "res://Scenes/Shop/Items/Shelf.tscn";
-    private const string ProductPricePath = "World/Furniture/ProductShelf/Content/Price1";
 
     private ShopCustomerRig _rig = null!;
 
@@ -70,7 +71,8 @@ public class ShopCustomerSceneTest
     public async Task CustomerRefusesAnOverpricedItem()
     {
         var slot = _rig.StockBooster();
-        _rig.Shop.GetNode<SlotPricing>(ProductPricePath).SetMarkup(50);
+        _rig.Shop.GetNode<ShopPriceBook>("Services/PriceBook")
+            .Set(CardContainerKind.Booster, ProductMarketPrices.BoosterPrice * 2);
         var balanceBefore = _rig.Money.Balance;
 
         var customer = _rig.Spawner.SpawnNow()!;

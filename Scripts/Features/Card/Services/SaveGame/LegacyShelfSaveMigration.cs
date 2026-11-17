@@ -11,9 +11,10 @@ namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 
 /// <summary>
 ///     Brings a save made before the shop's starting product shelf and storage rack became furniture onto the
-///     current layout. Such a save keys each price tag by the tag's old node path and keeps those shelves' stock at
-///     their old seats. The price entries get the tags' new paths, and a container saved in an old seat moves to the
-///     same slot's seat on the moved shelf, where that slot locks it again on load.
+///     current layout. Such a save keeps those shelves' stock at their old seats, and it is recognised by its price
+///     tag entries, which old tags saved under their node paths. A container saved in an old seat moves to the same
+///     slot's seat on the moved shelf, where that slot locks it again on load. The tag entries themselves are left
+///     alone: tags save nothing now (prices live with the stock), so the load ignores them.
 /// </summary>
 internal static class LegacyShelfSaveMigration
 {
@@ -46,7 +47,7 @@ internal static class LegacyShelfSaveMigration
     internal static string Migrate(string payload, Node root)
     {
         var save = SaveExtension.DeserializeObject<TreeSave>(payload);
-        if (save == null || !RekeyPrices(save))
+        if (save == null || !save.Collections.Keys.Any(IsOldShelfPriceId))
             return payload;
 
         MoveShelvedContainers(save, root);
@@ -54,37 +55,10 @@ internal static class LegacyShelfSaveMigration
         return SaveExtension.SerializeObject(save);
     }
 
-    // A key under an old shelf path can only come from a save made before the move, so it also marks the save as old.
-    private static bool RekeyPrices(TreeSave save)
-    {
-        var moved = false;
-        foreach (var key in save.Collections.Keys.Where(IsPriceId).ToList())
-        {
-            if (NewPriceId(key) is not { } newKey)
-                continue;
-
-            save.Collections.TryAdd(newKey, save.Collections[key]);
-            save.Collections.Remove(key);
-            moved = true;
-        }
-
-        return moved;
-    }
-
-    private static bool IsPriceId(string key) => key.StartsWith(PriceIdPrefix, StringComparison.Ordinal);
-
-    private static string? NewPriceId(string key)
-    {
-        foreach (var shelf in Shelves)
-        {
-            var oldSegment = $"/{shelf.OldPath}/";
-            var at = key.IndexOf(oldSegment, StringComparison.Ordinal);
-            if (at >= 0)
-                return $"{key[..at]}/{shelf.NewPath}/{key[(at + oldSegment.Length)..]}";
-        }
-
-        return null;
-    }
+    // A price id under an old shelf path can only come from a save made before the move.
+    private static bool IsOldShelfPriceId(string key) =>
+        key.StartsWith(PriceIdPrefix, StringComparison.Ordinal)
+        && Shelves.Any(shelf => key.Contains($"/{shelf.OldPath}/", StringComparison.Ordinal));
 
     private static void MoveShelvedContainers(TreeSave save, Node root)
     {

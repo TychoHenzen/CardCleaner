@@ -46,6 +46,9 @@ internal sealed class SavedCardRespawner
         if (!saved.Signature.HasValue)
             controller.ClearSignature();
 
+        // Before the slot lock below, so the slot's price tag shows this price when it repaints.
+        controller.ShopPrice = saved.Price;
+
         if (saved.IsHeld)
             ReparentWhenHeld(controller);
         // ASSUMPTION: a card is a slot's child only while the slot holds it. ReleaseCard leaves a card under its slot,

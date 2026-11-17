@@ -2,7 +2,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
+using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -25,6 +28,7 @@ public class ShelfOfferIndexTest
     [BeforeTest]
     public async Task Setup()
     {
+        TestServices.Reset();
         // Frozen as PlacedFurniture freezes every shelf in the shop. A loose shelf would fall, and a frozen booster
         // locked into its slot lies inside the shelf's collision box, so it would push the shelf away.
         _shelf = GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>();
@@ -58,11 +62,14 @@ public class ShelfOfferIndexTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task Markup_changes_the_asking_price()
+    public async Task The_price_book_sets_the_asking_price()
     {
+        var book = AddNode(new ShopPriceBook());
+        TestServices.Container.RegisterSingleton<IPriceBook>(book);
+        TestServices.ExecutePendingCallbacks();
         var slot = _shelf.Slots.First();
         await Stock(slot);
-        _shelf.PricingFor(slot)!.SetMarkup(50);
+        book.Set(CardContainerKind.Booster, 6);
 
         var offer = _index.Collect().Single();
 

@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Pause.Components;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Ui;
 using Godot;
 using CardCleaner.Tests.TestUtilities;
 
@@ -61,6 +62,10 @@ public static class ShopOrderingRig
             Service<OrderingService>(shop, "OrderingService"));
         container.RegisterSingleton<IStaffService>(
             Service<StaffService>(shop, "Staff"));
+        container.RegisterSingleton<IPriceBook>(
+            Service<ShopPriceBook>(shop, "PriceBook"));
+        container.RegisterSingleton<IPricingScreen>(
+            Service<PricingScreen>(shop, "PricingScreen"));
         // No autoload injects the shop (it is not the current scene);
         // the furniture load reads the lots through it.
         TestServices.Inject(

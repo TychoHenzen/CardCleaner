@@ -15,7 +15,7 @@ using Godot;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// Price tags on the shelf scenes: every slot has its own tag, the tag shows the price of its stock, and the
+/// Price tags on the shelf scenes: every slot has its own tag, the tag prints the price of its stock, and the
 /// interaction ray reaches the tag and the card as two separate targets.
 /// </summary>
 [TestSuite]
@@ -58,7 +58,7 @@ public class ShelfPriceTagSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task AStockedCardShelfSlotShowsTheCardReadoutAndInteractSteps()
+    public async Task AStockedCardShelfSlotPrintsTheCardPrice()
     {
         var shelf = LoadShelf(ShelfScene);
         var slot = shelf.Slots.First();
@@ -67,20 +67,13 @@ public class ShelfPriceTagSceneTest
         slot.TryLock(card);
         await Settle();
 
-        AssertThat(pricing.TagLabel!.Text).IsEqual(AskingPrice.Readout(CardValue.MinimumCardPrice, 0));
-        AssertThat(pricing.DetailLabel!.Text).IsEqual(AskingPrice.Detail(CardValue.MinimumCardPrice, 0));
+        AssertThat(pricing.TagLabel!.Text).IsEqual($"{CardValue.MinimumCardPrice}");
 
-        // A click skips the steps that keep a cheap card's whole-number price, so it lands on the next real price.
-        pricing.Interact();
-        var stepped = AskingPrice.NextMarkup(CardValue.MinimumCardPrice, 0);
-        AssertThat(stepped).IsNotEqual(0);
-        AssertThat(pricing.TagLabel.Text).IsEqual(AskingPrice.Readout(CardValue.MinimumCardPrice, stepped));
-        AssertThat(pricing.DetailLabel.Text).IsEqual(AskingPrice.Detail(CardValue.MinimumCardPrice, stepped));
-        AssertThat(pricing.TagLabel.Text).IsNotEqual(AskingPrice.Readout(CardValue.MinimumCardPrice, 0));
+        pricing.PricedStock()!.SetPrice(5);
+        AssertThat(pricing.TagLabel.Text).IsEqual("5");
 
         slot.ReleaseCard(card);
         AssertThat(pricing.TagLabel.Text).IsEqual(string.Empty);
-        AssertThat(pricing.DetailLabel.Text).IsEqual(string.Empty);
     }
 
     [TestCase]
@@ -94,7 +87,7 @@ public class ShelfPriceTagSceneTest
         await Settle();
 
         AssertThat(shelf.PricingFor(slot)!.TagLabel!.Text)
-            .IsEqual(AskingPrice.Readout(ProductMarketPrices.BoosterPrice, 0));
+            .IsEqual($"{ProductMarketPrices.BoosterPrice}");
     }
 
     [TestCase]
@@ -111,7 +104,7 @@ public class ShelfPriceTagSceneTest
 
         var packTag = shelf.PricingFor(slots[0])!;
         var boxTag = shelf.PricingFor(slots[1])!;
-        AssertThat(packTag.TagLabel!.Text).IsEqual(AskingPrice.Readout(ProductMarketPrices.PackPrice, 0));
+        AssertThat(packTag.TagLabel!.Text).IsEqual($"{ProductMarketPrices.PackPrice}");
         AssertThat(boxTag.TagLabel!.Text).IsEqual(string.Empty);
         AssertBool(boxTag.CanInteract).IsFalse();
     }
