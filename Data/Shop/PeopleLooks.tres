@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="FigureLooks" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Models/FigureLooks.cs" id="1_looks"]
+
+[resource]
+script = ExtResource("1_looks")
+Models = PackedStringArray("res://Assets/Models/kenney/characters/Mini Characters 1/Models/GLB format/character-female-a.glb", "res://Assets/Models/kenney/characters/Mini Characters 1/Models/GLB format/character-female-b.glb", "res://Assets/Models/kenney/characters/Mini Characters 1/Models/GLB format/character-female-c.glb", "res://Assets/Models/kenney/characters/Mini Characters 1/Models/GLB format/character-female-d.glb", "res://Assets/Models/kenney/characters/Mini Characters 1/Models/GLB format/character-female-e.glb", "res://Assets/Models/kenney/characters/Mini Characters 1/Models/GLB format/character-female-f.glb", "res://Assets/Models/kenney/characters/Mini Characters 1/Models/GLB format/character-male-a.glb", "res://Assets/Models/kenney/characters/Mini Characters 1/Models/GLB format/character-male-b.glb", "res://Assets/Models/kenney/characters/Mini Characters 1/Models/GLB format/character-male-c.glb", "res://Assets/Models/kenney/characters/Mini Characters 1/Models/GLB format/character-male-d.glb", "res://Assets/Models/kenney/characters/Mini Characters 1/Models/GLB format/character-male-e.glb", "res://Assets/Models/kenney/characters/Mini Characters 1/Models/GLB format/character-male-f.glb")
+ModelYawDegrees = 180.0

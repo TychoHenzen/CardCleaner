@@ -25,7 +25,10 @@ public partial class CashierWorker : Node, IDependent
     [Export]
     public CheckoutCounter? Counter { get; set; }
 
-    /// <summary>The cashier's figure behind the counter. Shown only while the cashier is hired.</summary>
+    /// <summary>
+    ///     The cashier's figure behind the counter. Shown only while the cashier is hired; a <see cref="HumanFigure" />
+    ///     also picks up each item it scans and hands the sale over when it takes the payment.
+    /// </summary>
     [Export]
     public Node3D? Figure { get; set; }
 
@@ -103,6 +106,7 @@ public partial class CashierWorker : Node, IDependent
         switch (action)
         {
             case CashierAction.Scan:
+                (Figure as HumanFigure)?.Act(FigureClip.PickUp);
                 if (!counter.Scan(plan.ScanIndex, this))
                 {
                     ILog.Error($"Cashier could not scan item {plan.ScanIndex}");
@@ -110,6 +114,7 @@ public partial class CashierWorker : Node, IDependent
                 }
                 break;
             case CashierAction.Pay:
+                (Figure as HumanFigure)?.Act(FigureClip.HandOver);
                 TakePayment(counter);
                 EndClaim(counter);
                 break;
