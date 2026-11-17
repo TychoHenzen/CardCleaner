@@ -134,10 +134,11 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
         _figure?.Follow(this, Velocity, delta);
     }
 
-    // Stands still for the figure's action, then goes on; with no action to show it goes on at once.
-    private void ActThen(FigureClip clip, Action next)
+    // Stands still for the figure's action, then goes on; with no action to show (none given, or none the figure can
+    // play) it goes on at once.
+    private void ActThen(FigureClip? clip, Action next)
     {
-        var seconds = _figure?.Act(clip) ?? 0f;
+        var seconds = clip is { } shown ? _figure?.Act(shown) ?? 0f : 0f;
         if (seconds <= 0f)
         {
             next();
@@ -218,13 +219,7 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
         switch (walk)
         {
             case Walk.ToPick:
-                _visited++;
-                var acted = TryPick(_plan[_next]);
-                _next++;
-                if (acted is { } clip)
-                    ActThen(clip, WalkToNextPick);
-                else
-                    WalkToNextPick();
+                ArrivedAtPick();
                 break;
             case Walk.ToBrowse:
                 _pauseLeft = BrowseSeconds;
@@ -241,6 +236,15 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
                 Finish();
                 break;
         }
+    }
+
+    // The figure shows what happened at the slot before the customer walks on; with nothing to show, it walks on.
+    private void ArrivedAtPick()
+    {
+        _visited++;
+        var acted = TryPick(_plan[_next]);
+        _next++;
+        ActThen(acted, WalkToNextPick);
     }
 
     // A slot whose stock is gone is skipped with no purchase; the customer complains only if it ends up with nothing.

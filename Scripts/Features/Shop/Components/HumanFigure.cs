@@ -98,10 +98,11 @@ public partial class HumanFigure : Node3D
         }
 
         model.Name = ModelName;
-        Fit(model);
+        model.Transform = FigureFit.Standing(model, Height, Looks?.ModelYawDegrees ?? 0f);
         AddChild(model);
         _model = model;
-        if (GetNodeOrNull<Node3D>(PlaceholderName) is { } placeholder)
+        var placeholder = GetNodeOrNull<Node3D>(PlaceholderName);
+        if (placeholder != null)
             placeholder.Visible = false;
 
         var players = model.FindChildren("*", nameof(AnimationPlayer), true, false);
@@ -124,20 +125,7 @@ public partial class HumanFigure : Node3D
     {
         var flat = new Vector2(velocity.X, velocity.Z);
         var speed = flat.Length();
-        float? yaw = null;
-        if (speed >= FigureMotion.WalkingSpeed)
-        {
-            yaw = FigureMotion.YawToward(flat.X, flat.Y);
-            _facePoint = null;
-        }
-        else if (_facePoint is { } point)
-        {
-            var toPoint = point - body.GlobalPosition;
-            if (new Vector2(toPoint.X, toPoint.Z).Length() > FacingMeters)
-                yaw = FigureMotion.YawToward(toPoint.X, toPoint.Z);
-        }
-
-        if (yaw is { } target)
+        if (TargetYaw(body, flat, speed) is { } target)
         {
             var rotation = body.GlobalRotation;
             var step = Mathf.DegToRad(TurnDegreesPerSecond) * (float)delta;
@@ -147,6 +135,24 @@ public partial class HumanFigure : Node3D
 
         _loop = FigureMotion.LoopFor(speed);
         PlayLoop(speed);
+    }
+
+    // Walking, the body turns down its walk and forgets the face point; standing, it turns to that point, if any.
+    private float? TargetYaw(Node3D body, Vector2 flat, float speed)
+    {
+        if (speed >= FigureMotion.WalkingSpeed)
+        {
+            _facePoint = null;
+            return FigureMotion.YawToward(flat.X, flat.Y);
+        }
+
+        if (_facePoint is not { } point)
+            return null;
+
+        var toPoint = point - body.GlobalPosition;
+        return new Vector2(toPoint.X, toPoint.Z).Length() > FacingMeters
+            ? FigureMotion.YawToward(toPoint.X, toPoint.Z)
+            : null;
     }
 
     /// <summary>Turns toward <paramref name="point" /> the next time the figure stands still.</summary>
@@ -199,41 +205,5 @@ public partial class HumanFigure : Node3D
             if (name != null && player.HasAnimation(name))
                 player.GetAnimation(name).LoopMode = Animation.LoopModeEnum.Linear;
         }
-    }
-
-    // Scales the model so its meshes stand Height tall with their lowest point on the origin, and turns its face down
-    // -Z. ASSUMPTION (Low): a model stands centred over its own origin, so only its height and floor are corrected.
-    private void Fit(Node3D model)
-    {
-        model.Transform = Transform3D.Identity;
-        var bounds = MeshBounds(model, Transform3D.Identity, null);
-        var yaw = Mathf.DegToRad(Looks?.ModelYawDegrees ?? 0f);
-        if (bounds is not { } box || box.Size.Y <= 0f)
-        {
-            model.Rotation = new Vector3(0f, yaw, 0f);
-            return;
-        }
-
-        var scale = Height / box.Size.Y;
-        model.Transform = new Transform3D(
-            new Basis(Vector3.Up, yaw).Scaled(Vector3.One * scale), new Vector3(0f, -box.Position.Y * scale, 0f));
-    }
-
-    // The box around every mesh under node, in the frame toModel maps node into.
-    private static Aabb? MeshBounds(Node node, Transform3D toModel, Aabb? bounds)
-    {
-        if (node is MeshInstance3D { Mesh: not null } mesh)
-        {
-            var box = toModel * mesh.GetAabb();
-            bounds = bounds is { } sofar ? sofar.Merge(box) : box;
-        }
-
-        foreach (var child in node.GetChildren())
-        {
-            var childToModel = child is Node3D spatial ? toModel * spatial.Transform : toModel;
-            bounds = MeshBounds(child, childToModel, bounds);
-        }
-
-        return bounds;
     }
 }
