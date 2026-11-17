@@ -6,12 +6,10 @@ namespace CardCleaner.Scripts.Features.Card.Models;
 
 public partial class CardTemplate : PinnedResource
 {
-    // --- Front & back base templates ---
     public LayerData CardBase { get; } = new() { RenderOnFront = true, RenderOnBack = true };
     public LayerData Border { get; } = new() { RenderOnFront = true, RenderOnBack = true };
     public LayerData Corners { get; } = new() { RenderOnFront = true, RenderOnBack = true };
 
-    // --- LayerData for paired texture+region+side ---
     public LayerData Art { get; } =
         new() { RenderOnFront = true, Region = new Rect2(0.1f, 0.1f, 0.8f, 0.35f) };
 
