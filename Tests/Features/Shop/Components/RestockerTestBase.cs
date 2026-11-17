@@ -30,7 +30,7 @@ public abstract class RestockerTestBase
     private protected const int LongIdleFrames = 600;
     private protected const int LevelThreePayment = 1500;
     private protected const int PacksInABox = 8;
-    private protected const int ProductSlots = 3;
+    private protected const int ProductSlots = 6;
     private protected const string ProductShelfScene = "res://Scenes/Shop/Items/ProductShelf.tscn";
     private protected const float ShelfSpacing = 3f;
     private protected const double LongWalkSeconds = 90;
@@ -129,24 +129,28 @@ public abstract class RestockerTestBase
         return (ordered[0], ordered[1]);
     }
 
-    // Two more product shelves beside the scene's one, in line along its width and turned the same way, so nine
-    // product slots are free and the real box threshold (8) can be met. Each is checked to be reachable from the rack
+    // One more product shelf beside the scene's one, in line along its width and turned the same way, so twelve
+    // product slots stand and the real box threshold (8) can be met. It is checked to be reachable from the rack
     // before a test relies on it.
     private protected List<CardShelf> AddProductShelves()
     {
-        var shelves = new List<CardShelf> { _product };
         var basis = _product.GlobalTransform.Basis;
-        var along = basis.X.Normalized();
-        foreach (var offset in new[] { -ShelfSpacing, ShelfSpacing })
-        {
-            var shelf = GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>();
-            _product.GetParent().AddChild(shelf);
-            shelf.GlobalTransform = new Transform3D(basis, _product.GlobalPosition + along * offset);
-            AssertBool(Reaches(_rack, shelf)).IsTrue();
-            shelves.Add(shelf);
-        }
+        var shelf = GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>();
+        _product.GetParent().AddChild(shelf);
+        shelf.GlobalTransform = new Transform3D(basis, _product.GlobalPosition + basis.X.Normalized() * ShelfSpacing);
+        AssertBool(Reaches(_rack, shelf)).IsTrue();
+        return [_product, shelf];
+    }
 
-        return shelves;
+    // Stocks a pack on the first product slots until only the given number of them is free; returns how many it stocked.
+    private protected int StockAllBut(List<CardShelf> shelves, int free)
+    {
+        var slots = shelves.SelectMany(shelf => shelf.Slots).ToList();
+        var stocked = slots.Count - free;
+        AssertInt(stocked).IsGreaterEqual(0);
+        foreach (var slot in slots.Take(stocked))
+            Stock(PackScene, slot);
+        return stocked;
     }
 
     // Whether a path from one shelf's spot on the baked mesh reaches the other's.

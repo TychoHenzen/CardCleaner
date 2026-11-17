@@ -189,7 +189,8 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
     }
 
     // The unpack target the hand points at within UnpackReach, or null. The ray starts at the hand anchor and runs
-    // along its forward axis, so it follows the player's view, not the holder's position.
+    // along its forward axis, so it follows the player's view, not the holder's position. It hits areas too: a shelf's
+    // aim volume is a trigger on the unpack layer, so the ray finds the shelf between its boards.
     private IUnpackTarget? FindUnpackTarget()
     {
         if (_handAnchor == null || !_handAnchor.IsInsideTree()) return null;
@@ -201,7 +202,7 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
             From = origin,
             To = to,
             CollideWithBodies = true,
-            CollideWithAreas = false,
+            CollideWithAreas = true,
             CollisionMask = UnpackLayerBit
         });
 

@@ -1,27 +1,60 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/CardShelf.cs" id="CardShelf"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/CardSlot.tscn" id="CardSlot"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Components/DeckSlot.cs" id="DeckSlot"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/PriceTag.tscn" id="PriceTag"]
 
-[sub_resource type="BoxShape3D" id="Shape"]
-size = Vector3(1.84, 2.37, 0.7)
+[sub_resource type="BoxShape3D" id="Post"]
+size = Vector3(0.046, 2.347, 0.689)
+
+[sub_resource type="BoxShape3D" id="Board"]
+size = Vector3(1.742, 0.05, 0.671)
+
+[sub_resource type="BoxShape3D" id="Cap"]
+size = Vector3(1.836, 0.02, 0.687)
+
+[sub_resource type="BoxShape3D" id="Trigger"]
+size = Vector3(0.5, 0.25, 0.6)
 
 [sub_resource type="StandardMaterial3D" id="PlaceholderMaterial"]
 albedo_color = Color(0.55, 0.45, 0.35, 1)
 
 [sub_resource type="BoxMesh" id="PlaceholderMesh"]
 material = SubResource("PlaceholderMaterial")
-size = Vector3(1.84, 2.37, 0.7)
+size = Vector3(1.836, 2.367, 0.694)
 
 [node name="ProductShelf" type="RigidBody3D"]
 script = ExtResource("CardShelf")
 Kind = 1
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.185, 0)
-shape = SubResource("Shape")
+[node name="PostLeft" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.887, 1.1735, -0.0025)
+shape = SubResource("Post")
+
+[node name="PostRight" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.886, 1.1735, -0.0025)
+shape = SubResource("Post")
+
+[node name="Board1" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.247, 0.0035)
+shape = SubResource("Board")
+
+[node name="Board2" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.757, 0.0035)
+shape = SubResource("Board")
+
+[node name="Board3" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.281, 0.0035)
+shape = SubResource("Board")
+
+[node name="Board4" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.792, 0.0035)
+shape = SubResource("Board")
+
+[node name="Cap" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.357, 0.0035)
+shape = SubResource("Cap")
 
 [node name="Art" type="Node3D" parent="." node_paths=PackedStringArray("Placeholder")]
 script = ExtResource("ShopArtSlot")
@@ -30,29 +63,113 @@ ArtOffset = Vector3(-9.569, -0.005, -1.187)
 Placeholder = NodePath("Placeholder")
 
 [node name="Placeholder" type="MeshInstance3D" parent="Art"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.185, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1835, 0)
 mesh = SubResource("PlaceholderMesh")
 
-[node name="Slot1" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.79, -0.1)
+[node name="Slot1" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.782, 0.1)
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
 Capacity = 1
 
-[node name="Slot2" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.79, -0.1)
+[node name="Area3D" type="Area3D" parent="Slot1"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Slot1/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.1)
+shape = SubResource("Trigger")
+
+[node name="Slot2" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.782, 0.1)
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
 Capacity = 1
 
-[node name="Slot3" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.79, -0.1)
+[node name="Area3D" type="Area3D" parent="Slot2"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Slot2/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.1)
+shape = SubResource("Trigger")
+
+[node name="Slot3" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.782, 0.1)
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
 Capacity = 1
+
+[node name="Area3D" type="Area3D" parent="Slot3"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Slot3/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.1)
+shape = SubResource("Trigger")
+
+[node name="Slot4" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.306, 0.1)
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
+Capacity = 1
+
+[node name="Area3D" type="Area3D" parent="Slot4"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Slot4/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.1)
+shape = SubResource("Trigger")
+
+[node name="Slot5" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.306, 0.1)
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
+Capacity = 1
+
+[node name="Area3D" type="Area3D" parent="Slot5"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Slot5/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.1)
+shape = SubResource("Trigger")
+
+[node name="Slot6" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.306, 0.1)
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
+Capacity = 1
+
+[node name="Area3D" type="Area3D" parent="Slot6"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Slot6/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.1)
+shape = SubResource("Trigger")
 
 [node name="Price1" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.735, -0.35)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.745, -0.338)
 Slot = NodePath("../Slot1")
 
 [node name="Price2" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.735, -0.35)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.745, -0.338)
 Slot = NodePath("../Slot2")
 
 [node name="Price3" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.735, -0.35)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.745, -0.338)
 Slot = NodePath("../Slot3")
+
+[node name="Price4" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.269, -0.338)
+Slot = NodePath("../Slot4")
+
+[node name="Price5" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.269, -0.338)
+Slot = NodePath("../Slot5")
+
+[node name="Price6" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.269, -0.338)
+Slot = NodePath("../Slot6")

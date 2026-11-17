@@ -223,7 +223,7 @@ public partial class FurniturePlacementController : Node, IFurniturePlacement, I
 
         // The box is made first, so a piece whose box cannot be made stays standing.
         var pose = furniture.Pose;
-        if (FurnitureBoxSpawn.At(Boxes, item.Id, BoxRoot, pose.X, pose.Z, DeliveryPoint) == null)
+        if (new FurnitureBoxSpawn(Boxes, BoxRoot, DeliveryPoint).At(item.Id, new Vector2(pose.X, pose.Z)) == null)
             return false;
 
         // Out of the tree at once, so the rebake and the next floor check no longer see it.

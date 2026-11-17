@@ -111,31 +111,34 @@ public class GameSaveServiceLoadTest
         AssertThat(seeds.Single(v => v.HasValue)!.Value).IsEqual(4242);
     }
 
-    // A card saved on a slot's seat is locked back into the slot as it respawns, before any physics step: a seat can
-    // lie inside its shelf's solid collider, which pushes a free card off it before the slot's trigger catches it. A
-    // card saved under the slot but off its seats stays free.
+    // A card saved under a slot is locked back into the slot as it respawns, before any physics step: a seat can lie
+    // inside its shelf's solid collider, which pushes a free card off it before the slot's trigger catches it. It goes
+    // to the seat the slot has now, so a shelf whose seats moved since the save (the card display replaced the old
+    // card shelf) still holds its cards. A card the full slot cannot take stays free.
     [TestCase]
     [TestCategory("Unit")]
-    public static void ACardSavedOnASlotSeatIsLockedIntoThatSlotAsItRespawns()
+    public static void ACardSavedUnderASlotIsLockedIntoTheSlotsCurrentSeatAsItRespawns()
     {
         using var scene = new SaveWorld("GameSaveSeatWorld");
         var slot = GD.Load<PackedScene>(CardSlotScene).Instantiate<DeckSlot>();
+        slot.Capacity = 1;
         scene.World.AddChild(slot);
         AddNode(scene.World, autoFree: false);
         scene.Enter();
         var respawner = new SavedCardRespawner(scene.Tree, scene.Spawner, scene.World, (_, _) => { });
         var slotPath = slot.GetPath().ToString();
 
-        var seat = slot.SeatPosition(0);
-        respawner.Respawn(new SavedCardRecord(new CardSignature(), seat, Vector3.Zero, false, slotPath));
-        respawner.Respawn(new SavedCardRecord(new CardSignature(), seat + Vector3.Up, Vector3.Zero, false, slotPath));
+        var oldSeat = slot.SeatPosition(0) + new Vector3(0.5f, 0.3f, -0.2f);
+        respawner.Respawn(new SavedCardRecord(new CardSignature(), oldSeat, Vector3.Zero, false, slotPath));
+        respawner.Respawn(new SavedCardRecord(new CardSignature(), oldSeat, Vector3.Zero, false, slotPath));
 
         var seated = scene.Spawner.Spawned[0].Card;
-        var beside = scene.Spawner.Spawned[1].Card;
+        var extra = scene.Spawner.Spawned[1].Card;
         AssertThat(slot.Cards.Count).IsEqual(1);
         AssertObject(slot.Cards[0]).IsSame(seated);
         AssertBool(seated.Freeze).IsTrue();
-        AssertBool(beside.Freeze).IsFalse();
+        AssertThat(seated.GlobalPosition.DistanceTo(slot.SeatPosition(0))).IsLess(0.001f);
+        AssertBool(extra.Freeze).IsFalse();
     }
 
     // A reload into the same scene frees the shelved card and respawns its saved copy. The freed card must leave the

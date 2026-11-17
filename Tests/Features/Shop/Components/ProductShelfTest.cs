@@ -31,10 +31,10 @@ public class ProductShelfTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ProductShelfHasThreeSlotsAndJoinsTheSalesGroupOnly()
+    public void ProductShelfHasSixSlotsAndJoinsTheSalesGroupOnly()
     {
         AssertThat(_shelf.Kind).IsEqual(ShelfKind.ProductShelf);
-        AssertThat(_shelf.SlotCount).IsEqual(3);
+        AssertThat(_shelf.SlotCount).IsEqual(6);
         AssertBool(_shelf.IsInGroup(CardShelf.SalesGroupName)).IsTrue();
         AssertBool(_shelf.IsInGroup(CardShelf.StorageGroupName)).IsFalse();
     }

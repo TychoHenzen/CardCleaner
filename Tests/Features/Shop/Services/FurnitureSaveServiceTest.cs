@@ -111,9 +111,11 @@ public class FurnitureSaveServiceTest
         }
     }
 
+    // A piece whose saved pose no longer fits (its item grew in an update, or the pose was never valid) is not lost:
+    // it comes back packed in its furniture box on the delivery area, so the player can place it again.
     [TestCase]
     [TestCategory("Unit")]
-    public void AnInvalidPoseIsSkipped()
+    public void APieceThatNoLongerFitsComesBackAsItsBoxAtTheDeliveryArea()
     {
         var save = SaveWith(
             new FurnitureRecord("shelf_unit", 0.5f, 0.5f, 0, false),
@@ -124,6 +126,7 @@ public class FurnitureSaveServiceTest
         var poses = PlacedPoses();
         AssertInt(poses.Count).IsEqual(1);
         AssertBool(poses[0].X == 8f && poses[0].Z == 6f).IsTrue();
+        AssertBoxOnDeliveryArea("shelf_unit");
     }
 
     [TestCase]
@@ -138,10 +141,10 @@ public class FurnitureSaveServiceTest
     }
 
     // The expansion's own save entry must load before the furniture's; with the order reversed the lot is not
-    // owned yet, so the record on it is skipped with an error.
+    // owned yet, so the record on it does not fit: an error names it, and the piece comes back as its box.
     [TestCase]
     [TestCategory("Unit")]
-    public void ARecordOnAnUnownedLotIsSkipped()
+    public void ARecordOnAnUnownedLotComesBackAsItsBox()
     {
         var sink = new RecordingLog();
         var previous = ILog.Sink;
@@ -154,6 +157,7 @@ public class FurnitureSaveServiceTest
 
             AssertInt(PlacedPoses().Count).IsEqual(0);
             AssertInt(sink.Errors.Count).IsEqual(1);
+            AssertBoxOnDeliveryArea("shelf_unit");
         }
         finally
         {
@@ -367,7 +371,7 @@ public class FurnitureSaveServiceTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void AnOlderRecordOverlappingTheStartingFurnitureIsSkipped()
+    public void AnOlderRecordOverlappingTheStartingFurnitureComesBackAsItsBox()
     {
         Place(8f, 6f, 0, "StarterShelf");
         var save = SaveWith(new FurnitureRecord("shelf_unit", 8f, 6f, 0, false));
@@ -376,6 +380,19 @@ public class FurnitureSaveServiceTest
         _service.Load(save);
 
         AssertThat(string.Join(",", PlacedNames())).IsEqual("StarterShelf");
+        AssertBoxOnDeliveryArea("shelf_unit");
+    }
+
+    // Exactly one box, of the item, standing on a cell of the delivery marker's grid (the marker is at the origin).
+    private void AssertBoxOnDeliveryArea(string id)
+    {
+        var boxes = _boxRoot.GetChildren().OfType<FurnitureBox>().ToList();
+        AssertInt(boxes.Count).IsEqual(1);
+        AssertString(boxes[0].Item!.Id).IsEqual(id);
+        var at = boxes[0].GlobalPosition;
+        AssertBool(Enumerable.Range(0, 6).Select(DefaultDeliveryGrid.SlotOffset)
+                .Any(cell => Mathf.Abs(cell.X - at.X) < 0.01f && Mathf.Abs(cell.Z - at.Z) < 0.01f))
+            .OverrideFailureMessage($"the box stands at {at}, on no delivery cell").IsTrue();
     }
 
     private static NodeSave SaveWith(params FurnitureRecord[] records)

@@ -9,6 +9,8 @@ namespace CardCleaner.Tests.Features.Card.Components;
 [RequireGodotRuntime]
 public class CardDesignerTest
 {
+    private const string CardMeshPath = "res://Data/Card/CardMesh.tres";
+
     private CardDesigner _designer = null!;
     private Node3D _cardRoot = null!;
 
@@ -21,12 +23,15 @@ public class CardDesignerTest
         _cardRoot.AddChild(_designer);
     }
 
+    // A designer left at its defaults sizes its card's collider to them, so they must be the real card's size.
     [TestCase]
-    public void TestDefaultDimensions()
+    public void DefaultDimensionsAreTheBakedCardMesh()
     {
-        Assertions.AssertFloat(_designer.Width).IsEqualApprox(0.635f, 0.001f);
-        Assertions.AssertFloat(_designer.Height).IsEqualApprox(0.889f, 0.001f);
-        Assertions.AssertFloat(_designer.Thickness).IsEqualApprox(0.005f, 0.001f);
+        var mesh = ResourceLoader.Load<Mesh>(CardMeshPath).GetAabb().Size;
+        var defaults = new Vector3(_designer.Width, _designer.Thickness, _designer.Height);
+        Assertions.AssertBool(defaults.IsEqualApprox(mesh))
+            .OverrideFailureMessage($"designer defaults {defaults}, the baked card mesh {mesh}")
+            .IsTrue();
     }
 
     [TestCase]

@@ -124,8 +124,7 @@ public class ShopShelfStockSceneTest
         _cardHolder.AddCard(_card);
         var target = TargetOf(_cardShelf, "Slot1");
         var slot = target.Slot!;
-        var front = -slot.GlobalBasis.Z;
-        var standing = slot.GlobalPosition + new Vector3(front.X, 0f, front.Z).Normalized() * StepBackDistance;
+        var standing = slot.GlobalPosition + ShelfFront(slot) * StepBackDistance;
         _player.GlobalPosition = new Vector3(standing.X, PlayerStandHeight, standing.Z);
         _player.Rotation = Vector3.Zero;
         _interaction.Camera!.LookAt(slot.GlobalPosition);
@@ -205,18 +204,22 @@ public class ShopShelfStockSceneTest
     // onto it, so the interaction ray reaches it the way a player's aim does.
     private async Task AimAt(Node3D body)
     {
-        var front = -_cardShelf.GlobalBasis.Z;
-        if (body is ShelfSlotTarget target)
-            front = -target.GlobalBasis.Z;
-        else if (body.GetParent() is DeckSlot slot)
-            front = -slot.GlobalBasis.Z;
-        front = new Vector3(front.X, 0f, front.Z).Normalized();
-
-        var standing = body.GlobalPosition + front * StandingDistance;
+        var standing = body.GlobalPosition + ShelfFront(body) * StandingDistance;
         _player.GlobalPosition = new Vector3(standing.X, PlayerStandHeight, standing.Z);
         _player.Rotation = Vector3.Zero;
         _interaction.Camera!.LookAt(body.GlobalPosition);
         await PhysicsFrames(AimFrames);
+    }
+
+    // A slot is turned to hold its card (a card stand's -Z points up and back), so the side a player stands on is
+    // the front of the shelf the body belongs to: the shelf's -Z, flattened.
+    private static Vector3 ShelfFront(Node body)
+    {
+        var node = body;
+        while (node is not CardShelf && node.GetParent() is { } parent)
+            node = parent;
+        var front = -((Node3D)node).GlobalBasis.Z;
+        return new Vector3(front.X, 0f, front.Z).Normalized();
     }
 
     private CardContainer NewBooster()

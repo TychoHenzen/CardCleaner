@@ -35,18 +35,17 @@ public class RestockerTest : RestockerTestBase
     {
         HireAndOpen();
         var shelves = AddProductShelves();
-        Stock(PackScene, shelves[0].Slots.First());
+        var stocked = StockAllBut(shelves, _restocker.BoxUnpackThreshold);
         var box = Stock(BoxScene, _rack.Slots.First());
         var slotCount = shelves.Sum(shelf => shelf.SlotCount);
-        AssertInt(slotCount - 1).IsEqual(_restocker.BoxUnpackThreshold);
 
-        // One shelf takes its free slots at the unpack; the rest spill and are carried to the other shelves.
+        // One shelf takes its free slots at the unpack; the rest spill and are carried to the other shelf.
         var shelved = await Poll(
             () => !GodotObject.IsInstanceValid(box) && shelves.Sum(shelf => shelf.StockedCount) == slotCount,
             LongWalkSeconds);
 
         AssertBool(shelved).IsTrue();
-        AssertInt(PackCount()).IsEqual(PacksInABox + 1);
+        AssertInt(PackCount()).IsEqual(PacksInABox + stocked);
         AssertThat(_restocker.Phase).IsEqual(RestockerPhase.Idle);
     }
 
@@ -69,20 +68,18 @@ public class RestockerTest : RestockerTestBase
     {
         HireAndOpen();
         var shelves = AddProductShelves();
-        foreach (var slot in shelves[0].Slots.Take(2))
-            Stock(PackScene, slot);
+        var stocked = StockAllBut(shelves, _restocker.BoxUnpackThreshold - 1);
         var box = Stock(BoxScene, _rack.Slots.First());
-        AssertInt(shelves.Sum(shelf => shelf.SlotCount) - 2).IsEqual(_restocker.BoxUnpackThreshold - 1);
 
         await Frames(LongIdleFrames);
 
         AssertBool(GodotObject.IsInstanceValid(box) && _rack.Slots.First().Cards.Contains(box)).IsTrue();
-        AssertInt(PackCount()).IsEqual(2);
+        AssertInt(PackCount()).IsEqual(stocked);
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task DefaultThresholdLeavesABoxOnTheRackWithOneThreeSlotShelf()
+    public async Task DefaultThresholdLeavesABoxOnTheRackWithOneSixSlotShelf()
     {
         HireAndOpen();
         var box = Stock(BoxScene, _rack.Slots.First());

@@ -86,7 +86,7 @@ public class ShopShelfUnpackSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task CarriedBoxFacingProductShelfStocksThreePacks()
+    public async Task CarriedBoxFacingProductShelfStocksSixPacks()
     {
         var shelf = await StockProductShelf();
 

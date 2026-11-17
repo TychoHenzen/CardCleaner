@@ -1,0 +1,53 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Features/Card/Components/DeckSlot.cs" id="DeckSlot"]
+
+[sub_resource type="StandardMaterial3D" id="Acrylic"]
+transparency = 1
+albedo_color = Color(0.85, 0.92, 1, 0.35)
+metallic_specular = 0.8
+roughness = 0.05
+
+[sub_resource type="PrismMesh" id="WedgeMesh"]
+material = SubResource("Acrylic")
+left_to_right = 1.0
+size = Vector3(0.374142, 0.079526, 0.3)
+
+[sub_resource type="BoxMesh" id="BaseMesh"]
+material = SubResource("Acrylic")
+size = Vector3(0.34, 0.006, 0.394142)
+
+[sub_resource type="BoxMesh" id="LipMesh"]
+material = SubResource("Acrylic")
+size = Vector3(0.34, 0.008, 0.01)
+
+[sub_resource type="BoxShape3D" id="Trigger"]
+size = Vector3(0.36, 0.12, 0.5)
+
+[node name="CardRest" type="Node3D" node_paths=PackedStringArray("Area")]
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
+Capacity = 1
+
+[node name="Upright" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 0.978148, -0.207912, 0, -0.207912, -0.978148, 0, 0, 0)
+
+[node name="Base" type="MeshInstance3D" parent="Upright"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.052225, -0.04249)
+mesh = SubResource("BaseMesh")
+
+[node name="Wedge" type="MeshInstance3D" parent="Upright"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, -0.010462, -0.032489)
+mesh = SubResource("WedgeMesh")
+
+[node name="Lip" type="MeshInstance3D" parent="Upright"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.045225, -0.226103)
+mesh = SubResource("LipMesh")
+
+[node name="Area3D" type="Area3D" parent="."]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
+shape = SubResource("Trigger")

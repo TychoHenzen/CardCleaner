@@ -8,6 +8,6 @@ script = ExtResource("FurnitureItemScript")
 Id = "storage_rack"
 DisplayName = "Storage rack"
 Scene = ExtResource("StorageRack")
-Width = 2.13
+Width = 2.02
 Depth = 1.0
 Height = 2.0

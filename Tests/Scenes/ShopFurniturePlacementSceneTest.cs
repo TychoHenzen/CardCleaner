@@ -36,7 +36,7 @@ public class ShopFurniturePlacementSceneTest
         // The camera aim is not driven headless; the cases place the pose with AimAt.
         _controller.AimOverride = true;
 
-        // The first bake runs inside _Ready during AddNode, so read the iteration id before adding the scene.
+        // The first bake runs in AddNode once the scene is ready, so read the iteration id before adding the scene.
         uint regionBefore = NavigationServer3D.RegionGetIterationId(_region.GetRid());
         AddNode(_shop);
         _furnitureRoot = _shop.GetNode<Node3D>(FurnitureRootPath);
