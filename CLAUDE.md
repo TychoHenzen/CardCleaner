@@ -436,6 +436,42 @@ The drift test can fail in that run because it may compare against the old file;
 
 `SignatureCardGenerator` gives every spawned card a rarity effect (embossed, glow, glossy, foil) and a condition effect (worn, shiny) on its art region: `CardEffectMapping` maps the rarity and the signature's intensity tier (mean element magnitude, so the all-zero signature of an ordinary pack card is Dormant and looks worn) to shader ids, and `CardMaterialManager.SetArtEffects` passes them with a per-card seed (`CardEffectSeed.For`, from the signature alone, so the same signature always gets the same scratches) and the baked bevel map (`CardEffectNormalMapCache`, baked once per art texture) to `Shaders/card_layers.gdshader`. The bevel map is baked off the main thread (a couple of art readbacks a frame, the bake on the thread pool), so the first card to show a new art texture renders its condition effect only and switches its rarity effect on when the map is ready, a few frames later; tests call `CardEffectNormalMapCache.ResetForTesting()` in their teardown. `CardMaterialManager.SetArtEffects` returns the number of its request, and the bevel map is delivered with that number through `SetArtNormalMap`, so a map for a request that a newer generation has superseded is ignored. To compare all five rarities (columns) by the three tiers (rows) side by side, open `Scenes/Debug/CardEffectComparison.tscn` in the editor and press F6 (run current scene); it is not the main scene, spawns real cards through the normal spawning service and fits the grid to the window. In that scene key 2 adds 10 cards, key 3 adds 100, key 0 removes them and key E sets `CardShaderRenderer.ArtEffectsEnabled` on every card (each card's material manager holds the on/off state, so a bevel map that arrives while the effects are off waits until they are switched back on), while the top-left readout shows the frame time and the GPU time, so the cost of the effects can be compared; the `CardSpawner` random-card keys 1 to 4 are switched off there (`SpawnKeys`).
 
+### Container Meshes and Opening
+
+The booster (`Scenes/Shop/Items/Booster.tscn`), pack (`Pack.tscn`) and cardboard box (`CardboardBox.tscn`) are built
+like the card: committed meshes in `Data/Packs/Meshes/` with their materials in `Data/Packs/` (the foil wrapper
+`Shaders/booster_wrapper.gdshader`, the printed board and kraft carton `Shaders/printed_board.gdshader`). Their source
+is `Tests/Features/Packs/Components/ContainerMeshRecipe.cs` (test code), and `ContainerMeshBakeTest` fails when a
+committed mesh differs from the recipe. To change a shape, edit the recipe, regenerate with the switch set, then run the
+suite again without it:
+
+```bash
+CARDCLEANER_REGENERATE_CONTAINER_MESHES=1 <godot console exe> --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -c --ignoreHeadlessMode -rc 100000 -rd reports/ci -a res://Tests/Features/Packs/Components/ContainerMeshBakeTest.cs
+```
+
+Never edit the mesh `.tres` files by hand. The words printed on a container (brand, count, THIS SIDE UP) are flat,
+shaded `Label3D`s lying on its faces, and `StockItemLook` copies them with the meshes, so a checkout prop keeps its
+print. The parts that move when a container opens (the booster's tear strip, the pack's lid, the box's four flaps) are
+`OpeningPart` nodes: each turns by `OpenRotationDegrees` about its hinge and moves by `OpenOffset` over its share of
+the unseal time (`StartAt` to `EndAt`), and one that `VanishWhenOpen` (the torn-off strip) shrinks away.
+
+`CardContainer.Open` plays the opening over real time (`ContainerOpening`, timed by the Godot-free
+`ContainerOpeningPlan`). The container stops colliding and freezes, drops onto the floor under it when it was opened in
+the air (`ContainerOpening.SettledPose`, a free-fall time capped at 0.7 s), unseals, then lets one item out every
+`ReleaseStep`, at most one new item a frame. Each item rises to its spot (`SpawnOffset`: one column above a pack or
+booster, two columns side by side above a box, starting `LiftHeight` above the container's base). The items hang
+frozen at their spots while the empty wrapper shrinks away and drop together once it is freed, so none falls back into
+the wrapper, which no longer collides. Every opening ends within three seconds (`ContainerOpeningPlanTest`).
+`FinishOpening` ends one at once (every item at its spot, the wrapper freed). `GameSaveService.Save` first finishes
+every opening container (`SavedContainers.FinishOpenings`), so a save made mid-opening stores the eight items, never a
+half-open container. Tests wait for an opening with `ContainerOpeningWait` (bounded in wall-clock time through
+`BoundedWait`, because headless frames are not throttled), or end it with `FinishOpening` when only the contents
+matter.
+
+Sizes: booster 0.35 x 0.045 x 0.53 m, pack 0.38 x 0.37 x 0.55 m, box 0.80 x 0.60 x 0.86 m. The product shelf's seats
+sit at z 0.055, 4.5 cm further back than before, so a pack fits on its 0.671 m deep boards. That is under the 5 cm a
+saved container may lie from its seat (`SeatAt`), so older saves need no migration step.
+
 ### World Generation
 
 > **Architecture Document**: See `docs/WORLDGEN_ARCHITECTURE.md` for the complete worldgen architecture, including the Soft WFC approach, weight modifier system, and data definition guides.
@@ -512,7 +548,7 @@ The `GameSessionService` manages the game loop through states: `WaitingForCards`
 
 Uses the Saveable addon (`addons/saveable/`) with Newtonsoft.Json. Implement `ISaveable` interface with `UniqueID`, `Load(NodeSave)`, and `Save(NodeSave)` methods. The shop's `GameSaveService` autosaves the active slot on a timer and on the pause menu's Save button (`ISaveGameCommand.ManualSave`).
 
-Save slots (`Scripts/Features/SaveSlots`) live under `user://saves/<slot>/save.json` (`SaveSlotLayout`). Each file is a `SaveEnvelope` at version 1. `SlotStore` writes `save.json.tmp` first and renames it into place, so a crash leaves the previous save intact. `SlotStore` also implements `ISaveSlotCatalog`, and a slot without a readable `save.json` is listed as unreadable. Slot names (`SaveSlotName`) are 1 to 32 characters of letters, digits, spaces, `-` and `_`, and cannot be `con`, `prn`, `aux` or `nul` (compared without case). `ActiveSaveSlot` starts on the `default` slot until one is selected. `LegacySaveImporter` copies the old single-file `user://game_save.json` into a slot named `imported`, and runs only when no slot exists yet and that file holds a JSON object. A first save that fails removes the slot it started. A `CardContainer` draws a content seed only when a save asks for one (`SeedForSave`); the seed is saved with the slot, so the same seed opens the same cards after a reload, and an unseeded box opens from the shared random source as before. Each later stateful slice adds its own saved state to the envelope and a round-trip test that saves, reloads and compares it. Prices live with the stock, never with a price tag: the booster and pack prices are saved by the scene's `ShopPriceBook` (UniqueID `prices`, only the kinds the player priced), and a card's own price (`CardController.ShopPrice`) is saved with the card (`price` in its record) and comes back with it into its slot. A save that still holds an old tag markup (an id starting `slot_price:`) loads with that entry ignored, so its stock asks the market price, and a corrupt price logs a warning and falls back to the market price.
+Save slots (`Scripts/Features/SaveSlots`) live under `user://saves/<slot>/save.json` (`SaveSlotLayout`). Each file is a `SaveEnvelope` at version 1. `SlotStore` writes `save.json.tmp` first and renames it into place, so a crash leaves the previous save intact. `SlotStore` also implements `ISaveSlotCatalog`, and a slot without a readable `save.json` is listed as unreadable. Slot names (`SaveSlotName`) are 1 to 32 characters of letters, digits, spaces, `-` and `_`, and cannot be `con`, `prn`, `aux` or `nul` (compared without case). `ActiveSaveSlot` starts on the `default` slot until one is selected. `LegacySaveImporter` copies the old single-file `user://game_save.json` into a slot named `imported`, and runs only when no slot exists yet and that file holds a JSON object. A first save that fails removes the slot it started. A container still opening when the game saves is finished first, so its items are saved instead of it. A `CardContainer` draws a content seed only when a save asks for one (`SeedForSave`); the seed is saved with the slot, so the same seed opens the same cards after a reload, and an unseeded box opens from the shared random source as before. Each later stateful slice adds its own saved state to the envelope and a round-trip test that saves, reloads and compares it. Prices live with the stock, never with a price tag: the booster and pack prices are saved by the scene's `ShopPriceBook` (UniqueID `prices`, only the kinds the player priced), and a card's own price (`CardController.ShopPrice`) is saved with the card (`price` in its record) and comes back with it into its slot. A save that still holds an old tag markup (an id starting `slot_price:`) loads with that entry ignored, so its stock asks the market price, and a corrupt price logs a warning and falls back to the market price.
 
 Furniture saves under UniqueID `furniture` (`FurnitureSaveService`) as one JSON string of `FurnitureRecord` entries: every
 placed piece with its pose and node name, the scene's starting pieces included, and unopened furniture boxes with their
@@ -553,7 +589,7 @@ Code is organized by feature under `Scripts/Features/`:
 - **Deckbuilder/**: Game session management, map generation, combat, exploration
 - **Worldgen/**: Procedural generation support (auto-tiling, biomes, gradients, blob generation)
 - **Player/**: Player controller and interaction system
-- **Packs/**: Card containers the player opens (box of 8 packs, pack of 8 boosters, booster of 8 cards); `CardPackGenerator` makes each card special with probability 1/200 (about 92% of boxes hold at least one) and special cards show their signature along the card edges
+- **Packs/**: Card containers the player opens (box of 8 packs, pack of 8 boosters, booster of 8 cards; see Container Meshes and Opening); `CardPackGenerator` makes each card special with probability 1/200 (about 92% of boxes hold at least one) and special cards show their signature along the card edges
 - **Conveyor/**: Conveyor belt mechanics
 - **Portal/**: Backoffice wall seam that opens to a doorway and teleports the player (pure rules in `Models/`)
 - **Pause/**: Pause menu controller

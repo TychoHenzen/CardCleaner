@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Tests.Features.Packs;
 using Godot;
+using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
 
@@ -21,7 +22,6 @@ public class ShelfUnpackTest
     private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
     private const ulong Seed = 777;
-    private const int OpenFrames = 12;
 
     private Node3D _world = null!;
     private RecordingCardSpawner _spawner = null!;
@@ -50,7 +50,7 @@ public class ShelfUnpackTest
             AssertThat(((CardContainer)slot.Cards[0]).Kind).IsEqual(CardContainerKind.Pack);
         }
 
-        await Frames(OpenFrames);
+        await UntilOpened(box);
 
         AssertThat(shelf.StockedCount).IsEqual(6);
         AssertThat(Containers(_world, CardContainerKind.Pack).Length).IsEqual(2);
@@ -67,12 +67,14 @@ public class ShelfUnpackTest
 
         AssertBool(unpacked.OpenOnto(FreeSlots(shelf))).IsTrue();
         AssertBool(loose.Open()).IsTrue();
-        await Frames(OpenFrames);
+        await UntilOpened(unpacked);
+        await UntilOpened(loose);
 
+        // Both took the seed of the box's first pack: the shelf's first slot, and one of the loose packs.
+        var firstSeed = ContainerSeeds.ChildSeed(Seed, 0);
         var lockedFirst = (CardContainer)shelf.Slots.First().Cards[0];
-        var looseFirst = Containers(looseWorld, CardContainerKind.Pack).OrderBy(c => c.GlobalPosition.Y).First();
-        AssertBool(lockedFirst.ContentSeed != null).IsTrue();
-        AssertBool(lockedFirst.ContentSeed == looseFirst.ContentSeed).IsTrue();
+        AssertBool(lockedFirst.ContentSeed == firstSeed).IsTrue();
+        AssertBool(Containers(looseWorld, CardContainerKind.Pack).Any(c => c.ContentSeed == firstSeed)).IsTrue();
     }
 
     [TestCase]
@@ -86,7 +88,7 @@ public class ShelfUnpackTest
         AssertThat(pack.PlacedCount).IsEqual(6);
         AssertThat(pack.PendingCount).IsEqual(2);
 
-        await Frames(OpenFrames);
+        await UntilOpened(pack);
 
         foreach (var slot in shelf.Slots)
             AssertThat(((CardContainer)slot.Cards[0]).Kind).IsEqual(CardContainerKind.Booster);
@@ -116,7 +118,7 @@ public class ShelfUnpackTest
         AssertThat(box.PlacedCount).IsEqual(6);
         AssertThat(box.PendingCount).IsEqual(2);
 
-        await Frames(OpenFrames);
+        await UntilOpened(box);
 
         AssertThat(shelf.StockedCount).IsEqual(6);
     }
@@ -133,7 +135,7 @@ public class ShelfUnpackTest
         AssertThat(box.PlacedCount).IsEqual(0);
         AssertThat(box.PendingCount).IsEqual(8);
 
-        await Frames(OpenFrames);
+        await UntilOpened(box);
 
         AssertThat(shelf.StockedCount).IsEqual(6);
     }
@@ -161,7 +163,7 @@ public class ShelfUnpackTest
         AssertThat(box.PlacedCount).IsEqual(4);
         AssertThat(box.PendingCount).IsEqual(4);
 
-        await Frames(OpenFrames);
+        await UntilOpened(box);
 
         AssertThat(rack.StockedCount).IsEqual(4);
     }
@@ -222,10 +224,4 @@ public class ShelfUnpackTest
 
     private static CardContainer[] Containers(Node parent, CardContainerKind kind) =>
         parent.GetChildren().OfType<CardContainer>().Where(c => c.Kind == kind && !c.IsOpened).ToArray();
-
-    private static async Task Frames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncProcessFrame;
-    }
 }

@@ -20,7 +20,6 @@ public class CardContainerSeedTest
     private const ulong SeedA = 777;
     private const ulong SeedB = 778;
     private const ulong SeedSearchLimit = 20000;
-    private const int OpenFrames = 12;
 
     private Node3D _world = null!;
 
@@ -41,10 +40,9 @@ public class CardContainerSeedTest
         var first = new RecordingCardSpawner();
         var second = new RecordingCardSpawner();
 
-        SeededBooster(_world, seed, first).Open();
-        await Frames(OpenFrames);
-        SeededBooster(_world, seed, second).Open();
-        await Frames(OpenFrames);
+        OpenAtOnce(SeededBooster(_world, seed, first));
+        OpenAtOnce(SeededBooster(_world, seed, second));
+        await Frames(1);
 
         AssertThat(first.Spawned.Count).IsEqual(CardContainerLayout.ItemsPerContainer);
         AssertBool(first.SpecialCount > 0).IsTrue();
@@ -53,7 +51,7 @@ public class CardContainerSeedTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task BoxesWithDifferentSeedsGiveTheirBoostersDifferentSeeds()
+    public static async Task BoxesWithDifferentSeedsGiveTheirBoostersDifferentSeeds()
     {
         // The cards themselves are mostly all zero, so two boxes are compared by the seeds their boosters received.
         var first = await OpenWholeBox(SeedA);
@@ -65,7 +63,7 @@ public class CardContainerSeedTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task BoxWithTheSameSeedOpensToTheSameCardsOnEveryRun()
+    public static async Task BoxWithTheSameSeedOpensToTheSameCardsOnEveryRun()
     {
         var firstRun = await OpenWholeBox(SeedA);
         var secondRun = await OpenWholeBox(SeedA);
@@ -143,26 +141,34 @@ public class CardContainerSeedTest
         box.Spawning = opened.Cards;
         world.AddChild(box);
 
-        box.Open();
-        await Frames(OpenFrames);
+        OpenAtOnce(box);
+        await Frames(1);
 
         var packs = Containers(world, CardContainerKind.Pack);
         AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
         foreach (var pack in packs)
         {
-            pack.Open();
-            await Frames(OpenFrames);
+            OpenAtOnce(pack);
+            await Frames(1);
 
             foreach (var booster in Containers(world, CardContainerKind.Booster))
             {
                 opened.BoosterSeeds.Add(booster.ContentSeed!.Value);
-                booster.Open();
+                OpenAtOnce(booster);
             }
 
-            await Frames(OpenFrames);
+            await Frames(1);
         }
 
         return opened;
+    }
+
+    // The opening animation plays for seconds and has its own tests; these tests only need what it opens into, in
+    // the same order, so they end it at once.
+    private static void OpenAtOnce(CardContainer container)
+    {
+        AssertBool(container.Open()).IsTrue();
+        container.FinishOpening();
     }
 
     private static CardContainer[] Containers(Node3D parent, CardContainerKind kind) =>

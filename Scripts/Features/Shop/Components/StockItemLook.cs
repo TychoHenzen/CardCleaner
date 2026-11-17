@@ -4,9 +4,10 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     A still copy of a stock item's visible meshes, made when a customer hands the real body over at the checkout,
-///     so the counter can show the item that is being sold. The copy has no script, collision or physics. Its origin
-///     is the centre of its base, and a flat item (a card, a booster) is laid on its widest face.
+///     A still copy of a stock item's visible meshes and printed labels, made when a customer hands the real body over
+///     at the checkout, so the counter can show the item that is being sold. The copy has no script, collision or
+///     physics. Its origin is the centre of its base, and a flat item (a card, a booster) is laid on its widest face.
+///     Only the meshes decide its size: a label is printed on a face and adds nothing to it.
 /// </summary>
 public sealed class StockItemLook
 {
@@ -19,19 +20,24 @@ public sealed class StockItemLook
         Size = size;
     }
 
-    /// <summary>The copied meshes under one parent; not in the tree until a prop adopts it.</summary>
+    /// <summary>The copied meshes and labels under one parent; not in the tree until a prop adopts it.</summary>
     public Node3D Node { get; }
 
     /// <summary>The size of the laid-down copy's bounding box.</summary>
     public Vector3 Size { get; }
 
-    /// <summary>Copies the visible meshes of <paramref name="body" />; null when it shows none.</summary>
+    /// <summary>Copies the visible meshes and labels of <paramref name="body" />; null when it shows no mesh.</summary>
     public static StockItemLook? Capture(Node3D body)
     {
         var meshes = new List<MeshInstance3D>();
-        CollectVisible(body, Transform3D.Identity, meshes);
+        var labels = new List<Label3D>();
+        CollectVisible(body, Transform3D.Identity, meshes, labels);
         if (meshes.Count == 0)
+        {
+            foreach (var label in labels)
+                label.Free();
             return null;
+        }
 
         var bounds = meshes[0].Transform * meshes[0].Mesh.GetAabb();
         foreach (var mesh in meshes)
@@ -47,6 +53,8 @@ public sealed class StockItemLook
         root.AddChild(holder);
         foreach (var mesh in meshes)
             holder.AddChild(mesh);
+        foreach (var label in labels)
+            holder.AddChild(label);
 
         return new StockItemLook(root, laid.Size);
     }
@@ -79,7 +87,7 @@ public sealed class StockItemLook
     }
 
     // Walks the visible subtree; a hidden node hides everything under it, as it does in the tree.
-    private static void CollectVisible(Node node, Transform3D toBody, List<MeshInstance3D> into)
+    private static void CollectVisible(Node node, Transform3D toBody, List<MeshInstance3D> meshes, List<Label3D> labels)
     {
         foreach (var child in node.GetChildren())
         {
@@ -90,8 +98,10 @@ public sealed class StockItemLook
 
             var transform = toBody * spatial.Transform;
             if (spatial is MeshInstance3D { Mesh: not null } mesh)
-                into.Add(Copy(mesh, transform));
-            CollectVisible(spatial, transform, into);
+                meshes.Add(Copy(mesh, transform));
+            else if (spatial is Label3D label)
+                labels.Add(Copy(label, transform));
+            CollectVisible(spatial, transform, meshes, labels);
         }
     }
 
@@ -107,6 +117,20 @@ public sealed class StockItemLook
         };
         for (var surface = 0; surface < source.GetSurfaceOverrideMaterialCount(); surface++)
             copy.SetSurfaceOverrideMaterial(surface, source.GetSurfaceOverrideMaterial(surface));
+        return copy;
+    }
+
+    // A label copies every property (text, font, size, colour, shading); its children are walked on their own.
+    private static Label3D Copy(Label3D source, Transform3D transform)
+    {
+        var copy = (Label3D)source.Duplicate(0);
+        foreach (var child in copy.GetChildren())
+        {
+            copy.RemoveChild(child);
+            child.Free();
+        }
+
+        copy.Transform = transform;
         return copy;
     }
 }

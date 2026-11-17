@@ -15,6 +15,7 @@ using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 using NSubstitute;
+using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -31,7 +32,6 @@ public class ShopCarryingPoseSceneTest
     private const float WalkDistance = 2f;
     private const float DropTolerance = 0.3f;
     private const float FallLimitY = -0.5f;
-    private const int OpenFrames = 12;
     private const int SettleFrames = 60;
     private const int InteractFrames = 6;
     private const int CarryFrames = 10;
@@ -93,7 +93,7 @@ public class ShopCarryingPoseSceneTest
         var holder = Holder();
         AssertBool(ReferenceEquals(holder.Held, box))
             .OverrideFailureMessage(
-                $"nothing picked up: camera y={camera.GlobalPosition.Y}, box top y={box.GlobalPosition.Y + 0.35f}, " +
+                $"nothing picked up: camera y={camera.GlobalPosition.Y}, box top y={box.GlobalPosition.Y + 0.6f}, " +
                 $"Held={holder.Held?.Name ?? "null"}")
             .IsTrue();
         AssertBool(ReferenceEquals(box.GetParent(), camera)).IsTrue();
@@ -145,10 +145,10 @@ public class ShopCarryingPoseSceneTest
             .IsTrue();
 
         await PressKeyAsync(Key.Q);
-        await PhysicsFrames(OpenFrames);
 
         AssertBool(box.IsOpened).IsTrue();
         AssertBool(holder.Held == null).IsTrue();
+        await UntilOpened(box);
         var packs = SpawnerNode().GetChildren().OfType<CardContainer>()
             .Where(c => c.Kind == CardContainerKind.Pack && !c.IsOpened).ToArray();
         AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);

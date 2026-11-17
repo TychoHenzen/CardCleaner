@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3]
+
+[ext_resource type="Shader" uid="uid://bj2jjcv8heo3y" path="res://Shaders/booster_wrapper.gdshader" id="1_wrapper"]
+[ext_resource type="Texture2D" uid="uid://dl120toc8kpsh" path="res://Assets/Graphics/Card back.png" id="2_art"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_wrapper")
+shader_parameter/art_texture = ExtResource("2_art")

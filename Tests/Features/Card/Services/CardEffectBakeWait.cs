@@ -1,7 +1,7 @@
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Services;
@@ -16,17 +16,10 @@ public static class CardEffectBakeWait
     ///     A wall-clock bound, because headless frames are not throttled and a frame count would run out before the
     ///     bakes do. It is a timeout, not a speed check: one bake takes milliseconds.
     /// </summary>
-    public static readonly TimeSpan Bound = TimeSpan.FromSeconds(30);
+    public const double BoundSeconds = 30;
 
     /// <summary>Waits until <paramref name="done" /> holds and fails the test if it still does not after the bound.</summary>
-    public static async Task Until(Func<bool> done, string what)
-    {
-        var clock = Stopwatch.StartNew();
-        while (!done() && clock.Elapsed < Bound)
-            await Frames(1);
-
-        AssertThat(done()).OverrideFailureMessage($"{what} did not happen within {Bound.TotalSeconds} s").IsTrue();
-    }
+    public static Task Until(Func<bool> done, string what) => BoundedWait.Expect(done, what, BoundSeconds);
 
     /// <summary>Requests the bevel map of <paramref name="art" /> and waits until the cache hands it over.</summary>
     public static async Task<ImageTexture> BakeOf(Texture2D art)
@@ -37,9 +30,5 @@ public static class CardEffectBakeWait
         return map!;
     }
 
-    public static async Task Frames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await Engine.GetMainLoop().ToSignal(Engine.GetMainLoop(), SceneTree.SignalName.ProcessFrame);
-    }
+    public static Task Frames(int count) => BoundedWait.ProcessFrames(count);
 }

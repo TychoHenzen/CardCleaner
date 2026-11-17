@@ -36,6 +36,22 @@ public static class BoundedWait
         return null;
     }
 
+    // Waits until done() holds and fails the test with the timeout message when it does not within maxSeconds.
+    public static async Task Expect(Func<bool> done, string what, double maxSeconds = DefaultMaxSeconds)
+    {
+        var timeout = await Until(done, what, maxSeconds);
+        // gdUnit refuses an empty failure message, so a wait that ended in time passes its name instead.
+        AssertThat(timeout).OverrideFailureMessage(timeout ?? what).IsNull();
+    }
+
+    // Waits count process frames, with no bound: the main loop ticks them as long as it runs.
+    public static async Task ProcessFrames(int count)
+    {
+        var tree = (SceneTree)Engine.GetMainLoop();
+        for (var i = 0; i < count; i++)
+            await tree.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+    }
+
     // Returns null once count physics frames have passed, otherwise the timeout message from Until.
     public static async Task<string?> PhysicsFrames(int count, double maxSeconds = DefaultMaxSeconds)
     {

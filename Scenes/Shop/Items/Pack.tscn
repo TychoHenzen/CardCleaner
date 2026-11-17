@@ -1,22 +1,19 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
-[ext_resource type="Script" path="res://Scripts/Features/Packs/Components/CardContainer.cs" id="CardContainer"]
+[ext_resource type="Script" uid="uid://t6rldk1b7o4e" path="res://Scripts/Features/Packs/Components/CardContainer.cs" id="CardContainer"]
+[ext_resource type="Script" uid="uid://6o6juperspfh" path="res://Scripts/Features/Packs/Components/OpeningPart.cs" id="OpeningPart"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Booster.tscn" id="Booster"]
 [ext_resource type="Material" path="res://Data/Ui/AimHighlightMaterial.tres" id="AimHighlight"]
+[ext_resource type="ArrayMesh" path="res://Data/Packs/Meshes/PackBody.tres" id="BodyMesh"]
+[ext_resource type="ArrayMesh" path="res://Data/Packs/Meshes/PackLid.tres" id="LidMesh"]
+[ext_resource type="Material" path="res://Data/Packs/PackPrint.tres" id="Print"]
 
 [sub_resource type="BoxShape3D" id="Shape"]
-size = Vector3(0.4, 0.15, 0.3)
-
-[sub_resource type="StandardMaterial3D" id="PlaceholderMaterial"]
-albedo_color = Color(0.35, 0.45, 0.75, 1)
-
-[sub_resource type="BoxMesh" id="PlaceholderMesh"]
-material = SubResource("PlaceholderMaterial")
-size = Vector3(0.4, 0.15, 0.3)
+size = Vector3(0.38, 0.37, 0.55)
 
 [sub_resource type="BoxMesh" id="HighlightMesh"]
 material = ExtResource("AimHighlight")
-size = Vector3(0.44, 0.19, 0.34)
+size = Vector3(0.42, 0.41, 0.59)
 
 [node name="Pack" type="RigidBody3D" node_paths=PackedStringArray("HighlightMesh")]
 script = ExtResource("CardContainer")
@@ -25,14 +22,57 @@ ChildScene = ExtResource("Booster")
 HighlightMesh = NodePath("Highlight")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.075, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.185, 0)
 shape = SubResource("Shape")
 
-[node name="Placeholder" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.075, 0)
-mesh = SubResource("PlaceholderMesh")
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+material_override = ExtResource("Print")
+mesh = ExtResource("BodyMesh")
+
+[node name="Lid" type="Node3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.364, -0.275)
+script = ExtResource("OpeningPart")
+OpenRotationDegrees = Vector3(-115, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visual/Lid"]
+material_override = ExtResource("Print")
+mesh = ExtResource("LidMesh")
+
+[node name="Brand" type="Label3D" parent="Visual/Lid"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.0062, 0.49)
+pixel_size = 0.0006
+shaded = true
+double_sided = false
+alpha_cut = 1
+modulate = Color(0.91, 0.7, 0.54, 1)
+text = "OCTARINE CARDS"
+font_size = 40
+outline_size = 0
+
+[node name="FrontBrand" type="Label3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.324, 0.2755)
+pixel_size = 0.0006
+shaded = true
+double_sided = false
+alpha_cut = 1
+modulate = Color(0.91, 0.7, 0.54, 1)
+text = "OCTARINE CARDS"
+font_size = 52
+outline_size = 0
+
+[node name="FrontCount" type="Label3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0.2755)
+pixel_size = 0.0006
+shaded = true
+double_sided = false
+alpha_cut = 1
+text = "8 BOOSTERS"
+font_size = 40
+outline_size = 0
 
 [node name="Highlight" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.075, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.185, 0)
 visible = false
 mesh = SubResource("HighlightMesh")

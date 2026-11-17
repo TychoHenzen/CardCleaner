@@ -11,14 +11,17 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Packs.Components;
 
 /// <summary>
-///     A box, pack or booster the player opens by interacting. It spawns 8 packs, boosters or cards (signatures
-///     from <see cref="CardPackGenerator" />), one per frame, in a column above the container that takes no more
-///     floor than the container, so opening never throws items through walls or into each other.
+///     A box, pack or booster the player opens by interacting. Opening plays out over a second or two
+///     (<see cref="ContainerOpening" />): the container falls to the surface below it, its lid, flaps or tear strip
+///     open, and its 8 packs, boosters or cards (signatures from <see cref="CardPackGenerator" />) rise out one by one
+///     to spots in a column above it that takes no more floor than the container, so opening never throws items
+///     through walls or into each other. They hang there while the empty wrapper shrinks away, and drop once it is
+///     freed.
 /// </summary>
 public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 {
-    /// <summary>Height above the container's origin of the first item it opens into.</summary>
-    public const float LiftHeight = 0.4f;
+    // Half the gap between the two columns a box's packs rise to: a pack is 0.38 m wide.
+    private const float BoxColumnOffset = 0.2f;
 
     /// <summary>
     ///     Raised when the player interacts with a container that can be opened or carried. The holder that
@@ -30,7 +33,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     private const float DefaultInteractionRange = 4.5f;
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
 
-    private readonly Queue<Action> _pendingSpawns = new();
+    private ContainerOpening? _opening;
     private IServiceResolver? _services;
     private IRandom? _random;
 
@@ -65,14 +68,14 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     public bool IsOpened { get; private set; }
 
-    /// <summary>Items opened out of this container so far.</summary>
-    public int SpawnedCount { get; private set; }
+    /// <summary>Items that have left this container while it opens so far.</summary>
+    public int SpawnedCount => _opening?.Released ?? 0;
 
     /// <summary>Items that <see cref="OpenOnto" /> locked into a shelf slot.</summary>
     public int PlacedCount { get; private set; }
 
-    /// <summary>Items still waiting to be spawned over the next frames.</summary>
-    public int PendingCount => _pendingSpawns.Count;
+    /// <summary>Items still inside this container while it opens.</summary>
+    public int PendingCount => _opening?.Pending ?? 0;
 
     /// <summary>True while a holder carries this container (its parent is the holder's camera).</summary>
     public bool IsHeld => GetParent() is Camera3D;
@@ -127,14 +130,29 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     public override void _Process(double delta)
     {
-        if (_pendingSpawns.Count > 0)
-        {
-            _pendingSpawns.Dequeue().Invoke();
-            SpawnedCount++;
-        }
-
-        if (_pendingSpawns.Count == 0)
+        if (_opening?.Advance((float)delta) == true)
             QueueFree();
+    }
+
+    // A wrapper taken out of the tree mid-opening (a load clears the scene's containers) lets its rising items fall.
+    public override void _ExitTree()
+    {
+        _opening?.Abandon();
+        SetProcess(false);
+    }
+
+    /// <summary>
+    ///     Ends an opening in progress at once, as if its time had run out: every item is at its spot and the wrapper
+    ///     is freed. A save calls it first, so it never has to store a half-opened container. Does nothing when the
+    ///     container is not opening.
+    /// </summary>
+    public void FinishOpening()
+    {
+        if (_opening == null || _opening.IsOver)
+            return;
+
+        _opening.Finish();
+        QueueFree();
     }
 
     public void Interact()
@@ -156,23 +174,43 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     }
 
     /// <summary>
-    ///     Offset of the n-th item opened out of a container of <paramref name="kind" />: straight above the
-    ///     container, one <see cref="StackStep" /> higher per item.
+    ///     Offset of the n-th item opened out of a container of <paramref name="kind" />: above the container, one
+    ///     <see cref="StackStep" /> higher per item. A box's packs fill two columns side by side, so its column stays
+    ///     under the shop's 3.5 m ceiling when the box stands on the floor.
     /// </summary>
     public static Vector3 SpawnOffset(int index, CardContainerKind kind)
     {
-        return new Vector3(0f, LiftHeight + index * StackStep(kind), 0f);
+        if (kind != CardContainerKind.Box)
+            return new Vector3(0f, LiftHeight(kind) + index * StackStep(kind), 0f);
+
+        var side = index % 2 == 0 ? -BoxColumnOffset : BoxColumnOffset;
+        return new Vector3(side, LiftHeight(kind) + index / 2 * StackStep(kind), 0f);
+    }
+
+    /// <summary>
+    ///     Height above the container's origin of the first item it opens into: a little more than the container's
+    ///     own height (a box is 0.60 m tall, a pack 0.37 m, a booster 0.045 m).
+    /// </summary>
+    public static float LiftHeight(CardContainerKind kind)
+    {
+        return kind switch
+        {
+            CardContainerKind.Box => 0.65f,
+            CardContainerKind.Pack => 0.42f,
+            CardContainerKind.Booster => 0.1f,
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown container kind")
+        };
     }
 
     /// <summary>
     ///     Vertical gap between the items opened out of <paramref name="kind" />: a little more than the height of
-    ///     one item (a pack is 0.15 m tall, a booster 0.03 m, a card 0.005 m), so none spawns inside the one below.
+    ///     one item (a pack is 0.37 m tall, a booster 0.045 m, a card 0.005 m), so none spawns inside the one below.
     /// </summary>
     public static float StackStep(CardContainerKind kind)
     {
         return kind switch
         {
-            CardContainerKind.Box => 0.25f,
+            CardContainerKind.Box => 0.42f,
             CardContainerKind.Pack => 0.1f,
             CardContainerKind.Booster => 0.05f,
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown container kind")
@@ -180,7 +218,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     }
 
     /// <summary>
-    ///     Opens the container: it disappears and its contents are queued to appear one per frame.
+    ///     Opens the container: it falls to the surface below it, opens, and its contents rise out one by one.
     ///     Returns false when it was already opened or lacks what it needs to open.
     /// </summary>
     public bool Open()
@@ -188,14 +226,11 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         if (!CanInteract || GetParent() is not Node3D parent)
             return false;
 
-        var origin = HideForOpening();
-
-        if (Kind == CardContainerKind.Booster)
-            QueueCards(parent, origin);
-        else
-            QueueContainers(parent, origin, 0);
-
-        SetProcess(true);
+        var settled = BeginOpening();
+        var spawns = Kind == CardContainerKind.Booster
+            ? CardSpawns(parent, settled.Origin)
+            : ContainerSpawns(parent, settled.Origin, 0);
+        StartOpening(settled, spawns);
         return true;
     }
 
@@ -210,66 +245,78 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         if (Kind == CardContainerKind.Booster || !CanInteract || GetParent() is not Node3D parent)
             return false;
 
-        var origin = HideForOpening();
+        var settled = BeginOpening();
         var placeable = Math.Min(CardContainerLayout.ItemsPerContainer, freeSlots.Count);
         for (var i = 0; i < placeable; i++)
         {
             // The same index as Open() uses, so each placed child gets the seed it would have got when opened loose.
-            var child = SpawnContainer(parent, origin + SpawnOffset(i, Kind), i);
+            var child = SpawnContainer(parent, settled.Origin + SpawnOffset(i, Kind), i);
             if (child is CardContainer container && freeSlots[i].TryLock(container))
                 PlacedCount++;
         }
 
-        QueueContainers(parent, origin, placeable);
-        SetProcess(true);
+        StartOpening(settled, ContainerSpawns(parent, settled.Origin, placeable));
         return true;
     }
 
-    // Marks the container opened and hidden, and stops it colliding and falling. Returns the origin its contents
-    // spawn above.
-    private Vector3 HideForOpening()
+    // Marks the container opened and stops it colliding, being aimed at and falling on its own. Returns the pose it
+    // settles into, worked out before its collision mask is cleared.
+    private Transform3D BeginOpening()
     {
         IsOpened = true;
-        var origin = GlobalPosition;
         ClearHighlight();
-        Visible = false;
+        var settled = ContainerOpening.SettledPose(this, CollisionMask);
         CollisionLayer = 0;
         CollisionMask = 0;
         Freeze = true;
-        return origin;
+        return settled;
     }
 
-    private void QueueCards(Node3D parent, Vector3 origin)
+    private void StartOpening(Transform3D settled, IReadOnlyList<Func<Node3D?>> spawns)
+    {
+        _opening = new ContainerOpening(this, settled, spawns);
+        SetProcess(true);
+    }
+
+    private List<Func<Node3D?>> CardSpawns(Node3D parent, Vector3 origin)
     {
         var generator = Generator ?? new CardPackGenerator(ContentSeed is { } seed
             ? RandomSources.Create(seed)
             : _random!);
         var signatures = generator.OpenBooster();
+        var spawns = new List<Func<Node3D?>>(signatures.Length);
         for (var i = 0; i < signatures.Length; i++)
         {
             var signature = signatures[i];
             var position = origin + SpawnOffset(i, Kind);
-            _pendingSpawns.Enqueue(() => SpawnCard(parent, signature, position));
+            spawns.Add(() => SpawnCard(parent, signature, position));
         }
+
+        return spawns;
     }
 
-    private void QueueContainers(Node3D parent, Vector3 origin, int startIndex)
+    // The items from startIndex on, each with its own seed index. They take the column spots from the bottom up, so
+    // the ones left over after an unpack start at the lowest spot.
+    private List<Func<Node3D?>> ContainerSpawns(Node3D parent, Vector3 origin, int startIndex)
     {
+        var spawns = new List<Func<Node3D?>>();
         for (var i = startIndex; i < CardContainerLayout.ItemsPerContainer; i++)
         {
             var index = i;
-            var position = origin + SpawnOffset(index, Kind);
-            _pendingSpawns.Enqueue(() => SpawnContainer(parent, position, index));
+            var position = origin + SpawnOffset(index - startIndex, Kind);
+            spawns.Add(() => SpawnContainer(parent, position, index));
         }
+
+        return spawns;
     }
 
-    private void SpawnCard(Node3D parent, CardSignature signature, Vector3 position)
+    private Node3D? SpawnCard(Node3D parent, CardSignature signature, Vector3 position)
     {
         if (!GodotObject.IsInstanceValid(parent))
-            return;
+            return null;
 
         var transform = new Transform3D(Basis.Identity, position);
-        Spawning?.SpawnCard(signature, transform, parent);
+        return Spawning?.SpawnCard(signature, transform, parent);
     }
 
     // Returns the spawned child, or null when nothing was spawned.

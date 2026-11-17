@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services.SaveGame;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
+using CardCleaner.Tests.Features.Packs.Components;
 using CardCleaner.Tests.Features.SaveSlots.Services;
 using GdUnit4;
 using Godot;
@@ -24,7 +25,6 @@ public class SealedBoxSaveTest
 {
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const ulong BoxSeed = 0x5EA1EDUL;
-    private const int MaxFrames = 300;
 
     [TestCase]
     [TestCategory("Unit")]
@@ -41,7 +41,7 @@ public class SealedBoxSaveTest
         scene.Enter();
         service.SaveGame();
 
-        // The original box opens on the first frame; the loop opens every container the frames bring in.
+        // The original box opens at once; the wait opens every container the opening brings in.
         await OpenUntilEmpty(scene);
         var original = Canonical(scene.Spawner);
         AssertThat(original.Count).IsEqual(CardContainerLayout.CardsPerBox);
@@ -63,24 +63,50 @@ public class SealedBoxSaveTest
         AssertBool(reopened.SequenceEqual(original)).IsTrue();
     }
 
-    // Opens every closed container in the tree, one frame at a time, until no container is left. A box spawns packs,
-    // a pack spawns boosters and a booster spawns cards, so the loop runs until the whole chain has been opened.
-    private static async Task OpenUntilEmpty(SaveWorld scene)
+    [TestCase]
+    [TestCategory("Unit")]
+    public static async Task ABoxSavedWhileItOpensIsSavedAsTheEightPacksItOpensInto()
     {
-        for (var frame = 0; frame < MaxFrames; frame++)
+        using var scene = new SaveWorld("OpeningBoxWorld", addCardsToTree: false);
+        var box = GD.Load<PackedScene>(BoxScene).Instantiate<CardContainer>();
+        box.ContentSeed = BoxSeed;
+        box.Spawning = scene.Spawner;
+        scene.World.AddChild(box);
+        var service = scene.Add(
+            new GameSaveService(new InMemorySlotFileSystem(), SaveWorld.SlotNamed("a")) { AutoLoadOnStart = false });
+        AddNode(scene.World, autoFree: false);
+        scene.Enter();
+        box.Open();
+        await ContainerOpeningWait.Until(() => box.SpawnedCount > 0, "the first pack leaving the box");
+
+        // Some packs are still rising out of the box and the rest are still inside it when the save runs.
+        AssertThat(box.PendingCount).IsGreater(0);
+        service.SaveGame();
+        AssertBool(box.IsQueuedForDeletion()).IsTrue();
+        await scene.TwoFrames();
+
+        service.LoadGame();
+        await scene.TwoFrames();
+        var restored = ContainersIn(scene.Tree);
+        AssertThat(restored.Count(c => c.Kind == CardContainerKind.Box)).IsEqual(0);
+        var seeds = restored.Where(c => c.Kind == CardContainerKind.Pack).Select(c => c.ContentSeed!.Value)
+            .Order().ToList();
+        var expected = Enumerable.Range(0, CardContainerLayout.ItemsPerContainer)
+            .Select(i => ContainerSeeds.ChildSeed(BoxSeed, i)).Order().ToList();
+        AssertThat(seeds).IsEqual(expected);
+    }
+
+    // Opens every closed container in the tree until no container is left. A box spawns packs, a pack spawns boosters
+    // and a booster spawns cards, so the wait lasts until the whole chain has been opened.
+    private static Task OpenUntilEmpty(SaveWorld scene) =>
+        ContainerOpeningWait.Until(() =>
         {
             var containers = ContainersIn(scene.Tree);
-            if (containers.Count == 0)
-                return;
-
             foreach (var container in containers.Where(c => c.CanInteract))
                 container.Open();
 
-            await scene.World.ToSignal(scene.Tree, SceneTree.SignalName.ProcessFrame);
-        }
-
-        throw new InvalidOperationException($"Containers still in the tree after {MaxFrames} frames");
-    }
+            return containers.Count == 0;
+        }, "opening every container down to the cards");
 
     private static List<CardContainer> ContainersIn(SceneTree tree) =>
         tree.GetNodesInGroup("card_containers").OfType<CardContainer>().ToList();

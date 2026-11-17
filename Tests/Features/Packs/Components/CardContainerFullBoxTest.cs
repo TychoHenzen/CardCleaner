@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
+using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
 namespace CardCleaner.Tests.Features.Packs.Components;
 
@@ -18,8 +19,6 @@ public class CardContainerFullBoxTest
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const float StorageWallHeight = 3.75f;
     private const ulong Seed = 777;
-    private const int GenerousFrameBudget = 200;
-    private const int OpenFrames = 12;
     private const int SettleFrames = 180;
     private const float WallThickness = 0.2f;
 
@@ -146,11 +145,12 @@ public class CardContainerFullBoxTest
     private CardContainer[] Containers(CardContainerKind kind) =>
         _world.GetChildren().OfType<CardContainer>().Where(c => c.Kind == kind && !c.IsOpened).ToArray();
 
-    // Where the items of this container spawn: its position when it is opened plus the per-item spawn offset.
+    // Where the items of this container spawn: the spot it settles on when it is opened plus the per-item offset.
     private static void RecordSpawns(CardContainer container, List<Vector3> into)
     {
+        var settled = ContainerOpening.SettledPose(container, container.CollisionMask).Origin;
         for (var i = 0; i < CardContainerLayout.ItemsPerContainer; i++)
-            into.Add(container.GlobalPosition + CardContainer.SpawnOffset(i, container.Kind));
+            into.Add(settled + CardContainer.SpawnOffset(i, container.Kind));
     }
 
     private static List<Vector3> SharedSpots(IEnumerable<Vector3> positions) =>
@@ -187,42 +187,34 @@ public class CardContainerFullBoxTest
         body.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = size }, Position = centre });
     }
 
-    /// <summary>Opens the box, then every pack and booster, optionally letting each level settle first.</summary>
+    /// <summary>
+    ///     Opens the box, then every pack, then every booster, each level all at once, optionally letting each level
+    ///     settle before the next is opened.
+    /// </summary>
     private async Task OpenEverything(CardContainer box, int settleFrames = 0)
     {
-        RecordSpawns(box, _packSpawns);
-        box.Open();
-        var expected = CardContainerLayout.ItemsPerContainer;
-        foreach (var kind in new[] { CardContainerKind.Pack, CardContainerKind.Booster })
+        var expected = 1;
+        foreach (var kind in new[] { CardContainerKind.Box, CardContainerKind.Pack, CardContainerKind.Booster })
         {
-            await Frames(OpenFrames);
-            await PhysicsFrames(settleFrames);
-            var next = Containers(kind);
-            AssertThat(next.Length).IsEqual(expected);
-            foreach (var container in next)
+            CardContainer[] level = kind == CardContainerKind.Box ? [box] : Containers(kind);
+            AssertThat(level.Length).IsEqual(expected);
+            foreach (var container in level)
             {
-                if (kind == CardContainerKind.Pack)
-                    RecordSpawns(container, _boosterSpawns);
+                if (kind != CardContainerKind.Booster)
+                    RecordSpawns(container, kind == CardContainerKind.Box ? _packSpawns : _boosterSpawns);
                 container.Open();
             }
 
+            await Until(() => level.All(c => !GodotObject.IsInstanceValid(c) || c.IsQueuedForDeletion()),
+                $"opening every {kind}");
+            await PhysicsFrames(settleFrames);
             expected *= CardContainerLayout.ItemsPerContainer;
         }
-
-        var budget = GenerousFrameBudget;
-        while (_spawner.Spawned.Count < CardContainerLayout.CardsPerBox && budget-- > 0)
-            await Frames(1);
     }
 
     private static async Task PhysicsFrames(int count)
     {
         for (var i = 0; i < count; i++)
             await ISceneRunner.SyncPhysicsFrame;
-    }
-
-    private static async Task Frames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncProcessFrame;
     }
 }
