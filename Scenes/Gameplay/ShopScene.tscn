@@ -73,6 +73,8 @@
 [ext_resource type="Script" uid="uid://t306livelmae" path="res://Scripts/Features/Shop/Services/StaffService.cs" id="StaffService"]
 [ext_resource type="Script" uid="uid://dtlyq0sdgspo0" path="res://Scripts/Features/Shop/Ui/StaffApp.cs" id="StaffApp"]
 [ext_resource type="Script" uid="uid://ck6rxiqcn12sc" path="res://Scripts/Features/Shop/Components/CashierWorker.cs" id="CashierWorker"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/HumanFigure.cs" id="HumanFigure"]
+[ext_resource type="Resource" path="res://Data/Shop/PeopleLooks.tres" id="PeopleLooks"]
 [ext_resource type="Script" uid="uid://bfdk80l1k1bkj" path="res://Scripts/Features/Signage/SignBoard.cs" id="SignBoard"]
 [ext_resource type="Resource" path="res://Data/Shop/StaffCatalog.tres" id="StaffCatalog"]
 [ext_resource type="Material" path="res://Data/Ui/AimHighlightMaterial.tres" id="AimHighlight"]
@@ -869,10 +871,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.62, -0.2)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.9)
 
 [node name="CashierFigure" type="Node3D" parent="World/Storefront/CheckoutCounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.9)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -0.9)
 visible = false
+script = ExtResource("HumanFigure")
+Looks = ExtResource("PeopleLooks")
+Look = 0
 
-[node name="Body" type="MeshInstance3D" parent="World/Storefront/CheckoutCounter/CashierFigure"]
+[node name="Placeholder" type="MeshInstance3D" parent="World/Storefront/CheckoutCounter/CashierFigure"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
 mesh = SubResource("CashierCapsuleMesh")
 

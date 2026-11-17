@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Components;
@@ -199,6 +200,69 @@ public class ShopCustomerSceneTest
 
         AssertBool(Gone(customer)).IsFalse();
         AssertBool(XzDistance(customer.GlobalPosition, _rig.Marker("CustomerSpawn")) >= 2.0f).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ACustomerFacesTheWayItWalks()
+    {
+        _rig.StockBooster();
+        var customer = _rig.Spawner.SpawnNow()!;
+        var walking = 0;
+        var facing = 0;
+        for (var i = 0; i < FrameBudget && !Gone(customer); i++)
+        {
+            await ISceneRunner.SyncPhysicsFrame;
+            if (Gone(customer))
+                break;
+
+            var velocity = new Vector3(customer.Velocity.X, 0f, customer.Velocity.Z);
+            if (velocity.Length() < 1f)
+                continue;
+
+            walking++;
+            var forward = customer.GlobalBasis * Vector3.Forward;
+            if (new Vector3(forward.X, 0f, forward.Z).Normalized().Dot(velocity.Normalized()) > 0.9f)
+                facing++;
+        }
+
+        // A turn takes a few frames at a path corner, so most walking frames, not all, face the walk.
+        AssertInt(walking).IsGreater(10);
+        AssertFloat((float)facing / walking).IsGreater(0.8f);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void EachCustomerWearsALookDrawnForIt()
+    {
+        var worn = new HashSet<int>();
+        for (var i = 0; i < 6; i++)
+        {
+            var customer = _rig.Spawner.SpawnNow()!;
+            AssertThat(customer.Figure?.Model).IsNotNull();
+            worn.Add(customer.Figure!.Worn);
+        }
+
+        AssertInt(worn.Count).IsGreater(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ACustomerStandsStillToPickTheItemUp()
+    {
+        var slot = _rig.StockBooster();
+        var customer = _rig.Spawner.SpawnNow()!;
+        var pickingFrames = 0;
+        for (var i = 0; i < FrameBudget && !Gone(customer); i++)
+        {
+            if (customer.Figure!.Playing == FigureClip.PickUp && customer.Velocity.IsZeroApprox())
+                pickingFrames++;
+            await ISceneRunner.SyncPhysicsFrame;
+        }
+
+        AssertBool(Gone(customer)).IsTrue();
+        AssertBool(slot.HasCards).IsFalse();
+        AssertInt(pickingFrames).IsGreater(0);
     }
 
     [TestCase]

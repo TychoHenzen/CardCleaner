@@ -13,7 +13,8 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     <see cref="Handoff" />, waits in line, walks to the despawn point and frees itself. A customer with nothing
 ///     to buy walks to its browse point first and looks for <see cref="BrowseSeconds" />. Every customer that
 ///     leaves empty-handed says why: the price complaint of a refused pick, or "nothing in stock" when it found
-///     nothing it could take.
+///     nothing it could take. Its <see cref="Figure" /> walks and turns with it, and the customer stands still while
+///     the figure picks an item up, shakes its head at a price or hands its basket over.
 /// </summary>
 public partial class Customer : CharacterBody3D, ICheckoutCustomer
 {
@@ -25,14 +26,15 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
     private IReadOnlyList<PlannedPick> _plan = Array.Empty<PlannedPick>();
     private ShelfOfferIndex? _offers;
     private CustomerNavigator? _navigator;
+    private HumanFigure? _figure;
     private Vector3 _counter;
     private Vector3 _despawn;
     private Vector3? _browse;
     private Walk _walk = Walk.None;
     private int _next;
     private int _visited;
-    private double _lookLeft;
-    private bool _looking;
+    private double _pauseLeft;
+    private Action? _afterPause;
     private bool _complained;
     private bool _finishedRaised;
 
@@ -67,11 +69,17 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
     /// <summary>How many shelf items the customer is carrying.</summary>
     public int CarriedCount => _carried.Count;
 
+    /// <summary>The person drawn for this customer; null in a scene without a Figure node.</summary>
+    public HumanFigure? Figure => _figure;
+
     /// <summary>Raised once, when the visit is over for any reason (also when the node leaves the tree).</summary>
     public event Action<Customer>? Finished;
 
-    public override void _Ready() =>
+    public override void _Ready()
+    {
         _navigator = new CustomerNavigator(this, GetNode<NavigationAgent3D>("Agent"), Arrived, GiveUp);
+        _figure = GetNodeOrNull<HumanFigure>("Figure");
+    }
 
     public override void _ExitTree()
     {
@@ -101,7 +109,7 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
     /// <summary>Ends the visit now: carried items go back to their slots, then the customer leaves.</summary>
     public void GiveUp()
     {
-        _looking = false;
+        _afterPause = null;
         _carried.ReturnToSlots();
         if (State == CustomerState.Leaving)
         {
@@ -116,11 +124,28 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
     {
         if (_walk != Walk.None)
             _navigator?.Step(delta, Speed, StuckSeconds);
-        else if (_looking && (_lookLeft -= delta) <= 0)
+        else if (_afterPause != null && (_pauseLeft -= delta) <= 0)
         {
-            _looking = false;
-            LeaveEmptyHanded();
+            var next = _afterPause;
+            _afterPause = null;
+            next();
         }
+
+        _figure?.Follow(this, Velocity, delta);
+    }
+
+    // Stands still for the figure's action, then goes on; with no action to show it goes on at once.
+    private void ActThen(FigureClip clip, Action next)
+    {
+        var seconds = _figure?.Act(clip) ?? 0f;
+        if (seconds <= 0f)
+        {
+            next();
+            return;
+        }
+
+        _pauseLeft = seconds;
+        _afterPause = next;
     }
 
     private void StartWalk(Walk walk, Vector3 target)
@@ -169,9 +194,14 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
 
     private void LeaveEmptyHanded()
     {
-        if (!_complained)
-            Complain(RefusalReason.NothingInStock);
-        StartLeaving();
+        if (_complained)
+        {
+            StartLeaving();
+            return;
+        }
+
+        Complain(RefusalReason.NothingInStock);
+        ActThen(FigureClip.Refuse, StartLeaving);
     }
 
     private void Complain(RefusalReason reason)
@@ -189,18 +219,23 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
         {
             case Walk.ToPick:
                 _visited++;
-                TryPick(_plan[_next]);
+                var acted = TryPick(_plan[_next]);
                 _next++;
-                WalkToNextPick();
+                if (acted is { } clip)
+                    ActThen(clip, WalkToNextPick);
+                else
+                    WalkToNextPick();
                 break;
             case Walk.ToBrowse:
-                _lookLeft = BrowseSeconds;
-                _looking = true;
+                _pauseLeft = BrowseSeconds;
+                _afterPause = LeaveEmptyHanded;
                 break;
             case Walk.ToCounter:
-                HandOverBasket();
+                FaceCounter();
+                ActThen(FigureClip.HandOver, HandOverBasket);
                 break;
             case Walk.ToQueue:
+                FaceCounter();
                 break;
             case Walk.ToDespawn:
                 Finish();
@@ -209,24 +244,27 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
     }
 
     // A slot whose stock is gone is skipped with no purchase; the customer complains only if it ends up with nothing.
-    private void TryPick(PlannedPick pick)
+    // Returns what the figure shows at the slot: picking the item up, or refusing its price.
+    private FigureClip? TryPick(PlannedPick pick)
     {
         var slot = _offers!.SlotFor(pick.Offer.OfferId);
         if (slot is null || !slot.HasCards)
-            return;
+            return null;
 
+        _figure?.FaceToward(slot.GlobalPosition);
         if (!pick.Outcome.Buys)
         {
             Complain(pick.Outcome.Reason ?? RefusalReason.PriceTooHigh);
-            return;
+            return FigureClip.Refuse;
         }
 
-        _carried.TryTake(slot, pick.Offer);
+        return _carried.TryTake(slot, pick.Offer) ? FigureClip.PickUp : null;
     }
 
     private void Finish()
     {
         _walk = Walk.None;
+        _afterPause = null;
         RaiseFinished();
         QueueFree();
     }
