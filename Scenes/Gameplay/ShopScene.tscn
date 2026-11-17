@@ -73,6 +73,7 @@
 [ext_resource type="Script" uid="uid://t306livelmae" path="res://Scripts/Features/Shop/Services/StaffService.cs" id="StaffService"]
 [ext_resource type="Script" uid="uid://dtlyq0sdgspo0" path="res://Scripts/Features/Shop/Ui/StaffApp.cs" id="StaffApp"]
 [ext_resource type="Script" uid="uid://ck6rxiqcn12sc" path="res://Scripts/Features/Shop/Components/CashierWorker.cs" id="CashierWorker"]
+[ext_resource type="Script" uid="uid://bfdk80l1k1bkj" path="res://Scripts/Features/Signage/SignBoard.cs" id="SignBoard"]
 [ext_resource type="Resource" path="res://Data/Shop/StaffCatalog.tres" id="StaffCatalog"]
 [ext_resource type="Material" path="res://Data/Ui/AimHighlightMaterial.tres" id="AimHighlight"]
 
@@ -222,22 +223,10 @@ size = Vector3(0.1, 1.2, 0.8)
 material = ExtResource("AimHighlight")
 size = Vector3(0.2, 1.3, 0.9)
 
-[sub_resource type="StandardMaterial3D" id="ShopSignBoardMaterial"]
-albedo_color = Color(0.08, 0.09, 0.11, 1)
-roughness = 0.5
-
 [sub_resource type="StandardMaterial3D" id="ShopSignMetalMaterial"]
 albedo_color = Color(0.55, 0.56, 0.58, 1)
 metallic = 0.7
 roughness = 0.35
-
-[sub_resource type="BoxMesh" id="ShopSignBoardMesh"]
-material = SubResource("ShopSignBoardMaterial")
-size = Vector3(0.08, 0.6, 0.85)
-
-[sub_resource type="BoxMesh" id="ShopSignPostMesh"]
-material = SubResource("ShopSignMetalMaterial")
-size = Vector3(0.06, 0.6, 0.06)
 
 [sub_resource type="BoxMesh" id="ShopSignBaseMesh"]
 material = SubResource("ShopSignMetalMaterial")
@@ -608,13 +597,16 @@ SealingWall = NodePath("../Walls/LeftWall")
 Sign = NodePath("Sign")
 Navigation = NodePath("../Navigation")
 
-[node name="Sign" type="Label3D" parent="World/ExpansionLot"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.2, 2.3, 8)
-pixel_size = 0.004
-text = "Side wing for sale
+[node name="Sign" type="Node3D" parent="World/ExpansionLot"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.165, 2.3, 8)
+script = ExtResource("SignBoard")
+Text = "Side wing for sale
 Buy it on the PC: Expansions"
-font_size = 40
-outline_size = 10
+Size = Vector2(2.6, 0.7)
+BoardColor = Color(0.62, 0.1, 0.08, 1)
+TextColor = Color(0.97, 0.95, 0.9, 1)
+FontSize = 48
+PixelSize = 0.0033
 
 [node name="Floor" type="StaticBody3D" parent="World/ExpansionLot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.1, 2)
@@ -802,10 +794,10 @@ Placeholder = NodePath("Placeholder")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, 2)
 mesh = SubResource("FloorBoxMesh")
 
-[node name="CheckoutCounter" type="StaticBody3D" parent="World/Storefront" node_paths=PackedStringArray("StatusLabel", "HighlightMesh")]
+[node name="CheckoutCounter" type="StaticBody3D" parent="World/Storefront" node_paths=PackedStringArray("Display", "HighlightMesh")]
 collision_layer = 5
 script = ExtResource("CheckoutCounter")
-StatusLabel = NodePath("StatusLabel")
+Display = NodePath("RegisterDisplay")
 HighlightMesh = NodePath("Highlight")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 6)
 
@@ -836,13 +828,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 visible = false
 mesh = SubResource("RegisterHighlightMesh")
 
-[node name="StatusLabel" type="Label3D" parent="World/Storefront/CheckoutCounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.85, 0)
-billboard = 1
-pixel_size = 0.002
-text = "Balance: -"
-font_size = 48
-outline_size = 8
+[node name="RegisterDisplay" type="Node3D" parent="World/Storefront/CheckoutCounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 1.44, -0.49)
+script = ExtResource("SignBoard")
+Size = Vector2(0.56, 0.3)
+Thickness = 0.04
+TextColor = Color(0.45, 1, 0.55, 1)
+FontSize = 40
+PixelSize = 0.001
+TwoSided = true
+Screen = true
+Mount = 2
+MountLength = 0.25
 
 [node name="QueueSlot0" type="Marker3D" parent="World/Storefront/CheckoutCounter"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.4)
@@ -1672,12 +1669,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 9)
 script = ExtResource("DeliveryMarker")
 MaxStackHeight = 3.6
 
-[node name="Sign" type="Label3D" parent="World/Markers/DeliveryPoint"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3.85, 2.4, 0)
-pixel_size = 0.004
-text = "Furniture deliveries"
-font_size = 40
-outline_size = 10
+[node name="Sign" type="Node3D" parent="World/Markers/DeliveryPoint"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3.835, 2.4, 0)
+script = ExtResource("SignBoard")
+Text = "Furniture deliveries"
+Size = Vector2(2.1, 0.4)
+BoardColor = Color(0.95, 0.78, 0.15, 1)
+TextColor = Color(0.08, 0.08, 0.08, 1)
+FontSize = 40
 
 [node name="StockDeliveryPoint" type="Marker3D" parent="World/Markers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, 4.5)
@@ -1687,12 +1686,14 @@ Rows = 3
 CellSize = Vector2(0.9, 0.9)
 MaxStackHeight = 1.5
 
-[node name="Sign" type="Label3D" parent="World/Markers/StockDeliveryPoint"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.85, 2.4, 0)
-pixel_size = 0.004
-text = "Stock deliveries"
-font_size = 40
-outline_size = 10
+[node name="Sign" type="Node3D" parent="World/Markers/StockDeliveryPoint"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.835, 2.4, 0)
+script = ExtResource("SignBoard")
+Text = "Stock deliveries"
+Size = Vector2(1.8, 0.4)
+BoardColor = Color(0.95, 0.78, 0.15, 1)
+TextColor = Color(0.08, 0.08, 0.08, 1)
+FontSize = 40
 
 [node name="ShelfSlotsArea" type="Marker3D" parent="World/Markers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 7)
@@ -2040,11 +2041,11 @@ SpawnMarker = NodePath("../../World/Markers/CustomerSpawn")
 DespawnMarker = NodePath("../../World/Markers/CustomerDespawn")
 CounterMarker = NodePath("../../World/Markers/CustomerCounter")
 
-[node name="ShopSign" type="StaticBody3D" parent="World/Storefront" node_paths=PackedStringArray("StatusLabel", "HighlightMesh")]
+[node name="ShopSign" type="StaticBody3D" parent="World/Storefront" node_paths=PackedStringArray("Board", "HighlightMesh")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 10.5)
 collision_layer = 5
 script = ExtResource("ShopSign")
-StatusLabel = NodePath("StatusLabel")
+Board = NodePath("Board")
 HighlightMesh = NodePath("Highlight")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="World/Storefront/ShopSign"]
@@ -2060,22 +2061,18 @@ mesh = SubResource("ShopSignHighlightMesh")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
 mesh = SubResource("ShopSignBaseMesh")
 
-[node name="Post" type="MeshInstance3D" parent="World/Storefront/ShopSign"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
-mesh = SubResource("ShopSignPostMesh")
-
-[node name="Board" type="MeshInstance3D" parent="World/Storefront/ShopSign"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-mesh = SubResource("ShopSignBoardMesh")
-
-[node name="StatusLabel" type="Label3D" parent="World/Storefront/ShopSign"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.046, 0.9, 0)
-pixel_size = 0.0035
-modulate = Color(1, 0.38, 0.32, 1)
-text = "CLOSED"
-font_size = 64
-outline_size = 10
-outline_modulate = Color(0.05, 0.05, 0.06, 1)
+[node name="Board" type="Node3D" parent="World/Storefront/ShopSign"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0.9, 0)
+script = ExtResource("SignBoard")
+Text = "CLOSED"
+Size = Vector2(0.85, 0.6)
+Thickness = 0.08
+TextColor = Color(1, 0.38, 0.32, 1)
+PixelSize = 0.003
+TwoSided = true
+Screen = true
+Mount = 2
+MountLength = 0.56
 
 [node name="DayUi" type="CanvasLayer" parent="."]
 

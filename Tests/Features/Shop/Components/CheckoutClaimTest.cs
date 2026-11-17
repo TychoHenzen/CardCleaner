@@ -75,7 +75,7 @@ public class CheckoutClaimTest
 
         AssertThat(_counter.Scan(0)).IsFalse();
         AssertThat(_counter.Session!.ScannedCount).IsEqual(0);
-        AssertThat(_counter.StatusLabel!.Text).Contains("cashier");
+        AssertThat(_counter.Display!.Text).Contains("cashier");
     }
 
     [TestCase]

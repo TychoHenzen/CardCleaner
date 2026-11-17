@@ -2,6 +2,7 @@ using System;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Signage;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 
@@ -15,16 +16,16 @@ public class ShopSignTest
     private const string ClosedText = "CLOSED";
 
     private FakeShopDayService _days = null!;
-    private Label3D _label = null!;
+    private SignBoard _board = null!;
     private ShopSign _sign = null!;
 
     [BeforeTest]
     public void Setup()
     {
         _days = new FakeShopDayService();
-        _label = new Label3D();
-        _sign = new ShopSign { StatusLabel = _label, DayService = _days };
-        _sign.AddChild(_label);
+        _board = new SignBoard();
+        _sign = new ShopSign { Board = _board, DayService = _days };
+        _sign.AddChild(_board);
         var world = new Node3D();
         world.AddChild(_sign);
         AddNode(world);
@@ -58,20 +59,20 @@ public class ShopSignTest
     [TestCategory("Unit")]
     public void LabelFollowsState()
     {
-        AssertThat(_label.Text).IsEqual(ClosedText);
+        AssertThat(_board.Text).IsEqual(ClosedText);
 
-        var closedColour = _label.Modulate;
+        var closedColour = _board.TextColor;
 
         _days.IsOpen = true;
         _days.RaiseOpened();
-        AssertThat(_label.Text).IsEqual(OpenText);
+        AssertThat(_board.Text).IsEqual(OpenText);
         // Open and closed read apart at a glance by colour as well as by word.
-        AssertThat(_label.Modulate).IsNotEqual(closedColour);
+        AssertThat(_board.TextColor).IsNotEqual(closedColour);
 
         _days.IsOpen = false;
         _days.RaiseClosed();
-        AssertThat(_label.Text).IsEqual(ClosedText);
-        AssertThat(_label.Modulate).IsEqual(closedColour);
+        AssertThat(_board.Text).IsEqual(ClosedText);
+        AssertThat(_board.TextColor).IsEqual(closedColour);
     }
 
     [TestCase]
@@ -84,7 +85,7 @@ public class ShopSignTest
         _days.IsOpen = false;
         _days.RaiseRestored();
 
-        AssertThat(_label.Text).IsEqual(ClosedText);
+        AssertThat(_board.Text).IsEqual(ClosedText);
     }
 
     /// <summary>Records the sign's calls and raises the service events on demand.</summary>

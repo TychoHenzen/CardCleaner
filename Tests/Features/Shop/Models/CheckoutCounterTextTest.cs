@@ -19,13 +19,13 @@ public class CheckoutCounterTextTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void ScanningShowsTheProgressAndThenTheMessage()
+    public static void ScanningShowsTheProgressAndSubtotalAndThenTheMessage()
     {
         var sale = Sale(PaymentMethod.Card);
-        sale.Scan(0);
+        sale.Scan(1);
 
-        AssertThat(CheckoutCounterText.For(sale, false, string.Empty)).IsEqual("Scan the items: 1 of 2");
-        AssertThat(CheckoutCounterText.For(sale, false, "Paid 9")).IsEqual("Scan the items: 1 of 2\nPaid 9");
+        AssertThat(CheckoutCounterText.For(sale, false, string.Empty)).IsEqual("Items 1 of 2\nSubtotal 7");
+        AssertThat(CheckoutCounterText.For(sale, false, "Paid 9")).IsEqual("Items 1 of 2\nSubtotal 7\nPaid 9");
     }
 
     [TestCase]
@@ -39,9 +39,9 @@ public class CheckoutCounterTextTest
         cash.Scan(0);
         cash.Scan(1);
 
-        AssertThat(CheckoutCounterText.For(card, false, string.Empty)).IsEqual("Card payment: 12");
+        AssertThat(CheckoutCounterText.For(card, false, string.Empty)).IsEqual("Card payment\nTotal 12");
         AssertThat(CheckoutCounterText.For(cash, false, "Wrong change"))
-            .IsEqual($"Cash payment: 12, handed {cash.Tendered}\nWrong change");
+            .IsEqual($"Cash payment\nTotal 12, given {cash.Tendered}\nWrong change");
     }
 
     [TestCase]

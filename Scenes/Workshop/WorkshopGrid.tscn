@@ -2,6 +2,7 @@
 
 [ext_resource type="MeshLibrary" uid="uid://dtyjkbdb6msr4" path="res://Data/Workshop/WorkshopMeshLibrary.tres" id="MeshLibrary"]
 [ext_resource type="Script" uid="uid://bj54sks6qxa3m" path="res://Scripts/Features/Workshop/Components/WorkshopGrid.cs" id="WorkshopGridScript"]
+[ext_resource type="Script" uid="uid://bfdk80l1k1bkj" path="res://Scripts/Features/Signage/SignBoard.cs" id="SignBoardScript"]
 
 [sub_resource type="BoxShape3D" id="SlabShape"]
 size = Vector3(40, 0.2, 40)
@@ -52,12 +53,16 @@ mesh = SubResource("CeilingMesh")
 [node name="OrderOffice" type="Marker3D" parent="Sections" unique_id=2032612802]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, -16.4)
 
-[node name="Sign" type="Label3D" parent="Sections/OrderOffice" unique_id=1913074955]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
-billboard = 1
-text = "Order office"
-font_size = 48
-outline_size = 8
+[node name="Sign" type="Node3D" parent="Sections/OrderOffice" unique_id=1913074955]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 3.1, 0)
+script = ExtResource("SignBoardScript")
+Text = "Order office"
+Size = Vector2(1.6, 0.36)
+BoardColor = Color(0.1, 0.27, 0.18, 1)
+FontSize = 40
+TwoSided = true
+Mount = 1
+MountLength = 0.72
 
 [node name="Light" type="OmniLight3D" parent="Sections/OrderOffice" unique_id=1472066414]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, 0)
@@ -67,12 +72,16 @@ omni_range = 11.0
 [node name="DeliveryBay" type="Marker3D" parent="Sections" unique_id=1825975624]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, -9.6)
 
-[node name="Sign" type="Label3D" parent="Sections/DeliveryBay" unique_id=709870242]
+[node name="Sign" type="Node3D" parent="Sections/DeliveryBay" unique_id=709870242]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
-billboard = 1
-text = "Delivery bay"
-font_size = 48
-outline_size = 8
+script = ExtResource("SignBoardScript")
+Text = "Delivery bay"
+Size = Vector2(1.6, 0.36)
+BoardColor = Color(0.1, 0.27, 0.18, 1)
+FontSize = 40
+TwoSided = true
+Mount = 1
+MountLength = 0.72
 
 [node name="Light" type="OmniLight3D" parent="Sections/DeliveryBay" unique_id=1939840667]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, 0)
@@ -82,12 +91,16 @@ omni_range = 11.0
 [node name="WestHall" type="Marker3D" parent="Sections" unique_id=41346157]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, 0)
 
-[node name="Sign" type="Label3D" parent="Sections/WestHall" unique_id=643940721]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
-billboard = 1
-text = "West hall"
-font_size = 48
-outline_size = 8
+[node name="Sign" type="Node3D" parent="Sections/WestHall" unique_id=643940721]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 3.1, 0)
+script = ExtResource("SignBoardScript")
+Text = "West hall"
+Size = Vector2(1.6, 0.36)
+BoardColor = Color(0.1, 0.27, 0.18, 1)
+FontSize = 40
+TwoSided = true
+Mount = 1
+MountLength = 0.72
 
 [node name="Light" type="OmniLight3D" parent="Sections/WestHall" unique_id=629700212]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, 0)
@@ -97,12 +110,16 @@ omni_range = 11.0
 [node name="Storeroom" type="Marker3D" parent="Sections" unique_id=784419806]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, 13)
 
-[node name="Sign" type="Label3D" parent="Sections/Storeroom" unique_id=1978377052]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
-billboard = 1
-text = "Storeroom"
-font_size = 48
-outline_size = 8
+[node name="Sign" type="Node3D" parent="Sections/Storeroom" unique_id=1978377052]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 3.1, 0)
+script = ExtResource("SignBoardScript")
+Text = "Storeroom"
+Size = Vector2(1.6, 0.36)
+BoardColor = Color(0.1, 0.27, 0.18, 1)
+FontSize = 40
+TwoSided = true
+Mount = 1
+MountLength = 0.72
 
 [node name="Light" type="OmniLight3D" parent="Sections/Storeroom" unique_id=599929427]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, 0)
@@ -112,12 +129,16 @@ omni_range = 12.0
 [node name="NorthHallway" type="Marker3D" parent="Sections" unique_id=1177978491]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -13)
 
-[node name="Sign" type="Label3D" parent="Sections/NorthHallway" unique_id=686060877]
+[node name="Sign" type="Node3D" parent="Sections/NorthHallway" unique_id=686060877]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
-billboard = 1
-text = "North hallway"
-font_size = 48
-outline_size = 8
+script = ExtResource("SignBoardScript")
+Text = "North hallway"
+Size = Vector2(1.6, 0.36)
+BoardColor = Color(0.1, 0.27, 0.18, 1)
+FontSize = 40
+TwoSided = true
+Mount = 1
+MountLength = 0.72
 
 [node name="Light" type="OmniLight3D" parent="Sections/NorthHallway" unique_id=1430414235]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, 0)
@@ -127,12 +148,16 @@ omni_range = 8.0
 [node name="CabinetRoom" type="Marker3D" parent="Sections" unique_id=1798921763]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 3)
 
-[node name="Sign" type="Label3D" parent="Sections/CabinetRoom" unique_id=845117570]
+[node name="Sign" type="Node3D" parent="Sections/CabinetRoom" unique_id=845117570]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
-billboard = 1
-text = "Cabinet room"
-font_size = 48
-outline_size = 8
+script = ExtResource("SignBoardScript")
+Text = "Cabinet room"
+Size = Vector2(1.6, 0.36)
+BoardColor = Color(0.1, 0.27, 0.18, 1)
+FontSize = 40
+TwoSided = true
+Mount = 1
+MountLength = 0.72
 
 [node name="Light" type="OmniLight3D" parent="Sections/CabinetRoom" unique_id=1886421156]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, 0)
@@ -142,12 +167,16 @@ omni_range = 10.0
 [node name="SouthHallway" type="Marker3D" parent="Sections" unique_id=1198947182]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 13)
 
-[node name="Sign" type="Label3D" parent="Sections/SouthHallway" unique_id=1740615031]
+[node name="Sign" type="Node3D" parent="Sections/SouthHallway" unique_id=1740615031]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
-billboard = 1
-text = "South hallway"
-font_size = 48
-outline_size = 8
+script = ExtResource("SignBoardScript")
+Text = "South hallway"
+Size = Vector2(1.6, 0.36)
+BoardColor = Color(0.1, 0.27, 0.18, 1)
+FontSize = 40
+TwoSided = true
+Mount = 1
+MountLength = 0.72
 
 [node name="Light" type="OmniLight3D" parent="Sections/SouthHallway" unique_id=673773201]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, 0)
@@ -157,12 +186,16 @@ omni_range = 8.0
 [node name="BuildRoomA" type="Marker3D" parent="Sections" unique_id=1340346072]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -16.4)
 
-[node name="Sign" type="Label3D" parent="Sections/BuildRoomA" unique_id=652348642]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
-billboard = 1
-text = "Build room A"
-font_size = 48
-outline_size = 8
+[node name="Sign" type="Node3D" parent="Sections/BuildRoomA" unique_id=652348642]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 3.1, 0)
+script = ExtResource("SignBoardScript")
+Text = "Build room A"
+Size = Vector2(1.6, 0.36)
+BoardColor = Color(0.1, 0.27, 0.18, 1)
+FontSize = 40
+TwoSided = true
+Mount = 1
+MountLength = 0.72
 
 [node name="Light" type="OmniLight3D" parent="Sections/BuildRoomA" unique_id=414057240]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, 0)
@@ -172,12 +205,16 @@ omni_range = 11.0
 [node name="BuildRoomB" type="Marker3D" parent="Sections" unique_id=611198489]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -9.6)
 
-[node name="Sign" type="Label3D" parent="Sections/BuildRoomB" unique_id=772444343]
+[node name="Sign" type="Node3D" parent="Sections/BuildRoomB" unique_id=772444343]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
-billboard = 1
-text = "Build room B"
-font_size = 48
-outline_size = 8
+script = ExtResource("SignBoardScript")
+Text = "Build room B"
+Size = Vector2(1.6, 0.36)
+BoardColor = Color(0.1, 0.27, 0.18, 1)
+FontSize = 40
+TwoSided = true
+Mount = 1
+MountLength = 0.72
 
 [node name="Light" type="OmniLight3D" parent="Sections/BuildRoomB" unique_id=581585078]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, 0)
@@ -187,12 +224,16 @@ omni_range = 11.0
 [node name="EastHall" type="Marker3D" parent="Sections" unique_id=1014350005]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 0)
 
-[node name="Sign" type="Label3D" parent="Sections/EastHall" unique_id=1149573574]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
-billboard = 1
-text = "East hall"
-font_size = 48
-outline_size = 8
+[node name="Sign" type="Node3D" parent="Sections/EastHall" unique_id=1149573574]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 3.1, 0)
+script = ExtResource("SignBoardScript")
+Text = "East hall"
+Size = Vector2(1.6, 0.36)
+BoardColor = Color(0.1, 0.27, 0.18, 1)
+FontSize = 40
+TwoSided = true
+Mount = 1
+MountLength = 0.72
 
 [node name="Light" type="OmniLight3D" parent="Sections/EastHall" unique_id=955546827]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, 0)
@@ -202,12 +243,16 @@ omni_range = 11.0
 [node name="BuildHallC" type="Marker3D" parent="Sections" unique_id=2135543781]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 13)
 
-[node name="Sign" type="Label3D" parent="Sections/BuildHallC" unique_id=819943383]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
-billboard = 1
-text = "Build hall C"
-font_size = 48
-outline_size = 8
+[node name="Sign" type="Node3D" parent="Sections/BuildHallC" unique_id=819943383]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 3.1, 0)
+script = ExtResource("SignBoardScript")
+Text = "Build hall C"
+Size = Vector2(1.6, 0.36)
+BoardColor = Color(0.1, 0.27, 0.18, 1)
+FontSize = 40
+TwoSided = true
+Mount = 1
+MountLength = 0.72
 
 [node name="Light" type="OmniLight3D" parent="Sections/BuildHallC" unique_id=1333367511]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6, 0)

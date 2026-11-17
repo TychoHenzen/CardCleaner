@@ -45,11 +45,11 @@ public class ShopCheckoutSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void CounterHasItsStatusLabelMarkersAndAPaymentScreenWiredToIt()
+    public void CounterHasItsRegisterDisplayMarkersAndAPaymentScreenWiredToIt()
     {
-        AssertThat(_rig.Counter.StatusLabel).IsNotNull();
-        // With nobody at the counter the sign says nothing; the money is on the HUD.
-        AssertThat(_rig.Counter.StatusLabel!.Text).IsEqual(string.Empty);
+        AssertThat(_rig.Counter.Display).IsNotNull();
+        // With nobody at the counter the display says nothing; the money is on the HUD.
+        AssertThat(_rig.Counter.Display!.Text).IsEqual(string.Empty);
         AssertThat(CheckoutCounterLayout.MarkersNamed(_rig.Counter, "QueueSlot").Length).IsEqual(4);
         AssertThat(CheckoutCounterLayout.MarkersNamed(_rig.Counter, "ItemSpot").Length).IsEqual(4);
         AssertThat(_rig.Ui.Counter).IsEqual(_rig.Counter);

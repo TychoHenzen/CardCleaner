@@ -7,7 +7,9 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 /// <summary>
 ///     One item laid on the checkout counter for scanning. Interacting scans it once through <see cref="OnScan" />.
 ///     It shows the item itself when the customer kept a copy of it (<see cref="Look" />), else a grey box. The aim
-///     draws the shared edge highlight around it, and a scanned item shows its price in green above it.
+///     draws the shared edge highlight around it. A scanned item goes into the bag: it lifts and shrinks away in a
+///     moment and stops colliding at once, so the counter holds only what is still to scan, and the register display
+///     shows the running subtotal. Items stacked on it settle down into its place (<see cref="SettleBy" />).
 /// </summary>
 public partial class CheckoutItemProp : StaticBody3D, IInteractable
 {
@@ -18,22 +20,22 @@ public partial class CheckoutItemProp : StaticBody3D, IInteractable
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
     private const float MinimumSide = 0.04f;
     private const float HighlightMargin = 0.04f;
-    private const float PriceLift = 0.08f;
+    private const float BagSeconds = 0.25f;
+    private const float BagLift = 0.12f;
+    private const float SettleSeconds = 0.15f;
     private const string HighlightMaterialPath = "res://Data/Ui/AimHighlightMaterial.tres";
     private static readonly Vector3 PropSize = new(0.2f, 0.06f, 0.28f);
     private static readonly Color IdleColor = new(0.6f, 0.6f, 0.6f);
-    private static readonly Color ScannedColor = new(0.3f, 0.75f, 0.35f);
-    private static readonly Color PriceColor = new(0.45f, 1f, 0.5f);
 
-    private StandardMaterial3D? _material;
+    private readonly Node3D _visual = new() { Name = "Visual" };
     private MeshInstance3D? _highlight;
-    private Label3D? _priceLabel;
+    private float? _restHeight;
 
     /// <summary>The id the counter gave this item; passed to <see cref="OnScan" />.</summary>
     public int ItemId { get; set; }
 
-    /// <summary>The asking price, shown once the item is scanned.</summary>
-    public int Price { get; set; }
+    /// <summary>The item spot this prop is stacked on.</summary>
+    public int Spot { get; set; }
 
     /// <summary>
     ///     The still copy of the real item, adopted as a child when the prop is ready. Null shows a grey box.
@@ -47,6 +49,9 @@ public partial class CheckoutItemProp : StaticBody3D, IInteractable
 
     /// <summary>The size of what the prop shows, so the counter can stack items without overlap.</summary>
     public Vector3 Size => Look?.Size.Max(new Vector3(MinimumSide, MinimumSide, MinimumSide)) ?? PropSize;
+
+    /// <summary>The height above the counter this prop rests at once it has settled.</summary>
+    public float RestHeight => _restHeight ?? Position.Y;
 
     [Export]
     public float InteractionRange { get; set; } = DefaultInteractionRange;
@@ -70,17 +75,38 @@ public partial class CheckoutItemProp : StaticBody3D, IInteractable
             OnScan?.Invoke(ItemId);
     }
 
+    /// <summary>Marks the item scanned and puts it into the bag.</summary>
     public void MarkScanned()
     {
         Scanned = true;
         ClearHighlight();
-        if (_material != null)
-            _material.AlbedoColor = ScannedColor;
-        if (_priceLabel != null)
+        CollisionLayer = 0;
+        if (!IsInsideTree())
         {
-            _priceLabel.Text = Price.ToString();
-            _priceLabel.Visible = true;
+            Visible = false;
+            return;
         }
+
+        // The visual shrinks, not the body: a scaled physics body is not supported.
+        var tween = CreateTween();
+        tween.TweenProperty(_visual, "scale", Vector3.One * 0.01f, BagSeconds)
+            .SetTrans(Tween.TransitionType.Back).SetEase(Tween.EaseType.In);
+        tween.Parallel().TweenProperty(_visual, "position:y", BagLift, BagSeconds);
+        tween.TweenCallback(Callable.From(() => Visible = false));
+    }
+
+    /// <summary>Lowers the prop by <paramref name="drop" /> metres, as when the item under it is bagged.</summary>
+    public void SettleBy(float drop)
+    {
+        _restHeight = RestHeight - drop;
+        if (!IsInsideTree())
+        {
+            Position = Position with { Y = _restHeight.Value };
+            return;
+        }
+
+        CreateTween().TweenProperty(this, "position:y", _restHeight.Value, SettleSeconds)
+            .SetTrans(Tween.TransitionType.Quad).SetEase(Tween.EaseType.In);
     }
 
     public void Highlight()
@@ -100,16 +126,17 @@ public partial class CheckoutItemProp : StaticBody3D, IInteractable
         var size = Size;
         var middle = new Vector3(0f, size.Y / 2f - BaseDrop, 0f);
         AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = size }, Position = middle });
+        AddChild(_visual);
 
         if (Look != null)
         {
             Look.Node.Position = new Vector3(0f, -BaseDrop, 0f);
-            AddChild(Look.Node);
+            _visual.AddChild(Look.Node);
         }
         else
         {
-            _material = new StandardMaterial3D { AlbedoColor = IdleColor };
-            AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = PropSize, Material = _material } });
+            var material = new StandardMaterial3D { AlbedoColor = IdleColor };
+            _visual.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = PropSize, Material = material } });
         }
 
         _highlight = new MeshInstance3D
@@ -123,17 +150,5 @@ public partial class CheckoutItemProp : StaticBody3D, IInteractable
             Visible = false
         };
         AddChild(_highlight);
-
-        _priceLabel = new Label3D
-        {
-            Billboard = BaseMaterial3D.BillboardModeEnum.Enabled,
-            Modulate = PriceColor,
-            OutlineSize = 8,
-            PixelSize = 0.002f,
-            FontSize = 48,
-            Position = new Vector3(0f, size.Y - BaseDrop + PriceLift, 0f),
-            Visible = false
-        };
-        AddChild(_priceLabel);
     }
 }

@@ -1,13 +1,14 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Signage;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     The shop sign. Interacting opens the shop when it is closed and closes it (charging the day's bills)
-///     when it is open. A label on the sign shows whether the shop is open.
+///     when it is open. Its board lights up OPEN or CLOSED, as a shop's door sign does.
 /// </summary>
 public partial class ShopSign : StaticBody3D, IInteractable, IDependent
 {
@@ -21,8 +22,9 @@ public partial class ShopSign : StaticBody3D, IInteractable, IDependent
     private IShopDayService? _dayService;
     private IServiceResolver? _services;
 
+    /// <summary>The lit board that shows whether the shop is open.</summary>
     [Export]
-    public Label3D? StatusLabel { get; set; }
+    public SignBoard? Board { get; set; }
 
     [Export]
     public Node3D? HighlightMesh { get; set; }
@@ -125,11 +127,11 @@ public partial class ShopSign : StaticBody3D, IInteractable, IDependent
 
     private void ShowState()
     {
-        if (StatusLabel == null)
+        if (Board == null)
             return;
         // The click prompt under the crosshair says what a click does, so the sign only shows the state.
         var open = _dayService is { IsOpen: true };
-        StatusLabel.Text = open ? OpenText : ClosedText;
-        StatusLabel.Modulate = open ? OpenColour : ClosedColour;
+        Board.Text = open ? OpenText : ClosedText;
+        Board.TextColor = open ? OpenColour : ClosedColour;
     }
 }

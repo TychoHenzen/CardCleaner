@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -25,7 +26,7 @@ public class SceneEditorRoundTripSceneTest
     [TestCategory("Unit")]
     public static void PackingAnySceneTheWayTheEditorDoesKeepsEveryStoredValue()
     {
-        var scenes = ScenePaths(ScenesRoot);
+        var scenes = SceneFiles.Under(ScenesRoot);
         AssertThat(scenes.Count).IsGreater(0);
 
         var lost = new List<string>();
@@ -101,18 +102,4 @@ public class SceneEditorRoundTripSceneTest
     // The node's groups in a stable order. Groups are not properties, so the property comparison misses a lost one.
     private static string Groups(Node node) =>
         string.Join(", ", node.GetGroups().Select(group => group.ToString()).Order(StringComparer.Ordinal));
-
-    private static List<string> ScenePaths(string folder)
-    {
-        var paths = new List<string>();
-        using var directory = DirAccess.Open(folder);
-        if (directory == null)
-            return paths;
-
-        foreach (var sub in directory.GetDirectories())
-            paths.AddRange(ScenePaths($"{folder}/{sub}"));
-
-        paths.AddRange(directory.GetFiles().Where(file => file.EndsWith(".tscn")).Select(file => $"{folder}/{file}"));
-        return paths;
-    }
 }

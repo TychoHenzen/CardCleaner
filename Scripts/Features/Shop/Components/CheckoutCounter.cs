@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Signage;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
@@ -25,15 +26,12 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     private readonly CheckoutItemTray _tray;
     private readonly CheckoutQueueSpots _queueSpots;
     private readonly CheckoutClaim _claim = new();
-    private readonly CheckoutStatusLine _status;
     private IServiceResolver? _services;
+    private string _statusMessage = string.Empty;
 
+    /// <summary>The register's display, which shows the sale as a till does (<see cref="CheckoutCounterText" />).</summary>
     [Export]
-    public Label3D? StatusLabel
-    {
-        get => _status.Label;
-        set => _status.Label = value;
-    }
+    public SignBoard? Display { get; set; }
 
     [Export]
     public Node3D? HighlightMesh { get; set; }
@@ -78,7 +76,6 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
     {
         _tray = new CheckoutItemTray(this);
         _queueSpots = new CheckoutQueueSpots(this);
-        _status = new CheckoutStatusLine(() => Session, () => _claim.IsHeld);
     }
 
     public override void _Ready()
@@ -88,7 +85,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         _queueSpots.Find();
         _tray.FindSpots();
         ResolveServices();
-        _status.Update();
+        ShowStatus();
     }
 
     public override void _Process(double delta)
@@ -139,7 +136,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         if (session.State == CheckoutState.AwaitingPayment && !_claim.IsHeld)
             PaymentReady?.Invoke(session);
 
-        _status.Say(string.Empty);
+        Say(string.Empty);
         return true;
     }
 
@@ -191,7 +188,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         if (Money != null)
             return true;
 
-        _status.Say(CheckoutPaymentGuard.UnavailableMessage);
+        Say(CheckoutPaymentGuard.UnavailableMessage);
         return false;
     }
 
@@ -200,7 +197,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         if (!_claim.Excludes(claimant))
             return true;
 
-        _status.Say("The cashier is serving this customer");
+        Say("The cashier is serving this customer");
         return false;
     }
 
@@ -211,7 +208,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
 
         if (!pay(sale.Session))
         {
-            _status.Say(wrongMessage);
+            Say(wrongMessage);
             return false;
         }
 
@@ -244,7 +241,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         }
 
         if (CheckoutPaymentGuard.MessageFor(readiness) is { } message)
-            _status.Say(message);
+            Say(message);
     }
 
     private CheckoutSale? CurrentSale() =>
@@ -269,7 +266,7 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         if (Session == null && Front is { } front)
             StartSession(front);
 
-        _status.Update();
+        ShowStatus();
         RefreshInteractable();
     }
 
@@ -312,6 +309,21 @@ public partial class CheckoutCounter : StaticBody3D, IInteractable, IDependent, 
         _claim.Clear();
         RefreshInteractable();
         SessionEnded?.Invoke();
-        _status.Say(message);
+        Say(message);
+    }
+
+    // Shows the message under the sale's step on the register display.
+    private void Say(string message)
+    {
+        _statusMessage = message;
+        ShowStatus();
+    }
+
+    // Puts the sale's step and the last message on the register display (CheckoutCounterText). Refresh calls it every
+    // frame; the display skips a text it already shows.
+    private void ShowStatus()
+    {
+        if (Display != null)
+            Display.Text = CheckoutCounterText.For(Session, IsClaimed, _statusMessage);
     }
 }
