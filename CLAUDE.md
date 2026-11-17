@@ -91,6 +91,19 @@ a card as soon as Jolt puts it to sleep (`SleepingStateChanged`). A sleeping bod
 so when Jolt's own half second ran out first, the enforcer's count never finished and the card lay unfrozen, which
 failed `CardFloorRestTest` on some CI runs and not others (`ACardJoltPutsToSleepIsFrozen` pins it).
 
+**C# resources stay loaded** (`PinnedResource`, `Scripts/Core/Resources`). Every C# class that derives from `Resource`
+derives from `PinnedResource` instead (`PinnedResourceTest` fails otherwise), which keeps an instance referenced for the
+rest of the run once a load has given it a path. Godot 4.7.1 holds only a weak handle to a C#-scripted resource that
+nothing but its managed wrapper references. When the collector took that wrapper and a scene or a `GD.Load` took the
+same path from the resource cache before the wrapper's finalizer ran, the finalizer stopped a debug build with `FATAL:
+Condition "gchandle.is_released()" is true` (exit `0xC000001D`, godotengine/godot issue 83762). The same crash, with the
+same finalizer backtrace, stopped `RestockerCarryTest` on full CI runs, since each of its cases loads the shop again.
+`ScriptedResourceRevivalTest` parks the finalizer thread so the race would happen on every run. An instance made with
+`new` has no path and is collected as usual. The pin checks the path at the end of the frame, so nothing may load on a
+worker thread (`ResourceLoader.LoadThreadedRequest`), which `PinnedResourceTest` also checks. A loaded resource is never
+unloaded: leaving the shop keeps its catalogs and the card visuals (about 3.6 MB of PNG textures) in memory. Drop the
+base class only on an engine version that contains a fix for that issue.
+
 CI scope: pull requests and pushes to `master` run only the Unit suites (`-Fast`). The full suite runs on the weekly
 schedule (Sunday 03:00 UTC) and on a manual dispatch with `full=true`, for example `gh workflow run ci.yml --ref
 <branch> -f full=true`. PR CI also fails when the latest scheduled run on `master` is not green. So a green PR or merge
