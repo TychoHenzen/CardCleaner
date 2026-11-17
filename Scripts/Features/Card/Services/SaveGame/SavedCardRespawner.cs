@@ -9,7 +9,7 @@ namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 
 /// <summary>
 /// Spawns saved cards back into the current scene, hands cards that were held to the player camera, and locks a card
-/// saved on a slot's seat back into that slot.
+/// saved under a slot back into that slot.
 /// </summary>
 internal sealed class SavedCardRespawner
 {
@@ -48,9 +48,13 @@ internal sealed class SavedCardRespawner
 
         if (saved.IsHeld)
             ReparentWhenHeld(controller);
+        // ASSUMPTION: a card is a slot's child only while the slot holds it. ReleaseCard leaves a card under its slot,
+        // but its only card caller (CarriedStock) takes the card out of the tree at once, and a pickup moves it to the
+        // camera. So a card saved under a slot goes back into that slot, at the seat the scene has now: a shelf whose
+        // seats moved since the save still gets its cards back.
         // Locked now, not by the slot's trigger: a seat can lie inside its shelf's solid collider, which pushes a free
         // card off the seat, and out of the trigger, on the first physics step (see SavedContainers.Restore).
-        else if (spawnParent is DeckSlot slot && slot.SeatAt(saved.Position) != null)
+        else if (spawnParent is DeckSlot slot)
             slot.TryLock(controller);
     }
 

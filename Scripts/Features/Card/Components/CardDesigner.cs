@@ -6,9 +6,10 @@ namespace CardCleaner.Scripts.Features.Card.Components;
 
 public partial class CardDesigner : Node, ICardComponent
 {
-    // Default values as constants
-    private const float DefaultWidth = 0.635f;
-    private const float DefaultHeight = 0.889f;
+    // The size of the baked card mesh (Data/Card/CardMesh.tres); CardDesignerTest fails when they differ, since a
+    // designer left at its defaults sizes its card's collider to them.
+    private const float DefaultWidth = 0.32f;
+    private const float DefaultHeight = 0.45f;
     private const float DefaultThickness = 0.005f;
 
     // The card's mesh is baked ahead of time (Data/Card/CardMesh.tres), so these only size the collision shape.

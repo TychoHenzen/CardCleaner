@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -15,7 +16,6 @@ namespace CardCleaner.Tests.Scenes;
 [RequireGodotRuntime]
 public class ShopArtMaterialSceneTest
 {
-    private const string PackFolder = "res://Assets/Synty/";
     private const string OwnModelPath = "res://Assets/Models/Button.fbx";
     private const string MissingPath = "res://Assets/Synty/SimpleShopInterior/DoesNotExist.fbx";
 
@@ -38,7 +38,7 @@ public class ShopArtMaterialSceneTest
     [TestCategory("Unit")]
     public void EveryPackSlotInTheShopLoadsItsMeshAndIsTextured()
     {
-        var packSlots = Slots(_shop).Where(slot => slot.ArtPath.StartsWith(PackFolder, StringComparison.Ordinal)).ToList();
+        var packSlots = PackSlots(_shop).ToList();
 
         AssertThat(packSlots.Count).IsGreater(0);
         var untextured = packSlots.Where(slot => !slot.ArtLoaded || !slot.ArtTextured).Select(slot => slot.GetPath().ToString());
@@ -47,9 +47,21 @@ public class ShopArtMaterialSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
+    public void EverySyntyModelInTheShopIsInAKnownPackFolder()
+    {
+        var unknown = Slots(_shop)
+            .Where(slot => slot.ArtPath.Contains("synty", StringComparison.OrdinalIgnoreCase))
+            .Where(slot => PackMaterialCatalog.AtlasPathFor(slot.ArtPath) == null)
+            .Select(slot => $"{slot.GetPath()} ({slot.ArtPath})");
+
+        AssertThat(string.Join(", ", unknown)).IsEmpty();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void EveryMeshOfAPackSlotHasTheAtlasAndFacesBothWays()
     {
-        var packSlots = Slots(_shop).Where(slot => slot.ArtPath.StartsWith(PackFolder, StringComparison.Ordinal)).ToList();
+        var packSlots = PackSlots(_shop).ToList();
 
         var offenders = new List<string>();
         foreach (var slot in packSlots)
@@ -106,6 +118,10 @@ public class ShopArtMaterialSceneTest
 
     private static IEnumerable<ShopArtSlot> Slots(Node root) =>
         SceneNodes.Descendants(root).OfType<ShopArtSlot>();
+
+    // The slots whose model lies in a pack folder, so they get that pack's atlas.
+    private static IEnumerable<ShopArtSlot> PackSlots(Node root) =>
+        Slots(root).Where(slot => PackMaterialCatalog.AtlasPathFor(slot.ArtPath) != null);
 
     private static IEnumerable<MeshInstance3D> Meshes(Node root) =>
         SceneNodes.Descendants(root).Append(root).OfType<MeshInstance3D>();

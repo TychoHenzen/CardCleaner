@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -40,7 +42,8 @@ public class ShopSceneArtSlotTest
 
         foreach (var slot in slots)
         {
-            AssertBool(slot.ArtPath.StartsWith(PackFolder)).IsTrue();
+            AssertBool(PackMaterialCatalog.PackFolders.Any(folder => slot.ArtPath.StartsWith(folder)))
+                .OverrideFailureMessage($"{slot.Name} shows {slot.ArtPath}, in no known pack folder").IsTrue();
             AssertThat(slot.Placeholder).IsNotNull();
         }
     }

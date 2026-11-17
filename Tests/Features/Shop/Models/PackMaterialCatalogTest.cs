@@ -1,6 +1,5 @@
 using System.Linq;
 using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
@@ -50,8 +49,20 @@ public class PackMaterialCatalogTest
         AssertThat(PackMaterialCatalog.AtlasPaths.ToList()).Contains(miniCityAtlas);
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void AnAssetManagerExportOfAKnownPackMapsToTheAtlasBesideIt()
+    {
+        const string folder = "res://Assets/Models/synty/props/SIMPLE_Shop_Interiors/SourceFiles/Fbx/";
+
+        var atlas = PackMaterialCatalog.AtlasPathFor($"{folder}SI_Prop_Shelf_09.fbx");
+
+        AssertThat(atlas).IsEqual($"{folder}SimpleShopInterior_Texture.png");
+    }
+
     [TestCase("")]
     [TestCase("res://Assets/Models/Button.fbx")]
+    [TestCase("res://Assets/Models/synty/props/OtherPack/SI_Prop_Shelf_09.fbx")]
     [TestCase("res://Assets/Synty/ParticleFx/Generic_Circle_Soft_01.png")]
     [TestCase("res://Assets/Synty/SimpleShopInteriorExtras/SI_Env_Wall_01.fbx")]
     [TestCategory("Unit")]
@@ -65,7 +76,7 @@ public class PackMaterialCatalogTest
     public static void EveryAtlasIsAFileInTheAssetsSubmodule()
     {
         var missing = PackMaterialCatalog.AtlasPaths
-            .Where(atlas => !SyntyAssets.Exists(atlas[SyntyRoot.Length..]))
+            .Where(atlas => !FileAccess.FileExists(atlas))
             .ToList();
 
         AssertThat(string.Join(", ", missing)).IsEmpty();

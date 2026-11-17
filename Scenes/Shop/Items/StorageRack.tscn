@@ -1,27 +1,49 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/CardShelf.cs" id="CardShelf"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/CardSlot.tscn" id="CardSlot"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Components/DeckSlot.cs" id="DeckSlot"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/PriceTag.tscn" id="PriceTag"]
 
-[sub_resource type="BoxShape3D" id="Shape"]
-size = Vector3(2.13, 2.0, 1.0)
+[sub_resource type="BoxShape3D" id="Side"]
+size = Vector3(0.036, 2.0, 1.0)
+
+[sub_resource type="BoxShape3D" id="Level"]
+size = Vector3(1.934, 0.049, 0.92)
+
+[sub_resource type="BoxShape3D" id="Trigger"]
+size = Vector3(0.7, 0.4, 0.8)
 
 [sub_resource type="StandardMaterial3D" id="PlaceholderMaterial"]
 albedo_color = Color(0.35, 0.35, 0.4, 1)
 
 [sub_resource type="BoxMesh" id="PlaceholderMesh"]
 material = SubResource("PlaceholderMaterial")
-size = Vector3(2.13, 2.0, 1.0)
+size = Vector3(2.02, 2.0, 1.0)
 
 [node name="StorageRack" type="RigidBody3D"]
 script = ExtResource("CardShelf")
 Kind = 2
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("Shape")
+[node name="SideLeft" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.992, 1, 0)
+shape = SubResource("Side")
+
+[node name="SideRight" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.992, 1, 0)
+shape = SubResource("Side")
+
+[node name="Level1" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.007, 0.3895, 0)
+shape = SubResource("Level")
+
+[node name="Level2" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.007, 1.2275, 0)
+shape = SubResource("Level")
+
+[node name="Level3" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.007, 1.9215, 0)
+shape = SubResource("Level")
 
 [node name="Art" type="Node3D" parent="." node_paths=PackedStringArray("Placeholder")]
 script = ExtResource("ShopArtSlot")
@@ -33,34 +55,74 @@ Placeholder = NodePath("Placeholder")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("PlaceholderMesh")
 
-[node name="Slot1" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.41, -0.2)
+[node name="Slot1" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.414, 0)
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
 Capacity = 1
 
-[node name="Slot2" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.41, -0.2)
+[node name="Area3D" type="Area3D" parent="Slot1"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Slot1/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("Trigger")
+
+[node name="Slot2" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.414, 0)
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
 Capacity = 1
 
-[node name="Slot3" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.25, -0.2)
+[node name="Area3D" type="Area3D" parent="Slot2"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Slot2/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("Trigger")
+
+[node name="Slot3" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.252, 0)
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
 Capacity = 1
 
-[node name="Slot4" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.25, -0.2)
+[node name="Area3D" type="Area3D" parent="Slot3"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Slot3/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("Trigger")
+
+[node name="Slot4" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.252, 0)
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
 Capacity = 1
+
+[node name="Area3D" type="Area3D" parent="Slot4"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Slot4/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("Trigger")
 
 [node name="Price1" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.4, -0.475)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.398, -0.465)
 Slot = NodePath("../Slot1")
 
 [node name="Price2" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.4, -0.475)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.398, -0.465)
 Slot = NodePath("../Slot2")
 
 [node name="Price3" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.235, -0.475)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.236, -0.465)
 Slot = NodePath("../Slot3")
 
 [node name="Price4" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.235, -0.475)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.236, -0.465)
 Slot = NodePath("../Slot4")
