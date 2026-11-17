@@ -1,11 +1,12 @@
 ﻿using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
 
 [Tool]
 [GlobalClass]
-public partial class GemVisual : Resource
+public partial class GemVisual : PinnedResource
 {
     // Default values as constants
     private const Element DefaultElement = Element.Solidum;

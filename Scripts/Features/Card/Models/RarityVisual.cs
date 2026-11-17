@@ -1,11 +1,12 @@
 ﻿using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
 
 [Tool]
 [GlobalClass]
-public partial class RarityVisual : Resource
+public partial class RarityVisual : PinnedResource
 {
     // Default values as constants
     private const CardRarity DefaultRarity = CardRarity.Common;

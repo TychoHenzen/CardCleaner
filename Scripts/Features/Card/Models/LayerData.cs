@@ -1,10 +1,11 @@
-﻿using Godot;
+﻿using CardCleaner.Scripts.Core.Resources;
+using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
 
 [Tool]
 [GlobalClass]
-public partial class LayerData : Resource
+public partial class LayerData : PinnedResource
 {
     // Default values as constants
     private static readonly Rect2 DefaultRegion = new(0, 0, 1, 1);

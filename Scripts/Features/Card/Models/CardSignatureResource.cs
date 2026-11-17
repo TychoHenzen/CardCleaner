@@ -1,10 +1,11 @@
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
 
 [Tool]
 [GlobalClass]
-public partial class CardSignatureResource : Resource
+public partial class CardSignatureResource : PinnedResource
 {
     [Export(PropertyHint.Range, "-1,1,0.01")] public float Solidum { get; set; }
     [Export(PropertyHint.Range, "-1,1,0.01")] public float Febris { get; set; }

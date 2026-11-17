@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
@@ -7,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 ///     Further lots are one more entry here plus an authored lot node in the shop scene.
 /// </summary>
 [GlobalClass]
-public partial class ExpansionLotCatalog : Resource
+public partial class ExpansionLotCatalog : PinnedResource
 {
     /// <summary>The lots, in any order; the purchase order is each lot's own order.</summary>
     [Export]

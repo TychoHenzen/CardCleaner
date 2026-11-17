@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Resources;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Models;
@@ -7,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 ///     and what is spawned when it is bought.
 /// </summary>
 [GlobalClass]
-public partial class OrderItem : Resource
+public partial class OrderItem : PinnedResource
 {
     /// <summary>Stable identifier used in logs and tests.</summary>
     [Export]

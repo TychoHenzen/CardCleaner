@@ -177,4 +177,18 @@ public class RestockerCarryTest : RestockerTestBase
         AssertInt(PackCount()).IsEqual(1);
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ClosingTheShopMidWalkLeavesTheRestockerStandingIdle()
+    {
+        HireAndOpen();
+        var pack = Stock(PackScene, _rack.Slots.First());
+        await Poll(() => IsCarried(pack) && !_restocker.Velocity.IsZeroApprox());
+        _day.CloseShop();
+
+        await Frames(IdleFrames);
+
+        AssertThat(_restocker.Velocity).IsEqual(Vector3.Zero);
+        AssertThat(_restocker.GetNode<HumanFigure>("Figure").Playing).IsEqual(FigureClip.Idle);
+    }
 }
