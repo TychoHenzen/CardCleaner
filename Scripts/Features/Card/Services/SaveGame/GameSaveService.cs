@@ -143,6 +143,7 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
             {
                 ["signature_elements"] = card.HasSignature ? card.Signature.Elements : null,
                 ["look_seed"] = card.LookSeed,
+                ["price"] = card.ShopPrice,
                 ["position"] = card.GlobalPosition,
                 ["rotation"] = card.GlobalRotation,
                 ["isHeld"] = card.GetParent() is Camera3D,

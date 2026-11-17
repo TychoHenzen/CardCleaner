@@ -38,7 +38,22 @@ internal static class SavedCardReader
             GetVector3FromData(cardData["rotation"]),
             Convert.ToBoolean(cardData["isHeld"]),
             cardData["parentPath"]?.ToString() ?? "",
-            lookSeed);
+            lookSeed,
+            PriceFrom(cardData));
+    }
+
+    // A price is a positive whole number. Anything else (absent, null, corrupt) leaves the card at its market price,
+    // so one bad price never stops the card from coming back.
+    private static int? PriceFrom(Dictionary<string, object> cardData)
+    {
+        if (!cardData.TryGetValue("price", out var priceData) || priceData is null)
+            return null;
+
+        if (priceData is long or int && Convert.ToInt64(priceData) is var price and > 0 and <= int.MaxValue)
+            return (int)price;
+
+        ILog.Warning($"Saved card price '{priceData}' is not a positive whole number; the market price is used");
+        return null;
     }
 
     // Handle both Dictionary<string, object> and JObject (from Newtonsoft.Json)

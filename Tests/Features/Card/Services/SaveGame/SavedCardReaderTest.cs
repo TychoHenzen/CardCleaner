@@ -63,6 +63,33 @@ public class SavedCardReaderTest
         AssertBool(explicitNull!.LookSeed.HasValue).IsFalse();
     }
 
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void Read_Price_IsReadBack()
+    {
+        // JSON hands an integer back as a long.
+        var entry = Entry();
+        entry["price"] = 7L;
+
+        var record = SavedCardReader.Read(entry);
+
+        AssertBool(record!.Price == 7).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void Read_AbsentNullOrCorruptPrice_GivesNull()
+    {
+        AssertBool(SavedCardReader.Read(Entry())!.Price.HasValue).IsFalse();
+        foreach (var corrupt in new object?[] { null, "abc", 0L, -3L, 2.5 })
+        {
+            var entry = Entry();
+            entry["price"] = corrupt!;
+
+            AssertBool(SavedCardReader.Read(entry)!.Price.HasValue).IsFalse();
+        }
+    }
+
     private static Dictionary<string, object> Entry() => new()
     {
         ["signature_elements"] = SavedElements,

@@ -8,6 +8,7 @@ using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.Scenes;
@@ -20,9 +21,10 @@ using Saveable.Extensions;
 namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
 
 /// <summary>
-/// A save made before the shop's starting product shelf and storage rack became furniture keyed their price tags by
-/// the old node paths and kept their stock at the old seats. Loaded into the current shop, its prices land on the
-/// moved tags and its stock locks into the same slots again. A current save loads as it is.
+/// A save made before the shop's starting product shelf and storage rack became furniture kept their stock at the old
+/// seats, and its price tags saved markups under the old node paths. Loaded into the current shop, its stock locks into
+/// the same slots again and the old markups are ignored, so the stock asks its market price. A current save loads as
+/// it is.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -30,7 +32,7 @@ public class LegacyShelfSaveMigrationTest
 {
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
     private const ulong BoosterSeed = 4242;
-    private const int SavedMarkup = 20;
+    private const int OldMarkup = 20;
     private const int SettleFrames = 10;
     private const float SameSeatMeters = 0.05f;
 
@@ -91,20 +93,18 @@ public class LegacyShelfSaveMigrationTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task AnOldSaveKeepsItsShelfPriceAndItsShelfStock()
+    public async Task AnOldSaveKeepsItsShelfStockAndDropsItsOldMarkup()
     {
         var slot = _product.GetNode<DeckSlot>("Slot2");
         var pricing = _product.PricingFor(slot)!;
         AssertBool(slot.TryLock(NewBooster())).IsTrue();
-        pricing.SetMarkup(SavedMarkup);
         AssertBool(_saves.ManualSave()).IsTrue();
-        WriteAsOldSave(slot.SeatPosition(0));
-        pricing.SetMarkup(0);
+        WriteAsOldSave(slot.SeatPosition(0), pricing);
 
         _saves.LoadGame();
         await SettleAsync();
 
-        AssertThat(pricing.MarkupPercent).IsEqual(SavedMarkup);
+        AssertThat(pricing.AskingValue).IsEqual(ProductMarketPrices.BoosterPrice);
         var booster = slot.Cards.OfType<CardContainer>().Single();
         AssertThat(booster.ContentSeed).IsEqual(BoosterSeed);
         AssertThat(BoostersWithTheSeed()).IsEqual(1);
@@ -115,27 +115,23 @@ public class LegacyShelfSaveMigrationTest
     public void ACurrentSaveIsLoadedAsItIs()
     {
         AssertBool(_product.GetNode<DeckSlot>("Slot2").TryLock(NewBooster())).IsTrue();
-        _product.PricingFor(_product.GetNode<DeckSlot>("Slot2"))!.SetMarkup(SavedMarkup);
         AssertBool(_saves.ManualSave()).IsTrue();
         var payload = ReadPayload();
 
         AssertThat(LegacyShelfSaveMigration.Migrate(payload, _shop)).IsEqual(payload);
     }
 
-    // Rewrites the slot's save the way the old layout wrote it: the two shelves' price ids under their old paths, the
-    // stock seated at `currentSeat` back at the old seat, and no furniture entry, which the old layout never saved.
-    private void WriteAsOldSave(Vector3 currentSeat)
+    // Rewrites the slot's save the way the old layout wrote it: a markup for `tag` under the tag's old path, the stock
+    // seated at `currentSeat` back at the old seat, and no furniture entry, which the old layout never saved.
+    private void WriteAsOldSave(Vector3 currentSeat, SlotPricing tag)
     {
         var save = SaveExtension.DeserializeObject<TreeSave>(ReadPayload())!;
-        foreach (var key in save.Collections.Keys.ToList())
-        {
-            var oldKey = ShelfPaths.Aggregate(key, (id, paths) => id.Replace(paths.Current, paths.Old));
-            if (oldKey == key)
-                continue;
-
-            save.Collections[oldKey] = save.Collections[key];
-            save.Collections.Remove(key);
-        }
+        var tagPath = tag.GetPath().ToString();
+        var oldTagPath = ShelfPaths.Aggregate(tagPath, (path, paths) => path.Replace(paths.Current, paths.Old));
+        AssertThat(oldTagPath).IsNotEqual(tagPath);
+        var markup = new NodeSave();
+        markup.SetOrAddProperty("markup", OldMarkup);
+        save.SetOrAddCollection($"slot_price:{oldTagPath}", markup);
 
         save.Collections.Remove("furniture");
         var game = save.Collections["game_save_service"];

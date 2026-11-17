@@ -3,9 +3,12 @@ using System;
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>
-///     Decides whether a customer buys an item at an asking price. The chance is 1 at or below the
-///     market price, 0 at 1.5 times the market price or more, and linear in between. A roll in [0, 1)
-///     decides it: the customer buys when the roll is below the chance.
+///     Decides whether a customer buys an item at an asking price. Every customer buys at or below the market price,
+///     none at twice the market price or more, and in between the chance falls off slowly at first and then fast:
+///     1 - ((ratio - 1) / (2 - 1))^2 for ratio = asking / market. A modest markup loses few customers, so the most
+///     profitable price lies about a third to a half above market
+///     (<c>BuyDecisionTest.TheMostProfitablePriceIsAMarkup</c>). A roll in [0, 1) decides it: the customer buys
+///     when the roll is below the chance.
 /// </summary>
 internal static class BuyDecision
 {
@@ -13,7 +16,7 @@ internal static class BuyDecision
     public const double FullChanceRatio = 1.0;
 
     /// <summary>Asking/market ratio at or above which no customer buys.</summary>
-    public const double ZeroChanceRatio = 1.5;
+    public const double ZeroChanceRatio = 2.0;
 
     /// <summary>The chance in [0, 1] that a customer buys at this asking price.</summary>
     public static double Chance(double asking, double market)
@@ -26,7 +29,8 @@ internal static class BuyDecision
         if (ratio >= ZeroChanceRatio)
             return 0.0;
 
-        return (ZeroChanceRatio - ratio) / (ZeroChanceRatio - FullChanceRatio);
+        var markup = (ratio - FullChanceRatio) / (ZeroChanceRatio - FullChanceRatio);
+        return 1.0 - markup * markup;
     }
 
     /// <summary>Decides one purchase from a roll in [0, 1).</summary>

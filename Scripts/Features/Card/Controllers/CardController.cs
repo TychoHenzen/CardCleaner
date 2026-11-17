@@ -41,6 +41,12 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
     /// </summary>
     public int? LookSeed { get; set; }
 
+    /// <summary>
+    /// The price the player set for this card in the shop, or null while it asks its market price. It travels with the
+    /// card from slot to slot and is saved with it.
+    /// </summary>
+    public int? ShopPrice { get; set; }
+
     private bool IsHeld => GetParent() is Camera3D; // Check if reparented to camera
 
     // IInteractable implementation
