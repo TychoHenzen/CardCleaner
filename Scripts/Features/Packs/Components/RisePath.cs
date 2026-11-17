@@ -36,7 +36,9 @@ internal readonly struct RisePath
     public static RisePath For(CardContainerKind kind, int index, Transform3D wrapper) =>
         new(wrapper * InsideOf(kind, index), wrapper * MouthOf(kind), wrapper.Basis.GetRotationQuaternion());
 
-    /// <summary>The item's pose at <paramref name="t" /> (0 inside the wrapper, 1 at <paramref name="target" />).</summary>
+    /// <summary>
+    ///     The item's pose at <paramref name="t" />: 0 inside the wrapper, 1 at <paramref name="target" />.
+    /// </summary>
     public Transform3D At(float t, Transform3D target)
     {
         var u = 1f - t;
