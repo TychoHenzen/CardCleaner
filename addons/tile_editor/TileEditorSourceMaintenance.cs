@@ -2,12 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Godot;
 
 namespace CardCleaner.Addons.TileEditor;
 
 public partial class TileEditorService
 {
+    /// <summary>
+    /// Groups atlas sources whose textures hold identical pixels, each group sorted by source id. Only sources
+    /// that share a texture size with another source are decoded, one at a time: holding every decoded image of
+    /// a 576-texture TileSet at once took gigabytes.
+    /// </summary>
     public List<List<int>> FindDuplicateSources()
     {
         var duplicateGroups = new List<List<int>>();
@@ -16,26 +22,10 @@ public partial class TileEditorService
 
         try
         {
-            var sourceImageData = CollectSourceImageData();
-            var processed = new HashSet<int>();
-            foreach (var (sourceId, imageData) in sourceImageData)
-            {
-                if (processed.Contains(sourceId))
-                    continue;
+            foreach (var sameSize in SourcesSharingATextureSize())
+                duplicateGroups.AddRange(GroupByPixels(sameSize));
 
-                var group = FindMatchingSources(
-                    sourceId,
-                    imageData,
-                    sourceImageData,
-                    processed);
-                processed.Add(sourceId);
-                if (group.Count <= 1)
-                    continue;
-
-                group.Sort();
-                duplicateGroups.Add(group);
-            }
-
+            duplicateGroups.Sort((left, right) => left[0].CompareTo(right[0]));
             return duplicateGroups;
         }
         catch (Exception ex)
@@ -45,45 +35,39 @@ public partial class TileEditorService
         }
     }
 
-    private Dictionary<int, byte[]> CollectSourceImageData()
+    private IEnumerable<List<AtlasSourceInfo>> SourcesSharingATextureSize() =>
+        GetAvailableAtlasSources()
+            .Where(source => source.Source?.Texture != null)
+            .GroupBy(source => (source.Source!.Texture.GetWidth(), source.Source.Texture.GetHeight()))
+            .Where(group => group.Count() > 1)
+            .Select(group => group.OrderBy(source => source.SourceId).ToList());
+
+    private static IEnumerable<List<int>> GroupByPixels(List<AtlasSourceInfo> sources)
     {
-        var imageDataBySource = new Dictionary<int, byte[]>();
-        foreach (var sourceInfo in GetAvailableAtlasSources())
+        var idsByHash = new Dictionary<string, List<int>>();
+        foreach (var source in sources)
         {
-            if (sourceInfo.Source?.Texture == null)
+            var hash = PixelHash(source.Source!.Texture);
+            if (hash == null)
                 continue;
 
-            var image = sourceInfo.Source.Texture.GetImage();
-            if (image != null)
-                imageDataBySource[sourceInfo.SourceId] = image.GetData();
+            if (!idsByHash.TryGetValue(hash, out var ids))
+                idsByHash[hash] = ids = new List<int>();
+            ids.Add(source.SourceId);
         }
 
-        return imageDataBySource;
+        return idsByHash.Values.Where(ids => ids.Count > 1);
     }
 
-    private static List<int> FindMatchingSources(
-        int sourceId,
-        byte[] sourceData,
-        Dictionary<int, byte[]> imageDataBySource,
-        HashSet<int> processed)
+    private static string? PixelHash(Texture2D texture)
     {
-        var group = new List<int> { sourceId };
-        foreach (var (candidateId, candidateData) in imageDataBySource)
-        {
-            if (sourceId == candidateId || processed.Contains(candidateId))
-                continue;
+        // Disposing frees the decoded copy now; without it every image waits for the finalizer.
+        using var image = texture.GetImage();
+        if (image == null)
+            return null;
 
-            if (sourceData.Length != candidateData.Length
-                || !sourceData.SequenceEqual(candidateData))
-            {
-                continue;
-            }
-
-            group.Add(candidateId);
-            processed.Add(candidateId);
-        }
-
-        return group;
+        var data = image.GetData();
+        return $"{image.GetFormat()}:{data.Length}:{Convert.ToHexString(SHA256.HashData(data))}";
     }
 
     public int RemoveDuplicateSources()
