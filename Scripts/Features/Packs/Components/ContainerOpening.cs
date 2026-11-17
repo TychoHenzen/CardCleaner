@@ -6,24 +6,11 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Packs.Components;
 
 /// <summary>
-///     Plays one container's opening, timed by <see cref="ContainerOpeningPlan" />: the wrapper falls to the surface
-///     below it, its <see cref="OpeningPart" />s open, and its items rise out one by one along a curve from inside it
-///     through its mouth to their spot above it. They stay there, frozen, while the empty wrapper shrinks away, and
-///     are let go together once it is gone, so none drops back into the wrapper it just left. At most one item is
-///     created per frame, so a slow frame never spawns a whole booster at once.
+///     Plays one container's opening over real time, timed by <see cref="ContainerOpeningPlan" />. Items hang frozen
+///     at their spots until the empty wrapper is gone, so none drops back into it.
 /// </summary>
 internal sealed class ContainerOpening
 {
-    // Where an item starts inside the wrapper and where it leaves it, in the wrapper's own frame. A box and a pack
-    // open at the top; a booster's cards slide out of its torn end at -Z.
-    private static readonly Vector3 BoxInside = new(0f, 0.01f, 0f);
-    private static readonly Vector3 BoxMouth = new(0f, 0.7f, 0f);
-    private static readonly Vector3 PackMouth = new(0f, 0.46f, 0f);
-    private const float PackFloor = 0.007f;
-    private const float BoosterHeight = 0.045f;
-    private static readonly Vector3 BoosterInside = new(0f, 0.02f, 0f);
-    private static readonly Vector3 BoosterMouth = new(0f, 0.022f, -0.6f);
-
     private const float SmallestScale = 0.01f;
     private const float LongestDrop = 4f;
     private const float RayLift = 0.3f;
@@ -31,7 +18,7 @@ internal sealed class ContainerOpening
     private readonly CardContainer _wrapper;
     private readonly ContainerOpeningPlan _plan;
     private readonly IReadOnlyList<Func<Node3D?>> _spawns;
-    private readonly List<Rising> _rising = new();
+    private readonly List<RisingItem> _rising = new();
     private readonly List<OpeningPart> _parts = new();
     private readonly Node3D? _visual;
     private readonly Transform3D _from;
@@ -143,15 +130,15 @@ internal sealed class ContainerOpening
                             Mathf.Max(SmallestScale, 1f - ContainerOpeningPlan.Ease(_plan.VanishProgress(_time)));
     }
 
-    // Creates the next item at its spot, then moves it back inside the wrapper, frozen, to rise from there.
+    // Creates the next item at its spot, then moves it back inside the wrapper, frozen, to rise from there. At most
+    // one item is created a frame, so a slow frame never spawns a whole booster at once.
     private void Release()
     {
         var index = Released++;
         if (_spawns[index]() is not { } node || !node.IsInsideTree())
             return;
 
-        var rising = new Rising(node, index, _to * InsideOf(_wrapper.Kind, index), _to * MouthOf(_wrapper.Kind),
-            _to.Basis);
+        var rising = new RisingItem(node, index, RisePath.For(_wrapper.Kind, index, _to));
         rising.Hold();
         _rising.Add(rising);
     }
@@ -170,65 +157,5 @@ internal sealed class ContainerOpening
                 item.LetGo();
 
         _rising.Clear();
-    }
-
-    // A pack's boosters lie stacked flat inside it and leave from the top of the stack down.
-    private static Vector3 InsideOf(CardContainerKind kind, int index) => kind switch
-    {
-        CardContainerKind.Box => BoxInside,
-        CardContainerKind.Pack => new Vector3(0f,
-            PackFloor + (CardContainerLayout.ItemsPerContainer - 1 - index % CardContainerLayout.ItemsPerContainer) *
-            BoosterHeight, 0f),
-        _ => BoosterInside
-    };
-
-    private static Vector3 MouthOf(CardContainerKind kind) => kind switch
-    {
-        CardContainerKind.Box => BoxMouth,
-        CardContainerKind.Pack => PackMouth,
-        _ => BoosterMouth
-    };
-
-    /// <summary>
-    ///     One item on its way out: a quadratic curve from inside the wrapper, pulled toward its mouth, to the spot it
-    ///     was created at, turning from the wrapper's yaw to its own.
-    /// </summary>
-    private sealed class Rising(Node3D node, int index, Vector3 inside, Vector3 mouth, Basis wrapperBasis)
-    {
-        private readonly Node? _parent = node.GetParent();
-        private readonly Transform3D _target = node.GlobalTransform;
-
-        public int Index { get; } = index;
-
-        // The player may take an item while it rises, or a load may clear it away; then it is no longer ours to move.
-        public bool StillOurs() =>
-            GodotObject.IsInstanceValid(node) && node.IsInsideTree() && node.GetParent() == _parent;
-
-        public void Hold()
-        {
-            if (node is RigidBody3D body)
-                body.Freeze = true;
-            MoveTo(0f);
-        }
-
-        public void MoveTo(float t)
-        {
-            var u = 1f - t;
-            var position = u * u * inside + 2f * u * t * mouth + t * t * _target.Origin;
-            var rotation = wrapperBasis.GetRotationQuaternion().Slerp(_target.Basis.GetRotationQuaternion(), t);
-            node.GlobalTransform = new Transform3D(new Basis(rotation), position);
-        }
-
-        public void LetGo()
-        {
-            node.GlobalTransform = _target;
-            Unfreeze();
-        }
-
-        public void Unfreeze()
-        {
-            if (node is RigidBody3D body)
-                body.Freeze = false;
-        }
     }
 }

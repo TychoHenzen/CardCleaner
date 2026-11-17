@@ -280,10 +280,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     private List<Func<Node3D?>> CardSpawns(Node3D parent, Vector3 origin)
     {
-        var generator = Generator ?? new CardPackGenerator(ContentSeed is { } seed
-            ? RandomSources.Create(seed)
-            : _random!);
-        var signatures = generator.OpenBooster();
+        var signatures = CardGenerator().OpenBooster();
         var spawns = new List<Func<Node3D?>>(signatures.Length);
         for (var i = 0; i < signatures.Length; i++)
         {
@@ -294,6 +291,10 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
         return spawns;
     }
+
+    // A test-set Generator, else one drawing from the saved content seed, else from the shared random source.
+    private CardPackGenerator CardGenerator() =>
+        Generator ?? new CardPackGenerator(ContentSeed is { } seed ? RandomSources.Create(seed) : _random!);
 
     // The items from startIndex on, each with its own seed index. They take the column spots from the bottom up, so
     // the ones left over after an unpack start at the lowest spot.

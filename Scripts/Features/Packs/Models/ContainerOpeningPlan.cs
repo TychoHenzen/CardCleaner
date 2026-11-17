@@ -15,27 +15,22 @@ public sealed class ContainerOpeningPlan
     // ASSUMPTION (Low): a drop from higher than about 2.4 m is cut short, so opening never keeps the player waiting.
     private const float LongestFall = 0.7f;
 
-    private ContainerOpeningPlan(float settle, float unseal, float releaseStep, float rise, float vanish, int items)
+    // Built only by For, which names every value.
+    private ContainerOpeningPlan()
     {
-        Settle = settle;
-        Unseal = unseal;
-        ReleaseStep = releaseStep;
-        Rise = rise;
-        Vanish = vanish;
-        Items = items;
     }
 
-    public float Settle { get; }
+    public float Settle { get; private init; }
 
-    public float Unseal { get; }
+    public float Unseal { get; private init; }
 
-    public float ReleaseStep { get; }
+    public float ReleaseStep { get; private init; }
 
-    public float Rise { get; }
+    public float Rise { get; private init; }
 
-    public float Vanish { get; }
+    public float Vanish { get; private init; }
 
-    public int Items { get; }
+    public int Items { get; private init; }
 
     /// <summary>
     ///     The plan for a container of <paramref name="kind" /> holding <paramref name="items" /> that falls
@@ -46,9 +41,18 @@ public sealed class ContainerOpeningPlan
         var settle = FallSeconds(fallHeight);
         return kind switch
         {
-            CardContainerKind.Box => new ContainerOpeningPlan(settle, 0.6f, 0.1f, 0.45f, 0.3f, items),
-            CardContainerKind.Pack => new ContainerOpeningPlan(settle, 0.4f, 0.08f, 0.35f, 0.25f, items),
-            CardContainerKind.Booster => new ContainerOpeningPlan(settle, 0.3f, 0.06f, 0.3f, 0.2f, items),
+            CardContainerKind.Box => new ContainerOpeningPlan
+            {
+                Settle = settle, Unseal = 0.6f, ReleaseStep = 0.1f, Rise = 0.45f, Vanish = 0.3f, Items = items
+            },
+            CardContainerKind.Pack => new ContainerOpeningPlan
+            {
+                Settle = settle, Unseal = 0.4f, ReleaseStep = 0.08f, Rise = 0.35f, Vanish = 0.25f, Items = items
+            },
+            CardContainerKind.Booster => new ContainerOpeningPlan
+            {
+                Settle = settle, Unseal = 0.3f, ReleaseStep = 0.06f, Rise = 0.3f, Vanish = 0.2f, Items = items
+            },
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown container kind")
         };
     }
