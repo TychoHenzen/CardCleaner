@@ -3,6 +3,7 @@ using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
+using Godot;
 using Saveable;
 
 namespace CardCleaner.Scripts.Features.Shop.Services;
@@ -65,7 +66,9 @@ public partial class FurnitureSaveService
     private Dictionary<string, PlacedFurniture> StandingByName() =>
         FurnitureRoot!.GetChildren().OfType<PlacedFurniture>().ToDictionary(placed => placed.Name.ToString());
 
-    /// <summary>The standing piece a placed record keeps: same name and same item. It leaves the pool either way.</summary>
+    /// <summary>
+    ///     The standing piece a placed record keeps: same name and same item. It leaves the pool either way.
+    /// </summary>
     private static PlacedFurniture? TakeStanding(Dictionary<string, PlacedFurniture> standing, FurnitureRecord record)
     {
         if (record.Name is not { Length: > 0 } name || !standing.Remove(name, out var piece))
@@ -88,7 +91,8 @@ public partial class FurnitureSaveService
     ///     The floor the records are judged on. The owned lots come from <see cref="IShopExpansion" />, which is
     ///     restored by its own save entry first: both services load first, and the expansion node sits before this
     ///     one in the Services provider. With the order reversed the lots are not owned yet and a record standing on
-    ///     one comes back as its box with an error (<c>FurnitureSaveServiceTest.ARecordOnAnUnownedLotComesBackAsItsBox</c>).
+    ///     one comes back as its box with an error
+    ///     (<c>FurnitureSaveServiceTest.ARecordOnAnUnownedLotComesBackAsItsBox</c>).
     /// </summary>
     private FurnitureFloorArea CurrentFloor()
     {
@@ -122,7 +126,7 @@ public partial class FurnitureSaveService
             // owned (yet), must not delete it. It comes back packed on the delivery area, to be placed again.
             ILog.Error($"Furniture record '{record.Id}' no longer fits the shop floor; it is back in its box");
             DiscardIfAny(kept);
-            FurnitureBoxSpawn.OnDeliveryArea(Boxes!, record.Id, BoxRoot!, DeliveryPoint, record.X, record.Z);
+            BoxSpawn.OnDeliveryArea(record.Id, new Vector2(record.X, record.Z));
             return;
         }
 
@@ -153,5 +157,7 @@ public partial class FurnitureSaveService
 
     // A box that cannot be made is logged by the spawn and skipped.
     private void RestoreBox(FurnitureRecord record) =>
-        FurnitureBoxSpawn.At(Boxes!, record.Id, BoxRoot!, record.X, record.Z, DeliveryPoint);
+        BoxSpawn.At(record.Id, new Vector2(record.X, record.Z));
+
+    private FurnitureBoxSpawn BoxSpawn => new(Boxes!, BoxRoot!, DeliveryPoint);
 }

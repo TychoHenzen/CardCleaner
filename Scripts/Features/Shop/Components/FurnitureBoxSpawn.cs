@@ -6,58 +6,69 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     Puts an unopened furniture box on the floor: the scene of the box order catalog row whose id is the item's.
-///     A restored save and a packed piece both make their boxes here.
+///     Puts unopened furniture boxes on the floor: the scene of the <see cref="Boxes" /> catalog row whose id is the
+///     item's, added under <see cref="Root" /> and tracked on <see cref="Marker" /> when there is one. A restored
+///     save and a packed piece both make their boxes here.
 /// </summary>
-internal static class FurnitureBoxSpawn
+internal readonly struct FurnitureBoxSpawn
 {
+    public FurnitureBoxSpawn(OrderCatalog boxes, Node root, DeliveryMarker? marker)
+    {
+        Boxes = boxes;
+        Root = root;
+        Marker = marker;
+    }
+
+    public OrderCatalog Boxes { get; }
+
+    public Node Root { get; }
+
+    public DeliveryMarker? Marker { get; }
+
     /// <summary>Height of a box's origin above the shop floor.</summary>
     // ASSUMPTION: boxes sit on the shop floor at a fixed height; no export records a delivery height (Risk Low).
     public const float BoxHeight = 0.5f;
 
     /// <summary>
-    ///     Adds the box of <paramref name="id" /> under <paramref name="root" /> at floor point
-    ///     (<paramref name="x" />, <paramref name="z" />) and tracks it on <paramref name="marker" />. Logs an error
-    ///     and returns null when the catalog has no 3D box scene for the id.
+    ///     Adds the box of <paramref name="id" /> at floor point <paramref name="spot" /> (x, z). Logs an error and
+    ///     returns null when the catalog has no 3D box scene for the id.
     /// </summary>
-    public static Node3D? At(OrderCatalog boxes, string id, Node root, float x, float z, DeliveryMarker? marker)
+    public Node3D? At(string id, Vector2 spot)
     {
-        if (Build(boxes, id) is not { } box)
+        if (Build(id) is not { } box)
             return null;
 
-        root.AddChild(box);
-        box.GlobalPosition = new Vector3(x, BoxHeight, z);
+        Root.AddChild(box);
+        box.GlobalPosition = new Vector3(spot.X, BoxHeight, spot.Y);
         // Only OrderingService tracks a box it delivers; a box put down any other way must count as an occupant too.
-        marker?.Track(box);
+        Marker?.Track(box);
         return box;
     }
 
     /// <summary>
-    ///     Adds the box of <paramref name="id" /> under <paramref name="root" /> on the first free cell of
-    ///     <paramref name="marker" />'s delivery area, where an order of it would arrive. With no marker, or no free
-    ///     cell, it goes to floor point (<paramref name="x" />, <paramref name="z" />) instead.
+    ///     Adds the box of <paramref name="id" /> on the first free cell of the marker's delivery area, where an
+    ///     order of it would arrive. With no marker, or no free cell, it goes to <paramref name="fallback" /> (x, z).
     /// </summary>
-    public static Node3D? OnDeliveryArea(OrderCatalog boxes, string id, Node root, DeliveryMarker? marker, float x,
-        float z)
+    public Node3D? OnDeliveryArea(string id, Vector2 fallback)
     {
-        if (marker == null)
-            return At(boxes, id, root, x, z, null);
-        if (Build(boxes, id) is not { } box)
+        if (Marker is not { } marker)
+            return At(id, fallback);
+        if (Build(id) is not { } box)
             return null;
 
         var cell = marker.FindPlacement(box);
-        root.AddChild(box);
+        Root.AddChild(box);
         box.GlobalPosition = cell is { } place
             ? marker.GlobalPosition + marker.SlotOffset(place.Slot) + Vector3.Up * place.Lift
-            : new Vector3(x, BoxHeight, z);
+            : new Vector3(fallback.X, BoxHeight, fallback.Y);
         marker.Track(box);
         return box;
     }
 
     // The box scene of the id, built but not in the tree, or null with the reason logged.
-    private static Node3D? Build(OrderCatalog boxes, string id)
+    private Node3D? Build(string id)
     {
-        var orderItem = boxes.Items.FirstOrDefault(entry => entry.Id == id);
+        var orderItem = Boxes.Items.FirstOrDefault(entry => entry.Id == id);
         if (orderItem?.Scene == null)
         {
             ILog.Error($"Furniture box '{id}' is not in the box order catalog");
