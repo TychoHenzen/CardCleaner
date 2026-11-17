@@ -25,7 +25,7 @@ public class ShopNavigationRigTest
         var shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _region = shop.GetNode<ShopNavigationRegion>(RegionPath);
 
-        // The first bake runs inside _Ready during AddNode, so read the region id before adding the scene.
+        // The first bake runs in AddNode once the scene is ready, so read the region id before adding the scene.
         uint regionBefore = RegionId();
         AddNode(shop);
         await ShopNavigationRig.WaitForBakeSync(_region, regionBefore);
