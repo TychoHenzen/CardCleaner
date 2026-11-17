@@ -7,7 +7,7 @@ namespace CardCleaner.Addons.TileEditor;
 [Tool]
 public partial class TileEditorPlugin : EditorPlugin
 {
-    private Control? _dock;
+    private EditorDock? _editorDock;
     private bool _isInitialized;
 
     public override void _EnterTree()
@@ -25,8 +25,12 @@ public partial class TileEditorPlugin : EditorPlugin
             // Clean up any stale references first
             CleanupDock();
 
-            _dock = new TileEditorDock();
-            AddControlToBottomPanel(_dock, "Tile Editor");
+            // The host builds the dock the first time its tab is shown; see TileEditorDockHost.
+            _editorDock = new EditorDock { Title = "Tile Editor", DefaultSlot = EditorDock.DockSlot.Bottom };
+            var host = new TileEditorDockHost();
+            host.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+            _editorDock.AddChild(host);
+            AddDock(_editorDock);
             _isInitialized = true;
             GD.Print("[TileEditorPlugin] Plugin loaded successfully");
         }
@@ -40,21 +44,21 @@ public partial class TileEditorPlugin : EditorPlugin
 
     private void CleanupDock()
     {
-        if (_dock != null)
+        if (_editorDock != null)
         {
             try
             {
-                if (IsInstanceValid(_dock))
+                if (IsInstanceValid(_editorDock))
                 {
-                    RemoveControlFromBottomPanel(_dock);
-                    _dock.QueueFree();
+                    RemoveDock(_editorDock);
+                    _editorDock.QueueFree();
                 }
             }
             catch (Exception ex)
             {
                 GD.PrintErr($"[TileEditorPlugin] Cleanup warning: {ex.Message}");
             }
-            _dock = null;
+            _editorDock = null;
         }
     }
 
