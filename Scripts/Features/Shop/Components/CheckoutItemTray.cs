@@ -24,8 +24,21 @@ public sealed class CheckoutItemTray(Node3D counter)
     public void Lay(IReadOnlyList<CheckoutItem> items, IReadOnlyList<StockItemLook?> looks, Action<int> onScan) =>
         _props = CheckoutCounterLayout.LayOutItems(counter, _spots, items, looks, onScan);
 
-    /// <summary>Marks the prop of an item scanned. Nothing happens for an item with no prop.</summary>
-    public void MarkScanned(int itemId) => _props.FirstOrDefault(prop => prop.ItemId == itemId)?.MarkScanned();
+    /// <summary>
+    ///     Marks the prop of an item scanned, which bags it, and lets the items stacked on it settle into its place.
+    ///     Nothing happens for an item with no prop.
+    /// </summary>
+    public void MarkScanned(int itemId)
+    {
+        if (_props.FirstOrDefault(prop => prop.ItemId == itemId) is not { } bagged)
+            return;
+
+        var drop = bagged.Size.Y + CheckoutCounterLayout.StackGap;
+        foreach (var above in _props.Where(prop =>
+                     prop.Spot == bagged.Spot && !prop.Scanned && prop.RestHeight > bagged.RestHeight))
+            above.SettleBy(drop);
+        bagged.MarkScanned();
+    }
 
     /// <summary>Frees every prop.</summary>
     public void Clear()

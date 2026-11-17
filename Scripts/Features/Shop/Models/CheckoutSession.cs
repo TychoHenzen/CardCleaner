@@ -58,6 +58,9 @@ public sealed class CheckoutSession
 
     public int ScannedCount => _scanned.Count;
 
+    /// <summary>The sum of the asking prices scanned so far: the register's running subtotal.</summary>
+    public int ScannedTotal => _basket.Where(item => _scanned.Contains(item.Id)).Sum(item => item.AskingPrice);
+
     /// <summary>Marks an item as scanned. False for an unknown id, a repeat, or once scanning has finished.</summary>
     public bool Scan(int itemId)
     {

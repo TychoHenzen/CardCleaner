@@ -309,7 +309,7 @@ public class CheckoutCounterTest
 
         var props = PropsOf(_counter);
         AssertThat(ReferenceEquals(PropFor(props, 0).Look, look)).IsTrue();
-        AssertThat(ReferenceEquals(look.Node.GetParent(), PropFor(props, 0))).IsTrue();
+        AssertThat(PropFor(props, 0).IsAncestorOf(look.Node)).IsTrue();
         AssertThat(PropFor(props, 1).Look).IsNull();
         AssertThat(PropFor(props, 0).Size.Y).IsLess(0.06f);
         AssertThat(customer.TakeBasketLooks().Count).IsEqual(0);

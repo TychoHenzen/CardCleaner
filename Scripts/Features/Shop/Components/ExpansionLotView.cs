@@ -23,7 +23,7 @@ public partial class ExpansionLotView : Node3D, IDependent
     [Export] public StaticBody3D? SealingWall { get; set; }
 
     /// <summary>The notice on the sealing wall that says how to buy the lot; hidden once the lot is open.</summary>
-    [Export] public Label3D? Sign { get; set; }
+    [Export] public Node3D? Sign { get; set; }
 
     [Export] public ShopNavigationRegion? Navigation { get; set; }
 

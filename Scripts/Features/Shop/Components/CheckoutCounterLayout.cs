@@ -10,7 +10,8 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 /// <summary>Places a checkout counter's item props and marker spots.</summary>
 public static class CheckoutCounterLayout
 {
-    private const float StackGap = 0.01f;
+    /// <summary>The space left between two items stacked on one spot.</summary>
+    public const float StackGap = 0.01f;
 
     /// <summary>
     ///     Adds one prop per item to <paramref name="counter" />, stacked on the item spots in order. Item i shows
@@ -28,7 +29,7 @@ public static class CheckoutCounterLayout
             var prop = new CheckoutItemProp
             {
                 ItemId = item.Id,
-                Price = item.AskingPrice,
+                Spot = spot,
                 OnScan = onScan,
                 Look = index < looks.Count ? looks[index] : null
             };

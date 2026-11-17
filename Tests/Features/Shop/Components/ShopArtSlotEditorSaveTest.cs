@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -111,7 +112,7 @@ public class ShopArtSlotEditorSaveTest
     private static List<string> ScenesWithArtSlots(string folder)
     {
         var found = new List<string>();
-        foreach (var scenePath in ScenePaths(folder))
+        foreach (var scenePath in SceneFiles.Under(folder))
         {
             var root = GD.Load<PackedScene>(scenePath).Instantiate<Node>();
             if (Slots(root).Any())
@@ -120,20 +121,6 @@ public class ShopArtSlotEditorSaveTest
         }
 
         return found;
-    }
-
-    private static List<string> ScenePaths(string folder)
-    {
-        var paths = new List<string>();
-        using var directory = DirAccess.Open(folder);
-        if (directory == null)
-            return paths;
-
-        foreach (var sub in directory.GetDirectories())
-            paths.AddRange(ScenePaths($"{folder}/{sub}"));
-
-        paths.AddRange(directory.GetFiles().Where(file => file.EndsWith(".tscn")).Select(file => $"{folder}/{file}"));
-        return paths;
     }
 
     // Plays what the editor does when it saves a scene whose slots show their art: _Ready has run (art loaded,

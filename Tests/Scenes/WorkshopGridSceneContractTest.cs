@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Features.Signage;
 using CardCleaner.Scripts.Features.Workshop.Components;
 using CardCleaner.Scripts.Features.Workshop.Models;
 using Godot;
@@ -116,7 +117,7 @@ public class WorkshopGridSceneContractTest
         {
             var marker = _grid.GetNode<Marker3D>($"Sections/{section.Name}");
             AssertThat(new Vector2(marker.Position.X, marker.Position.Z)).IsEqual(section.Anchor);
-            AssertThat(marker.GetNodeOrNull<Label3D>("Sign")).IsNotNull();
+            AssertThat(marker.GetNodeOrNull<SignBoard>("Sign")).IsNotNull();
         }
     }
 

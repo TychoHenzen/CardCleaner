@@ -164,7 +164,7 @@ public class ShopStaffFailureSceneTest
         AssertBool(_counter.Scan(0)).IsFalse();
         _counter.Interact();
 
-        AssertBool(_counter.StatusLabel!.Text.Contains(ServingMessage, StringComparison.Ordinal)).IsTrue();
+        AssertBool(_counter.Display!.Text.Contains(ServingMessage, StringComparison.Ordinal)).IsTrue();
         AssertInt(_counter.Session!.ScannedCount).IsEqual(0);
         AssertBool(paymentRaised).IsFalse();
     }

@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Signage;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 
@@ -46,8 +47,8 @@ public sealed class CheckoutCounterRig
         TestServices.Reset();
         var world = new Node3D();
         var money = new MoneyService { StartingBalance = StartingBalance };
-        var label = new Label3D();
-        var counter = new CheckoutCounter { StatusLabel = label };
+        var display = new SignBoard();
+        var counter = new CheckoutCounter { Display = display };
         TestServices.Container.RegisterSingleton<IMoneyService>(money);
         TestServices.Inject(counter);
 
@@ -70,7 +71,7 @@ public sealed class CheckoutCounterRig
         foreach (var marker in slots.Concat(itemSpots))
             counter.AddChild(marker);
 
-        counter.AddChild(label);
+        counter.AddChild(display);
         world.AddChild(money);
         world.AddChild(counter);
         AddNode(world);
