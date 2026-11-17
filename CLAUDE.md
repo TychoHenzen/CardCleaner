@@ -510,8 +510,10 @@ position. Every save sets `whole_layout`. A load of such a save makes the furnit
 whose record has its name and item is kept and moved to the saved pose (so its price tags and stock load onto the same
 nodes), a record with no such piece makes a new one, and a standing piece no record keeps is freed. An older save without
 `whole_layout` leaves the starting pieces standing and adds its records beside them. Boxes are always replaced, and the
-navigation mesh is rebaked once. A save without the key leaves the scene as authored, and a record with an unknown id, a
-non-finite coordinate or an invalid pose is skipped with an error. `FurnitureSaveService` is an `ILoadsFirst`
+navigation mesh is rebaked once. A save without the key leaves the scene as authored, and a record with an unknown id or a
+non-finite coordinate is skipped with an error. A record whose pose no longer fits (a piece that grew since the save, a
+lot not owned, an overlap) logs an error and comes back as its box on a free cell of the delivery area
+(`FurnitureBoxSpawn.OnDeliveryArea`), so no update deletes a piece the player bought. `FurnitureSaveService` is an `ILoadsFirst`
 (`addons/saveable`), so `SaveSystem` loads it before the rest of the tree and the restored shelves are in the tree when
 their price tags and cards load. A restored piece keeps its saved name under `World/Furniture`
 (`PlacedFurniture.StandUnder`; a new piece takes the first free `Furniture<n>`), which keeps those node-path save ids
