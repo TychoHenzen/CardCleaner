@@ -82,7 +82,7 @@ public class SignBoardTest
     {
         var sign = AddNode(new SignBoard
         {
-            Size = new Vector2(1.2f, 0.4f), Mount = SignBoard.MountKind.Hanging, MountLength = 0.6f
+            Size = new Vector2(1.2f, 0.4f), Mount = SignMount.Hanging, MountLength = 0.6f
         });
 
         AssertThat(sign.MountParts.Count).IsEqual(2);
@@ -102,7 +102,7 @@ public class SignBoardTest
     {
         var sign = AddNode(new SignBoard
         {
-            Size = new Vector2(0.4f, 0.2f), Mount = SignBoard.MountKind.Post, MountLength = 0.3f
+            Size = new Vector2(0.4f, 0.2f), Mount = SignMount.Post, MountLength = 0.3f
         });
 
         var post = sign.MountParts[0];
@@ -118,7 +118,7 @@ public class SignBoardTest
     [TestCategory("Unit")]
     public static void AWallSignBuildsNoMount()
     {
-        var sign = AddNode(new SignBoard { Mount = SignBoard.MountKind.Wall, MountLength = 1f });
+        var sign = AddNode(new SignBoard { Mount = SignMount.Wall, MountLength = 1f });
 
         AssertThat(sign.MountParts.Count).IsEqual(0);
     }
@@ -130,7 +130,7 @@ public class SignBoardTest
         var root = AddNode(new Node3D { Name = "Root" });
         var sign = new SignBoard
         {
-            Name = "Sign", Text = "For sale", TwoSided = true, Mount = SignBoard.MountKind.Hanging, MountLength = 0.5f
+            Name = "Sign", Text = "For sale", TwoSided = true, Mount = SignMount.Hanging, MountLength = 0.5f
         };
         root.AddChild(sign);
         sign.Owner = root;

@@ -14,19 +14,6 @@ namespace CardCleaner.Scripts.Features.Signage;
 [Tool]
 public partial class SignBoard : Node3D
 {
-    /// <summary>How the board is held up.</summary>
-    public enum MountKind
-    {
-        /// <summary>The back of the board lies on a wall; nothing else is drawn.</summary>
-        Wall,
-
-        /// <summary>Two rods rise <see cref="MountLength" /> from the top edge to the ceiling.</summary>
-        Hanging,
-
-        /// <summary>One post drops <see cref="MountLength" /> from the bottom edge to what it stands on.</summary>
-        Post
-    }
-
     private const float TextLift = 0.002f;
     private const float TextFill = 0.92f;
     private const float RodRadius = 0.008f;
@@ -45,7 +32,7 @@ public partial class SignBoard : Node3D
     private float _pixelSize = 0.004f;
     private bool _twoSided;
     private bool _screen;
-    private MountKind _mount = MountKind.Wall;
+    private SignMount _mount = SignMount.Wall;
     private float _mountLength;
 
     /// <summary>
@@ -89,7 +76,7 @@ public partial class SignBoard : Node3D
         set => Change(ref _boardColor, value);
     }
 
-    /// <summary>The colour of the print. Changing it repaints both faces at once, as <see cref="Text" /> does.</summary>
+    /// <summary>The colour of the print. Changing it repaints both faces, as <see cref="Text" /> does.</summary>
     [Export]
     public Color TextColor
     {
@@ -134,7 +121,7 @@ public partial class SignBoard : Node3D
     }
 
     [Export]
-    public MountKind Mount
+    public SignMount Mount
     {
         get => _mount;
         set => Change(ref _mount, value);
@@ -241,11 +228,11 @@ public partial class SignBoard : Node3D
 
     private IReadOnlyList<MeshInstance3D> BuildMount()
     {
-        if (_mount == MountKind.Wall || _mountLength <= 0f)
+        if (_mount == SignMount.Wall || _mountLength <= 0f)
             return [];
 
         var material = new StandardMaterial3D { AlbedoColor = MountColor, Metallic = 0.6f, Roughness = 0.4f };
-        if (_mount == MountKind.Post)
+        if (_mount == SignMount.Post)
         {
             var post = Rod("Post", PostRadius, material);
             post.Position = new Vector3(0f, -(_size.Y + _mountLength) / 2f, 0f);
