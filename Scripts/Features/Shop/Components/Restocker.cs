@@ -97,6 +97,8 @@ public partial class Restocker : CharacterBody3D, IDependent
     public void Step(double delta)
     {
         _job.Tick(delta);
+        // The figure walks by Velocity, so it holds only this step's walk; the navigator sets it when it moves.
+        Velocity = Vector3.Zero;
         if (_navigator == null || !Active)
             return;
 
@@ -130,7 +132,6 @@ public partial class Restocker : CharacterBody3D, IDependent
         _putBackSlot = null;
         _homing = false;
         _job.Cancel();
-        Velocity = Vector3.Zero;
     }
 
     private void PlanNext()
