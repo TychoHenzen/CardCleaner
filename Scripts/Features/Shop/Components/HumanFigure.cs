@@ -66,7 +66,9 @@ public partial class HumanFigure : Node3D
             Wear(random.RandiRange(0, LookCount - 1));
     }
 
-    /// <summary>Wears look <paramref name="index" />. False, with the placeholder kept, when it cannot be loaded.</summary>
+    /// <summary>
+    ///     Wears look <paramref name="index" />. False, with the placeholder kept, when it cannot be loaded.
+    /// </summary>
     public bool Wear(int index)
     {
         if (Looks is null || index < 0 || index >= Looks.Models.Length)
@@ -84,7 +86,9 @@ public partial class HumanFigure : Node3D
         return true;
     }
 
-    /// <summary>Wears <paramref name="model" /> in place of any earlier one. Tests hand-build models through it.</summary>
+    /// <summary>
+    ///     Wears <paramref name="model" /> in place of any earlier one. Tests hand-build models through it.
+    /// </summary>
     internal void Put(Node3D model)
     {
         if (_model != null)
@@ -137,7 +141,8 @@ public partial class HumanFigure : Node3D
         {
             var rotation = body.GlobalRotation;
             var step = Mathf.DegToRad(TurnDegreesPerSecond) * (float)delta;
-            body.GlobalRotation = new Vector3(rotation.X, FigureMotion.TurnToward(rotation.Y, target, step), rotation.Z);
+            var turned = FigureMotion.TurnToward(rotation.Y, target, step);
+            body.GlobalRotation = new Vector3(rotation.X, turned, rotation.Z);
         }
 
         _loop = FigureMotion.LoopFor(speed);

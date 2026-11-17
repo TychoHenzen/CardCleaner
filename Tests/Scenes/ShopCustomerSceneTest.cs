@@ -130,7 +130,8 @@ public class ShopCustomerSceneTest
     public async Task UnreachableTargetMakesTheCustomerLeaveAndFreesTheClaim()
     {
         var slot = _rig.StockBooster();
-        var frontBlocker = ShopNavigationRig.AddDoorBlocker(_rig.Shop, "FrontDoorBlocker", ShopNavigationRig.FrontDoorX);
+        var frontBlocker =
+            ShopNavigationRig.AddDoorBlocker(_rig.Shop, "FrontDoorBlocker", ShopNavigationRig.FrontDoorX);
         var roadBlocker = ShopNavigationRig.AddDoorBlocker(_rig.Shop, "RoadDoorBlocker", ShopNavigationRig.RoadDoorX);
         await _rig.RebakeAndSync();
         var balanceBefore = _rig.Money.Balance;
