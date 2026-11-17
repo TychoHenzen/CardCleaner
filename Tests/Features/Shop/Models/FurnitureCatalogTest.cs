@@ -13,6 +13,7 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class FurnitureCatalogTest
 {
     private const string CatalogPath = "res://Data/Shop/Furniture/FurnitureItems.tres";
+    private const string AssetsRoot = "res://Assets/";
     private const float Tolerance = 0.001f;
 
     [TestCase]
@@ -24,20 +25,24 @@ public class FurnitureCatalogTest
         AssertThat(ids).IsEqual(new[] { "shelf_unit", "product_shelf", "storage_rack", "bulk_packing_station" });
     }
 
+    // A piece collides as several boxes that follow its art (posts, boards, panels). Together they fill the
+    // catalog footprint exactly: centred on the piece's origin, standing on the floor, as PlacedFurniture builds it.
     [TestCase]
     [TestCategory("Unit")]
-    public static void EveryEntryMatchesTheColliderOfItsScene()
+    public static void EveryEntryMatchesTheCollidersOfItsScene()
     {
         foreach (var item in GD.Load<FurnitureCatalog>(CatalogPath).Items)
         {
             var instance = item.Scene!.Instantiate<Node3D>();
             try
             {
-                var shape = instance.GetNode<CollisionShape3D>("CollisionShape3D").Shape as BoxShape3D;
-                AssertThat(shape).IsNotNull();
-                AssertBool(Near(shape!.Size.X, item.Width)).OverrideFailureMessage(item.Id + " width").IsTrue();
-                AssertBool(Near(shape.Size.Y, item.Height)).OverrideFailureMessage(item.Id + " height").IsTrue();
-                AssertBool(Near(shape.Size.Z, item.Depth)).OverrideFailureMessage(item.Id + " depth").IsTrue();
+                var bounds = ColliderBounds(instance);
+                AssertBool(Near(bounds.Size.X, item.Width)).OverrideFailureMessage($"{item.Id} width {bounds.Size.X}").IsTrue();
+                AssertBool(Near(bounds.Size.Y, item.Height)).OverrideFailureMessage($"{item.Id} height {bounds.Size.Y}").IsTrue();
+                AssertBool(Near(bounds.Size.Z, item.Depth)).OverrideFailureMessage($"{item.Id} depth {bounds.Size.Z}").IsTrue();
+                var centre = bounds.GetCenter();
+                AssertBool(Near(centre.X, 0) && Near(bounds.Position.Y, 0) && Near(centre.Z, 0))
+                    .OverrideFailureMessage($"{item.Id} colliders are not centred on the floor: {bounds}").IsTrue();
             }
             finally
             {
@@ -76,7 +81,7 @@ public class FurnitureCatalogTest
             AddNode(instance);
 
             AssertThat(instance).IsInstanceOf<RigidBody3D>();
-            AssertThat(instance.GetNodeOrNull<CollisionShape3D>("CollisionShape3D")).IsNotNull();
+            AssertThat(instance.GetChildren().OfType<CollisionShape3D>().Count()).IsGreater(0);
             var slot = instance.GetNode<ShopArtSlot>("Art");
             AssertBool(slot.ArtLoaded || slot.Placeholder!.Visible).IsTrue();
         }
@@ -90,8 +95,8 @@ public class FurnitureCatalogTest
         {
             var instance = item.Scene!.Instantiate<Node3D>();
             var slot = instance.GetNode<ShopArtSlot>("Art");
-            AssertBool(slot.ArtPath.StartsWith(SyntyAssets.Root)).IsTrue();
-            AssertBool(SyntyAssets.Exists(slot.ArtPath[SyntyAssets.Root.Length..])).IsTrue();
+            AssertBool(slot.ArtPath.StartsWith(AssetsRoot, StringComparison.Ordinal)).IsTrue();
+            AssertBool(FileAccess.FileExists(slot.ArtPath)).OverrideFailureMessage(slot.ArtPath).IsTrue();
             instance.Free();
         }
     }
@@ -150,4 +155,15 @@ public class FurnitureCatalogTest
     }
 
     private static bool Near(float actual, float expected) => Math.Abs(actual - expected) <= Tolerance;
+
+    // The piece's own collision boxes, in its frame.
+    private static Aabb ColliderBounds(Node3D piece)
+    {
+        var shapes = piece.GetChildren().OfType<CollisionShape3D>().ToList();
+        AssertThat(shapes.Count).IsGreater(0);
+        var bounds = shapes[0].Transform * shapes[0].Shape.GetDebugMesh().GetAabb();
+        foreach (var shape in shapes.Skip(1))
+            bounds = bounds.Merge(shape.Transform * shape.Shape.GetDebugMesh().GetAabb());
+        return bounds;
+    }
 }

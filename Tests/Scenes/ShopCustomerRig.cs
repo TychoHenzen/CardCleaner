@@ -60,7 +60,8 @@ public sealed class ShopCustomerRig
         rig.Spawner.CustomerSpeed = FastSpeed;
         rig.Spawner.CustomerStuckSeconds = TestStuckSeconds;
 
-        // The first bake runs inside _Ready during AddNode, so read the region's iteration id before adding the scene.
+        // The first bake runs in AddNode once the scene is ready, so read the region's iteration id before adding the
+        // scene.
         uint regionBefore = NavigationServer3D.RegionGetIterationId(rig.Region.GetRid());
         AddNode(shop);
         await ShopNavigationRig.WaitForBakeSync(rig.Region, regionBefore);

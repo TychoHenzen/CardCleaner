@@ -39,10 +39,10 @@ public class PlacedFurnitureTest
 
         var shape = placed.GetChildren().OfType<CollisionShape3D>().Single();
         var box = (BoxShape3D)shape.Shape;
-        AssertBool(MathF.Abs(box.Size.X - 2.13f) <= Tolerance).IsTrue();
-        AssertBool(MathF.Abs(box.Size.Y - 1.07f) <= Tolerance).IsTrue();
-        AssertBool(MathF.Abs(box.Size.Z - 1.0f) <= Tolerance).IsTrue();
-        AssertBool(MathF.Abs(shape.Position.Y - 0.535f) <= Tolerance).IsTrue();
+        AssertBool(MathF.Abs(box.Size.X - _shelf.Width) <= Tolerance).IsTrue();
+        AssertBool(MathF.Abs(box.Size.Y - _shelf.Height) <= Tolerance).IsTrue();
+        AssertBool(MathF.Abs(box.Size.Z - _shelf.Depth) <= Tolerance).IsTrue();
+        AssertBool(MathF.Abs(shape.Position.Y - _shelf.Height / 2f) <= Tolerance).IsTrue();
 
         var content = placed.GetNode<Node3D>(PlacedFurniture.ContentName);
         AssertBool(content is CardShelf).IsTrue();

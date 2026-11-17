@@ -70,7 +70,42 @@ public partial class CardShelf : RigidBody3D, IUnpackTarget
         }
 
         CollisionLayer |= ContainerHolder.UnpackLayerBit;
+        AddAimVolume();
     }
+
+    /// <summary>The box over this shelf's whole bounds that the hand aims at to unpack onto it.</summary>
+    public Area3D? AimVolume => GetNodeOrNull<Area3D>(AimVolumeName);
+
+    private const string AimVolumeName = "UnpackAim";
+
+    // The shelf's colliders follow its model's parts, so a ray aimed between two boards passes through them. One
+    // trigger box over the bounds of those colliders, on the unpack layer only, lets the hand aim at the whole shelf.
+    // It is a trigger, not a body: the navigation bake parses static bodies by their layer, so a body here would keep
+    // a carried shelf (whose own layers are off) in the mesh. It is in DeliveryMarker.FootprintGroup, so a delivered
+    // shelf stacks as its bounding box, the way PlacedFurniture's footprint box stands for a placed one. Built here
+    // with no owner, so no scene ever stores it.
+    private void AddAimVolume()
+    {
+        var shapes = GetChildren().OfType<CollisionShape3D>().ToList();
+        if (shapes.Count == 0 || AimVolume != null)
+            return;
+
+        var bounds = shapes.Skip(1).Aggregate(BoundsOf(shapes[0]), (box, shape) => box.Merge(BoundsOf(shape)));
+        var area = new Area3D
+        {
+            Name = AimVolumeName,
+            CollisionLayer = ContainerHolder.UnpackLayerBit,
+            CollisionMask = 0,
+            Monitoring = false
+        };
+        area.AddToGroup(DeliveryMarker.FootprintGroup);
+        area.AddChild(new CollisionShape3D
+            { Position = bounds.GetCenter(), Shape = new BoxShape3D { Size = bounds.Size } });
+        AddChild(area);
+    }
+
+    // In the shelf's own frame, from the shape's local transform, so a turned shelf still gets a box along its sides.
+    private static Aabb BoundsOf(CollisionShape3D shape) => shape.Transform * shape.Shape.GetDebugMesh().GetAabb();
 
     /// <summary>The click targets of this shelf's slots, one per slot.</summary>
     public IEnumerable<ShelfSlotTarget> SlotTargets => GetChildren().OfType<ShelfSlotTarget>();

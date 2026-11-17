@@ -1,57 +1,115 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/CardShelf.cs" id="CardShelf"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/CardSlot.tscn" id="CardSlot"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/CardStand.tscn" id="CardStand"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/CardRest.tscn" id="CardRest"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/PriceTag.tscn" id="PriceTag"]
 
-[sub_resource type="BoxShape3D" id="Shape"]
-size = Vector3(2.13, 1.07, 1.0)
+[sub_resource type="BoxShape3D" id="Base"]
+size = Vector3(2.288, 0.0648, 0.6628)
+
+[sub_resource type="BoxShape3D" id="Board"]
+size = Vector3(2.288, 0.068, 0.6504)
+
+[sub_resource type="BoxShape3D" id="Top"]
+size = Vector3(2.43, 0.0822, 0.6628)
+
+[sub_resource type="BoxShape3D" id="Side"]
+size = Vector3(0.071, 1.0058, 0.6628)
 
 [sub_resource type="StandardMaterial3D" id="PlaceholderMaterial"]
 albedo_color = Color(0.55, 0.45, 0.35, 1)
 
 [sub_resource type="BoxMesh" id="PlaceholderMesh"]
 material = SubResource("PlaceholderMaterial")
-size = Vector3(2.13, 1.07, 1.0)
+size = Vector3(2.43, 1.088, 0.6628)
 
 [node name="Shelf" type="RigidBody3D"]
 script = ExtResource("CardShelf")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.535, 0)
-shape = SubResource("Shape")
+[node name="Base" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0324, 0)
+shape = SubResource("Base")
+
+[node name="Board" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5336, -0.0062)
+shape = SubResource("Board")
+
+[node name="Top" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0469, 0)
+shape = SubResource("Top")
+
+[node name="SideLeft" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1795, 0.5029, 0)
+shape = SubResource("Side")
+
+[node name="SideRight" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1795, 0.5029, 0)
+shape = SubResource("Side")
 
 [node name="Art" type="Node3D" parent="." node_paths=PackedStringArray("Placeholder")]
 script = ExtResource("ShopArtSlot")
-ArtPath = "res://Assets/Synty/SimpleShopInterior/SI_Prop_RecordShelf_01.fbx"
-ArtScale = 100
+ArtPath = "res://Assets/Models/synty/props/SIMPLE_Shop_Interiors/SourceFiles/Fbx/SI_Prop_Shelf_09.fbx"
+ArtScale = 60
 Placeholder = NodePath("Placeholder")
 
 [node name="Placeholder" type="MeshInstance3D" parent="Art"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.535, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.544, 0)
 mesh = SubResource("PlaceholderMesh")
 
-[node name="Slot1" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.9, -0.2)
-Capacity = 1
+[node name="Slot1" parent="." instance=ExtResource("CardStand")]
+transform = Transform3D(-1, 0, 0, 0, 0.422618, -0.906308, 0, -0.906308, -0.422618, -0.81, 1.299, -0.1)
 
-[node name="Slot2" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.9, -0.2)
-Capacity = 1
+[node name="Slot2" parent="." instance=ExtResource("CardStand")]
+transform = Transform3D(-1, 0, 0, 0, 0.422618, -0.906308, 0, -0.906308, -0.422618, -0.27, 1.299, -0.1)
 
-[node name="Slot3" parent="." instance=ExtResource("CardSlot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0.9, -0.2)
-Capacity = 1
+[node name="Slot3" parent="." instance=ExtResource("CardStand")]
+transform = Transform3D(-1, 0, 0, 0, 0.422618, -0.906308, 0, -0.906308, -0.422618, 0.27, 1.299, -0.1)
+
+[node name="Slot4" parent="." instance=ExtResource("CardStand")]
+transform = Transform3D(-1, 0, 0, 0, 0.422618, -0.906308, 0, -0.906308, -0.422618, 0.81, 1.299, -0.1)
+
+[node name="Slot5" parent="." instance=ExtResource("CardRest")]
+transform = Transform3D(-1, 0, 0, 0, 0.978148, -0.207912, 0, -0.207912, -0.978148, -0.81, 0.622825, -0.080437)
+
+[node name="Slot6" parent="." instance=ExtResource("CardRest")]
+transform = Transform3D(-1, 0, 0, 0, 0.978148, -0.207912, 0, -0.207912, -0.978148, -0.27, 0.622825, -0.080437)
+
+[node name="Slot7" parent="." instance=ExtResource("CardRest")]
+transform = Transform3D(-1, 0, 0, 0, 0.978148, -0.207912, 0, -0.207912, -0.978148, 0.27, 0.622825, -0.080437)
+
+[node name="Slot8" parent="." instance=ExtResource("CardRest")]
+transform = Transform3D(-1, 0, 0, 0, 0.978148, -0.207912, 0, -0.207912, -0.978148, 0.81, 0.622825, -0.080437)
 
 [node name="Price1" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.84, -0.515)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.81, 1.0608, -0.3374)
 Slot = NodePath("../Slot1")
 
 [node name="Price2" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.84, -0.515)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.27, 1.0608, -0.3374)
 Slot = NodePath("../Slot2")
 
 [node name="Price3" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0.84, -0.515)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.27, 1.0608, -0.3374)
 Slot = NodePath("../Slot3")
+
+[node name="Price4" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.81, 1.0608, -0.3374)
+Slot = NodePath("../Slot4")
+
+[node name="Price5" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.81, 0.534, -0.3374)
+Slot = NodePath("../Slot5")
+
+[node name="Price6" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.27, 0.534, -0.3374)
+Slot = NodePath("../Slot6")
+
+[node name="Price7" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.27, 0.534, -0.3374)
+Slot = NodePath("../Slot7")
+
+[node name="Price8" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.81, 0.534, -0.3374)
+Slot = NodePath("../Slot8")

@@ -36,15 +36,13 @@ public partial class UnusedSourcesPanel
                 : "Renumber atlas source IDs to be contiguous (0, 1, 2, ...) and update tiles.json";
         }
 
+        // The duplicate scan decodes texture pixels, so it runs when the button is pressed, never on a refresh
+        // (a refresh follows every tile edit).
         if (_removeDuplicatesButton != null)
         {
-            var duplicateGroups = _service!.FindDuplicateSources();
-            var hasDuplicates = duplicateGroups.Count > 0;
-            var duplicateCount = duplicateGroups.Sum(group => group.Count - 1);
-            _removeDuplicatesButton.Disabled = !hasDuplicates;
-            _removeDuplicatesButton.TooltipText = hasDuplicates
-                ? $"Remove {duplicateCount} duplicate source(s) with identical texture content"
-                : "No duplicate sources found";
+            _removeDuplicatesButton.Disabled = false;
+            _removeDuplicatesButton.TooltipText =
+                "Find sources with identical texture content and remove the extra copies";
         }
     }
 

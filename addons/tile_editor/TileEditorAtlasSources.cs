@@ -28,6 +28,9 @@ public partial class TileEditorService
         }
     }
 
+    /// <summary>Lets a test work on a TileSet built in memory instead of the one on disk.</summary>
+    internal void UseTileSetForTesting(TileSet tileSet) => _tileSet = tileSet;
+
     private bool IsTileSetValid()
     {
         if (_tileSet == null)

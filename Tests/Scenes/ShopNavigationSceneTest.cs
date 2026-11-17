@@ -30,6 +30,9 @@ public class ShopNavigationSceneTest
     private const float AgentStep = 0.1f;
     private const int AgentMaxFrames = 600;
 
+    // One bake cell (ShopNavigationRegion's cell size and height): the bake rounds every edge to it.
+    private const float BakeCell = 0.25f;
+
     private Node3D _shop = null!;
     private ShopNavigationRegion _region = null!;
     private Rid _map;
@@ -44,7 +47,8 @@ public class ShopNavigationSceneTest
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _region = _shop.GetNode<ShopNavigationRegion>(RegionPath);
 
-        // The first bake runs inside _Ready during AddNode, so read the region's iteration id before adding the scene.
+        // The first bake runs during AddNode, once the scene is ready, so read the region's iteration id before adding
+        // the scene.
         uint regionBefore = NavigationServer3D.RegionGetIterationId(_region.GetRid());
         AddNode(_shop);
         _map = _region.GetNavigationMap();
@@ -84,6 +88,30 @@ public class ShopNavigationSceneTest
         int before = _region.RebakeCount;
         _region.Rebake();
         AssertInt(_region.RebakeCount).IsEqual(before + 1);
+    }
+
+    // A placed piece builds its footprint collider in its own _Ready, after the region's, so a bake that ran in the
+    // region's _Ready left floor under every starting piece and a path ran straight through the card shelf. The
+    // closest point to the middle of a piece, at floor height, must not be floor inside it (a point on its top is fine).
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TheFirstBakeLeavesNoFloorUnderTheStartingFurniture()
+    {
+        var pieces = _shop.GetNode("World/Furniture").GetChildren().OfType<PlacedFurniture>().ToList();
+        AssertThat(pieces.Count).IsGreater(0);
+        float floor = NavigationServer3D.MapGetClosestPoint(_map, _spawn).Y;
+
+        foreach (var piece in pieces)
+        {
+            var rect = piece.Rect;
+            var middle = new Vector3((rect.MinX + rect.MaxX) / 2f, floor, (rect.MinZ + rect.MaxZ) / 2f);
+            var nearest = NavigationServer3D.MapGetClosestPoint(_map, middle);
+            bool floorInside = MathF.Abs(nearest.Y - floor) < BakeCell
+                               && nearest.X > rect.MinX + BakeCell && nearest.X < rect.MaxX - BakeCell
+                               && nearest.Z > rect.MinZ + BakeCell && nearest.Z < rect.MaxZ - BakeCell;
+            AssertBool(floorInside)
+                .OverrideFailureMessage($"{piece.Name}: the mesh has floor at {nearest}, inside {rect}").IsFalse();
+        }
     }
 
     [TestCase]

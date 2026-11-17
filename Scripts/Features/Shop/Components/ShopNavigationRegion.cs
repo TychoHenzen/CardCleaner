@@ -5,12 +5,12 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     Bakes the shop's navigation mesh from the static colliders of the
-///     "shop_navigation" group when the scene loads, and again on
+///     "shop_navigation" group once the scene is ready, and again on
 ///     <see cref="Rebake" /> (for example after a wall, door or furniture
 ///     changes). The scene's own NavigationMesh holds the bake settings only;
 ///     the baked mesh is a copy, so no polygons are ever stored in the scene
-///     file. <see cref="RebakeCount" /> counts every bake, the first one in
-///     _Ready included.
+///     file. <see cref="RebakeCount" /> counts every bake, the first one
+///     included.
 /// </summary>
 public partial class ShopNavigationRegion : NavigationRegion3D
 {
@@ -33,7 +33,14 @@ public partial class ShopNavigationRegion : NavigationRegion3D
     public override void _Ready()
     {
         _settings = NavigationMesh;
-        Rebake();
+
+        // Nodes build colliders in their own _Ready (a placed piece of furniture its footprint box), and the ones
+        // after this region in the tree are not ready yet, so the first bake waits for the whole scene. Baking here
+        // left the starting furniture out of the mesh, and paths ran through it until something rebaked.
+        if (Owner is { } scene && !scene.IsNodeReady())
+            scene.Connect(Node.SignalName.Ready, Callable.From(Rebake), (uint)ConnectFlags.OneShot);
+        else
+            Rebake();
     }
 
     public void Rebake()
