@@ -253,7 +253,7 @@ albedo_texture = SubResource("PcScreenTexture")
 [sub_resource type="QuadMesh" id="PcScreenQuadMesh"]
 resource_local_to_scene = true
 material = SubResource("PcScreenMaterial")
-size = Vector2(0.5, 0.3)
+size = Vector2(0.613, 0.345)
 
 [node name="Root" type="Node3D"]
 
@@ -1754,11 +1754,11 @@ visible = false
 mesh = SubResource("PcHighlightMesh")
 
 [node name="ScreenQuad" type="MeshInstance3D" parent="World/Markers/PcLocation/PcTerminal"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -0.065)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.044, -0.173)
 mesh = SubResource("PcScreenQuadMesh")
 
 [node name="ScreenCamera" type="Camera3D" parent="World/Markers/PcLocation/PcTerminal"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.044, 0.052)
 
 [node name="PcScreenOverlay" type="CanvasLayer" parent="World/Markers/PcLocation/PcTerminal" node_paths=PackedStringArray("Viewport")]
 layer = 8
