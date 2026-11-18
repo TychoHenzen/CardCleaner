@@ -8,6 +8,7 @@ using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Tests.Scenes;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
@@ -22,6 +23,7 @@ namespace CardCleaner.Tests.Features.Automation;
 public class AutomationShopSceneTest
 {
     private static readonly Vector2I RootWindowSize = new(1280, 720);
+    private const int WalkClockFactor = 4;
 
     private SceneTree _tree = null!;
     private Node? _previousScene;
@@ -120,8 +122,12 @@ public class AutomationShopSceneTest
         await Settle();
         var terminal = _shop.GetNode<ScreenTerminal>("World/Markers/PcLocation/PcTerminal");
 
-        var reply = await Run("use",
-            new JsonObject { ["node"] = terminal.GetPath().ToString(), ["distance"] = 1.2 });
+        // ASSUMPTION: the walker steers once per process frame, so the clock runs only WalkClockFactor times faster:
+        // about two physics steps per headless frame, close to the game's one step per frame. The default factor
+        // would move the player a metre or more between two steering corrections.
+        JsonNode reply;
+        using (FastClock.Start(WalkClockFactor))
+            reply = await Run("use", new JsonObject { ["node"] = terminal.GetPath().ToString(), ["distance"] = 1.2 });
 
         AssertBool(reply["ok"]!.GetValue<bool>()).OverrideFailureMessage(reply.ToJsonString()).IsTrue();
         AssertFloat(reply["result"]!["walk"]!["distance"]!.GetValue<double>()).IsLessEqual(1.2);

@@ -24,9 +24,12 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenar
 /// GridMapGenerator with the seed and size the session derives from the cards. Its start and enemies lines were
 /// recorded again in #256, when MapPopulation began placing them; the tile rows are unchanged since ab82cbc.
 /// To record it again, run this suite with CARDCLEANER_RECORD_GRID_GOLDEN=1; never edit the file by hand.
+/// A Daily suite: the one case is a full WFC solve of a session-sized map, about 11 s, and a smaller map would no
+/// longer be the map a session makes. It runs once a day on master, and a red daily run fails every pull request.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
+[TestCategory("Daily")]
 public class GridMapGoldenTest
 {
     private const string FixturePath =
