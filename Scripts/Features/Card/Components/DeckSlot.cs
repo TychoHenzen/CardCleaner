@@ -81,11 +81,11 @@ public partial class DeckSlot : Node3D
     {
         if (_processingEntry) return;
 
-        // Only free bodies this slot takes lock. Anything else (a box on a card shelf, a card on a storage rack) is
-        // ignored: it is not frozen and reparented into the slot. So is a body a slot already holds, this one or
-        // another (see TryLock).
+        // Only free stock this slot takes locks (see IsFreeStock). Anything else (a box on a card shelf, a card on a
+        // storage rack, a card the player just took into the hand) is ignored: it is not frozen and reparented into
+        // the slot.
         if (body is not RigidBody3D rigid || StockOf(rigid) is not { } stock || !Accepts(stock)
-            || _cards.Contains(rigid) || IsHeld(rigid))
+            || _cards.Contains(rigid) || !IsFreeStock(rigid))
             return;
 
         if (!HasRoomFor(stock))
@@ -100,10 +100,9 @@ public partial class DeckSlot : Node3D
 
     private void LockCardDeferred(RigidBody3D body)
     {
-        // A body on no collision layer was taken out of play after it entered (the restocker carries a container that
-        // way), so the entry queued for it is stale.
-        if (IsInstanceValid(body) && body.CollisionLayer != 0)
-            TryLock(body);
+        // TryLock checks again that the body is free stock: it may have been taken out of play (into a hand) between
+        // the entry and this call, which makes the queued entry stale.
+        TryLock(body);
 
         _processingEntry = false;
     }
@@ -137,12 +136,24 @@ public partial class DeckSlot : Node3D
     public bool HasRoom => _cards.Count == 0 ? Capacity > 0 : StockOf(_cards[0]) is { } held && HasRoomFor(held);
 
     /// <summary>
-    /// Whether <see cref="TryLock" /> would lock <paramref name="body" /> now: stock it takes, that no slot holds,
-    /// with room.
+    /// Whether <see cref="TryLock" /> would lock <paramref name="body" /> now: free stock (<see cref="IsFreeStock" />)
+    /// it takes, with room.
     /// </summary>
     public bool CanTake(RigidBody3D body) =>
-        IsInstanceValid(body) && StockOf(body) is { } stock && CanTake(stock) && !_cards.Contains(body)
-        && !IsHeld(body);
+        IsFreeStock(body) && StockOf(body) is { } stock && CanTake(stock) && !_cards.Contains(body);
+
+    /// <summary>
+    ///     Whether <paramref name="body" /> is stock a slot may take: it lives, it is in play (on a collision layer),
+    ///     and no slot holds it.
+    /// </summary>
+    /// <remarks>
+    ///     Whatever carries a body (the player's hand, a held container, the restocker, a booster opening in hand)
+    ///     takes it out of play by clearing its collision layer. A reparent reports the body entering every trigger it
+    ///     still overlaps, at once, so a card taken off a seat is reported to that seat's slot while it still lies
+    ///     there; this rule is what keeps the slot from taking it back. Every slot entry and every lock goes through it.
+    /// </remarks>
+    public static bool IsFreeStock(RigidBody3D body) =>
+        IsInstanceValid(body) && body.CollisionLayer != 0 && !IsHeld(body);
 
     /// <summary>
     ///     Whether this slot takes one more body of <paramref name="stock" /> now: its shelf takes that stock, the

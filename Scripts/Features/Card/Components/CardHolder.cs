@@ -102,10 +102,12 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
     {
         if (_heldCards.Contains(card)) return;
 
-        // Disable physics and collision
+        // A held card is out of play: frozen, its shape off, and on no collision layer, so no slot trigger it still
+        // overlaps takes it back (DeckSlot.IsFreeStock).
         card.Freeze = true;
         var shape = card.GetNode<CollisionShape3D>("CardCollision");
         if (shape != null) shape.Disabled = true;
+        card.CollisionLayer = 0;
 
         // Reparent to hand
         card.Reparent(_handParent);

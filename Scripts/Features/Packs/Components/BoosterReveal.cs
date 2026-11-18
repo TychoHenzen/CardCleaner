@@ -133,8 +133,9 @@ internal sealed class BoosterReveal : IContainerRun
                             Mathf.Max(SmallestScale, 1f - ContainerOpeningPlan.Ease(_plan.VanishProgress(_time)));
     }
 
-    // Spawns the next card inside the booster, frozen and with its collision off, so it never meets the world while it
-    // hangs in front of the camera. At most one card a frame, so a slow frame never spawns the whole booster at once.
+    // Spawns the next card inside the booster, frozen, with its collision off and on no layer, so it never meets the
+    // world while it hangs in front of the camera and no slot takes it (DeckSlot.IsFreeStock). At most one card a
+    // frame, so a slow frame never spawns the whole booster at once.
     private void Release()
     {
         var signature = _signatures[Released++];
@@ -145,6 +146,7 @@ internal sealed class BoosterReveal : IContainerRun
         card.Freeze = true;
         if (card.GetNodeOrNull<CollisionShape3D>("CardCollision") is { } shape)
             shape.Disabled = true;
+        card.CollisionLayer = 0;
         card.Transform = CardStart;
         _cards.Add(card);
     }
