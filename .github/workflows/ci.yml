@@ -86,9 +86,10 @@ jobs:
 
           "GODOT_BIN=$godotBinary" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      # A red daily run blocks pull requests until it is fixed: while the latest finished daily run on master is not a
-      # success (failed, cancelled or timed out), a pull request runs every suite, Daily ones included, so it passes
-      # only once its own head fixes what the daily run caught. The block lifts with the next green daily run.
+      # A red daily run widens pull-request CI: while the latest finished daily run on master is not a success (failed,
+      # cancelled or timed out), a pull request runs every suite, Daily ones included, and passes when they all pass on
+      # its own runner. A failure that does not happen again there (a flake) does not fail the pull request. The wider
+      # run ends with the next green daily run.
       - name: Check latest daily GdUnit result
         if: github.event_name == 'pull_request'
         shell: pwsh

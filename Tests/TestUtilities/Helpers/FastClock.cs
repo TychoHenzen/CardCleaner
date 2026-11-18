@@ -20,6 +20,11 @@ public sealed class FastClock : IDisposable
     // slower, with a restocker case missing the walk it waits to interrupt.
     public const int DefaultFactor = 16;
 
+    // The clock running now. A suite whose teardown never ran (a timed-out case) leaves it running; the next Start
+    // gives the real rates back first, so a leaked 16x clock never compounds into 256x.
+    // ASSUMPTION: no test nests two clocks; one that did would have its outer clock stopped by the inner Start.
+    private static FastClock? _live;
+
     private readonly int _ticks;
     private readonly double _scale;
     private readonly int _maxSteps;
@@ -27,6 +32,13 @@ public sealed class FastClock : IDisposable
 
     private FastClock(int factor)
     {
+        if (_live is { _disposed: false } leaked)
+        {
+            GD.PushWarning("FastClock: a clock was still running (a teardown did not run); restoring it first");
+            leaked.Dispose();
+        }
+
+        _live = this;
         _ticks = Engine.PhysicsTicksPerSecond;
         _scale = Engine.TimeScale;
         _maxSteps = Engine.MaxPhysicsStepsPerFrame;
@@ -42,6 +54,8 @@ public sealed class FastClock : IDisposable
         if (_disposed)
             return;
         _disposed = true;
+        if (ReferenceEquals(_live, this))
+            _live = null;
         Engine.PhysicsTicksPerSecond = _ticks;
         Engine.TimeScale = _scale;
         Engine.MaxPhysicsStepsPerFrame = _maxSteps;

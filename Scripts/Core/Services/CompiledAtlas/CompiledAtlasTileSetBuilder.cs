@@ -182,10 +182,14 @@ internal static class CompiledAtlasTileSetBuilder
 
     private static IEnumerable<Vector2I> TransitionCoordinates(Dictionary<string, TransitionEntry> transitions)
     {
+        // A null entry or variant ("key": null in the JSON) is skipped, so one bad row cannot fail the whole load.
         foreach (var entry in transitions.Values)
-        foreach (var variantOptions in entry.Variants ?? [])
+        foreach (var variantOptions in entry?.Variants ?? [])
         foreach (var variant in variantOptions ?? [])
-            yield return variant.GetAtlasCoordinates();
+        {
+            if (variant != null)
+                yield return variant.GetAtlasCoordinates();
+        }
     }
 
     // Whether the tile at these atlas coordinates starts inside the texture.

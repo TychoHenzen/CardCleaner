@@ -189,16 +189,15 @@ public static class CompiledAtlasLoader
         var id = tileSet.GetInstanceId();
         foreach (var tiles in CachedTileSets.Values)
         {
-            if (tiles.TileSet.GetInstanceId() == id)
+            if (tiles.TileSetId == id)
                 return tiles;
         }
 
         return null;
     }
 
-    /// <summary>
-    /// Clears every cached tileset, so the next load builds again. Assembly unload runs it (see
-    /// <see cref="AssemblyUnloadCleanup"/>); call it too after regenerating the compiled atlas.
-    /// </summary>
-    public static void ClearCache() => CachedTileSets.Clear();
+    // Clears every cached tileset on assembly unload (see AssemblyUnloadCleanup) and only then. A TileSet still on a
+    // layer after a clear is no longer found by TilesFor, so its deferred transition tiles would never be created and
+    // the cells that paint one would show nothing.
+    private static void ClearCache() => CachedTileSets.Clear();
 }

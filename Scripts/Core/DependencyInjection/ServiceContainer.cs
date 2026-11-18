@@ -64,8 +64,9 @@ public class ServiceContainer : IServiceContainer
 
     public void RegisterLazy<T>(Func<T> factory, params Type[] alsoAs) where T : class
     {
-        var entry = new LazyService(typeof(T)) { Factory = factory };
-        foreach (var serviceType in alsoAs.Prepend(typeof(T)))
+        var serviceTypes = alsoAs.Prepend(typeof(T)).ToArray();
+        var entry = new LazyService(typeof(T)) { Factory = factory, ServiceTypes = serviceTypes };
+        foreach (var serviceType in serviceTypes)
         {
             _singletons.Remove(serviceType);
             _lazy[serviceType] = entry;
@@ -93,12 +94,25 @@ public class ServiceContainer : IServiceContainer
     private object Build(LazyService lazy)
     {
         if (lazy.Factory != null)
-            return lazy.Instance = lazy.Factory();
+            return lazy.Instance = BuildFromFactory(lazy);
 
         var parameters = GreediestConstructor(lazy.Implementation).GetParameters();
         lazy.Instance = Construct(lazy.Implementation);
         lazy.SceneBound = parameters.Any(parameter => IsSceneScoped(parameter.ParameterType));
         return lazy.Instance;
+    }
+
+    // The compiler checks only the factory's own type, so a type passed in alsoAs is checked here, once, on the built
+    // instance. Without it the wrong type surfaced as an InvalidCastException in whichever Resolve<T> asked for it.
+    private static object BuildFromFactory(LazyService lazy)
+    {
+        var instance = lazy.Factory!();
+        var unmet = lazy.ServiceTypes.FirstOrDefault(serviceType => !serviceType.IsInstanceOfType(instance));
+        if (unmet != null)
+            throw new InvalidOperationException(
+                $"The lazy {lazy.Implementation.Name} factory built {instance?.GetType().Name ?? "null"}, " +
+                $"which is not a {unmet.Name}");
+        return instance!;
     }
 
     // Scene scope is whatever was registered or built from a scene registration after SealAppScope.
@@ -224,6 +238,9 @@ public class ServiceContainer : IServiceContainer
 
         // Set for a RegisterLazy entry, which builds through it instead of a constructor.
         public Func<object>? Factory { get; init; }
+
+        // Every type a RegisterLazy entry is registered under; the built instance must be each of them.
+        public Type[] ServiceTypes { get; init; } = [];
 
         // True when Instance was built from a scene-scope service; DropSceneScope then clears Instance.
         public bool SceneBound { get; set; }

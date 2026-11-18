@@ -49,10 +49,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-InstallGodot
   fixture, `FastClock` below, one shared expensive setup); only when that fails does its class get the tag. CI runs
   every suite, Daily ones included, at 03:00 UTC each day on `master`.
 
-A red daily run blocks pull requests until it is fixed. While the latest finished daily run on `master` is not a success
-(failed, cancelled or timed out), every pull request runs every suite, Daily ones included, so only a head that fixes
-the failure passes. The block lifts with the next green daily run; a run that failed on a flake lifts it with `gh run
-rerun <run-id> --failed`. `-SkipDaily` leaves a Daily file out as a whole (by name, through gdUnit's `-i`), so the tag
+A red daily run widens pull-request CI. While the latest finished daily run on `master` is not a success (failed,
+cancelled or timed out), every pull request runs every suite, Daily ones included, and passes when they all pass on its
+own runner, so a failure that does not happen again there (a flake) does not fail it. That is not a block: a red daily
+run still needs its own fix. The wider runs end with the next green daily run; after a flake, `gh run rerun <run-id>
+--failed` ends them sooner. `-SkipDaily` leaves a Daily file out as a whole (by name, through gdUnit's `-i`), so the tag
 must sit on the suite class: `TestSuiteNamingTest` fails when it sits on a member.
 
 **FastClock** (`Tests/TestUtilities/Helpers/FastClock.cs`). A scene test that waits on game time (a customer's walk, a

@@ -20,11 +20,16 @@ internal sealed class CompiledAtlasTiles
     internal CompiledAtlasTiles(TileSet tileSet, TileSetAtlasSource source, HashSet<Vector2I> deferred)
     {
         TileSet = tileSet;
+        TileSetId = tileSet.GetInstanceId();
         _source = source;
         _deferred = deferred;
     }
 
     internal TileSet TileSet { get; }
+
+    // The tile set's instance id, read once: every painted cell looks its tile set up by id, and reading it from the
+    // engine for each cached entry on each cell is an interop call per entry.
+    internal ulong TileSetId { get; }
 
     /// <summary>
     /// Whether a cell may show these atlas coordinates: the tile exists, or it is created when first painted.

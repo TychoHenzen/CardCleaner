@@ -59,6 +59,16 @@ public class ServiceContainerLazyTest
     }
 
     [TestCase]
+    public void AnInstanceThatIsNotAnExtraServiceTypeFailsNamingThatType()
+    {
+        _container.RegisterLazy<IData>(() => new DataOnly(), typeof(IOtherView));
+
+        Assertions.AssertThrown(() => _container.Resolve<IOtherView>())
+            .IsInstanceOf<InvalidOperationException>()
+            .HasMessage("The lazy IData factory built DataOnly, which is not a IOtherView");
+    }
+
+    [TestCase]
     public void AnExplicitRegistrationReplacesItWithoutBuildingIt()
     {
         _container.RegisterLazy<IData>(Build);
@@ -136,6 +146,8 @@ public class ServiceContainerLazyTest
     }
 
     private sealed class Data : IData, IOtherView;
+
+    private sealed class DataOnly : IData;
 
     [Service(typeof(IConsumer))]
     private sealed class Consumer(IData data) : IConsumer

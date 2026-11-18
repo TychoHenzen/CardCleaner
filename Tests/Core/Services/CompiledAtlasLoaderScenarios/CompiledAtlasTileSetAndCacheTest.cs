@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Core.Services.CompiledAtlas;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Core.Services.CompiledAtlasLoaderScenarios;
@@ -16,7 +17,7 @@ public class CompiledAtlasTileSetAndCacheTest : CompiledAtlasLoaderTestBase
     // ==================== TileSet Creation ====================
 
     [TestCase]
-    public void TestLoadCompiledTileSetSucceeds()
+    public static void TestLoadCompiledTileSetSucceeds()
     {
         var tileSet = CompiledAtlasLoader.LoadCompiledTileSet();
 
@@ -106,7 +107,7 @@ public class CompiledAtlasTileSetAndCacheTest : CompiledAtlasLoaderTestBase
     }
 
     [TestCase]
-    public void PaintingACoordinateOutsideTheAtlasCreatesNoTile()
+    public static void PaintingACoordinateOutsideTheAtlasCreatesNoTile()
     {
         var tiles = DefaultAtlasTiles();
         var atlasSource = (TileSetAtlasSource)tiles.TileSet.GetSource(CompiledAtlasTiles.SourceId);
@@ -124,6 +125,43 @@ public class CompiledAtlasTileSetAndCacheTest : CompiledAtlasLoaderTestBase
             layer.Free();
         }
     }
+
+    // A transition tile exists only once AtlasCells.Set has created it, so a SetCell anywhere else in Scripts/ could
+    // paint a compiled-atlas coordinate that has no tile yet and show nothing.
+    [TestCase]
+    public static void OnlyAtlasCellsPaintsATileMapCell()
+    {
+        var files = SourceScan.CsFiles("res://Scripts").ToList();
+        AssertThat(files.Any(file => Path.GetFileName(file) == "AtlasCells.cs"))
+            .OverrideFailureMessage("The SetCell scan no longer sees AtlasCells.cs, so it could pass on nothing")
+            .IsTrue();
+
+        var hits = files
+            .Where(file => Path.GetFileName(file) != "AtlasCells.cs")
+            .SelectMany(file => SetCellCalls(SourceScan.RelativePath(file), SourceScan.Blanked(file)))
+            .ToList();
+
+        AssertThat(string.Join("\n", hits)).IsEmpty();
+    }
+
+    [TestCase]
+    public static void SetCellCallsAreReportedAndCommentsAndStringsIgnored()
+    {
+        const string source = "namespace Sample;\n"
+            + "// layer.SetCell(cell, 0, coords) in a comment\n"
+            + "var text = \"layer.SetCell(cell, 0, coords)\";\n"
+            + "layer.SetCell(cell, 0, coords);\n"
+            + "layer.SetCellsTerrainConnect(cells, 0, 0);\n";
+
+        var hits = SetCellCalls("Sample.cs", TestSuiteNamingTest.BlankCommentsAndStrings(source)).ToList();
+
+        AssertThat(hits.ToArray()).IsEqual(new[] { "Sample.cs:4 .SetCell(" });
+    }
+
+    private static System.Collections.Generic.IEnumerable<string> SetCellCalls(string relative, string blanked) =>
+        SetCellCall.Matches(blanked).Select(match => SourceScan.FormatHit(relative, blanked, match));
+
+    private static readonly System.Text.RegularExpressions.Regex SetCellCall = new(@"\.SetCell\(");
 
     private static CompiledAtlasTiles DefaultAtlasTiles()
     {
