@@ -13,7 +13,10 @@ internal static class CompiledAtlasTileSetBuilder
 {
     private const string DefaultTransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";
 
-    internal static TileSet Build(
+    /// <summary>
+    /// The tile set with the mapped tiles created and the transition tiles deferred until a cell first shows one.
+    /// </summary>
+    internal static CompiledAtlasTiles Build(
         AtlasMapping.AtlasMappingData mapping,
         Texture2D atlasTexture,
         JsonSerializerOptions jsonOptions)
@@ -32,13 +35,13 @@ internal static class CompiledAtlasTileSetBuilder
 
         CreateMappedTiles(atlasSource, mapping.Sources);
 
-        var transitionTilesCreated = CreateTransitionMapTiles(atlasSource, jsonOptions);
+        var deferred = CollectTransitionMapTiles(atlasSource, jsonOptions);
         ILog.Print(
-            $"[CompiledAtlasLoader] Created {transitionTilesCreated} additional tiles " +
-            "from transition_map");
+            $"[CompiledAtlasLoader] Deferred {deferred.Count} additional tiles " +
+            "from transition_map until a cell shows them");
 
-        tileSet.AddSource(atlasSource, 0);
-        return tileSet;
+        tileSet.AddSource(atlasSource, CompiledAtlasTiles.SourceId);
+        return new CompiledAtlasTiles(tileSet, atlasSource, deferred);
     }
 
     private static void CreateMappedTiles(
@@ -100,28 +103,31 @@ internal static class CompiledAtlasTileSetBuilder
             $"skipped {tilesSkipped} existing");
     }
 
-    private static int CreateTransitionMapTiles(
+    // The in-bounds transition-map coordinates that hold no tile yet. None is created here.
+    private static HashSet<Vector2I> CollectTransitionMapTiles(
         TileSetAtlasSource atlasSource,
         JsonSerializerOptions jsonOptions)
     {
+        var deferred = new HashSet<Vector2I>();
         var absolutePath = ProjectSettings.GlobalizePath(DefaultTransitionMapPath);
         if (!File.Exists(absolutePath))
         {
             ILog.Print($"[CompiledAtlasLoader] Transition map not found: {absolutePath}");
-            return 0;
+            return deferred;
         }
 
         if (!TryReadTransitionMap(absolutePath, jsonOptions, out var transitionMap))
-            return 0;
+            return deferred;
 
         var transitions = transitionMap?.Transitions;
         if (transitions == null)
         {
             ILog.Print("[CompiledAtlasLoader] Transition map has no transitions");
-            return 0;
+            return deferred;
         }
 
-        return CreateTransitionTiles(atlasSource, transitions);
+        CollectTransitionTiles(atlasSource, transitions, deferred);
+        return deferred;
     }
 
     private static bool TryReadTransitionMap(
@@ -144,107 +150,37 @@ internal static class CompiledAtlasTileSetBuilder
         }
     }
 
-    private static int CreateTransitionTiles(
+    private static void CollectTransitionTiles(
         TileSetAtlasSource atlasSource,
-        Dictionary<string, TransitionEntry> transitions)
+        Dictionary<string, TransitionEntry> transitions,
+        HashSet<Vector2I> deferred)
     {
-        try
-        {
-            return CreateTransitionTilesCore(atlasSource, transitions);
-        }
-        catch (Exception ex)
-        {
-            ILog.Print($"[CompiledAtlasLoader] Error loading transition map: {ex.Message}");
-            return 0;
-        }
-    }
+        var texture = atlasSource.Texture;
+        if (texture == null)
+            return;
 
-    private static int CreateTransitionTilesCore(
-        TileSetAtlasSource atlasSource,
-        Dictionary<string, TransitionEntry> transitions)
-    {
-        var tilesCreated = 0;
-        var tilesSkipped = 0;
-
+        var regionSize = atlasSource.TextureRegionSize;
+        var width = texture.GetWidth();
+        var height = texture.GetHeight();
+        var alreadyTiles = 0;
         foreach (var entry in transitions.Values)
+        foreach (var variantOptions in entry.Variants ?? [])
+        foreach (var variant in variantOptions ?? [])
         {
-            AddTransitionEntryTiles(atlasSource, entry, ref tilesCreated, ref tilesSkipped);
+            var atlasCoords = variant.GetAtlasCoordinates();
+            if (atlasCoords.X < 0 || atlasCoords.Y < 0
+                || atlasCoords.X * regionSize.X >= width
+                || atlasCoords.Y * regionSize.Y >= height)
+                continue;
+
+            if (atlasSource.HasTile(atlasCoords))
+                alreadyTiles++;
+            else
+                deferred.Add(atlasCoords);
         }
 
         ILog.Print(
-            $"[CompiledAtlasLoader] Transition tiles: {tilesCreated} created, " +
-            $"{tilesSkipped} already existed");
-        return tilesCreated;
-    }
-
-    private static void AddTransitionEntryTiles(
-        TileSetAtlasSource atlasSource,
-        TransitionEntry entry,
-        ref int tilesCreated,
-        ref int tilesSkipped)
-    {
-        var variants = entry.Variants;
-        if (variants == null)
-            return;
-
-        foreach (var variantOptions in variants)
-        {
-            AddTransitionVariantTiles(
-                atlasSource,
-                variantOptions,
-                ref tilesCreated,
-                ref tilesSkipped);
-        }
-    }
-
-    private static void AddTransitionVariantTiles(
-        TileSetAtlasSource atlasSource,
-        VariantCoord[]? variantOptions,
-        ref int tilesCreated,
-        ref int tilesSkipped)
-    {
-        if (variantOptions == null)
-            return;
-
-        foreach (var variant in variantOptions)
-        {
-            AddTransitionTile(atlasSource, variant, ref tilesCreated, ref tilesSkipped);
-        }
-    }
-
-    private static void AddTransitionTile(
-        TileSetAtlasSource atlasSource,
-        VariantCoord variant,
-        ref int tilesCreated,
-        ref int tilesSkipped)
-    {
-        var atlasCoords = variant.GetAtlasCoordinates();
-        var texture = atlasSource.Texture;
-        var regionSize = atlasSource.TextureRegionSize;
-        if (texture == null
-            || atlasCoords.X < 0
-            || atlasCoords.Y < 0
-            || atlasCoords.X * regionSize.X >= texture.GetWidth()
-            || atlasCoords.Y * regionSize.Y >= texture.GetHeight())
-            return;
-
-        if (atlasSource.HasTile(atlasCoords))
-        {
-            tilesSkipped++;
-            return;
-        }
-
-        try
-        {
-            atlasSource.CreateTile(atlasCoords);
-            tilesCreated++;
-        }
-        catch (Exception ex)
-        {
-            ILog.Print(
-                $"[CompiledAtlasLoader] Failed to create transition tile at {atlasCoords}: " +
-                ex.Message);
-        }
+            $"[CompiledAtlasLoader] Transition tiles: {deferred.Count} deferred, {alreadyTiles} already mapped tiles");
     }
 
     private sealed class TransitionMapData

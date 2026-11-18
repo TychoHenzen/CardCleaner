@@ -27,9 +27,10 @@ public static class CompiledAtlasLoader
         AllowTrailingCommas = true
     };
 
-    // One TileSet per mapping file, built on its first load. The game's has about 26,000 tiles and takes seconds to
-    // build, so a TileSet built for another mapping (a test's) must not replace it. A failed build caches nothing.
-    private static readonly Dictionary<string, TileSet> CachedTileSets = new();
+    // One TileSet per mapping file, built on its first load, so a TileSet built for another mapping (a test's) never
+    // replaces the game's. Its transition tiles are created as cells show them (CompiledAtlasTiles), so a replaced
+    // TileSet would lose the ones already created. A failed build caches nothing.
+    private static readonly Dictionary<string, CompiledAtlasTiles> CachedTileSets = new();
 
     static CompiledAtlasLoader()
     {
@@ -75,7 +76,7 @@ public static class CompiledAtlasLoader
         if (CachedTileSets.TryGetValue(cacheKey, out var cached))
         {
             ILog.Print("[CompiledAtlasLoader] Returning cached TileSet");
-            return cached;
+            return cached.TileSet;
         }
 
         var mapping = LoadMapping(mappingPath);
@@ -101,12 +102,12 @@ public static class CompiledAtlasLoader
                 return null;
             }
 
-            var tileSet = CompiledAtlasTileSetBuilder.Build(mapping, atlasTexture, CreateJsonOptions());
+            var tiles = CompiledAtlasTileSetBuilder.Build(mapping, atlasTexture, CreateJsonOptions());
 
-            CachedTileSets[cacheKey] = tileSet;
-            LogTileSetDetails(tileSet);
+            CachedTileSets[cacheKey] = tiles;
+            LogTileSetDetails(tiles.TileSet);
 
-            return tileSet;
+            return tiles.TileSet;
         }
         catch (Exception ex)
         {
@@ -178,6 +179,21 @@ public static class CompiledAtlasLoader
             $"[CompiledAtlasLoader] Created TileSet: {sourceCount} source(s), " +
             $"source 0 = {(source0 != null ? "present" : "MISSING")}, " +
             $"texture = {textureDims.X}x{textureDims.Y}");
+    }
+
+    /// <summary>
+    /// The compiled atlas whose tile set this is, or null for any other tile set (the original tileset, a test's).
+    /// </summary>
+    internal static CompiledAtlasTiles? TilesFor(TileSet tileSet)
+    {
+        var id = tileSet.GetInstanceId();
+        foreach (var tiles in CachedTileSets.Values)
+        {
+            if (tiles.TileSet.GetInstanceId() == id)
+                return tiles;
+        }
+
+        return null;
     }
 
     /// <summary>

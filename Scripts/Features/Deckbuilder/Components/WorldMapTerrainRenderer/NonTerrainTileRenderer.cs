@@ -1,5 +1,6 @@
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRendererSupport;
@@ -60,7 +61,7 @@ internal sealed class NonTerrainTileRenderer
                 continue;
 
             var atlasCoords = new Vector2I(info.AtlasCoords.X + dx, info.AtlasCoords.Y + dy);
-            targetLayer.SetCell(cellPosition, info.SourceId, atlasCoords);
+            AtlasCells.Set(targetLayer, cellPosition, info.SourceId, atlasCoords);
         }
 
         counts.Record(info.Layer);

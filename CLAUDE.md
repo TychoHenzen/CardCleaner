@@ -341,7 +341,10 @@ The project uses a custom DI container with no static service state: an instance
   The compiled atlas is loaded by the stateless
   `TileVisualLoader`, which returns a `TileVisualCatalog` that `TileRegistry` exposes as `Visuals` (UI users read the
   tileset path, atlas flag and `TilesetConfig` there). `AtlasMapping` holds no static cache: `Load` reads its file on
-  every call, and `WorldMapComponents` passes the loaded mapping to `TerrainTransitions.Create`. `MeshStatistics` (a
+  every call, and `WorldMapComponents` passes the loaded mapping to `TerrainTransitions.Create`. The compiled
+  atlas's TileSet (`CompiledAtlasLoader`, one per mapping file) creates its 25,700 transition tiles only when a cell
+  first shows one (`CompiledAtlasTiles`), because creating them all took about 18 s: every cell painted on a world-map
+  layer goes through `AtlasCells.Set`, never `TileMapLayer.SetCell`. `MeshStatistics` (a
   readonly struct) and `AutoTileFormatDefinition` (a sealed record) are immutable: every property is set once.
 - **IServiceProvider**: Nodes implementing this interface and added to the `service_providers` group will have their services registered at startup
 - **Tree injection**: a node implementing `IDependent` (`Scripts/Core/Interfaces`) gets `Inject(IServiceResolver)`

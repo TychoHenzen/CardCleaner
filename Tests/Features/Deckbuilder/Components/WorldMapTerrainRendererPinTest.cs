@@ -72,6 +72,10 @@ public class WorldMapTerrainRendererPinTest
             // ASSUMPTION: the seeded map draws at least one terrain cell, so an empty terrain layer means the
             // render path did nothing rather than matched the golden.
             AssertThat(terrain.GetUsedCells().Count).IsGreater(0);
+            // The compiled atlas creates a transition tile only when a cell first shows it, so every painted
+            // terrain cell must have its tile.
+            var cellsWithoutTile = terrain.GetUsedCells().Where(cell => terrain.GetCellTileData(cell) == null);
+            AssertThat(string.Join(", ", cellsWithoutTile)).IsEmpty();
 
             var hash = Fingerprint(layers);
             GD.Print("[WorldMapTerrainRendererPin] hash " + hash);
