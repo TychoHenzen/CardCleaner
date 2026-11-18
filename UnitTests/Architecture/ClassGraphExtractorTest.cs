@@ -1,3 +1,4 @@
+using System;
 using CardCleaner.Tests.Architecture.DependencyGate;
 
 namespace CardCleaner.Tests.Architecture;
@@ -62,7 +63,11 @@ public class ClassGraphExtractorTest
         AssertThat(layers["DrawContext"].ToString()).IsEqual(nameof(Layer.Middle));
     }
 
-    private static ClassGraph Extract() =>
+    // One extraction for the suite: the source is fixed, the tests only read the graph, and each compilation against
+    // the host's references costs about a quarter of a second.
+    private static readonly Lazy<ClassGraph> Graph = new(() =>
         ClassGraphExtractor.Extract([new SourceFile("Scripts/Features/Fixture/Shapes.cs", Source)], [],
-            CompilationReferences.FromHost()).Graph;
+            CompilationReferences.FromHost()).Graph);
+
+    private static ClassGraph Extract() => Graph.Value;
 }
