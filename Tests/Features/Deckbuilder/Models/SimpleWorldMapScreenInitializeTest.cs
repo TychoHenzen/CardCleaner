@@ -187,7 +187,6 @@ public class SimpleWorldMapScreenInitializeTest
         {
             if (File.Exists(absolutePath))
                 File.Delete(absolutePath);
-            CompiledAtlasLoader.ClearCache();
             layer.Free();
             screen.Free();
         }

@@ -66,21 +66,32 @@ public class CompiledAtlasTileSetAndCacheTest : CompiledAtlasLoaderTestBase
     // ==================== Cache Behavior ====================
 
     [TestCase]
-    public void TestClearCacheResetsMappingState()
+    public void TestMappingIsReadFromDiskOnEveryLoad()
     {
-        // First load to populate cache
-        var mapping1 = CompiledAtlasLoader.LoadMapping();
-        AssertThat(mapping1).IsNotNull();
+        var mappingPath = CreateTemporaryPath(".json");
+        WriteMapping(mappingPath, "user://first-atlas.png");
+        AssertString(CompiledAtlasLoader.LoadMapping(mappingPath)!.Atlas!.Path).IsEqual("user://first-atlas.png");
 
-        // Clear cache
-        CompiledAtlasLoader.ClearCache();
+        WriteMapping(mappingPath, "user://second-atlas.png");
 
-        // Load again - should reload from disk
-        var mapping2 = CompiledAtlasLoader.LoadMapping();
-        AssertThat(mapping2).IsNotNull();
+        AssertString(CompiledAtlasLoader.LoadMapping(mappingPath)!.Atlas!.Path).IsEqual("user://second-atlas.png");
+    }
 
-        // Both should be valid (not testing reference equality since cache may differ)
-        AssertThat(mapping1!.Sources!.Count).IsEqual(mapping2!.Sources!.Count);
+    [TestCase]
+    public void TestATileSetForAnotherMappingLeavesTheDefaultOneCached()
+    {
+        var defaultTileSet = CompiledAtlasLoader.LoadCompiledTileSet();
+        var mappingPath = CreateTemporaryPath(".json");
+        var atlasPath = CreateTemporaryPath(".png");
+        WriteMapping(mappingPath, atlasPath);
+        var atlasImage = Image.CreateEmpty(16, 16, false, Image.Format.Rgba8);
+        AssertThat(atlasImage.SavePng(ProjectSettings.GlobalizePath(atlasPath))).IsEqual(Error.Ok);
+
+        var otherTileSet = CompiledAtlasLoader.LoadCompiledTileSet(mappingPath);
+
+        AssertThat(otherTileSet).IsNotNull();
+        AssertThat(otherTileSet).IsNotSame(defaultTileSet);
+        AssertThat(CompiledAtlasLoader.LoadCompiledTileSet()).IsSame(defaultTileSet);
     }
 
     [TestCase]

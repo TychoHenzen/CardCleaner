@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using CardCleaner.Scripts.Core.Services.CompiledAtlas;
@@ -26,8 +27,9 @@ public static class CompiledAtlasLoader
         AllowTrailingCommas = true
     };
 
-    private static TileSet? _cachedTileSet;
-    private static string? _cachedTileSetPath;
+    // One TileSet per mapping file, built on its first load. The game's has about 26,000 tiles and takes seconds to
+    // build, so a TileSet built for another mapping (a test's) must not replace it. A failed build caches nothing.
+    private static readonly Dictionary<string, TileSet> CachedTileSets = new();
 
     static CompiledAtlasLoader()
     {
@@ -69,11 +71,11 @@ public static class CompiledAtlasLoader
     {
         ILog.Print("[CompiledAtlasLoader] LoadCompiledTileSet called");
 
-        // Return cached TileSet if available
-        if (_cachedTileSet != null && _cachedTileSetPath == (mappingPath ?? DefaultMappingPath))
+        var cacheKey = mappingPath ?? DefaultMappingPath;
+        if (CachedTileSets.TryGetValue(cacheKey, out var cached))
         {
             ILog.Print("[CompiledAtlasLoader] Returning cached TileSet");
-            return _cachedTileSet;
+            return cached;
         }
 
         var mapping = LoadMapping(mappingPath);
@@ -101,8 +103,7 @@ public static class CompiledAtlasLoader
 
             var tileSet = CompiledAtlasTileSetBuilder.Build(mapping, atlasTexture, CreateJsonOptions());
 
-            _cachedTileSet = tileSet;
-            _cachedTileSetPath = mappingPath ?? DefaultMappingPath;
+            CachedTileSets[cacheKey] = tileSet;
             LogTileSetDetails(tileSet);
 
             return tileSet;
@@ -180,12 +181,8 @@ public static class CompiledAtlasLoader
     }
 
     /// <summary>
-    /// Clears the cached tileset.
-    /// Call this if the compiled atlas has been regenerated.
+    /// Clears every cached tileset, so the next load builds again. Assembly unload runs it (see
+    /// <see cref="AssemblyUnloadCleanup"/>); call it too after regenerating the compiled atlas.
     /// </summary>
-    public static void ClearCache()
-    {
-        _cachedTileSet = null;
-        _cachedTileSetPath = null;
-    }
+    public static void ClearCache() => CachedTileSets.Clear();
 }

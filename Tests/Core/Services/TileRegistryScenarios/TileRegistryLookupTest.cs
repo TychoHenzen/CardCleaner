@@ -72,7 +72,6 @@ public class TileRegistryLookupTest : TileRegistryTestBase
         {
             if (File.Exists(absolutePath))
                 File.Delete(absolutePath);
-            CompiledAtlasLoader.ClearCache();
         }
     }
 

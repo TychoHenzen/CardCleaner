@@ -18,12 +18,6 @@ namespace CardCleaner.Tests.Core.Services;
 [RequireGodotRuntime]
 public class TileVisualLoaderTest
 {
-    [AfterTest]
-    public static void TearDown()
-    {
-        CompiledAtlasLoader.ClearCache();
-    }
-
     [TestCase]
     [TestCategory("Unit")]
     public static void CompiledAtlasAvailableUsesTheAtlasTileSizeAndKeepsEveryTileInOrder()
