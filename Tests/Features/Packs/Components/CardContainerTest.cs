@@ -27,12 +27,16 @@ public class CardContainerTest
     private Node3D _world = null!;
     private RecordingCardSpawner _spawner = null!;
 
+    // Several cases check the opening stage by stage (the lid swings before the boosters rise, items hang until the
+    // wrapper is gone), so a frame must span little game time; at the default factor of 16 they skipped stages.
+    private const int StageByStageFactor = 4;
+
     private FastClock? _clock;
 
     [BeforeTest]
     public void Setup()
     {
-        _clock = FastClock.Start();
+        _clock = FastClock.Start(StageByStageFactor);
         _world = AddNode(new Node3D());
         _spawner = new RecordingCardSpawner();
     }

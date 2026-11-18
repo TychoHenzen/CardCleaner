@@ -57,8 +57,10 @@ must sit on the suite class: `TestSuiteNamingTest` fails when it sits on a membe
 
 **FastClock** (`Tests/TestUtilities/Helpers/FastClock.cs`). A scene test that waits on game time (a customer's walk, a
 card settling) wraps the wait in `using (FastClock.Start())`. It raises `Engine.PhysicsTicksPerSecond`,
-`Engine.TimeScale` and `Engine.MaxPhysicsStepsPerFrame` by the same factor (4 by default), so game time runs four times
-faster while every physics step stays 1/60 s of game time (`FastClockTest` pins that). Do not pass `--fixed-fps` to
+`Engine.TimeScale` and `Engine.MaxPhysicsStepsPerFrame` by the same factor (16 by default), so game time runs sixteen
+times faster while every physics step stays 1/60 s of game time (`FastClockTest` pins that). A process frame then spans
+about 0.11 s of game time, so a test that checks an animation stage by stage passes a smaller factor
+(`CardContainerTest` uses 4). Do not pass `--fixed-fps` to
 Godot instead: it drops the frame sleep that a headless Godot otherwise takes (its low-processor delay, about 6.9 ms, so
 about 145 frames a second), and gdUnit then lost suite starts on every run.
 

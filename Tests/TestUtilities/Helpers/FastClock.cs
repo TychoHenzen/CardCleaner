@@ -13,9 +13,12 @@ namespace CardCleaner.Tests.TestUtilities.Helpers;
 /// </summary>
 public sealed class FastClock : IDisposable
 {
-    // ASSUMPTION: four times real time keeps a shop scene's physics within a headless frame on a CI runner; a frame
-    // that runs late only slows game time back down, it does not change any step.
-    public const int DefaultFactor = 4;
+    // ASSUMPTION: sixteen times real time keeps a shop scene's physics within a headless frame on a CI runner; a frame
+    // that runs late only slows game time back down, it does not change any step. One process frame then spans about
+    // 0.11 s of game time (16 x the 6.9 ms headless frame), so a test that must see each stage of an animation passes
+    // a smaller factor. 32 was barely faster than 16 locally (47 s against 52 s over the clocked suites) and 64 was
+    // slower, with a restocker case missing the walk it waits to interrupt.
+    public const int DefaultFactor = 16;
 
     private readonly int _ticks;
     private readonly double _scale;
