@@ -119,6 +119,39 @@ public class CardHolderAddTest : CardHolderTestBase
 
     [TestCase]
     [TestCategory("Unit")]
+    public void PositionCards_ThreeCards_FanOutLeftToRightWithTheirTopsLeaningOut()
+    {
+        var cards = CreateMultipleTestCards(3);
+        foreach (var card in cards)
+            _systemUnderTest.AddCard(card);
+
+        var left = cards[0].Transform;
+        var middle = cards[1].Transform;
+        var right = cards[2].Transform;
+        Assertions.AssertThat(left.Origin.X).IsLess(middle.Origin.X);
+        Assertions.AssertThat(middle.Origin.X).IsLess(right.Origin.X);
+
+        // A card's top edge is its local -Z; the outer cards lean it away from the middle, and every card shows its
+        // face (local +Y) to the camera, which looks down the anchor's -Z.
+        Assertions.AssertThat((left.Basis * Vector3.Forward).X).IsLess(0f);
+        Assertions.AssertThat((right.Basis * Vector3.Forward).X).IsGreater(0f);
+        Assertions.AssertThat((middle.Basis * Vector3.Forward).Y).IsEqualApprox(1f, 1e-4f);
+        Assertions.AssertThat((middle.Basis * Vector3.Up).Z).IsEqualApprox(1f, 1e-4f);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void PositionCards_ManyCards_KeepTheFullSpread()
+    {
+        var tenth = _systemUnderTest.FanPose(9, 10).Basis * Vector3.Forward;
+        var twentieth = _systemUnderTest.FanPose(19, 20).Basis * Vector3.Forward;
+
+        // The rightmost card leans out just as far with 20 cards as with 10: the extra cards close the gaps instead.
+        Assertions.AssertThat(twentieth.X).IsEqualApprox(tenth.X, 1e-4f);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
     public void PositionCardsForDrop_WithHandAnchorTransform_CardsPositionedRelativeToAnchor()
     {
         // Arrange

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
@@ -21,9 +22,31 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
     // Define defaults as constants to use in both field initializers and reversion
     private const uint DefaultCardCollisionLayer = 2;
     private const float DefaultHoldDistance = 2f;
+    private const float DefaultFanRadius = 0.8f;
+    private const float DefaultFanSpreadDegrees = 50f;
+    private const int DefaultFanFillCount = 10;
+    private const float DefaultFanDepthStep = 0.006f;
+    private static readonly Vector3 DefaultFanCenter = new(0.5f, -0.55f, -1.4f);
 
     [Export] public uint CardCollisionLayer = DefaultCardCollisionLayer;
+
+    /// <summary>How far in front of the hand anchor the cards lie while a drop is being aimed.</summary>
     [Export] public float HoldDistance = DefaultHoldDistance;
+
+    /// <summary>Where the middle of the held fan sits, in the hand anchor's frame.</summary>
+    [Export] public Vector3 FanCenter = DefaultFanCenter;
+
+    /// <summary>Distance from the point the fan turns about (straight below the middle card) to each card's centre.</summary>
+    [Export] public float FanRadius = DefaultFanRadius;
+
+    /// <summary>Angle between the outermost cards once the hand holds <see cref="FanFillCount" /> cards or more.</summary>
+    [Export] public float FanSpreadDegrees = DefaultFanSpreadDegrees;
+
+    /// <summary>How many cards it takes to fill the spread (see <see cref="HandFan" />).</summary>
+    [Export] public int FanFillCount = DefaultFanFillCount;
+
+    /// <summary>How much nearer the camera each next card lies, so the cards never sink into each other.</summary>
+    [Export] public float FanDepthStep = DefaultFanDepthStep;
 
     public override bool _PropertyCanRevert(StringName property)
     {
@@ -31,6 +54,11 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
         {
             nameof(CardCollisionLayer) => true,
             nameof(HoldDistance) => true,
+            nameof(FanCenter) => true,
+            nameof(FanRadius) => true,
+            nameof(FanSpreadDegrees) => true,
+            nameof(FanFillCount) => true,
+            nameof(FanDepthStep) => true,
             _ => base._PropertyCanRevert(property)
         };
     }
@@ -41,6 +69,11 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
         {
             nameof(CardCollisionLayer) => DefaultCardCollisionLayer,
             nameof(HoldDistance) => DefaultHoldDistance,
+            nameof(FanCenter) => DefaultFanCenter,
+            nameof(FanRadius) => DefaultFanRadius,
+            nameof(FanSpreadDegrees) => DefaultFanSpreadDegrees,
+            nameof(FanFillCount) => DefaultFanFillCount,
+            nameof(FanDepthStep) => DefaultFanDepthStep,
             _ => base._PropertyGetRevert(property)
         };
     }
@@ -133,23 +166,30 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
         while (_heldCards.Count > 0) RemoveCard(_heldCards[^1]);
     }
 
+    /// <summary>Lays the held cards out as a fan in front of the hand anchor (see <see cref="FanPose" />).</summary>
     public void PositionCards()
     {
         for (var i = 0; i < _heldCards.Count; i++)
-        {
-            var card = _heldCards[i];
-            var designer = card.GetNode<CardDesigner>("Designer");
-            var thickness = designer.Thickness;
-            var indexOffset = i * thickness;
+            _heldCards[i].Transform = FanPose(i, _heldCards.Count);
+    }
 
-            var rotation = Basis.Identity.Rotated(Vector3.Right, Mathf.DegToRad(90));
-            var localPos = new Vector3(
-                1 - indexOffset * 10,
-                0,
-                -HoldDistance + indexOffset
-            );
-            card.Transform = new Transform3D(rotation, localPos);
-        }
+    /// <summary>
+    ///     The pose of the card at <paramref name="index" /> (0 is the leftmost) in a hand of <paramref name="count" />
+    ///     cards, in the hand anchor's frame. Each card faces the camera, turned about the point
+    ///     <see cref="FanRadius" /> below <see cref="FanCenter" /> by its <see cref="HandFan" /> angle, so its top leans
+    ///     out; each next card lies <see cref="FanDepthStep" /> nearer the camera, on top of the one before.
+    /// </summary>
+    public Transform3D FanPose(int index, int count)
+    {
+        var angle = Mathf.DegToRad(HandFan.AngleDegrees(index, count, FanSpreadDegrees, FanFillCount));
+        var pivot = FanCenter + Vector3.Down * FanRadius;
+        var position = pivot + new Vector3(Mathf.Sin(angle), Mathf.Cos(angle), 0f) * FanRadius
+                       + Vector3.Back * (index * FanDepthStep);
+
+        // Standing the card up (90 degrees about X) shows its face to the camera with its top up; the roll about the
+        // view axis then leans a card right of the middle clockwise.
+        var basis = new Basis(Vector3.Back, -angle) * new Basis(Vector3.Right, Mathf.Pi / 2f);
+        return new Transform3D(basis, position);
     }
 
     public void PositionCardsForDrop()
