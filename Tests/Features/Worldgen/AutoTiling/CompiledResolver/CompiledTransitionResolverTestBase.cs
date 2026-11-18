@@ -2,6 +2,7 @@ using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.CompiledResolver;
 
@@ -19,7 +20,7 @@ public abstract class CompiledTransitionResolverTestBase
     [BeforeTest]
     public void Setup()
     {
-        _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
+        _resolver = GameTransitionResolver.Shared;
         // Load from Tiled source to match transition_map.json source
         _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         _registry.Clear();

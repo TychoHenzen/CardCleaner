@@ -8,6 +8,7 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.Features.Worldgen.Support;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 
@@ -41,7 +42,7 @@ public class WfcPerformanceBenchmarkTest
     [BeforeTest]
     public void Setup()
     {
-        _transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        _transitionPairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
         _biomeRegistry = new BiomeRegistry();
         _biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
     }

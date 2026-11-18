@@ -1,4 +1,4 @@
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug;
 using Godot;
 
@@ -15,5 +15,5 @@ internal sealed class WorldMapSettings
     internal required SubViewport? Viewport { get; init; }
     internal required Camera2D? Camera { get; init; }
     internal required IrregularMeshDebugRenderer? DebugRenderer { get; init; }
-    internal required ITileRegistry? TileRegistry { get; init; }
+    internal required ITransitionResolver? TransitionResolver { get; init; }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.MapGeneratorScenarios;
 
@@ -18,7 +19,7 @@ public abstract class WfcMapGeneratorIntegrationTestBase
     [BeforeTest]
     public void Setup()
     {
-        _transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        _transitionPairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
         _biomeRegistry = new BiomeRegistry();
         _biomeRegistry.RegisterDefaultBiomes(new GodotAssetPaths());
     }

@@ -1,12 +1,10 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -37,10 +35,7 @@ public class IrregularWorldMapScreenEnemyFogTest
     public async Task Setup()
     {
         TestServices.Reset();
-        TestServices.Container.RegisterSingleton<ITileRegistry>(TileCatalogLoad.Load(
-            new GodotAssetPaths(),
-            new CompiledAtlasSource()
-        ));
+        TestServices.Container.RegisterSingleton<ITransitionResolver>(GameTransitionResolver.Shared);
         var session = TestServices.CreateGameSession();
         TestServices.Container.RegisterSingleton<IGameSessionService>(session);
         AddNode(session);

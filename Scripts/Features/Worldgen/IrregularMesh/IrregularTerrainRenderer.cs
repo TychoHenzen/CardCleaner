@@ -1,11 +1,9 @@
 using System.Linq;
-using CardCleaner.Scripts.Core.Services;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 using Godot;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Rendering;
 
@@ -23,7 +21,6 @@ public partial class IrregularTerrainRenderer : Node2D
     private Texture2D? _atlasTexture;
     private ITransitionResolver? _transitionResolver;
     private Vector2 _atlasSize;
-    private ITileRegistry? _tileRegistry;
 
     /// <summary>
     /// Seed for selecting tile variants (for reproducible randomization).
@@ -52,12 +49,12 @@ public partial class IrregularTerrainRenderer : Node2D
     }
 
     /// <summary>
-    /// Sets the tile registry for looking up tile properties.
-    /// REQUIRED for proper terrain resolution.
+    /// Sets the resolver that picks each quad's atlas tile from its corner terrains. Required before rendering. The
+    /// map screen passes the app's one shared resolver, so no renderer parses the transition map on its own.
     /// </summary>
-    public void SetTileRegistry(ITileRegistry tileRegistry)
+    public void SetTransitionResolver(ITransitionResolver? transitionResolver)
     {
-        _tileRegistry = tileRegistry;
+        _transitionResolver = transitionResolver;
     }
 
     /// <summary>
@@ -66,15 +63,15 @@ public partial class IrregularTerrainRenderer : Node2D
     /// </summary>
     public void RenderTerrain(IIrregularMesh mesh)
     {
-        if (_tileRegistry == null)
+        if (_transitionResolver == null)
         {
             GD.PrintErr(
-                "[IrregularTerrainRenderer] CRITICAL: TileRegistry not set! " +
-                "Call SetTileRegistry() before rendering.");
+                "[IrregularTerrainRenderer] CRITICAL: transition resolver not set! " +
+                "Call SetTransitionResolver() before rendering.");
             return;
         }
 
-        if (!LoadResources())
+        if (_atlasTexture == null && !LoadAtlas())
         {
             GD.PrintErr("[IrregularTerrainRenderer] Failed to load atlas resources");
             return;
@@ -121,20 +118,6 @@ public partial class IrregularTerrainRenderer : Node2D
         GD.Print($"[IrregularTerrainRenderer] Rendered {mesh.Quads.Count} quads (solid color)");
     }
 
-    private bool LoadResources()
-    {
-        if (_atlasTexture == null && !LoadAtlas())
-            return false;
-
-        if (_transitionResolver == null)
-        {
-            _transitionResolver = TransitionResolvers.Create(new GodotAssetPaths());
-            GD.Print("[IrregularTerrainRenderer] Created transition resolver");
-        }
-
-        return true;
-    }
-
     private bool LoadAtlas()
     {
         _atlasTexture = TerrainAtlasLoader.Load(DefaultAtlasPath);
@@ -151,7 +134,7 @@ public partial class IrregularTerrainRenderer : Node2D
 
     private ArrayMesh? BuildTerrainMesh(IIrregularMesh mesh)
     {
-        if (_transitionResolver == null || _atlasTexture == null || _tileRegistry == null)
+        if (_transitionResolver == null || _atlasTexture == null)
             return null;
 
         var quadResolver = TerrainQuads.Create(_transitionResolver);

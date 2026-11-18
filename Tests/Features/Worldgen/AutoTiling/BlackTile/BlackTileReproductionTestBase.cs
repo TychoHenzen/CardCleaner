@@ -4,6 +4,7 @@ using System.Text.Json;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.BlackTile;
 
@@ -28,7 +29,7 @@ public abstract class BlackTileReproductionTestBase
     public void Setup()
     {
         _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
-        _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
+        _resolver = GameTransitionResolver.Shared;
         _atlasMapping = CompiledAtlasLoader.LoadMapping();
 
         var transitionPath = ProjectSettings.GlobalizePath(TransitionMapPath);

@@ -4,6 +4,7 @@ using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen;
 
@@ -41,9 +42,9 @@ public class TransitionPairsTest
     [TestCase]
     public void CompiledResolverPairsCarryOverUnchanged()
     {
-        var expected = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var expected = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
 
-        var pairs = new TransitionPairs(new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs());
+        var pairs = new TransitionPairs(GameTransitionResolver.Shared.GetAllTransitionPairs());
 
         AssertThat(expected.Count).IsGreater(0);
         AssertThat(pairs.Pairs.Count).IsEqual(expected.Count);

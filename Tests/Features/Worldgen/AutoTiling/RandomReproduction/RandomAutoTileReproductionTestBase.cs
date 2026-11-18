@@ -4,6 +4,7 @@ using System.Text.Json;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.RandomReproduction;
 
@@ -24,7 +25,7 @@ public abstract class RandomAutoTileReproductionTestBase
     public void Setup()
     {
         _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
-        _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
+        _resolver = GameTransitionResolver.Shared;
 
         var transitionPath = ProjectSettings.GlobalizePath(TransitionMapPath);
         if (File.Exists(transitionPath))

@@ -11,6 +11,7 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Components;
 
@@ -53,7 +54,7 @@ public class DualGridOverlayBuilderTest
         var rng = RandomSources.Create(4242);
         var gradient = Gradients.FromCards(MapCards(), rng);
         var biomeProvider = BiomeMaps.Create(biomeRegistry.ToBiomeSet(), gradient.GetSignatureAt, GridSize);
-        var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var transitionPairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),
             TileCatalogData.From(tileRegistry));

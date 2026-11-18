@@ -15,6 +15,7 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Components;
 
@@ -40,7 +41,7 @@ public class WorldMapTerrainRendererPinTest
         var rng = RandomSources.Create(GridSeed);
         var gradient = Gradients.FromCards(MapCards(), rng);
         var biomeProvider = BiomeMaps.Create(biomeRegistry.ToBiomeSet(), gradient.GetSignatureAt, GridSize);
-        var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var transitionPairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),
             TileCatalogData.From(tileRegistry));
@@ -63,7 +64,7 @@ public class WorldMapTerrainRendererPinTest
             var renderer = new WorldMapTerrainRenderer(
                 terrain, decoration, structure, effect, tileRegistry,
                 TerrainTransitions.Create(
-                    TransitionResolvers.Create(new GodotAssetPaths()),
+                    GameTransitionResolver.Shared,
                     CompiledAtlasLoader.LoadMapping()));
             renderer.RenderTerrainTransitions(map);
             renderer.RenderNonTerrainTiles(map);

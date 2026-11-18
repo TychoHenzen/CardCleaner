@@ -1,3 +1,5 @@
+using System.Linq;
+using CardCleaner.Tests.TestUtilities;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -94,13 +96,6 @@ public class IrregularTerrainRendererTest
         AssertThat(_renderer.VariantSeed).IsEqual(99999);
     }
 
-    [TestCase]
-    public void TestTileRegistryCanBeSet()
-    {
-        // SetTileRegistry should accept null without crashing
-        _renderer.SetTileRegistry(null);
-        // No assertion needed - just verify it doesn't throw
-    }
 
     [TestCase]
     public void TestShowWireframeCanBeToggled()
@@ -132,15 +127,30 @@ public class IrregularTerrainRendererTest
     }
 
     [TestCase]
-    public void TestRenderTerrainWithMissingAtlasFails()
+    public void RenderTerrainWithoutATransitionResolverDrawsNothing()
     {
-        // RenderTerrain requires atlas resources which won't be loaded in tests
-        // This should log an error but not crash
         _renderer.RenderTerrain(_testMesh);
 
-        // The mesh instance should exist but may not have a mesh
-        var meshInstance = _renderer.GetChildOrNull<MeshInstance2D>(0);
-        AssertThat(meshInstance).IsNotNull();
+        AssertThat(_renderer.GetChild<MeshInstance2D>(0).Mesh).IsNull();
+    }
+
+    [TestCase]
+    public void RenderTerrainWithTheTransitionResolverDrawsTheMeshOverTheAtlas()
+    {
+        // Any terrain the compiled atlas has a solid tile for.
+        var resolver = GameTransitionResolver.Shared;
+        var background = resolver.GetAllTransitionPairs()
+            .Select(pair => pair.innerTerrain)
+            .First(terrain => resolver.ResolveSolidFill(terrain).HasValue);
+        foreach (var quad in _testMesh.Quads)
+            quad.BackgroundTileId = background;
+        _renderer.SetTransitionResolver(resolver);
+
+        _renderer.RenderTerrain(_testMesh);
+
+        var meshInstance = _renderer.GetChild<MeshInstance2D>(0);
+        AssertThat(meshInstance.Mesh).IsNotNull();
+        AssertThat(meshInstance.Texture).IsNotNull();
     }
 
     /// <summary>

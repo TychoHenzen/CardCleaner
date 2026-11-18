@@ -2,6 +2,7 @@ using System.Linq;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 
@@ -16,7 +17,7 @@ public class WfcTerrainSolverFactoryTest
     [TestCase]
     public static void CreateReturnsANewSolverEachCall()
     {
-        var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var pairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
         IWfcTerrainSolver.IFactory factory = new WfcMapGenerator.Factory();
 
         AssertBool(ReferenceEquals(factory.Create(pairs, null), factory.Create(pairs, null))).IsFalse();
@@ -25,7 +26,7 @@ public class WfcTerrainSolverFactoryTest
     [TestCase]
     public static void CreateReportsTheRuleTileIdsOfFreshRules()
     {
-        var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var pairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
 
         var solver = WfcMapGenerator.Factory.Build(pairs, null);
         var expected = new WfcAdjacencyRules(pairs);

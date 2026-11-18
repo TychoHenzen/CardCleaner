@@ -1,13 +1,11 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -47,10 +45,7 @@ public class IrregularWorldMapScreenSessionTest
     public async Task Setup()
     {
         TestServices.Reset();
-        TestServices.Container.RegisterSingleton<ITileRegistry>(TileCatalogLoad.Load(
-            new GodotAssetPaths(),
-            new CompiledAtlasSource()
-        ));
+        TestServices.Container.RegisterSingleton<ITransitionResolver>(GameTransitionResolver.Shared);
         _session = TestServices.CreateGameSession();
         TestServices.Container.RegisterSingleton<IGameSessionService>(_session);
         AddNode(_session);
@@ -102,10 +97,7 @@ public class IrregularWorldMapScreenSessionTest
     public async Task InitializeBeforeTheServiceResolvesStartsOnceItDoes()
     {
         TestServices.Reset();
-        TestServices.Container.RegisterSingleton<ITileRegistry>(TileCatalogLoad.Load(
-            new GodotAssetPaths(),
-            new CompiledAtlasSource()
-        ));
+        TestServices.Container.RegisterSingleton<ITransitionResolver>(GameTransitionResolver.Shared);
         var screen = CreateScreen();
         AddNode(screen);
         await ISceneRunner.SyncProcessFrame;

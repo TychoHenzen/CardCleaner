@@ -9,5 +9,5 @@ namespace CardCleaner.Tests.TestUtilities;
 public static class CompiledTransitionPairs
 {
     public static TransitionPairs Load() =>
-        new(new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList());
+        new(GameTransitionResolver.Shared.GetAllTransitionPairs().ToList());
 }
