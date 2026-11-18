@@ -13,6 +13,12 @@ on:
         required: false
         default: false
         type: boolean
+      suites:
+        # TEMPORARY (feature/test-tiers): res:// paths of single suites to time, separated by spaces.
+        description: 'TEMPORARY: run only these GdUnit suites (res:// paths separated by spaces)'
+        required: false
+        default: ''
+        type: string
 
 permissions:
   contents: read
@@ -52,8 +58,8 @@ jobs:
 
   build-and-test:
     name: Build and test (Windows)
-    # TEMPORARY: skipped on the test-tiers branch while the unit tier is being classified.
-    if: github.ref != 'refs/heads/feature/test-tiers'
+    # TEMPORARY: skipped on the test-tiers branch while the unit tier is being classified, unless suites are named.
+    if: github.ref != 'refs/heads/feature/test-tiers' || inputs.suites != ''
     runs-on: windows-latest
     steps:
       - name: Check out repository
@@ -114,8 +120,13 @@ jobs:
 
       - name: Run GdUnit tests
         shell: pwsh
+        env:
+          SUITES: ${{ inputs.suites }}
         run: |
-          if ('${{ github.event_name }}' -eq 'schedule' -or '${{ inputs.full }}' -eq 'true') {
+          if ($env:SUITES) {
+            ./Scripts/ci/Run-GdUnit.ps1 -GodotBinary $env:GODOT_BIN -Suite ($env:SUITES -split '\s+' | Where-Object { $_ })
+          }
+          elseif ('${{ github.event_name }}' -eq 'schedule' -or '${{ inputs.full }}' -eq 'true') {
             ./Scripts/ci/Run-GdUnit.ps1 -GodotBinary $env:GODOT_BIN
           }
           else {
