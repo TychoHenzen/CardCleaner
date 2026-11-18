@@ -41,11 +41,7 @@ jobs:
       - name: Build the unit test project
         run: dotnet build UnitTests/CardCleaner.UnitTests.csproj --configuration Debug
 
-      - name: TEMPORARY classify each unit suite alone
-        run: node Scripts/ci/classify-unit-suites.mjs
-
       - name: Run the unit tests
-        if: ${{ !cancelled() }}
         run: dotnet test UnitTests/CardCleaner.UnitTests.csproj --no-build --blame-crash --logger "trx;LogFileName=unit.trx" --results-directory reports/unit
 
       - name: Upload unit reports
