@@ -168,9 +168,12 @@ internal static class CompiledAtlasTileSetBuilder
                 continue;
 
             if (atlasSource.HasTile(atlasCoords))
+            {
                 alreadyTiles++;
-            else
-                deferred.Add(atlasCoords);
+                continue;
+            }
+
+            deferred.Add(atlasCoords);
         }
 
         ILog.Print(

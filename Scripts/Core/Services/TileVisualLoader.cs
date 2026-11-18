@@ -79,18 +79,23 @@ internal static class TileVisualLoader
         // but auto-tiles use transition_map.json which IS complete
         var translator = new CompiledAtlasTileTranslator(atlasMapping);
         var tiles = original.Tiles.Select(tile => translator.Translate(tile)).ToList();
-
-        if (translator.UnmappedCount > 0)
-        {
-            ILog.Print(
-                $"[TileRegistry] {translator.UnmappedCount} tile coordinates have no entry in the atlas mapping " +
-                "and keep their original coordinates");
-        }
+        LogUnmapped(translator.UnmappedCount);
 
         ILog.Print(
             $"[TileRegistry] SUCCESS: Registered {CountDistinctIds(tiles)} tiles, " +
             "using compiled atlas for auto-tiles");
         return new TileVisualCatalog(tilesetPath, true, tilesetConfig, tiles);
+    }
+
+    // One line for all unmapped coordinates: the translation itself logs nothing, since a load translates hundreds.
+    private static void LogUnmapped(int unmappedCount)
+    {
+        if (unmappedCount == 0)
+            return;
+
+        ILog.Print(
+            $"[TileRegistry] {unmappedCount} tile coordinates have no entry in the atlas mapping " +
+            "and keep their original coordinates");
     }
 
     // Fallback to original tileset

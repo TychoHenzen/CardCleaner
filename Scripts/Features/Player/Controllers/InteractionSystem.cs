@@ -23,7 +23,7 @@ public partial class InteractionSystem : Node3D, IDependent
 
     // One query for every scan. A new query per scan left a finalizable wrapper behind 20 times a game second, and
     // Godot listed thousands of them as leaked when it shut down.
-    private PhysicsRayQueryParameters3D? _ray;
+    private readonly PhysicsRayQueryParameters3D _ray = new() { CollideWithBodies = true, CollideWithAreas = false };
 
     [Export] public Camera3D? Camera { get; set; }
     [Export] public float RayLength { get; set; } = DefaultRayLength;
@@ -106,7 +106,6 @@ public partial class InteractionSystem : Node3D, IDependent
         var origin = Camera.GlobalTransform.Origin;
         var forward = -Camera.GlobalTransform.Basis.Z;
 
-        _ray ??= new PhysicsRayQueryParameters3D { CollideWithBodies = true, CollideWithAreas = false };
         _ray.From = origin;
         _ray.To = origin + forward * RayLength;
         _ray.CollisionMask = InteractableCollisionMask;
