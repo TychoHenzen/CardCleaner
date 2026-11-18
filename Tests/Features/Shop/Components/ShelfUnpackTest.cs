@@ -36,14 +36,14 @@ public class ShelfUnpackTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task OpenOntoLocksTheFirstSixBoxPacksIntoTheShelfAndSpillsTheRest()
+    public async Task OpenOntoLocksAllEightBoxPacksIntoTheShelf()
     {
         var shelf = AddShelf();
         var box = MakeContainer(BoxScene, Seed);
 
         AssertBool(box.OpenOnto(FreeSlots(shelf))).IsTrue();
-        AssertThat(box.PlacedCount).IsEqual(6);
-        AssertThat(box.PendingCount).IsEqual(2);
+        AssertThat(box.PlacedCount).IsEqual(8);
+        AssertThat(box.PendingCount).IsEqual(0);
         foreach (var slot in shelf.Slots)
         {
             AssertThat(slot.Cards.Count).IsEqual(1);
@@ -52,8 +52,8 @@ public class ShelfUnpackTest
 
         await UntilOpened(box);
 
-        AssertThat(shelf.StockedCount).IsEqual(6);
-        AssertThat(Containers(_world, CardContainerKind.Pack).Length).IsEqual(2);
+        AssertThat(shelf.StockedCount).IsEqual(8);
+        AssertThat(Containers(_world, CardContainerKind.Pack).Length).IsEqual(0);
     }
 
     [TestCase]
@@ -79,20 +79,38 @@ public class ShelfUnpackTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task APackOntoAShelfYieldsBoostersInTheSixSlots()
+    public async Task APackUnpackedOntoAProductShelfStacksItsBoostersFourToASlot()
     {
         var shelf = AddShelf();
         var pack = MakeContainer(PackScene, Seed);
 
-        AssertBool(pack.OpenOnto(FreeSlots(shelf))).IsTrue();
-        AssertThat(pack.PlacedCount).IsEqual(6);
-        AssertThat(pack.PendingCount).IsEqual(2);
+        AssertBool(shelf.TryUnpack(pack)).IsTrue();
+        AssertThat(pack.PlacedCount).IsEqual(8);
+        AssertThat(pack.PendingCount).IsEqual(0);
 
         await UntilOpened(pack);
 
-        foreach (var slot in shelf.Slots)
-            AssertThat(((CardContainer)slot.Cards[0]).Kind).IsEqual(CardContainerKind.Booster);
-        AssertThat(Containers(_world, CardContainerKind.Booster).Length).IsEqual(2);
+        var counts = shelf.Slots.Select(slot => slot.Cards.Count).ToArray();
+        AssertThat(string.Join(",", counts)).IsEqual("4,4,0,0,0,0,0,0");
+        foreach (var body in shelf.StockedCards)
+            AssertThat(((CardContainer)body).Kind).IsEqual(CardContainerKind.Booster);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task TryUnpackSkipsASlotThatHoldsAPack()
+    {
+        var shelf = AddShelf();
+        var first = shelf.Slots.First();
+        AssertBool(first.TryLock(MakeContainer(PackScene, Seed + 1))).IsTrue();
+        var pack = MakeContainer(PackScene, Seed);
+
+        AssertBool(shelf.TryUnpack(pack)).IsTrue();
+        await UntilOpened(pack);
+
+        var counts = shelf.Slots.Select(slot => slot.Cards.Count).ToArray();
+        AssertThat(string.Join(",", counts)).IsEqual("1,4,4,0,0,0,0,0");
+        AssertThat(((CardContainer)first.Cards[0]).Kind).IsEqual(CardContainerKind.Pack);
     }
 
     [TestCase]
@@ -109,18 +127,18 @@ public class ShelfUnpackTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task TryUnpackOntoAProductShelfFillsItsSixFreeSlots()
+    public async Task TryUnpackABoxOntoAProductShelfFillsItsEightSlots()
     {
         var shelf = AddShelf();
         var box = MakeContainer(BoxScene, Seed);
 
         AssertBool(shelf.TryUnpack(box)).IsTrue();
-        AssertThat(box.PlacedCount).IsEqual(6);
-        AssertThat(box.PendingCount).IsEqual(2);
+        AssertThat(box.PlacedCount).IsEqual(8);
+        AssertThat(box.PendingCount).IsEqual(0);
 
         await UntilOpened(box);
 
-        AssertThat(shelf.StockedCount).IsEqual(6);
+        AssertThat(shelf.StockedCount).IsEqual(8);
     }
 
     [TestCase]
@@ -137,7 +155,7 @@ public class ShelfUnpackTest
 
         await UntilOpened(box);
 
-        AssertThat(shelf.StockedCount).IsEqual(6);
+        AssertThat(shelf.StockedCount).IsEqual(8);
     }
 
     [TestCase]

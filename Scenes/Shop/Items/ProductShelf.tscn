@@ -15,7 +15,7 @@ size = Vector3(1.742, 0.05, 0.671)
 size = Vector3(1.836, 0.02, 0.687)
 
 [sub_resource type="BoxShape3D" id="Trigger"]
-size = Vector3(0.5, 0.25, 0.6)
+size = Vector3(0.4, 0.25, 0.6)
 
 [sub_resource type="StandardMaterial3D" id="PlaceholderMaterial"]
 albedo_color = Color(0.55, 0.45, 0.35, 1)
@@ -67,10 +67,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1835, 0)
 mesh = SubResource("PlaceholderMesh")
 
 [node name="Slot1" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.782, 0.055)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.63, 0.782, 0.055)
 script = ExtResource("DeckSlot")
 Area = NodePath("Area3D")
-Capacity = 1
+StackOffset = Vector3(0, 0.046, 0)
+Capacity = 4
 
 [node name="Area3D" type="Area3D" parent="Slot1"]
 collision_layer = 3
@@ -81,10 +82,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.055)
 shape = SubResource("Trigger")
 
 [node name="Slot2" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.782, 0.055)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.21, 0.782, 0.055)
 script = ExtResource("DeckSlot")
 Area = NodePath("Area3D")
-Capacity = 1
+StackOffset = Vector3(0, 0.046, 0)
+Capacity = 4
 
 [node name="Area3D" type="Area3D" parent="Slot2"]
 collision_layer = 3
@@ -95,10 +97,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.055)
 shape = SubResource("Trigger")
 
 [node name="Slot3" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.782, 0.055)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.21, 0.782, 0.055)
 script = ExtResource("DeckSlot")
 Area = NodePath("Area3D")
-Capacity = 1
+StackOffset = Vector3(0, 0.046, 0)
+Capacity = 4
 
 [node name="Area3D" type="Area3D" parent="Slot3"]
 collision_layer = 3
@@ -109,10 +112,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.055)
 shape = SubResource("Trigger")
 
 [node name="Slot4" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.306, 0.055)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.63, 0.782, 0.055)
 script = ExtResource("DeckSlot")
 Area = NodePath("Area3D")
-Capacity = 1
+StackOffset = Vector3(0, 0.046, 0)
+Capacity = 4
 
 [node name="Area3D" type="Area3D" parent="Slot4"]
 collision_layer = 3
@@ -123,10 +127,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.055)
 shape = SubResource("Trigger")
 
 [node name="Slot5" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.306, 0.055)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.63, 1.306, 0.055)
 script = ExtResource("DeckSlot")
 Area = NodePath("Area3D")
-Capacity = 1
+StackOffset = Vector3(0, 0.046, 0)
+Capacity = 4
 
 [node name="Area3D" type="Area3D" parent="Slot5"]
 collision_layer = 3
@@ -137,10 +142,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.055)
 shape = SubResource("Trigger")
 
 [node name="Slot6" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.306, 0.055)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.21, 1.306, 0.055)
 script = ExtResource("DeckSlot")
 Area = NodePath("Area3D")
-Capacity = 1
+StackOffset = Vector3(0, 0.046, 0)
+Capacity = 4
 
 [node name="Area3D" type="Area3D" parent="Slot6"]
 collision_layer = 3
@@ -150,26 +156,64 @@ collision_mask = 3
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.055)
 shape = SubResource("Trigger")
 
+[node name="Slot7" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.21, 1.306, 0.055)
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
+StackOffset = Vector3(0, 0.046, 0)
+Capacity = 4
+
+[node name="Area3D" type="Area3D" parent="Slot7"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Slot7/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.055)
+shape = SubResource("Trigger")
+
+[node name="Slot8" type="Node3D" parent="." node_paths=PackedStringArray("Area")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.63, 1.306, 0.055)
+script = ExtResource("DeckSlot")
+Area = NodePath("Area3D")
+StackOffset = Vector3(0, 0.046, 0)
+Capacity = 4
+
+[node name="Area3D" type="Area3D" parent="Slot8"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Slot8/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, -0.055)
+shape = SubResource("Trigger")
+
 [node name="Price1" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.745, -0.338)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.63, 0.745, -0.338)
 Slot = NodePath("../Slot1")
 
 [node name="Price2" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.745, -0.338)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.21, 0.745, -0.338)
 Slot = NodePath("../Slot2")
 
 [node name="Price3" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.745, -0.338)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.21, 0.745, -0.338)
 Slot = NodePath("../Slot3")
 
 [node name="Price4" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 1.269, -0.338)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.63, 0.745, -0.338)
 Slot = NodePath("../Slot4")
 
 [node name="Price5" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.269, -0.338)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.63, 1.269, -0.338)
 Slot = NodePath("../Slot5")
 
 [node name="Price6" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.269, -0.338)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.21, 1.269, -0.338)
 Slot = NodePath("../Slot6")
+
+[node name="Price7" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.21, 1.269, -0.338)
+Slot = NodePath("../Slot7")
+
+[node name="Price8" parent="." node_paths=PackedStringArray("Slot") instance=ExtResource("PriceTag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.63, 1.269, -0.338)
+Slot = NodePath("../Slot8")

@@ -30,7 +30,7 @@ public abstract class RestockerTestBase
     private protected const int LongIdleFrames = 600;
     private protected const int LevelThreePayment = 1500;
     private protected const int PacksInABox = 8;
-    private protected const int ProductSlots = 6;
+    private protected const int ProductSlots = 8;
     private protected const string ProductShelfScene = "res://Scenes/Shop/Items/ProductShelf.tscn";
     private protected const float ShelfSpacing = 3f;
     private protected const double LongWalkSeconds = 90;
@@ -129,7 +129,7 @@ public abstract class RestockerTestBase
         return (ordered[0], ordered[1]);
     }
 
-    // One more product shelf beside the scene's one, in line along its width and turned the same way, so twelve
+    // One more product shelf beside the scene's one, in line along its width and turned the same way, so sixteen
     // product slots stand and the real box threshold (8) can be met. It is checked to be reachable from the rack
     // before a test relies on it.
     private protected List<CardShelf> AddProductShelves()

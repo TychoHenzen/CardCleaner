@@ -79,15 +79,15 @@ public class RestockerTest : RestockerTestBase
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task DefaultThresholdLeavesABoxOnTheRackWithOneSixSlotShelf()
+    public async Task DefaultThresholdUnpacksABoxOntoOneEmptyEightSlotShelf()
     {
         HireAndOpen();
-        var box = Stock(BoxScene, _rack.Slots.First());
+        Stock(BoxScene, _rack.Slots.First());
 
-        await Frames(LongIdleFrames);
+        var filled = await Poll(() => _product.Slots.All(slot => slot.HasCards), LongWalkSeconds);
 
-        AssertBool(_rack.Slots.First().Cards.Contains(box)).IsTrue();
-        AssertThat(_restocker.Phase).IsEqual(RestockerPhase.Idle);
+        AssertBool(filled).IsTrue();
+        AssertInt(PackCount()).IsEqual(ProductSlots);
     }
 
     [TestCase]

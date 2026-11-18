@@ -84,10 +84,11 @@ public partial class DeckSlot : Node3D
         // Only free bodies this slot takes lock. Anything else (a box on a card shelf, a card on a storage rack) is
         // ignored: it is not frozen and reparented into the slot. So is a body a slot already holds, this one or
         // another (see TryLock).
-        if (body is not RigidBody3D rigid || !Accepts(rigid) || _cards.Contains(rigid) || IsHeld(rigid))
+        if (body is not RigidBody3D rigid || StockOf(rigid) is not { } stock || !Accepts(stock)
+            || _cards.Contains(rigid) || IsHeld(rigid))
             return;
 
-        if (!HasRoom)
+        if (!HasRoomFor(stock))
         {
             EjectCard(rigid);
             return;
@@ -129,29 +130,54 @@ public partial class DeckSlot : Node3D
         return true;
     }
 
-    /// <summary>True while the slot holds fewer bodies than its capacity.</summary>
-    public bool HasRoom => _cards.Count < Capacity;
+    /// <summary>
+    ///     True while the slot can take one more body: it is empty, or holds fewer of its stock than that stock's
+    ///     limit (<see cref="SeatsFor" />).
+    /// </summary>
+    public bool HasRoom => _cards.Count == 0 ? Capacity > 0 : StockOf(_cards[0]) is { } held && HasRoomFor(held);
 
     /// <summary>
     /// Whether <see cref="TryLock" /> would lock <paramref name="body" /> now: stock it takes, that no slot holds,
     /// with room.
     /// </summary>
     public bool CanTake(RigidBody3D body) =>
-        IsInstanceValid(body) && Accepts(body) && !_cards.Contains(body) && !IsHeld(body) && HasRoom;
+        IsInstanceValid(body) && StockOf(body) is { } stock && CanTake(stock) && !_cards.Contains(body)
+        && !IsHeld(body);
+
+    /// <summary>
+    ///     Whether this slot takes one more body of <paramref name="stock" /> now: its shelf takes that stock, the
+    ///     slot holds nothing else, and the stack is below <see cref="SeatsFor" />.
+    /// </summary>
+    public bool CanTake(StockKind stock) => Accepts(stock) && HasRoomFor(stock);
+
+    /// <summary>
+    ///     How many bodies of <paramref name="stock" /> this slot stacks: the shelf's stack limit for that stock
+    ///     (<see cref="ShelfPlacementRule.StackLimit" />) within the slot's <see cref="Capacity" />.
+    /// </summary>
+    public int SeatsFor(StockKind stock) => Math.Min(Capacity, ShelfPlacementRule.StackLimit(Kind, stock) ?? Capacity);
+
+    /// <summary>How many more bodies of <paramref name="stock" /> this slot takes now; 0 when it takes none.</summary>
+    public int FreeSeatsFor(StockKind stock) => CanTake(stock) ? SeatsFor(stock) - _cards.Count : 0;
+
+    // A slot holds one kind of stock at a time, up to that stock's seats.
+    private bool HasRoomFor(StockKind stock) =>
+        (_cards.Count == 0 || StockOf(_cards[0]) == stock) && _cards.Count < SeatsFor(stock);
 
     // A slot holds a body it has locked: the body is its child and in its list. A released body stays the slot's
     // child (see ReleaseCard) but is free again.
     private static bool IsHeld(RigidBody3D body) =>
         body.GetParent() is DeckSlot holder && holder._cards.Contains(body);
 
-    // A card is a card on a card shelf; a container is taken when this slot's kind accepts its kind.
-    private bool Accepts(Node3D body)
+    private bool Accepts(StockKind stock) => ShelfPlacementRule.Accepts(Kind, stock);
+
+    // What a body is as stock: a card, or a container of its kind. Null for anything else.
+    private static StockKind? StockOf(Node3D body)
     {
         return body switch
         {
-            CardController => ShelfPlacementRule.Accepts(Kind, StockKind.Card),
-            CardContainer container => ShelfPlacementRule.Accepts(Kind, ShelfPlacementRule.From(container.Kind)),
-            _ => false
+            CardController => StockKind.Card,
+            CardContainer container => ShelfPlacementRule.From(container.Kind),
+            _ => null
         };
     }
 

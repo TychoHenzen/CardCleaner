@@ -9,8 +9,9 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     A shelf that displays stock in its slots. Each slot is a one-card <see cref="DeckSlot" /> child:
-///     a body dropped on a slot locks and shows there, and picking it up releases it again. The
+///     A shelf that displays stock in its slots. Each slot is a <see cref="DeckSlot" /> child that holds one kind of
+///     stock (one card, one pack, or a stack of boosters; see <see cref="ShelfPlacementRule" />): a body dropped on a
+///     slot locks and shows there, and picking it up releases it again. The
 ///     <see cref="Kind" /> decides which stock the slots take and which group the shelf joins. A shelf is also an
 ///     <see cref="IUnpackTarget" />: a carried box or pack pointed at it unpacks into its free slots.
 /// </summary>
@@ -117,16 +118,27 @@ public partial class CardShelf : RigidBody3D, IUnpackTarget
     /// </summary>
     public bool TryUnpack(CardContainer container)
     {
-        if (!TakesContentsOf(container))
+        if (ContentsOf(container) is not { } contents)
             return false;
 
-        return container.OpenOnto(Slots.Where(slot => !slot.HasCards).ToList());
+        return container.OpenOnto(FreeSeats(contents));
     }
 
     public bool CanUnpack(CardContainer container) =>
-        TakesContentsOf(container) && Slots.Any(slot => !slot.HasCards);
+        ContentsOf(container) is { } contents && Slots.Any(slot => slot.CanTake(contents));
 
-    private bool TakesContentsOf(CardContainer container) =>
+    /// <summary>
+    ///     One entry per free seat for <paramref name="stock" />, slot by slot in scene order: a slot that stacks three
+    ///     more boosters is listed three times, so unpacking fills each stack before it starts the next.
+    /// </summary>
+    private List<DeckSlot> FreeSeats(StockKind stock) =>
+        Slots.SelectMany(slot => Enumerable.Repeat(slot, slot.FreeSeatsFor(stock))).ToList();
+
+    // The stock a container opens into, when this shelf takes it; null for a booster (it holds cards) or contents
+    // this shelf does not take.
+    private StockKind? ContentsOf(CardContainer container) =>
         CardContainerLayout.ChildKind(container.Kind) is { } kind
-        && ShelfPlacementRule.Accepts(Kind, ShelfPlacementRule.From(kind));
+        && ShelfPlacementRule.Accepts(Kind, ShelfPlacementRule.From(kind))
+            ? ShelfPlacementRule.From(kind)
+            : null;
 }
