@@ -218,9 +218,9 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     /// <summary>
     ///     Takes the next item out of this open box or pack and locks it into <paramref name="slot" />. The item gets
-    ///     the seed <see cref="Open" /> would have given it, so taking a box apart by hand gives the same stock. When the
-    ///     last item leaves, the container is used up: it counts as opened and is freed. False, with nothing taken,
-    ///     when the lid is shut, nothing is left or the slot refuses the item.
+    ///     the seed <see cref="Open" /> would have given it, so taking a box apart by hand gives the same stock. When
+    ///     the last item leaves, the container is used up: it counts as opened and is freed. False, with nothing
+    ///     taken, when the lid is shut, nothing is left or the slot refuses the item.
     /// </summary>
     public bool TakeOneInto(DeckSlot slot)
     {
@@ -350,10 +350,11 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     }
 
     /// <summary>
-    ///     Opens this held booster in front of the player (<see cref="BoosterReveal" />): its strip tears off, its cards
-    ///     spread into a fan, and the fan slides into <paramref name="hand" />. The cards are the ones <see cref="Open" />
-    ///     would let out, from the same seed. The booster stays under the hand anchor the whole time and is freed when
-    ///     the cards are in the hand. False unless this is a held, unopened booster that has its contents.
+    ///     Opens this held booster in front of the player (<see cref="BoosterReveal" />): its strip tears off, its
+    ///     cards spread into a fan, and the fan slides into <paramref name="hand" />. The cards are the ones
+    ///     <see cref="Open" /> would let out, from the same seed. The booster stays under the hand anchor the whole
+    ///     time and is freed when the cards are in the hand. False unless this is a held, unopened booster that has
+    ///     its contents.
     /// </summary>
     public bool OpenInHand(ICardHolder hand)
     {

@@ -26,7 +26,9 @@ public partial class CardDropper : Node3D, IDependent
 
     public void Inject(IServiceResolver services) => _services = services;
 
-    /// <param name="handBusy">True while something else occupies the hand (a held container), so X drops no card.</param>
+    /// <param name="handBusy">
+    ///     True while something else occupies the hand (a held container), so X drops no card.
+    /// </param>
     public void Initialize(ICardHolder cardHolder, IDropPreview dropPreview, Camera3D camera,
         Func<bool>? handBusy = null)
     {

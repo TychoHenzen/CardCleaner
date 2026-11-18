@@ -8,9 +8,9 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
 ///     Where stock sits once a shelf slot locks it: on a surface of the shelf's own model, centred on the slot, inside
-///     the shelf's colliders, all of it turning with the shelf. The surfaces are read from the art mesh, so a slot that
-///     floats above a board or sinks into one fails here. Each shelf stands turned a quarter turn, as the shop's product
-///     shelf does, so an offset applied in world space instead of the slot's frame fails too.
+///     the shelf's colliders, all of it turning with the shelf. The surfaces are read from the art mesh, so a slot
+///     that floats above a board or sinks into one fails here. Each shelf stands turned a quarter turn, as the shop's
+///     product shelf does, so an offset applied in world space instead of the slot's frame fails too.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -51,7 +51,8 @@ public class ShelfSeatTest
 
             var onSlot = BodyShapesIn(slot, body);
             AssertBool(Near(onSlot.GetCenter().X, 0))
-                .OverrideFailureMessage($"{slot.Name}: {stock} centred at {onSlot.GetCenter()}, not on the slot").IsTrue();
+                .OverrideFailureMessage($"{slot.Name}: {stock} centred at {onSlot.GetCenter()}, not on the slot")
+                .IsTrue();
 
             var onShelf = BodyShapesIn(shelf, body);
             var bottom = new Vector3(onShelf.GetCenter().X, onShelf.Position.Y, onShelf.GetCenter().Z);
@@ -92,7 +93,8 @@ public class ShelfSeatTest
 
             var onShelf = BodyShapesIn(shelf, card);
             AssertBool(onShelf.Position.Y >= baseBox.End.Y - 0.002f && onShelf.Position.Y <= baseBox.End.Y + 0.01f)
-                .OverrideFailureMessage($"{slot.Name}: card bottom at {onShelf.Position.Y}, stand base top {baseBox.End.Y}")
+                .OverrideFailureMessage(
+                    $"{slot.Name}: card bottom at {onShelf.Position.Y}, stand base top {baseBox.End.Y}")
                 .IsTrue();
             // A card on top of the shelf stands above its colliders, so only its sides are held to the footprint.
             AssertInside(footprint, onShelf, $"{slot.Name}: card", capHeight: false);
@@ -129,7 +131,8 @@ public class ShelfSeatTest
                 var eye = new Vector3(point.X, EyeHeight, front - EyeDistance);
                 var blocker = boxes.FirstOrDefault(box => box.Blocks(eye, point));
                 AssertObject(blocker.Owner)
-                    .OverrideFailureMessage($"{slot.Name}: {blocker.Name} hides the card at {point} from an eye at {eye}")
+                    .OverrideFailureMessage(
+                        $"{slot.Name}: {blocker.Name} hides the card at {point} from an eye at {eye}")
                     .IsNull();
             }
         }

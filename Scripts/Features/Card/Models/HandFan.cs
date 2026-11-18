@@ -24,7 +24,9 @@ public static class HandFan
         return spreadDegrees / gaps;
     }
 
-    /// <summary>The angle of the card at <paramref name="index" /> (0 is the leftmost) of <paramref name="count" />.</summary>
+    /// <summary>
+    ///     The angle of the card at <paramref name="index" /> (0 is the leftmost) of <paramref name="count" />.
+    /// </summary>
     public static float AngleDegrees(int index, int count, float spreadDegrees, int fillCount) =>
         (index - (count - 1) / 2f) * StepDegrees(count, spreadDegrees, fillCount);
 }

@@ -145,7 +145,8 @@ public class ShopOpenBoxStockingSceneTest
         for (var i = 0; i < ShelfPlacementRule.BoostersPerProductSlot; i++)
         {
             AssertBool(ReferenceEquals(_interaction.Target, target))
-                .OverrideFailureMessage($"click {i + 1} aimed at {Describe(_interaction.Target)}, expected {target.Name}")
+                .OverrideFailureMessage(
+                    $"click {i + 1} aimed at {Describe(_interaction.Target)}, expected {target.Name}")
                 .IsTrue();
             _leftClick!.Invoke(true);
             await PhysicsFrames(AimFrames);

@@ -101,7 +101,8 @@ public class ProductShelfTest
 
         AssertThat(slot.Cards.Count).IsEqual(4);
         for (var i = 0; i < slot.Cards.Count; i++)
-            AssertVector(slot.Cards[i].GlobalPosition).IsEqualApprox(slot.SeatPosition(i), new Vector3(Near, Near, Near));
+            AssertVector(slot.Cards[i].GlobalPosition)
+                .IsEqualApprox(slot.SeatPosition(i), new Vector3(Near, Near, Near));
         AssertBool(extra.Freeze).IsFalse();
         AssertBool(slot.Cards.Contains(extra)).IsFalse();
     }

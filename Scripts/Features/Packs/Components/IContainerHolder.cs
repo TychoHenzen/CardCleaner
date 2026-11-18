@@ -23,13 +23,15 @@ public interface IContainerHolder
     bool Drop();
 
     /// <summary>
-    ///     Opens or closes the held box's flaps or pack's lid; a held booster opens in front of the player and its cards
-    ///     go into the hand of cards. False when nothing is held or nothing happened.
+    ///     Opens or closes the held box's flaps or pack's lid; a held booster opens in front of the player and its
+    ///     cards go into the hand of cards. False when nothing is held or nothing happened.
     /// </summary>
     bool UseHeld();
 
     /// <param name="handAnchor">The node a held container hangs under: the player's camera.</param>
-    /// <param name="cards">The hand a booster opened in the hand gives its cards to; none means a booster stays shut.</param>
+    /// <param name="cards">
+    ///     The hand a booster opened in the hand gives its cards to; none means a booster stays shut.
+    /// </param>
     void SetReferences(Node3D handAnchor, ICardHolder? cards = null);
 
     event ContainerHolder.ContainerPickedUpEventHandler ContainerPickedUp;

@@ -39,10 +39,14 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
     /// <summary>Where the middle of the held fan sits, in the hand anchor's frame.</summary>
     [Export] public Vector3 FanCenter = DefaultFanCenter;
 
-    /// <summary>Distance from the point the fan turns about (straight below the middle card) to each card's centre.</summary>
+    /// <summary>
+    ///     Distance from the point the fan turns about (straight below the middle card) to each card's centre.
+    /// </summary>
     [Export] public float FanRadius = DefaultFanRadius;
 
-    /// <summary>Angle between the outermost cards once the hand holds <see cref="FanFillCount" /> cards or more.</summary>
+    /// <summary>
+    ///     Angle between the outermost cards once the hand holds <see cref="FanFillCount" /> cards or more.
+    /// </summary>
     [Export] public float FanSpreadDegrees = DefaultFanSpreadDegrees;
 
     /// <summary>How many cards it takes to fill the spread (see <see cref="HandFan" />).</summary>

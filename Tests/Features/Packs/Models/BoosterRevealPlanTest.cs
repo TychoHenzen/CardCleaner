@@ -49,7 +49,8 @@ public class BoosterRevealPlanTest
     {
         var plan = new BoosterRevealPlan(Cards);
 
-        AssertThat(plan.RiseProgress(Cards - 1, plan.IntoHandStart - BoosterRevealPlan.Show)).IsEqualApprox(1f, 0.0001f);
+        AssertThat(plan.RiseProgress(Cards - 1, plan.IntoHandStart - BoosterRevealPlan.Show))
+            .IsEqualApprox(1f, 0.0001f);
         AssertThat(plan.IntoHandStart - plan.ReleaseAt(Cards - 1) - BoosterRevealPlan.Rise)
             .IsEqualApprox(BoosterRevealPlan.Show, 0.0001f);
         AssertThat(plan.Duration).IsEqualApprox(plan.IntoHandStart + BoosterRevealPlan.IntoHand, 0.0001f);

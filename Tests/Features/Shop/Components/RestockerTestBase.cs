@@ -142,7 +142,8 @@ public abstract class RestockerTestBase
         return [_product, shelf];
     }
 
-    // Stocks a pack on the first product slots until only the given number of them is free; returns how many it stocked.
+    // Stocks a pack on the first product slots until only the given number of them is free; returns how many it
+    // stocked.
     private protected int StockAllBut(List<CardShelf> shelves, int free)
     {
         var slots = shelves.SelectMany(shelf => shelf.Slots).ToList();
