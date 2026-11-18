@@ -12,6 +12,10 @@ public interface IServiceContainer
     void RegisterSingleton<TInterface, TImplementation>()
         where TImplementation : class, TInterface;
 
+    /// <summary>Registers a service that factory builds on its first Resolve and that T and every type in alsoAs then
+    ///     share. It counts as registered at once, and an explicit registration of one of its types replaces it.</summary>
+    void RegisterLazy<T>(Func<T> factory, params Type[] alsoAs) where T : class;
+
     T Resolve<T>() where T : class;
     object Resolve(Type type);
     bool IsRegistered<T>() where T : class;

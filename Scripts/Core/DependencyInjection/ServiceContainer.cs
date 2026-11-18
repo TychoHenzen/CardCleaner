@@ -11,7 +11,8 @@ public class ServiceContainer : IServiceContainer
 {
     private readonly Dictionary<Type, object> _singletons = new();
 
-    // Scanned [Service] classes, built on first Resolve. One entry is shared by every service type of its class.
+    // Scanned [Service] classes and RegisterLazy factories, built on first Resolve. One entry is shared by every
+    // service type of its class or factory.
     private readonly Dictionary<Type, LazyService> _lazy = new();
 
     // The registrations SealAppScope recorded; null until it runs. DropSceneScope returns the maps to these.
@@ -61,6 +62,16 @@ public class ServiceContainer : IServiceContainer
         RegisterSingleton(typeof(TInterface), Construct(typeof(TImplementation)));
     }
 
+    public void RegisterLazy<T>(Func<T> factory, params Type[] alsoAs) where T : class
+    {
+        var entry = new LazyService(typeof(T)) { Factory = factory };
+        foreach (var serviceType in alsoAs.Prepend(typeof(T)))
+        {
+            _singletons.Remove(serviceType);
+            _lazy[serviceType] = entry;
+        }
+    }
+
     public T Resolve<T>() where T : class
     {
         return (T)Resolve(typeof(T));
@@ -77,9 +88,13 @@ public class ServiceContainer : IServiceContainer
         throw new InvalidOperationException($"Service {type.Name} not registered");
     }
 
-    // Builds a scanned class once. It is scene-bound when any constructor argument came from the scene scope.
+    // Builds a lazy entry once. A scanned class is scene-bound when any constructor argument came from the scene
+    // scope; a factory takes no arguments from the container, so it never is.
     private object Build(LazyService lazy)
     {
+        if (lazy.Factory != null)
+            return lazy.Instance = lazy.Factory();
+
         var parameters = GreediestConstructor(lazy.Implementation).GetParameters();
         lazy.Instance = Construct(lazy.Implementation);
         lazy.SceneBound = parameters.Any(parameter => IsSceneScoped(parameter.ParameterType));
@@ -150,7 +165,7 @@ public class ServiceContainer : IServiceContainer
             return true;
         if (!_lazy.TryGetValue(serviceType, out var lazy))
             return false;
-        if (lazy.Instance != null)
+        if (lazy.Instance != null || lazy.Factory != null)
             return true;
 
         // A class already on the path is a dependency cycle, which can never be built.
@@ -206,6 +221,9 @@ public class ServiceContainer : IServiceContainer
     {
         public Type Implementation { get; } = implementation;
         public object? Instance { get; set; }
+
+        // Set for a RegisterLazy entry, which builds through it instead of a constructor.
+        public Func<object>? Factory { get; init; }
 
         // True when Instance was built from a scene-scope service; DropSceneScope then clears Instance.
         public bool SceneBound { get; set; }

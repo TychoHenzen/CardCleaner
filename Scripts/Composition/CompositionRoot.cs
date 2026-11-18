@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -167,23 +168,23 @@ public partial class CompositionRoot : Node
         var assetPaths = new GodotAssetPaths();
         container.RegisterSingleton<IAssetPaths>(assetPaths);
 
-        var tileRegistry = TileCatalogLoad.Load(assetPaths, new CompiledAtlasSource());
-        container.RegisterSingleton<ITileRegistry>(tileRegistry);
-        container.RegisterSingleton<ITileMetadataProvider>(tileRegistry);
-        // The [Service] scan builds TileCatalogData once from the registry above; the root only resolves it.
-        _ = container.Resolve<ITileCatalog>();
-
-        var biomeRegistry = new BiomeRegistry();
-        biomeRegistry.RegisterDefaultBiomes(assetPaths);
-        container.RegisterSingleton<IBiomeCatalog>(biomeRegistry);
-        // The data the map generators take as constructor parameters;
-        // the [Service] scan builds the generators from them.
-        var biomes = biomeRegistry.ToBiomeSet();
-        container.RegisterSingleton(biomes);
-        var transitionResolver = TransitionResolvers.Create(assetPaths);
-        container.RegisterSingleton(transitionResolver);
-        var transitionPairs = new TransitionPairs(transitionResolver.GetAllTransitionPairs());
-        container.RegisterSingleton(transitionPairs);
+        // The world data is read from files on its first resolve, on the main thread: the workshop in the shop
+        // resolves the map generators and the tile registry in its _Ready. The main menu and the tests that never
+        // build a workshop or a map never load it. The [Service] scan builds TileCatalogData and the map generators
+        // from these entries.
+        container.RegisterLazy<ITileRegistry>(
+            () => TileCatalogLoad.Load(assetPaths, new CompiledAtlasSource()), typeof(ITileMetadataProvider));
+        var biomeRegistry = new Lazy<BiomeRegistry>(() =>
+        {
+            var registry = new BiomeRegistry();
+            registry.RegisterDefaultBiomes(assetPaths);
+            return registry;
+        });
+        container.RegisterLazy<IBiomeCatalog>(() => biomeRegistry.Value);
+        container.RegisterLazy(() => biomeRegistry.Value.ToBiomeSet());
+        var transitionResolver = new Lazy<ITransitionResolver>(() => TransitionResolvers.Create(assetPaths));
+        container.RegisterLazy(() => transitionResolver.Value);
+        container.RegisterLazy(() => new TransitionPairs(transitionResolver.Value.GetAllTransitionPairs()));
 
         container.RegisterSingleton<IVisibilityChecker, SimpleVisibilityChecker>();
         container.RegisterSingleton(SafePositionTrackers.Create());
