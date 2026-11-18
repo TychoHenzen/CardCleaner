@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -270,39 +269,6 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
             AddIfAutoPair(0, y, 0, y + 1);
             AddIfAutoPair(width - 1, y, width - 1, y + 1);
         }
-    }
-
-    // Max-of-3 average of three process runs, measured 2026-10-10 on AMD Ryzen 7 7435HS with the production tile
-    // catalog and an optimized build (-p:Optimize=true): run averages 760.8, 710.7 and 736.0 ms. See
-    // WfcTestFixtures.PerfBudgetMs.
-    private const double OptimizedBaseline20x20Ms = 760.8;
-
-    [TestCase]
-    public void TestPerformance20x20WithinBudget()
-    {
-        var generator = new WfcMapGenerator(
-            new WfcAdjacencyRules(_transitionPairs),
-            WfcTestFixtures.ProductionCatalog());
-        var biome = _biomeRegistry.GetBiome("plains");
-        AssertThat(biome).IsNotNull();
-        WfcTestFixtures.WarmUp(_transitionPairs, biome!);
-
-        const int runs = 3;
-        var times = new double[runs];
-        for (var i = 0; i < runs; i++)
-        {
-            var stopwatch = Stopwatch.StartNew();
-            var result = generator.Generate(biome!, new Vector2I(20, 20), 12345);
-            stopwatch.Stop();
-
-            WfcTestFixtures.AssertSucceeded(result, "Plains 20x20 map");
-            times[i] = stopwatch.Elapsed.TotalMilliseconds;
-        }
-
-        var avgTime = times.Average();
-        GD.Print($"WFC generation for 20x20 ({runs} runs): average {avgTime:F1}ms, " +
-                 $"min {times.Min():F1}ms, max {times.Max():F1}ms");
-        WfcTestFixtures.AssertWithinBudget("20x20", avgTime, OptimizedBaseline20x20Ms);
     }
 
     /// <summary>

@@ -37,6 +37,8 @@ $FixtureRoot = Join-Path $TempBase ('RunGdUnitFixture\' + [guid]::NewGuid().ToSt
 $SuiteAlpha = 'res://Tests/Alpha/AlphaTest.cs'
 $SuiteAlphaTwo = 'res://Tests/Alpha/AlphaTwoTest.cs'
 $SuiteBeta = 'res://Tests/Beta/BetaTest.cs'
+$SuiteGamma = 'res://Tests/Gamma/GammaTest.cs'
+$SuiteDelta = 'res://Tests/Delta/DeltaTest.cs'
 
 # ASSUMPTION: the in-box csc.exe compiles C# 5 only, so the fake avoids interpolation, null-conditional operators,
 # expression-bodied members and nameof.
@@ -265,7 +267,7 @@ param(
     [Parameter(Mandatory = $true)][string]$GodotBinary,
     [Parameter(Mandatory = $true)][int]$StallSeconds,
     [Parameter(Mandatory = $true)][int]$MaxResumes,
-    [switch]$Fast,
+    [switch]$SkipDaily,
     [string[]]$Suite = @(),
     [string]$ReportDirectory = ''
 )
@@ -273,8 +275,8 @@ param(
 $ErrorActionPreference = 'Stop'
 try {
     $splat = @{ GodotBinary = $GodotBinary; StallSeconds = $StallSeconds; MaxResumes = $MaxResumes }
-    if ($Fast) {
-        $splat['Fast'] = $true
+    if ($SkipDaily) {
+        $splat['SkipDaily'] = $true
     }
     # The suite list travels as one comma-joined string, because the wrapper is a child process.
     # Empty entries are kept, so the runner is the one that rejects them.
@@ -295,7 +297,6 @@ catch {
 
 $AlphaSuite = @'
 [TestSuite]
-[TestCategory("Unit")]
 public class AlphaTest
 {
 }
@@ -319,21 +320,31 @@ public class BetaTest
 }
 '@
 
-# A real non-Unit suite whose only Unit category is commented out: -Fast must not select it.
-$CommentedUnitSuite = @'
-// [TestCategory("Unit")]
+# A Daily suite: -SkipDaily leaves it out.
+$DailySuite = @'
 [TestSuite]
+[TestCategory("Daily")]
 public class GammaTest
 {
 }
 '@
 
+# A suite whose only Daily category is commented out: -SkipDaily must still run it.
+$CommentedDailySuite = @'
+// [TestCategory("Daily")]
+[TestSuite]
+public class DeltaTest
+{
+}
+'@
+
 # Phantoms: a suite attribute that appears only inside a comment or a string is not a suite, so the runner must not
-# expect these files. The block-comment phantom carries the Unit category too, so -Fast would select it if it counted.
+# expect these files. The block-comment phantom carries the Daily category too, so -SkipDaily would skip it if it
+# counted.
 $PhantomBlockComment = @'
 /*
 [TestSuite]
-[TestCategory("Unit")]
+[TestCategory("Daily")]
 public class BlockComment
 {
 }
@@ -563,15 +574,15 @@ function Get-FlatRunnerOutput {
 }
 
 function Invoke-Runner {
-    param($Context, [switch]$Fast, [int]$MaxResumes = 3, [string[]]$Suite = @(), [string]$ReportDirectory = '')
+    param($Context, [switch]$SkipDaily, [int]$MaxResumes = 3, [string[]]$Suite = @(), [string]$ReportDirectory = '')
 
     $runnerArguments = @(
         '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $Context.Wrapper,
         '-RunnerPath', $Context.Runner, '-GodotBinary', $Context.Fake,
         '-StallSeconds', '3', '-MaxResumes', [string]$MaxResumes
     )
-    if ($Fast) {
-        $runnerArguments += '-Fast'
+    if ($SkipDaily) {
+        $runnerArguments += '-SkipDaily'
     }
     if ($Suite.Count -gt 0) {
         $runnerArguments += '-Suite', ($Suite -join ',')
@@ -820,6 +831,9 @@ function Test-InvalidSuiteParameters {
         Assert-ExitCode -Result $result -Expected 1 -Message 'an invalid parameter fails the run'
         Assert-Contains $result.Stderr $case.Expect 'the error names the problem'
     }
+    $result = Invoke-Runner -Context $Context -Suite @($SuiteAlpha) -SkipDaily
+    Assert-ExitCode -Result $result -Expected 1 -Message '-Suite with -SkipDaily fails the run'
+    Assert-Contains $result.Stderr '-Suite and -SkipDaily cannot be combined' 'the error names the conflict'
     Assert-Equal 0 @(Get-FakeCalls -Context $Context).Count 'neither the build nor Godot started'
 }
 
@@ -881,20 +895,54 @@ function Test-BuildFails {
     Assert-Equal 0 @(Get-RunnerTestCalls -Context $Context).Count 'no test run after a failed build'
 }
 
-function Test-Fast {
+function Write-DailyFixtures {
     param($Context)
 
-    Write-FileText -Path (Join-Path $Context.Repo 'Tests\Gamma\GammaTest.cs') -Text $CommentedUnitSuite
+    Write-FileText -Path (Join-Path $Context.Repo 'Tests\Gamma\GammaTest.cs') -Text $DailySuite
+    Write-FileText -Path (Join-Path $Context.Repo 'Tests\Delta\DeltaTest.cs') -Text $CommentedDailySuite
+}
+
+function Test-SkipDaily {
+    param($Context)
+
+    Write-DailyFixtures -Context $Context
     Set-FakePlan -Context $Context -Index 0 -Lines @(
         (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteAlphaTwo), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteBeta), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteDelta), (Get-SuiteStats),
         'report r1 0 0',
         'exit 0')
-    $result = Invoke-Runner -Context $Context -Fast
-    Assert-ExitCode -Result $result -Expected 0 -Message 'a -Fast run exits 0'
-    Assert-Line $result.Stdout 'GdUnit passed: 1 of 1 suite files ran.' 'only the Unit-category suite runs'
+    $result = Invoke-Runner -Context $Context -SkipDaily
+    Assert-ExitCode -Result $result -Expected 0 -Message 'a -SkipDaily run exits 0'
+    Assert-Line $result.Stdout ('Skipping 1 Daily suite(s): ' + $SuiteGamma) 'the run names the Daily suite it skips'
+    Assert-Line $result.Stdout 'GdUnit passed: 4 of 4 suite files ran.' 'every suite but the Daily one is expected'
     $tests = @(Get-RunnerTestCalls -Context $Context)
     Assert-Equal 1 $tests.Count 'one test invocation'
-    Assert-That $tests[0].EndsWith('-a res://Tests/Alpha/AlphaTest.cs') 'the -Fast run names only the Unit suite file'
+    Assert-That $tests[0].EndsWith('-a res://Tests -i ' + $SuiteGamma) 'the run starts at the Tests folder and skips the Daily suite'
+}
+
+# A resume names its own targets, so it must pass the Daily skip again.
+function Test-SkipDailyResumes {
+    param($Context)
+
+    Write-DailyFixtures -Context $Context
+    Set-FakePlan -Context $Context -Index 0 -Lines @(
+        (Get-SuiteStart $SuiteAlpha), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteAlphaTwo),
+        'stall')
+    Set-FakePlan -Context $Context -Index 1 -Lines @(
+        (Get-SuiteStart $SuiteAlphaTwo), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteBeta), (Get-SuiteStats),
+        (Get-SuiteStart $SuiteDelta), (Get-SuiteStats),
+        'report r1 0 0',
+        'exit 0')
+    $result = Invoke-Runner -Context $Context -SkipDaily
+    Assert-ExitCode -Result $result -Expected 0 -Message 'a -SkipDaily run that resumes after one stall exits 0'
+    Assert-Line $result.Stdout 'GdUnit passed: 4 of 4 suite files ran.' 'the resumed run finishes every non-Daily suite'
+    $tests = @(Get-RunnerTestCalls -Context $Context)
+    Assert-Equal 2 $tests.Count 'two test invocations'
+    Assert-That $tests[1].EndsWith('-i ' + $SuiteGamma) 'the resume skips the Daily suite too'
 }
 
 function Test-StallResumes {
@@ -1212,6 +1260,8 @@ function Test-GateAndSummary {
 
 # The runner's suite-detection patterns must match the ones in TestSuiteNamingTest.cs, the C# side that gdUnit's own
 # self-check uses. The runner is parsed, not run, so this compares the shipped text.
+$LockstepPatterns = @('SuiteAttributePattern', 'CodeNoisePattern', 'DailyCategoryPattern')
+
 function Test-PatternLockstep {
     param($Context)
 
@@ -1225,7 +1275,7 @@ function Test-PatternLockstep {
         }, $true)
     foreach ($assignment in @($assignments)) {
         $name = $assignment.Left.VariablePath.UserPath
-        if ($name -ne 'SuiteAttributePattern' -and $name -ne 'CodeNoisePattern') {
+        if ($LockstepPatterns -notcontains $name) {
             continue
         }
         # ASSUMPTION: Windows PowerShell 5.1, the fixture's shell in CI and locally, parses an assignment's value
@@ -1240,7 +1290,7 @@ function Test-PatternLockstep {
     }
 
     $source = [IO.File]::ReadAllText((Join-Path $RepositoryRoot 'Tests\TestSuiteNamingTest.cs'))
-    foreach ($name in @('SuiteAttributePattern', 'CodeNoisePattern')) {
+    foreach ($name in $LockstepPatterns) {
         Assert-That $runnerValues.ContainsKey($name) "the runner declares $name"
         $match = [regex]::Match($source, 'internal const string ' + $name + '\s*=\s*@"((?:[^"]|"")*)";')
         Assert-That $match.Success "TestSuiteNamingTest.cs declares $name as a verbatim const"
@@ -1251,7 +1301,8 @@ function Test-PatternLockstep {
 
 # Every check in run order. -Only must name one of them (letter case does not matter) and then runs alone.
 $AllChecks = @(
-    'CleanRun', 'BuildLeavesWorkerRunning', 'BuildFails', 'Fast', 'StallResumes', 'RepeatedStallFails',
+    'CleanRun', 'BuildLeavesWorkerRunning', 'BuildFails', 'SkipDaily', 'SkipDailyResumes', 'StallResumes',
+    'RepeatedStallFails',
     'CrashNoReport', 'CrashAfterEarlierReportResumes', 'RepeatedCrashFails', 'StallThenCrashFails',
     'CrashResumeNoProgressFails', 'InterruptionBudget', 'GdUnitExitCodes', 'ReportAggregation', 'GateAndSummary',
     'PatternLockstep', 'SingleSuite', 'CommaSuiteList', 'InvalidSuiteParameters', 'SingleSuiteStall')
@@ -1259,7 +1310,7 @@ if ([string]::IsNullOrWhiteSpace($Only)) {
     $checks = $AllChecks
 }
 else {
-    # The canonical spelling comes from $AllChecks, so -Only fast runs Fast.
+    # The canonical spelling comes from $AllChecks, so -Only skipdaily runs SkipDaily.
     $checks = @($AllChecks | Where-Object { $_ -eq $Only })
     if ($checks.Count -eq 0) {
         throw "Unknown check '$Only'. Valid checks: $($AllChecks -join ', ')"
