@@ -62,28 +62,24 @@ public class ShopNavigationSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BakesMeshWithPolygons()
     {
         AssertBool(_region.NavigationMesh!.GetPolygonCount() > 0).IsTrue();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BakeCellSizeMatchesTheNavigationMap()
     {
         AssertThat(_region.NavigationMesh!.CellSize).IsEqual(NavigationServer3D.MapGetCellSize(_map));
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BakeOnLoadCountsOnce()
     {
         AssertInt(_region.RebakeCount).IsEqual(1);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RebakeCountRisesByOnePerRebake()
     {
         int before = _region.RebakeCount;
@@ -95,7 +91,6 @@ public class ShopNavigationSceneTest
     // region's _Ready left floor under every starting piece and a path ran straight through the card shelf. The
     // closest point to the middle of a piece, at floor height, must not be floor inside it (a point on its top is fine).
     [TestCase]
-    [TestCategory("Unit")]
     public void TheFirstBakeLeavesNoFloorUnderTheStartingFurniture()
     {
         var pieces = _shop.GetNode("World/Furniture").GetChildren().OfType<PlacedFurniture>().ToList();
@@ -116,7 +111,6 @@ public class ShopNavigationSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CommittedSceneStoresNoBakedMesh()
     {
         // Never added to the tree, so no _Ready ran: this is the sub-resource exactly as the scene file stores it.
@@ -129,7 +123,6 @@ public class ShopNavigationSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StreetToStorefrontRoutesThroughTheFrontDoor()
     {
         AssertBool(_region.Reaches(_spawn, _shelf)).IsTrue();
@@ -140,28 +133,24 @@ public class ShopNavigationSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ShelfToDespawnHasAPath()
     {
         AssertBool(_region.Reaches(_shelf, _despawn)).IsTrue();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StreetToCounterHasAPath()
     {
         AssertBool(_region.Reaches(_spawn, Marker("CustomerCounter"))).IsTrue();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CounterToDespawnHasAPath()
     {
         AssertBool(_region.Reaches(Marker("CustomerCounter"), _despawn)).IsTrue();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task DoorBlockersRerouteThenCutThenRestoreTheRoute()
     {
         // (a) Baseline on this scene instance: the route to the shelf exists and uses the front door.
@@ -200,7 +189,6 @@ public class ShopNavigationSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AgentFromSpawnReachesTheShelf()
     {
         // NavigationAgent3D is a plain Node; it reads its parent's position, so the parent is the mover.

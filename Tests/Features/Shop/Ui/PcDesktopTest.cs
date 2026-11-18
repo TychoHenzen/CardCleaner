@@ -18,7 +18,6 @@ public class PcDesktopTest
     private static readonly Vector2I ScreenSize = new(1280, 720);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void StockIconShowsTheOrderingList()
     {
         var (desktop, stockApp, _) = BuildDesktop();
@@ -30,7 +29,6 @@ public class PcDesktopTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DisabledIconsDoNothing()
     {
         var (desktop, stockApp, billsApp) = BuildDesktop();
@@ -48,7 +46,6 @@ public class PcDesktopTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CloseButtonRaisesCloseRequested()
     {
         var (desktop, _, _) = BuildDesktop();
@@ -61,7 +58,6 @@ public class PcDesktopTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ResetToDesktopHidesTheOrderingList()
     {
         var (desktop, stockApp, _) = BuildDesktop();
@@ -74,7 +70,6 @@ public class PcDesktopTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BillsIconShowsBillsAppAndHidesStock()
     {
         var (desktop, stockApp, billsApp) = BuildDesktop();
@@ -87,7 +82,6 @@ public class PcDesktopTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void StockIconHidesBillsApp()
     {
         var (desktop, stockApp, billsApp) = BuildDesktop();
@@ -101,7 +95,6 @@ public class PcDesktopTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void HomeButtonReturnsToDesktop()
     {
         var (desktop, stockApp, billsApp) = BuildDesktop();
@@ -115,7 +108,6 @@ public class PcDesktopTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnassignedBillsAppKeepsIconDisabled()
     {
         var (desktop, _, billsApp) = BuildDesktop(assignBills: false);
@@ -129,7 +121,6 @@ public class PcDesktopTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FurnitureIconShowsFurnitureAppAndHidesOthers()
     {
         var (desktop, stockApp, furnitureApp) = BuildDesktopWithFurniture();
@@ -147,7 +138,6 @@ public class PcDesktopTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ResetToDesktopHidesTheFurnitureApp()
     {
         var (desktop, _, furnitureApp) = BuildDesktopWithFurniture();
@@ -160,7 +150,6 @@ public class PcDesktopTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AssignedFurnitureIconIsEnabled()
     {
         var (desktop, _, _) = BuildDesktopWithFurniture();
@@ -169,7 +158,6 @@ public class PcDesktopTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ForwardedClickOnDisabledIconRaisesNothing()
     {
         var (desktop, stockApp, overlay) = await BuildForwardedDesktop();

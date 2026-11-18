@@ -11,7 +11,6 @@ public class CheckoutSessionTest
         new[] { new CheckoutItem(1, 7), new CheckoutItem(2, 4) };
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TotalIsTheSumOfTheAskingPrices()
     {
         var session = new CheckoutSession(TwoItems(), PaymentMethod.Card);
@@ -20,7 +19,6 @@ public class CheckoutSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ScanMarksAnItemOnceAndRejectsUnknownAndRepeatedIds()
     {
         var session = new CheckoutSession(TwoItems(), PaymentMethod.Card);
@@ -32,7 +30,6 @@ public class CheckoutSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void StateIsAwaitingPaymentOnlyOnceEveryItemIsScanned()
     {
         var session = new CheckoutSession(TwoItems(), PaymentMethod.Card);
@@ -45,7 +42,6 @@ public class CheckoutSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CardPaymentBeforeEveryScanReturnsFalseAndStaysScanning()
     {
         var session = new CheckoutSession(TwoItems(), PaymentMethod.Card);
@@ -56,7 +52,6 @@ public class CheckoutSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void WrongCardTotalReturnsFalseAndStaysAwaitingPayment()
     {
         var session = new CheckoutSession(TwoItems(), PaymentMethod.Card);
@@ -68,7 +63,6 @@ public class CheckoutSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RightCardTotalPaysOnce()
     {
         var session = new CheckoutSession(TwoItems(), PaymentMethod.Card);
@@ -81,7 +75,6 @@ public class CheckoutSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CashPaymentWithTheRightChangePaysOnce()
     {
         var session = new CheckoutSession(TwoItems(), PaymentMethod.Cash);
@@ -95,7 +88,6 @@ public class CheckoutSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CashPaymentWithWrongChangeStaysAwaitingPayment()
     {
         var session = new CheckoutSession(TwoItems(), PaymentMethod.Cash);
@@ -107,7 +99,6 @@ public class CheckoutSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PaymentWithTheWrongMethodReturnsFalse()
     {
         var card = new CheckoutSession(TwoItems(), PaymentMethod.Card);
@@ -123,7 +114,6 @@ public class CheckoutSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EmptyBasketThrowsArgumentException()
     {
         AssertThrown(() => new CheckoutSession(Array.Empty<CheckoutItem>(), PaymentMethod.Card))
@@ -131,7 +121,6 @@ public class CheckoutSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NonPositivePriceThrowsArgumentOutOfRangeException()
     {
         AssertThrown(() => new CheckoutSession(new[] { new CheckoutItem(1, 0) }, PaymentMethod.Card))
@@ -139,7 +128,6 @@ public class CheckoutSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DuplicateIdsThrowArgumentException()
     {
         AssertThrown(() => new CheckoutSession(

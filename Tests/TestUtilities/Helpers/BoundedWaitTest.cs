@@ -7,7 +7,6 @@ namespace CardCleaner.Tests.TestUtilities.Helpers;
 public class BoundedWaitTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ANeverTrueConditionReturnsAMessageNamingTheWait()
     {
         var message = await BoundedWait.Until(() => false, "the shelf to settle", 0.2);
@@ -18,14 +17,12 @@ public class BoundedWaitTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ATrueConditionReturnsNull()
     {
         AssertThat(await BoundedWait.Until(() => true, "anything", 0.2)).IsNull();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ExpectReturnsOnceTheConditionHolds()
     {
         var checks = 0;
@@ -36,7 +33,6 @@ public class BoundedWaitTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ProcessFramesWaitsAtLeastThatManyProcessFrames()
     {
         var first = Godot.Engine.GetProcessFrames();
@@ -47,7 +43,6 @@ public class BoundedWaitTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task TheNextCaseStillRunsAfterABoundedWaitFailed()
     {
         await BoundedWait.Until(() => false, "never", 0.1);

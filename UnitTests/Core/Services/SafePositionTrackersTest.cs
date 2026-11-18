@@ -10,7 +10,6 @@ namespace CardCleaner.Tests.Core.Services;
 public class SafePositionTrackersTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void CreateReturnsAnEmptyTracker()
     {
         ISafePositionTracker tracker = SafePositionTrackers.Create();
@@ -20,7 +19,6 @@ public class SafePositionTrackersTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CreatedTrackerRecordsAValidPositionAndRejectsAnInvalidOne()
     {
         ISafePositionTracker tracker = SafePositionTrackers.Create();
@@ -33,7 +31,6 @@ public class SafePositionTrackersTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CreateBuildsANewTrackerOnEveryCall()
     {
         ISafePositionTracker first = SafePositionTrackers.Create();

@@ -36,7 +36,6 @@ public class ShopWorkshopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EntryMarkerStandsAboveTheFloorInsideTheCabinetRoom()
     {
         AssertThat(_rig.Workshop.GetNodeOrNull<CollisionShape3D>("WorkshopGrid/Floor/CollisionShape3D")).IsNotNull();
@@ -47,7 +46,6 @@ public class ShopWorkshopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RoomSitsFarFromTheShopInteriorSoItCannotBeSeenFromIt()
     {
         var spawn = _rig.Shop.GetNode<Node3D>("Player").GlobalPosition;
@@ -58,7 +56,6 @@ public class ShopWorkshopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CabinetHoldersAndButtonStandInsideTheRoom()
     {
         foreach (var part in new Node3D[] { _rig.Cabinet, _rig.DeckHolder, _rig.CardHolder, _rig.Button })
@@ -66,7 +63,6 @@ public class ShopWorkshopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EachHolderIsJoinedToTheCabinetByAVisibleWire()
     {
         foreach (var (holder, prefix) in new[] { (_rig.DeckHolder, "Deck"), (_rig.CardHolder, "Card") })
@@ -83,7 +79,6 @@ public class ShopWorkshopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CreditCardEndsUpSeatedInTheDeckHolderOnly()
     {
         AssertBool(_rig.DeckHolder.HasCards).IsTrue();
@@ -92,7 +87,6 @@ public class ShopWorkshopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WorkshopArtUsesExistingPackMeshesWithPlaceholderFallbacks()
     {
         var slots = new List<ShopArtSlot>();

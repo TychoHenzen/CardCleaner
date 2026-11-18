@@ -12,7 +12,6 @@ public class StockItemLookTest
     private static readonly Vector3 CardSize = new(0.32f, 0.45f, 0.005f);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OnlyVisibleMeshesAreCopied()
     {
         var body = new Node3D();
@@ -33,7 +32,6 @@ public class StockItemLookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PrintedLabelsAreCopiedWithTheirTextButAddNothingToTheSize()
     {
         var size = new Vector3(0.3f, 0.2f, 0.25f);
@@ -53,7 +51,6 @@ public class StockItemLookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnItemShowingOnlyALabelHasNoLook()
     {
         var body = new Node3D();
@@ -64,7 +61,6 @@ public class StockItemLookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AFlatItemIsLaidOnItsWidestFaceWithItsBaseAtTheOrigin()
     {
         var body = new Node3D();
@@ -82,7 +78,6 @@ public class StockItemLookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ABoxStaysUpright()
     {
         var size = new Vector3(0.3f, 0.2f, 0.25f);
@@ -97,7 +92,6 @@ public class StockItemLookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnItemWithNothingVisibleHasNoLook()
     {
         var body = new Node3D();
@@ -108,7 +102,6 @@ public class StockItemLookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DiscardFreesALookNoPropAdopted()
     {
         var body = new Node3D();

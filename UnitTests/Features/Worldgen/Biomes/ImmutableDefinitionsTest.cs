@@ -21,7 +21,6 @@ public class ImmutableDefinitionsTest
     ];
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoDefinitionHasAPublicNonInitSetter()
     {
         var offenders = Definitions
@@ -35,7 +34,6 @@ public class ImmutableDefinitionsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoDefinitionHasAPublicVoidMethod()
     {
         var offenders = Definitions
@@ -49,7 +47,6 @@ public class ImmutableDefinitionsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryCollectionPropertyIsAReadOnlyInterface()
     {
         var offenders = Definitions

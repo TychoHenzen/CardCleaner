@@ -12,7 +12,6 @@ public class FigureMotionTest
     [TestCase(0.1f, FigureClip.Idle)]
     [TestCase(FigureMotion.WalkingSpeed, FigureClip.Walk)]
     [TestCase(1.6f, FigureClip.Walk)]
-    [TestCategory("Unit")]
     public static void APersonWalksOnlyAtWalkingSpeed(float speed, FigureClip loop)
     {
         AssertThat(FigureMotion.LoopFor(speed)).IsEqual(loop);
@@ -23,7 +22,6 @@ public class FigureMotionTest
     [TestCase(FigureClip.PickUp, false)]
     [TestCase(FigureClip.HandOver, false)]
     [TestCase(FigureClip.Refuse, false)]
-    [TestCategory("Unit")]
     public static void OnlyIdleAndWalkLoop(FigureClip clip, bool loops)
     {
         AssertBool(FigureMotion.Loops(clip)).IsEqual(loops);
@@ -35,7 +33,6 @@ public class FigureMotionTest
     [TestCase(1f, 0f)]
     [TestCase(-1f, 0f)]
     [TestCase(0.6f, -0.8f)]
-    [TestCategory("Unit")]
     public static void TheYawTowardADirectionTurnsMinusZOntoIt(float x, float z)
     {
         var yaw = FigureMotion.YawToward(x, z);
@@ -45,14 +42,12 @@ public class FigureMotionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ATurnStopsAtItsTarget()
     {
         AssertFloat(FigureMotion.TurnToward(0f, 0.1f, 0.5f)).IsEqualApprox(0.1f, Tolerance);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ATurnMovesAtMostOneStep()
     {
         AssertFloat(FigureMotion.TurnToward(0f, 2f, 0.5f)).IsEqualApprox(0.5f, Tolerance);
@@ -60,7 +55,6 @@ public class FigureMotionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ATurnGoesTheShortWayAcrossTheBackOfTheCircle()
     {
         // From just short of +pi to just past -pi is a small step through pi, not almost a full turn back.
@@ -68,7 +62,6 @@ public class FigureMotionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ATurnAlwaysEndsInsideMinusPiToPi()
     {
         for (var target = -10f; target <= 10f; target += 0.37f)
@@ -81,7 +74,6 @@ public class FigureMotionTest
     [TestCase(1.6f, 1.6f, 1f)]
     [TestCase(0.8f, 1.6f, 0.5f)]
     [TestCase(1.6f, 0f, 1f)]
-    [TestCategory("Unit")]
     public static void TheWalkClipPlaysAtTheSpeedThatKeepsItsFeetDown(float speed, float clipSpeed, float playback)
     {
         AssertFloat(FigureMotion.WalkPlayback(speed, clipSpeed)).IsEqualApprox(playback, Tolerance);

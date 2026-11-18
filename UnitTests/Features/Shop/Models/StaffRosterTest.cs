@@ -6,7 +6,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class StaffRosterTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void Decide_below_unlock_is_Locked()
     {
         var roster = new StaffRoster();
@@ -15,7 +14,6 @@ public class StaffRosterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Decide_short_balance_is_CannotAfford()
     {
         var roster = new StaffRoster();
@@ -25,7 +23,6 @@ public class StaffRosterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Decide_hired_role_is_AlreadyHired()
     {
         var roster = new StaffRoster();
@@ -35,7 +32,6 @@ public class StaffRosterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Decide_ok_is_Hired_and_does_not_add()
     {
         var roster = new StaffRoster();
@@ -47,7 +43,6 @@ public class StaffRosterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Decide_null_role_is_UnknownRole()
     {
         var roster = new StaffRoster();
@@ -56,7 +51,6 @@ public class StaffRosterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Dismiss_hired_is_Dismissed_and_removes()
     {
         var roster = new StaffRoster();
@@ -69,7 +63,6 @@ public class StaffRosterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Dismiss_absent_is_NotHired()
     {
         var roster = new StaffRoster();
@@ -78,7 +71,6 @@ public class StaffRosterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Restore_drops_unknown_and_duplicate_ids_and_returns_the_dropped_count()
     {
         var roster = new StaffRoster();

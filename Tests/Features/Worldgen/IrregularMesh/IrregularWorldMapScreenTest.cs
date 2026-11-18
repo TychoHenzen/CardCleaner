@@ -87,7 +87,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestScreenStartsUninitialized()
     {
         var freshScreen = AutoFree(new IrregularMeshNs.IrregularWorldMapScreen())!;
@@ -100,7 +99,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LootGeneratedSpawnsCardsInARowAtTheLootPoint()
     {
         var lootPoint = new Marker3D { Name = "LootSpawnPoint", Position = new Vector3(2f, 3f, 4f) };
@@ -131,7 +129,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ASessionTheScreenStartsShowsItsMap()
     {
         var mapsShown = 0;
@@ -146,7 +143,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheScreenAnimatesEachMoveToANeighbouringCell()
     {
         var cells = new List<int>();
@@ -196,7 +192,6 @@ public class IrregularWorldMapScreenTest
     // Leaving the tree disconnects the screen from the session; entering it again must connect it again, or a start
     // made after that waits for a service that never comes.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AScreenAddedBackToTheTreeConnectsToTheSessionAgain()
     {
         var parent = _screen.GetParent();
@@ -211,7 +206,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task RevealAllShowsEveryCell()
     {
         await ShowMap();
@@ -223,7 +217,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ToggleDebugSwitchesTheDebugRenderer()
     {
         var debugRenderer = _screen.Viewport!.GetNode<CanvasItem>("DebugRenderer");
@@ -237,7 +230,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ResetClearsTheMapAndStopsShowingTheSession()
     {
         await ShowMap();
@@ -255,7 +247,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ANewSessionShowsAfterTheResetOfTheLastOne()
     {
         await ShowMap();

@@ -14,7 +14,6 @@ namespace CardCleaner.Tests.Features.Card.Models.Effects;
 public class CardEffectComparisonGridTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryCellSignatureHasTheRarityItIsLabelledWith()
     {
         foreach (var rarity in Enum.GetValues<CardRarity>())
@@ -29,7 +28,6 @@ public class CardEffectComparisonGridTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryCellSignatureHasTheTierItIsLabelledWith()
     {
         foreach (var rarity in Enum.GetValues<CardRarity>())
@@ -45,7 +43,6 @@ public class CardEffectComparisonGridTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheCommonDormantCellIsTheOrdinaryPackCard()
     {
         var signature = CardEffectComparisonGrid.SignatureFor(CardRarity.Common, IntensityTier.Dormant);
@@ -54,7 +51,6 @@ public class CardEffectComparisonGridTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoTwoCellsShareASignature()
     {
         var keys = (from rarity in Enum.GetValues<CardRarity>()

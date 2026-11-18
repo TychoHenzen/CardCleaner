@@ -16,14 +16,12 @@ namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
 public class SavedCardReaderFixtureTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void FixtureCarriesNoClrTypeNames()
     {
         AssertBool(SavedCardFixture.ReadText().Contains("$type")).IsFalse();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FixtureLoadsEverySavedCardFieldThroughTheSaveAddon()
     {
         var tree = SaveExtension.DeserializeObject<TreeSave>(SavedCardFixture.ReadText());

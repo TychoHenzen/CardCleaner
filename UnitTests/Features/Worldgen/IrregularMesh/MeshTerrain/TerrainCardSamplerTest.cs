@@ -18,28 +18,24 @@ public class TerrainCardSamplerTest
     private static readonly Vector2I[] Positions = { new(0, 0), new(5, 7), new(19, 19) };
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EmptyCardsGiveNoSampler()
     {
         AssertObject(TerrainGeneratorFactory.CardSampler(Array.Empty<CardSignature>(), 4242)).IsNull();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SamplerMatchesAGradientSeededTheSameWay()
     {
         AssertSamplerMatches(4242);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NegativeSeedKeepsTheUlongCast()
     {
         AssertSamplerMatches(-5);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NullCardsThrow()
     {
         Assertions.AssertThrown(() => TerrainGeneratorFactory.CardSampler(null!, 4242))

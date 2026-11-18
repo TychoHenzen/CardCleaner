@@ -9,7 +9,6 @@ namespace CardCleaner.Tests.Features.SaveSlots.Services;
 public class GodotSlotFileSystemTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void DeleteRemovesFileTempAndFolder()
     {
         var files = new GodotSlotFileSystem();
@@ -41,7 +40,6 @@ public class GodotSlotFileSystemTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RenameOverExistingFileReplacesIt()
     {
         var files = new GodotSlotFileSystem();
@@ -69,7 +67,6 @@ public class GodotSlotFileSystemTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FailedRenameLeavesExistingTargetInPlace()
     {
         var files = new GodotSlotFileSystem();

@@ -7,7 +7,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class PaymentRulesTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void CashTenderedRoundsTheTotalUpToTheNextMultipleOfFive()
     {
         AssertThat(PaymentRules.CashTendered(7)).IsEqual(10);
@@ -17,14 +16,12 @@ public class PaymentRulesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ChangeIsTenderedMinusTotal()
     {
         AssertThat(PaymentRules.Change(15, 11)).IsEqual(4);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CardTotalMatchesOnlyTheExactTotal()
     {
         AssertThat(PaymentRules.CardTotalMatches(11, 11)).IsTrue();
@@ -32,7 +29,6 @@ public class PaymentRulesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ChangeMatchesSumsOfChangeDenominations()
     {
         AssertThat(PaymentRules.ChangeMatches(new[] { 1, 1, 1, 1 }, 15, 11)).IsTrue();
@@ -41,14 +37,12 @@ public class PaymentRulesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ChangeMatchesRejectsAPickThatIsNotADenomination()
     {
         AssertThat(PaymentRules.ChangeMatches(new[] { 2, 2 }, 15, 11)).IsFalse();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NonPositiveTotalThrows()
     {
         AssertThrown(() => PaymentRules.CashTendered(0)).IsInstanceOf<ArgumentOutOfRangeException>();

@@ -10,7 +10,6 @@ public class CardLookSeedTest
     private const ulong Seed = 42;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SpecialSignatureHasNoLookSeed()
     {
         var special = new CardSignature(new float[] { 0.5f, 0f, 0f, 0f, 0f, 0f, 0f, 0f });
@@ -23,7 +22,6 @@ public class CardLookSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SpecialSignatureIgnoresASavedSeed()
     {
         var special = new CardSignature(new float[] { 0.5f, 0f, 0f, 0f, 0f, 0f, 0f, 0f });
@@ -34,7 +32,6 @@ public class CardLookSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ZeroSignatureDrawsASeed()
     {
         var zero = new CardSignature(new float[8]);
@@ -45,7 +42,6 @@ public class CardLookSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TwoDrawsFromOneSourceDiffer()
     {
         var zero = new CardSignature(new float[8]);
@@ -58,7 +54,6 @@ public class CardLookSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SameRandomSeedGivesTheSameLookSeed()
     {
         var zero = new CardSignature(new float[8]);
@@ -70,7 +65,6 @@ public class CardLookSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SavedSeedIsKeptAndRandomIsNotAdvanced()
     {
         var zero = new CardSignature(new float[8]);

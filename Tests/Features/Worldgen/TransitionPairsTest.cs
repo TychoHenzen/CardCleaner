@@ -12,7 +12,6 @@ namespace CardCleaner.Tests.Features.Worldgen;
 public class TransitionPairsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void KeepsThePairsInTheOrderGiven()
     {
         var pairs = new TransitionPairs(new[] { ("grass", "dirt"), ("dirt", "sand") });
@@ -23,7 +22,6 @@ public class TransitionPairsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LaterChangesToTheSourceDoNotReachTheValue()
     {
         var source = new List<(string tileA, string tileB)> { ("grass", "dirt") };
@@ -35,7 +33,6 @@ public class TransitionPairsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NullPairsAreRefused()
     {
         AssertThrown(() => new TransitionPairs(null!)).IsInstanceOf<ArgumentNullException>();

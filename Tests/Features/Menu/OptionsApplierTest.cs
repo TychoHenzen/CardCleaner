@@ -15,7 +15,6 @@ namespace CardCleaner.Tests.Features.Menu;
 public class OptionsApplierTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void Master_volume_half_sets_master_bus_to_about_minus_6_dB()
     {
         var master = ApplyAndReadMasterDb(GameOptions.Defaults with { MasterVolume = 0.5f });
@@ -25,7 +24,6 @@ public class OptionsApplierTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Master_volume_zero_sets_master_bus_to_minus_80_dB_or_lower()
     {
         var master = ApplyAndReadMasterDb(GameOptions.Defaults with { MasterVolume = 0f });
@@ -34,7 +32,6 @@ public class OptionsApplierTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ApplyMouse_sets_sensitivity_and_invert_on_the_settings()
     {
         var settings = new GameSettings();
@@ -54,7 +51,6 @@ public class OptionsApplierTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Apply_does_not_touch_the_mouse_settings()
     {
         var settings = new GameSettings { MouseSensitivity = 0.3f };
@@ -74,7 +70,6 @@ public class OptionsApplierTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DisplayFor_fullscreen_has_exclusive_mode_and_no_size()
     {
         var plan = OptionsApplier.DisplayFor(GameOptions.Defaults with { Fullscreen = true, ResolutionIndex = 2 });
@@ -84,7 +79,6 @@ public class OptionsApplierTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DisplayFor_windowed_uses_the_resolution_and_vsync()
     {
         var plan = OptionsApplier.DisplayFor(GameOptions.Defaults with { ResolutionIndex = 2, Vsync = true });
@@ -95,7 +89,6 @@ public class OptionsApplierTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DisplayFor_vsync_off_is_Disabled()
     {
         var plan = OptionsApplier.DisplayFor(GameOptions.Defaults with { Vsync = false });
@@ -104,7 +97,6 @@ public class OptionsApplierTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DisplayFor_clamps_an_out_of_range_index()
     {
         var plan = OptionsApplier.DisplayFor(GameOptions.Defaults with { ResolutionIndex = 99 });
@@ -114,7 +106,6 @@ public class OptionsApplierTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Apply_sends_the_display_plan_to_the_sink()
     {
         DisplayPlan? seen = null;

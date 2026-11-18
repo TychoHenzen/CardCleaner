@@ -29,7 +29,6 @@ public class CardEffectComparisonLayoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RaritiesRunLeftToRightAndTiersTopToBottom()
     {
         var commonDormant = CardEffectComparisonLayout.CellCenter(CardRarity.Common, IntensityTier.Dormant);
@@ -43,7 +42,6 @@ public class CardEffectComparisonLayoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoCardOverlapsAnotherCardOrALabel()
     {
         var cards = AllCenters(100).Select(CardRect).ToArray();
@@ -61,7 +59,6 @@ public class CardEffectComparisonLayoutTest
     [TestCase(0)]
     [TestCase(10)]
     [TestCase(100)]
-    [TestCategory("Unit")]
     public static void TheBoundsHoldEveryCardAndLabel(int batchCount)
     {
         var bounds = CardEffectComparisonLayout.Bounds(batchCount).Grow(0.0001f);
@@ -75,7 +72,6 @@ public class CardEffectComparisonLayoutTest
     [TestCase(16f / 9f)]
     [TestCase(4f / 3f)]
     [TestCase(9f / 16f)]
-    [TestCategory("Unit")]
     public static void TheCameraDistanceFitsTheBoundsTightlyAtAnyAspect(float aspect)
     {
         const float fov = 35f;
@@ -93,7 +89,6 @@ public class CardEffectComparisonLayoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheBatchCyclesThroughEveryRarityAndTier()
     {
         var cells = Enum.GetValues<CardRarity>()

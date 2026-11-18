@@ -15,7 +15,6 @@ namespace CardCleaner.Tests.Core.DependencyInjection;
 public class ServiceHostTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestGetRegisteredService()
     {
         var host = new ServiceHost();
@@ -29,7 +28,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestHasService()
     {
         var host = new ServiceHost();
@@ -41,7 +39,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestGetUnregisteredServiceThrows()
     {
         var host = new ServiceHost();
@@ -52,7 +49,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestAsyncServiceCallback()
     {
         var host = new ServiceHost();
@@ -77,7 +73,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestImmediateCallbackForRegisteredService()
     {
         var host = new ServiceHost();
@@ -99,7 +94,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestMultipleCallbacksForSameService()
     {
         var host = new ServiceHost();
@@ -133,7 +127,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestCallbackNotExecutedIfServiceNotRegistered()
     {
         var host = new ServiceHost();
@@ -148,7 +141,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestContainerAccessibility()
     {
         var container = new ServiceHost().Container;
@@ -158,7 +150,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestServiceRegistrationViaContainer()
     {
         var host = new ServiceHost();
@@ -173,7 +164,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DeferredGetRunsOnceAfterTheServiceIsRegistered()
     {
         var host = new ServiceHost();
@@ -197,7 +187,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ResolverReadsTheContainerThatReplacedTheOldOne()
     {
         var host = new ServiceHost();
@@ -214,7 +203,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ResetDropsTheQueuedCallbacks()
     {
         var host = new ServiceHost();
@@ -229,7 +217,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ThrowingCallbackDoesNotRerunEarlierCallbacks()
     {
         var host = new ServiceHost();
@@ -252,7 +239,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SeveralFailuresAreRethrownTogether()
     {
         var host = new ServiceHost();
@@ -279,7 +265,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ThrowingTypeDoesNotStarveOtherRegisteredTypes()
     {
         var host = new ServiceHost();
@@ -298,7 +283,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ThrowingCallbackIsReportedThroughILogError()
     {
         var host = new ServiceHost();
@@ -324,7 +308,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CallbacksOfOneTypeRunInRegistrationOrder()
     {
         var host = new ServiceHost();
@@ -340,7 +323,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CallbackThatGetsARegisteredServiceRunsItOnce()
     {
         var host = new ServiceHost();
@@ -359,7 +341,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void
         CallbackThatGetsAnUnregisteredServiceRunsItOnTheNextCall()
     {
@@ -382,7 +363,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CallbackThatExecutesPendingCallbacksDoesNotRerunItsType()
     {
         var host = new ServiceHost();
@@ -402,7 +382,6 @@ public class ServiceHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CallbackThatResetsTheHostLeavesNoStaleEntry()
     {
         var host = new ServiceHost();

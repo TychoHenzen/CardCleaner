@@ -7,7 +7,6 @@ namespace CardCleaner.Tests.Features.SaveSlots.Models;
 public class SaveSlotLayoutTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void FileForNamedSlotIsItsFolderSaveJson()
     {
         SaveSlotName.TryCreate("My Shop", out var name, out _);

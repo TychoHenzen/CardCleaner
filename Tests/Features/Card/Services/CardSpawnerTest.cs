@@ -29,7 +29,6 @@ public class CardSpawnerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CardSpawner_CanBeInstantiated()
     {
         // Assert
@@ -38,7 +37,6 @@ public class CardSpawnerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OffsetRange_CanBeModified()
     {
         // Act
@@ -50,7 +48,6 @@ public class CardSpawnerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GetNode_ReturnsSpawnerInstance()
     {
         // Act
@@ -62,7 +59,6 @@ public class CardSpawnerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SpawnSpecificCard_ValidSignature_WithoutServices_ReturnsNull()
     {
         // Arrange

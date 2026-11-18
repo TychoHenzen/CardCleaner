@@ -13,7 +13,6 @@ public class DailyBillsTest
     ];
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BalanceCoversBills()
     {
         var settlement = DailyBills.Settle(TwoBills, 500);
@@ -23,7 +22,6 @@ public class DailyBillsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ShortBalanceLeavesUnpaid()
     {
         var settlement = DailyBills.Settle(TwoBills, 120);
@@ -33,7 +31,6 @@ public class DailyBillsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NegativeAmountsAreDropped()
     {
         IReadOnlyList<BillLine> lines =
@@ -50,7 +47,6 @@ public class DailyBillsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ZeroBalancePaysNothing()
     {
         var settlement = DailyBills.Settle(TwoBills, 0);
@@ -60,7 +56,6 @@ public class DailyBillsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CarriedDebtIsPartOfTotal()
     {
         IReadOnlyList<BillLine> lines = [new BillLine("Rent", 40)];
@@ -74,7 +69,6 @@ public class DailyBillsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ShortBalanceWithDebtCarriesMore()
     {
         IReadOnlyList<BillLine> lines = [new BillLine("Rent", 40)];
@@ -86,7 +80,6 @@ public class DailyBillsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NegativeDebtCountsAsZero()
     {
         IReadOnlyList<BillLine> lines = [new BillLine("Rent", 40)];

@@ -20,7 +20,6 @@ public class GameSessionPacingTest : GameSessionServiceTestBase
     protected override bool ReportsStepsShown => false;
 
     [TestCase(Timeout = 20000)]
-    [TestCategory("Unit")]
     public async Task ExplorationWaitsForTheViewToReportEachMoveShown()
     {
         var moves = 0;

@@ -20,7 +20,6 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Tiles;
 public class TileCatalogDataTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void SnapshotAnswersLikeTheRegistryItWasTakenFrom()
     {
         var registry = MockTileRegistry.CreateWithTestTiles();
@@ -56,7 +55,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AllTilesKeepTheRegistryInsertionOrder()
     {
         string[] order = { "sand", "grass", "water", "stone", "dirt", "rock" };
@@ -71,7 +69,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SelectPerMapVariantMatchesTheSelectorAndLeavesTheRngAtTheSameStep()
     {
         var registry = new MockTileRegistry();
@@ -96,7 +93,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnknownIdAnswersAreNeutral()
     {
         var catalog = TileCatalogData.From(MockTileRegistry.CreateWithTestTiles());
@@ -111,7 +107,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TileRegisteredAfterTheSnapshotIsNotVisible()
     {
         var registry = new MockTileRegistry();
@@ -126,7 +121,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnknownTile_IsNotAutoTileAndHasNoSolidFill()
     {
         var catalog = TileCatalogData.From(new MockTileRegistry());
@@ -136,7 +130,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void GapTile_IsNotAutoTileAndHasNoSolidFill()
     {
         var registry = new MockTileRegistry();
@@ -148,7 +141,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AutoTileWithoutVariantFifteen_HasNoSolidFill()
     {
         var registry = new MockTileRegistry();
@@ -160,7 +152,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AutoTileWithVariantFifteen_HasSolidFill()
     {
         var variants = new Vector2I?[16];
@@ -179,7 +170,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnknownTile_HasNoBitmaskOrMultiCellAnswer()
     {
         var catalog = TileCatalogData.From(new MockTileRegistry());
@@ -189,7 +179,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PerInstanceVariationGroup_GivesDensityAndNormalizedWeight()
     {
         var registry = new MockTileRegistry();
@@ -215,7 +204,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnknownTile_AnswersAreNeutral()
     {
         var catalog = TileCatalogData.From(new MockTileRegistry());
@@ -231,7 +219,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void KnownTile_ReadsPassabilityProbabilityBiomeAndTerrainType()
     {
         var registry = new MockTileRegistry();
@@ -268,7 +255,6 @@ public class TileCatalogDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TileWithShapeFacts_AnswersFromTheTileData()
     {
         var registry = new MockTileRegistry();

@@ -69,7 +69,6 @@ public class SignatureCardHelperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PickUniformOfOneItemDoesNotDraw()
     {
         var rng = RandomSources.Create(42UL);
@@ -81,7 +80,6 @@ public class SignatureCardHelperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PickUniformReachesEveryItem()
     {
         var items = new[] { "a", "b", "c" };

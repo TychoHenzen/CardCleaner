@@ -14,7 +14,6 @@ public class ShoppingPlannerTest
     private static ShelfOffer Offer(string id, int asking, int market) => new(id, asking, market);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PlanWithNoOffersIsEmpty()
     {
         var picks = ShoppingPlanner.Plan(
@@ -24,7 +23,6 @@ public class ShoppingPlannerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PlanWithWishZeroIsEmpty()
     {
         var offers = new[] { Offer("a", 4, 4), Offer("b", 4, 4) };
@@ -35,7 +33,6 @@ public class ShoppingPlannerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PlanOfWish2Over5OffersHas2DistinctOfferIds()
     {
         var offers = new[]
@@ -50,7 +47,6 @@ public class ShoppingPlannerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PlanOfWish10Over3OffersHas3()
     {
         var offers = new[] { Offer("a", 4, 4), Offer("b", 4, 4), Offer("c", 4, 4) };
@@ -61,7 +57,6 @@ public class ShoppingPlannerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ClaimedOfferIsNeverPlanned()
     {
         var offers = new[] { Offer("a", 4, 4), Offer("b", 4, 4), Offer("c", 4, 4) };
@@ -72,7 +67,6 @@ public class ShoppingPlannerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SameSeedGivesEqualPlans()
     {
         var offers = new[] { Offer("a", 4, 4), Offer("b", 6, 4), Offer("c", 5, 4), Offer("d", 4, 4) };
@@ -85,7 +79,6 @@ public class ShoppingPlannerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OfferAtMarketPriceBuys()
     {
         var offers = new[] { Offer("a", 4, 4) };
@@ -97,7 +90,6 @@ public class ShoppingPlannerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OfferAtTwiceMarketPriceIsRefused()
     {
         var offers = new[] { Offer("a", 8, 4) };
@@ -109,7 +101,6 @@ public class ShoppingPlannerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OfferWithNoMarketValueIsDropped()
     {
         var offers = new[] { Offer("a", 4, 0), Offer("b", 4, -1) };
@@ -120,7 +111,6 @@ public class ShoppingPlannerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OfferWithNegativeAskingPriceIsDropped()
     {
         var offers = new[] { Offer("a", -1, 4) };
@@ -131,7 +121,6 @@ public class ShoppingPlannerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DuplicateOfferIdIsPlannedOnce()
     {
         var offers = new[] { Offer("a", 4, 4), Offer("a", 4, 4) };
@@ -142,7 +131,6 @@ public class ShoppingPlannerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NegativeWishThrows()
     {
         var offers = new[] { Offer("a", 4, 4) };
@@ -152,7 +140,6 @@ public class ShoppingPlannerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DrawWishStaysWithin1To3AndReachesBothEnds()
     {
         var rng = new Pcg32Random(Seed);

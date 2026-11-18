@@ -7,7 +7,6 @@ namespace CardCleaner.Tests.Features.Packs.Models;
 public class ContainerHintsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void AtAShelfQUnpacksTheContents()
     {
         var hints = ContainerHints.For(CardContainerKind.Box, atShelf: true);
@@ -20,7 +19,6 @@ public class ContainerHintsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AwayFromAShelfQOpensTheContainer()
     {
         var hints = ContainerHints.For(CardContainerKind.Booster, atShelf: false);
@@ -29,7 +27,6 @@ public class ContainerHintsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryKindHasAName()
     {
         AssertThat(CardContainerKindText.NameOf(CardContainerKind.Box)).IsEqual("booster box");

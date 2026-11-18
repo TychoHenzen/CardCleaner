@@ -18,7 +18,6 @@ public class RestockerInterruptionTest : RestockerTestBase
     private static readonly Vector3 LockedLotSpot = new(-4f, 0f, 6f);
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task DismissedRestockerSetsTheCarriedPackDownLooseAtItsFeet()
     {
         HireAndOpen();
@@ -38,7 +37,6 @@ public class RestockerInterruptionTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ShelfBehindTheLockedLotWallSendsTheCarriedPackBackToItsRackSlot()
     {
         _product.GlobalPosition = LockedLotSpot;

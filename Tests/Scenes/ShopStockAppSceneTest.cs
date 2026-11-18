@@ -45,7 +45,6 @@ public class ShopStockAppSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BackofficePcIsAScreenTerminalWithoutOrderUi()
     {
         var pc = _shop.GetNode(BackofficeTerminalPath);
@@ -56,7 +55,6 @@ public class ShopStockAppSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StockAndBillsAppsAreAssignedOnTheDesktop()
     {
         var desktop = _shop.GetNode<PcDesktop>($"{DesktopViewportPath}/PcDesktop");
@@ -66,7 +64,6 @@ public class ShopStockAppSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BillsIconOpensBillsAndStockIconOpensStock()
     {
         var stock = _shop.GetNode<Control>($"{DesktopViewportPath}/StockApp");
@@ -88,7 +85,6 @@ public class ShopStockAppSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WorkshopOrderTerminalStillHasItsUi()
     {
         var terminal = _shop.GetNode<OrderTerminal>(WorkshopTerminalPath);

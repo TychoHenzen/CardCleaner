@@ -56,7 +56,6 @@ public class ShopWorkshopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TerminalListsConveyorArcadeCabinetAndWiringWithPrices()
     {
         AssertThat(_terminal.Catalog!.Items.Select(i => i.Id).ToArray()).IsEqual(ExpectedItems);
@@ -65,7 +64,6 @@ public class ShopWorkshopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WorkshopTerminalIsADifferentNodeWithItsOwnUiFromTheShopPc()
     {
         var pc = _shop.GetNode<ScreenTerminal>("World/Markers/PcLocation/PcTerminal");
@@ -77,7 +75,6 @@ public class ShopWorkshopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TerminalSitsInTheOrderOfficeLeftOfTheCabinet()
     {
         var cabinet = _workshop.GetNode<StaticBody3D>("Cabinet");
@@ -89,7 +86,6 @@ public class ShopWorkshopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PlayerInteractionRayReachesTheTerminalFromInsideTheRoom()
     {
         var interaction = _player.GetNode<InteractionSystem>("Head/Camera3D/InteractionSystem");
@@ -107,7 +103,6 @@ public class ShopWorkshopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PlayerCanWalkFromTheWorkshopEntryThroughTheNorthHallwayToTheTerminal()
     {
         var shape = (CapsuleShape3D)_player.GetNode<CollisionShape3D>("CollisionShape3D").Shape;
@@ -126,7 +121,6 @@ public class ShopWorkshopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TerminalOpensItsOwnUiWithTheSharedBalance()
     {
         _terminal.Interact();
@@ -142,7 +136,6 @@ public class ShopWorkshopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OrderingEachItemChargesThePriceAndDeliversItToTheWorkshopMarker()
     {
         var world = _shop.GetNode("World");
@@ -173,7 +166,6 @@ public class ShopWorkshopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OfficeIsClosedTowardsTheNorthHallwayExceptForItsDoor()
     {
         var space = _shop.GetWorld3D().DirectSpaceState;
@@ -190,7 +182,6 @@ public class ShopWorkshopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TerminalArtSlotsUseExistingPackMeshesWithAPlaceholderFallback()
     {
         var slots = _terminal.GetChildren().OfType<ShopArtSlot>().ToList();
@@ -206,7 +197,6 @@ public class ShopWorkshopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OrderedConveyorIsAPhysicalBodyWithCollisionAndKeepsItsConveyorBehaviourNode()
     {
         _terminal.Interact();

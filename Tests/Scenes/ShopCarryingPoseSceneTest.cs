@@ -81,7 +81,6 @@ public class ShopCarryingPoseSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task HeldBoxSitsInFrontOfTheCamera()
     {
         var box = OrderBox();
@@ -106,7 +105,6 @@ public class ShopCarryingPoseSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CarryLoopWorksThroughAWalkDropPickUpAndOpen()
     {
         var box = OrderBox();

@@ -91,7 +91,6 @@ public class ShopShelfUnpackSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CarriedBoxFacingProductShelfStocksSixPacks()
     {
         var shelf = await StockProductShelf();
@@ -102,7 +101,6 @@ public class ShopShelfUnpackSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CarriedBoxFacingAwayFromShelfOpensLoose()
     {
         var shelf = _shop.GetNode<CardShelf>(ProductShelfPath);
@@ -121,7 +119,6 @@ public class ShopShelfUnpackSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CarriedPackFacingStorageRackStocksFourBoosters()
     {
         var rack = _shop.GetNode<CardShelf>(StorageRackPath);

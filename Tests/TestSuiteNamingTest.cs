@@ -95,7 +95,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EverySuiteUnderTestsIsAConcreteClassNamedAfterItsFile()
     {
         var root = ProjectSettings.GlobalizePath(TestsRoot);
@@ -108,7 +107,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryDailyCategoryUnderTestsTagsASuiteClass()
     {
         var root = ProjectSettings.GlobalizePath(TestsRoot);
@@ -120,7 +118,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DailyCategoryOnTheSuiteClassIsAccepted()
     {
         const string source = "[TestSuite]\n[RequireGodotRuntime]\n[TestCategory(\"Daily\")]\npublic class SlowTest\n{\n}\n";
@@ -129,7 +126,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DailyCategoryOnATestMethodIsReported()
     {
         const string source = "[TestSuite]\npublic class SlowTest\n{\n    [TestCase]\n    [TestCategory(\"Daily\")]\n" +
@@ -140,7 +136,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CommentedOutDailyCategoryIsIgnored()
     {
         const string source = "[TestSuite]\npublic class SlowTest\n{\n    // [TestCategory(\"Daily\")]\n" +
@@ -150,7 +145,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SuiteClassNamedDifferentlyFromItsFileIsReported()
     {
         const string source = "[TestSuite]\npublic class EleAspectsEnhancedTest\n{\n}\n";
@@ -165,7 +159,6 @@ public class TestSuiteNamingTest
     [TestCase("[TestSuite()]")]
     [TestCase("[TestSuiteAttribute]")]
     [TestCase("[GdUnit4.TestSuite]")]
-    [TestCategory("Unit")]
     public static void EverySpellingOfTheSuiteAttributeIsRecognized(string attribute)
     {
         var source = attribute + "\npublic class EleAspectsEnhancedTest\n{\n}\n";
@@ -174,7 +167,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AbstractSuiteClassIsReported()
     {
         const string source = "[TestSuite]\n[RequireGodotRuntime]\npublic abstract class PropertyTestBase\n{\n}\n";
@@ -183,7 +175,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ConcreteSuiteNamedAfterItsFileIsAccepted()
     {
         const string source = "[TestSuite]\n[RequireGodotRuntime]\npublic partial class GoodTest : PropertyTestBase\n{\n}\n";
@@ -192,7 +183,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MentionOfTheAttributeInACommentIsIgnored()
     {
         const string source = "/// A [TestSuite] class named after its file.\npublic static class Helper\n{\n}\n";
@@ -201,7 +191,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SuiteAttributeInBlockCommentIsIgnored()
     {
         const string source = "/*\n[TestSuite]\npublic class EleAspectsEnhancedTest\n{\n}\n*/\n";
@@ -210,7 +199,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SuiteAttributeInVerbatimStringIsIgnored()
     {
         const string source = "var text = @\"\n[TestSuite]\npublic class EleAspectsEnhancedTest\n{\n}\n\";\n";
@@ -220,7 +208,6 @@ public class TestSuiteNamingTest
 
     [TestCase("@$\"")]
     [TestCase("$@\"")]
-    [TestCategory("Unit")]
     public static void SuiteAttributeInInterpolatedVerbatimStringIsIgnored(string prefix)
     {
         var source = "var text = " + prefix + "\n[TestSuite]\npublic class EleAspectsEnhancedTest\n{{\n}}\n\";\n";
@@ -229,7 +216,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SuiteAttributeInRawStringIsIgnored()
     {
         const string source = "var text = \"\"\"\n[TestSuite]\npublic class EleAspectsEnhancedTest\n{\n}\n\"\"\";\n";
@@ -238,7 +224,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SuiteAfterCommentAndStringNoiseIsStillFound()
     {
         const string source = "/* note */\nvar quote = \"/*\";\n" +
@@ -248,7 +233,6 @@ public class TestSuiteNamingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BlankingKeepsLineCount()
     {
         const string source = "a /* x\ny */ \"s\"\n[TestSuite]\n";

@@ -14,7 +14,6 @@ public class Pcg32RandomTest
     private static readonly ulong[] Seeds = [0, 1, 777, 4242, 9223372036854775813UL];
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MembersMatchGodotBitForBit()
     {
         foreach (var seed in Seeds)

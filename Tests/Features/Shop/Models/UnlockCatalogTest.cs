@@ -16,7 +16,6 @@ public class UnlockCatalogTest
     private const string StaffCatalogPath = "res://Data/Shop/StaffCatalog.tres";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DefaultRowsGiveTheRequiredLevelOfEachItem()
     {
         var catalog = UnlockCatalog.Default;
@@ -37,7 +36,6 @@ public class UnlockCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnknownAndEmptyIdsHaveNoLevel()
     {
         var catalog = UnlockCatalog.Default;
@@ -47,7 +45,6 @@ public class UnlockCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DuplicateIdThrows()
     {
         var rows = new[]
@@ -61,7 +58,6 @@ public class UnlockCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LevelBelowOneThrows()
     {
         var rows = new[] { new UnlockEntry("shelf", UnlockKind.Furniture, 0) };
@@ -71,7 +67,6 @@ public class UnlockCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EmptyIdThrows()
     {
         var rows = new[] { new UnlockEntry("  ", UnlockKind.Furniture, 1) };
@@ -81,7 +76,6 @@ public class UnlockCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void StaffRoleUnlockIdsHaveRows()
     {
         var catalog = UnlockCatalog.Default;
@@ -97,7 +91,6 @@ public class UnlockCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryItemInTheShippedCatalogsHasAnUnlockRow()
     {
         var catalog = UnlockCatalog.Default;

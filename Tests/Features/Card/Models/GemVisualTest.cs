@@ -28,7 +28,6 @@ public class GemVisualTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DefaultValues_AreValid()
     {
         // Arrange
@@ -43,7 +42,6 @@ public class GemVisualTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Properties_CanBeSet()
     {
         // Assert - Verify all properties were set correctly
@@ -60,7 +58,6 @@ public class GemVisualTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Element_CanBeChanged()
     {
         // Act
@@ -71,7 +68,6 @@ public class GemVisualTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EmissionStrengths_AcceptValidRange()
     {
         // Act
@@ -84,7 +80,6 @@ public class GemVisualTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EmissionColors_AcceptFullColorRange()
     {
         // Act

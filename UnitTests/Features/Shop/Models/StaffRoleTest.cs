@@ -6,7 +6,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class StaffRoleTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void Cashier_defaults_match_constants()
     {
         var cashier = StaffDefaults.Cashier();

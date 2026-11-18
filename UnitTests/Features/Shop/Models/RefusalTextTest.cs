@@ -7,7 +7,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class RefusalTextTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void PriceTooHighTextIsPriceTooHigh()
     {
         AssertThat(RefusalText.For(RefusalReason.PriceTooHigh)).IsEqual("price too high");
@@ -15,7 +14,6 @@ public class RefusalTextTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NothingInStockTextIsNothingInStock()
     {
         AssertThat(RefusalText.For(RefusalReason.NothingInStock)).IsEqual("nothing in stock");
@@ -23,7 +21,6 @@ public class RefusalTextTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnknownReasonThrows()
     {
         AssertThrown(() => RefusalText.For((RefusalReason)99)).IsInstanceOf<ArgumentOutOfRangeException>();

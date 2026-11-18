@@ -110,7 +110,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task LeftClick_PicksUpBox()
     {
         var box = OrderBox();
@@ -129,7 +128,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task RightPress_DropsBox_InFrontOfCamera()
     {
         var box = OrderBox();
@@ -150,7 +148,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Q_OpensHeldBox_Spawns8Packs()
     {
         var box = OrderBox();
@@ -169,7 +166,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CardsHeld_BlocksContainerPickup()
     {
         var box = OrderBox();
@@ -186,7 +182,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ContainerHeld_BlocksCardPickup()
     {
         var box = OrderBox();
@@ -207,7 +202,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PickUpDropPickUp_Works()
     {
         var box = OrderBox();

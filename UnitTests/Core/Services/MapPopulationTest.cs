@@ -26,7 +26,6 @@ public class MapPopulationTest
     private const int SeedCount = 20;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void GridMapGetsAPassableStartAndTwoToThreeFarEnemies()
     {
         var map = GridMap(GridSide);
@@ -35,7 +34,6 @@ public class MapPopulationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MeshMapGetsAPassableStartAndTwoToThreeFarEnemies()
     {
         var map = MeshMap();
@@ -45,7 +43,6 @@ public class MapPopulationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheSameSeedGivesTheSamePlacement()
     {
         var map = GridMap(GridSide);
@@ -58,7 +55,6 @@ public class MapPopulationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheStartIsNotAlwaysTheSameCell()
     {
         var map = GridMap(GridSide);
@@ -72,7 +68,6 @@ public class MapPopulationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ASmallMapStillGetsEnemiesOnOtherPassableCells()
     {
         // 5 x 16 = 80 world units: no cell is 200 world units from the start.
@@ -87,7 +82,6 @@ public class MapPopulationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AStartWithOneFarCellPutsAnEnemyThereAndTopsUpFromNearerCells()
     {
         // A 20 x 1 strip with passable cells 0, 1, 2 and 19: from a start among 0-2 only cell 19 is far (272 world
@@ -107,7 +101,6 @@ public class MapPopulationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AStartWithTwoFarCellsNeverPlacesANearThirdEnemy()
     {
         // A 20 x 1 strip with passable cells 0, 1, 2, 18 and 19: from a start among 0-2 exactly two cells are far
@@ -123,7 +116,6 @@ public class MapPopulationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AMapWithOnePassableCellStartsThereWithNoEnemies()
     {
         var only = new Vector2I(2, 3);

@@ -12,7 +12,6 @@ public class CheckoutXpTest
     [TestCase(100, 10)]
     [TestCase(0, 0)]
     [TestCase(-3, 0)]
-    [TestCategory("Unit")]
     public static void XpIsOnePerTenPaidWithAtLeastOneForAnySale(int amountPaid, int expectedXp)
     {
         AssertThat(CheckoutXp.For(amountPaid)).IsEqual(expectedXp);

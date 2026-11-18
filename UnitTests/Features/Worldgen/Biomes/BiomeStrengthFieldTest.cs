@@ -9,7 +9,6 @@ namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 public class BiomeStrengthFieldTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void GetStrength_OutOfRangeOrUnknownBiome_ReturnsZero()
     {
         var size = new Vector2I(4, 3);

@@ -37,7 +37,6 @@ public class ShopSceneStockContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SidelinedPlayerStaysTheLiveTargetOfBothSeams()
     {
         var player = _shop.GetNode<PlayerController>("Player");
@@ -48,14 +47,12 @@ public class ShopSceneStockContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ExactlyOneStorageRackJoinsTheStorageRackGroup()
     {
         AssertThat(_shop.GetTree().GetNodesInGroup(CardShelf.StorageGroupName).Count).IsEqual(1);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EverySalesShelfGroupMemberIsAShelfAndNoStorageRackJoinsIt()
     {
         // Sales stock is listed through sales_shelves, so a storage rack must never join it.
@@ -67,7 +64,6 @@ public class ShopSceneStockContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AProductShelfStandsUnderWorld()
     {
         var shelves = Descendants(_shop.GetNode("World")).OfType<CardShelf>().ToArray();
@@ -76,7 +72,6 @@ public class ShopSceneStockContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FurnitureCatalogSellsEveryFurnitureItemAsItsBox()
     {
         var items = GD.Load<OrderCatalog>(FurnitureCatalogPath).Items;
@@ -93,7 +88,6 @@ public class ShopSceneStockContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheStartingShelvesArePlacedFurnitureThatFitsTheFloor()
     {
         // Placed furniture can be moved, packed and saved like a bought piece, so the starting shelves are too.
@@ -112,7 +106,6 @@ public class ShopSceneStockContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NoStartingFurnitureStandsInTheCheckoutQueue()
     {
         // Waiting customers step from queue spot to queue spot, so the lane from the first spot to the last, as wide as
@@ -137,7 +130,6 @@ public class ShopSceneStockContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CustomerSpawnerIsWiredUnderServices()
     {
         var spawner = _shop.GetNode<CustomerSpawner>("Services/CustomerSpawner");

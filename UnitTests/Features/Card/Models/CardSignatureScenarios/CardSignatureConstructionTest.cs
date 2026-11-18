@@ -15,7 +15,6 @@ namespace CardCleaner.Tests.Features.Card.Models.CardSignatureScenarios;
 public class CardSignatureConstructionTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void SignatureIsAReadonlyValueWithoutSetters()
     {
         AssertBool(typeof(CardSignature).IsValueType).IsTrue();
@@ -42,7 +41,6 @@ public class CardSignatureConstructionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestSignatureClampingWithChanges()
     {
         var signature = new CardSignature();
@@ -69,7 +67,6 @@ public class CardSignatureConstructionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestArrayConstructorClampsValues()
     {
         var signature = new CardSignature(new[] { 2.0f, -2.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });

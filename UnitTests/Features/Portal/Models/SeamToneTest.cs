@@ -12,7 +12,6 @@ public class SeamToneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ToneIsWholePeriodsOfSixteenBitMonoSamples()
     {
         var pcm = SeamTone.Pcm16();
@@ -22,7 +21,6 @@ public class SeamToneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ToneStartsAtZeroAndStaysWithinTheAmplitude()
     {
         var pcm = SeamTone.Pcm16();

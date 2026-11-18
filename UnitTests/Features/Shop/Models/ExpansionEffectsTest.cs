@@ -14,22 +14,18 @@ public class ExpansionEffectsTest
         new(new[] { LotA, LotB }, new HashSet<string>(owned));
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NothingOwnedGivesNoCustomers() =>
         AssertThat(ExpansionEffects.ExtraCustomers(Table())).IsEqual(0);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OneOwnedLotGivesItsOwnValue() =>
         AssertThat(ExpansionEffects.ExtraCustomers(Table("lot_a"))).IsEqual(6);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BothOwnedLotsGiveTheSum() =>
         AssertThat(ExpansionEffects.ExtraCustomers(Table("lot_a", "lot_b"))).IsEqual(15);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OwnedIdMissingFromTheTableIsIgnored() =>
         AssertThat(ExpansionEffects.ExtraCustomers(Table("ghost"))).IsEqual(0);
 }

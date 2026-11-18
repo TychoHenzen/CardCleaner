@@ -38,7 +38,6 @@ public class ShelfPriceTagSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task EveryTaggedShelfSceneHasOneTagPerSlot()
     {
         foreach (var path in new[] { ShelfScene, ProductShelfScene, StorageRackScene })
@@ -57,7 +56,6 @@ public class ShelfPriceTagSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AStockedCardShelfSlotPrintsTheCardPrice()
     {
         var shelf = LoadShelf(ShelfScene);
@@ -77,7 +75,6 @@ public class ShelfPriceTagSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AProductShelfBoosterShowsTheBoosterPrice()
     {
         var shelf = LoadShelf(ProductShelfScene);
@@ -91,7 +88,6 @@ public class ShelfPriceTagSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AStorageRackPackShowsThePackPriceAndABoxShowsNone()
     {
         var shelf = LoadShelf(StorageRackScene);
@@ -110,7 +106,6 @@ public class ShelfPriceTagSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheRayPicksTheTagAtTheTagAndTheCardAtTheCard()
     {
         var shelf = LoadShelf(ShelfScene);

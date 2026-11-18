@@ -23,7 +23,6 @@ public class ShopStaffSaveSceneTest : ShopStaffSaveSceneTestBase
     private const float StepSeconds = 0.5f;
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Hired_cashier_survives_save_and_reload()
     {
         HireCashier();
@@ -44,7 +43,6 @@ public class ShopStaffSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Unhired_save_loads_with_nobody_hired()
     {
         AssertBool(_rig.Saves.ManualSave()).IsTrue();
@@ -58,7 +56,6 @@ public class ShopStaffSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Save_without_the_staff_key_loads_as_nobody_hired()
     {
         var log = new RecordingLog();
@@ -71,7 +68,6 @@ public class ShopStaffSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Unknown_role_id_in_a_save_is_dropped_with_a_warning_and_valid_ones_kept()
     {
         var log = new RecordingLog();
@@ -87,7 +83,6 @@ public class ShopStaffSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Unreadable_staff_json_is_warned_and_ignored()
     {
         HireCashier();
@@ -103,7 +98,6 @@ public class ShopStaffSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Null_catalog_hires_nobody()
     {
         _rig.Staff.Catalog = null;
@@ -118,7 +112,6 @@ public class ShopStaffSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Wage_line_is_charged_at_close_for_a_hired_cashier()
     {
         HireCashier();
@@ -138,7 +131,6 @@ public class ShopStaffSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Short_balance_leaves_the_unpaid_wage_as_debt()
     {
         HireCashier();
@@ -158,7 +150,6 @@ public class ShopStaffSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Save_written_mid_checkout_reloads_hired_idle_and_closed()
     {
         HireCashier();

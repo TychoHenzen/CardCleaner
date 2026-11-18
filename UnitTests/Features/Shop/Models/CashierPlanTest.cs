@@ -7,7 +7,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class CashierPlanTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void Idle_plan_ignores_time()
     {
         var plan = new CashierPlan(StaffDefaults.Cashier());
@@ -17,7 +16,6 @@ public class CashierPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Waits_take_over_delay_before_the_first_scan()
     {
         var plan = new CashierPlan(StaffDefaults.Cashier());
@@ -29,7 +27,6 @@ public class CashierPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Scans_one_item_per_interval_in_order()
     {
         var plan = new CashierPlan(StaffDefaults.Cashier());
@@ -49,7 +46,6 @@ public class CashierPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Pays_after_the_last_scan_and_the_payment_delay()
     {
         var plan = new CashierPlan(StaffDefaults.Cashier());
@@ -65,7 +61,6 @@ public class CashierPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Done_returns_None_for_more_time()
     {
         var plan = new CashierPlan(StaffDefaults.Cashier());
@@ -80,7 +75,6 @@ public class CashierPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Zero_or_negative_delta_changes_nothing()
     {
         var plan = new CashierPlan(StaffDefaults.Cashier());
@@ -96,7 +90,6 @@ public class CashierPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Huge_delta_yields_one_action_per_call()
     {
         var plan = new CashierPlan(StaffDefaults.Cashier());
@@ -115,7 +108,6 @@ public class CashierPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Reset_returns_to_Idle()
     {
         var plan = new CashierPlan(StaffDefaults.Cashier());
@@ -129,7 +121,6 @@ public class CashierPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Begin_with_no_items_throws()
     {
         var plan = new CashierPlan(StaffDefaults.Cashier());

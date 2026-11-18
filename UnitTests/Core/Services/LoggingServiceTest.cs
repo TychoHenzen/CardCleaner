@@ -7,7 +7,6 @@ namespace CardCleaner.Tests.Core.Services;
 public class LoggingServiceTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void LoggingService_CanBeInstantiated()
     {
         // Arrange & Act
@@ -19,7 +18,6 @@ public class LoggingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LoggingService_ImplementsILogInterface()
     {
         // Arrange & Act

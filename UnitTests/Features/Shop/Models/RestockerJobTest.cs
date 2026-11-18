@@ -8,7 +8,6 @@ public class RestockerJobTest
     private static readonly RestockStep Step = new(RestockStepKind.Move, 4, 9);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Begin_then_Arrived_twice_ends_Idle_and_the_second_returns_true()
     {
         var job = new RestockerJob();
@@ -22,7 +21,6 @@ public class RestockerJobTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TargetLost_returns_Idle_and_blocks_the_pair()
     {
         var job = new RestockerJob();
@@ -36,7 +34,6 @@ public class RestockerJobTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Pair_unblocks_after_BlockSeconds_and_not_before()
     {
         var job = new RestockerJob();
@@ -51,7 +48,6 @@ public class RestockerJobTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoPath_behaves_like_TargetLost()
     {
         var job = new RestockerJob();
@@ -64,7 +60,6 @@ public class RestockerJobTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Cancel_returns_Idle_without_blocking_the_pair()
     {
         var job = new RestockerJob();
@@ -79,7 +74,6 @@ public class RestockerJobTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Calls_in_Idle_change_nothing()
     {
         var job = new RestockerJob();
@@ -95,7 +89,6 @@ public class RestockerJobTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Begin_while_busy_is_ignored()
     {
         var job = new RestockerJob();

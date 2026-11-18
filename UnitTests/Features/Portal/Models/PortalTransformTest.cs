@@ -19,7 +19,6 @@ public class PortalTransformTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PlayerAtTheEntryLandsAtTheExit()
     {
         var entry = At(new Vector3(12f, 1.5f, -7.8f), 0f);
@@ -31,7 +30,6 @@ public class PortalTransformTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OffsetFromTheDoorwayIsPreservedWhenMarkersShareAFacing()
     {
         var entry = At(new Vector3(12f, 1.5f, -7.8f), 0f);
@@ -45,7 +43,6 @@ public class PortalTransformTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ExitTurnedNinetyDegreesTurnsOffsetAndFacingByTheSameAmount()
     {
         var entry = At(new Vector3(0f, 1.5f, 0f), 0f);
@@ -60,7 +57,6 @@ public class PortalTransformTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PitchAndHeightOffsetAreNotChanged()
     {
         var entry = At(new Vector3(0f, 1.5f, 0f), 0f);
@@ -74,7 +70,6 @@ public class PortalTransformTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void VelocityTurnsWithTheBody()
     {
         var entry = At(Vector3.Zero, 0f);
@@ -86,7 +81,6 @@ public class PortalTransformTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SteppingIntoTheDoorwayCrossesButStandingBackOrBesideDoesNot()
     {
         var doorway = At(new Vector3(12f, 1.5f, -7.8f), 0f);
@@ -97,7 +91,6 @@ public class PortalTransformTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void JumpingAboveTheDoorwayDoesNotCross()
     {
         var doorway = At(new Vector3(12f, 1.5f, -7.8f), 0f);
@@ -107,7 +100,6 @@ public class PortalTransformTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CrossingFollowsTheDoorwayFacing()
     {
         var doorway = At(Vector3.Zero, 90f);
@@ -118,7 +110,6 @@ public class PortalTransformTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CandidatesRiseInStepsFromTheMappedSpot()
     {
         var landing = new Vector3(60f, 0.9f, -4f);

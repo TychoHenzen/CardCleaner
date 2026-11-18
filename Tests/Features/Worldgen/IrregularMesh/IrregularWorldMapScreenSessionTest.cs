@@ -69,7 +69,6 @@ public class IrregularWorldMapScreenSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ASessionTheScreenDidNotStartLeavesItEmpty()
     {
         _session.StartSession(
@@ -85,7 +84,6 @@ public class IrregularWorldMapScreenSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AGeneratorThatGivesNoMeshMapEndsTheSession()
     {
         var states = new List<SessionState>();
@@ -101,7 +99,6 @@ public class IrregularWorldMapScreenSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task InitializeBeforeTheServiceResolvesStartsOnceItDoes()
     {
         TestServices.Reset();

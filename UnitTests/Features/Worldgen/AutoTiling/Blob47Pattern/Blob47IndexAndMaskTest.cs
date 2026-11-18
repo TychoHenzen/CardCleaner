@@ -53,7 +53,6 @@ public class Blob47IndexAndMaskTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ValidMasksAreStable()
     {
         var first = NeighborBitmask8.GetValid47Masks();

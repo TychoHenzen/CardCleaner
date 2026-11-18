@@ -25,7 +25,6 @@ public class CardSleepEnforcerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DefaultThresholds_AreReasonable()
     {
         // Arrange
@@ -40,7 +39,6 @@ public class CardSleepEnforcerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ThresholdProperties_CanBeModified()
     {
         // Act
@@ -53,7 +51,6 @@ public class CardSleepEnforcerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Setup_NullCardRoot_DoesNotThrow()
     {
         // Act & Assert - Should handle null gracefully
@@ -63,7 +60,6 @@ public class CardSleepEnforcerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PhysicsProcess_DoesNotThrow()
     {
         // Act & Assert - Should not throw when called without setup
@@ -73,7 +69,6 @@ public class CardSleepEnforcerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OneSlowStep_DoesNotFreeze()
     {
         // A landing card is slow on the step the floor stops it, while it is still inside the floor.
@@ -81,7 +76,6 @@ public class CardSleepEnforcerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SlowForTheRestTime_Freezes()
     {
         var steps = StepsToRest();
@@ -92,7 +86,6 @@ public class CardSleepEnforcerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AFastStep_StartsTheRestAgain()
     {
         var steps = StepsToRest();
@@ -107,7 +100,6 @@ public class CardSleepEnforcerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AfterAFreeze_TheCardRestsAnew()
     {
         var steps = StepsToRest();
@@ -118,7 +110,6 @@ public class CardSleepEnforcerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CardShaderScene_SleepEnforcerNodeRunsTheMovedScript()
     {
         // Arrange - not added to the tree: the check needs only the instanced children, not the card's _Ready

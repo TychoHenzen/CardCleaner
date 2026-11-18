@@ -19,7 +19,6 @@ public class ServiceContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestRegisterAndResolveSingleton()
     {
         var instance = new TestServiceImpl();
@@ -32,7 +31,6 @@ public class ServiceContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestRegisterSingletonWithGenericTypes()
     {
         _container.RegisterSingleton<ITestService, TestServiceImpl>();
@@ -45,7 +43,6 @@ public class ServiceContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestIsRegistered()
     {
         Assertions.AssertBool(_container.IsRegistered<ITestService>()).IsFalse();
@@ -57,7 +54,6 @@ public class ServiceContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestResolveUnregisteredServiceThrows()
     {
         Assertions.AssertThrown(() => _container.Resolve<ITestService>())

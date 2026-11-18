@@ -11,7 +11,6 @@ public class DayReportSheetTest
         new(3, takings, settlement, complaints);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TitleNamesTheDayThatClosed()
     {
         var report = Report(0, new BillSettlement(0, 0, 0, 0, Array.Empty<BillLine>()));
@@ -20,7 +19,6 @@ public class DayReportSheetTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void APaidDayListsTakingsBillsAndNetWithoutDebtRows()
     {
         var settlement = new BillSettlement(0, 40, 40, 0, new[] { new BillLine("Rent", 40) });
@@ -32,7 +30,6 @@ public class DayReportSheetTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ADayInDebtShowsTheDebtCarriedInAndWhatIsStillOwed()
     {
         var settlement = new BillSettlement(41, 203, 150, 53,
@@ -46,7 +43,6 @@ public class DayReportSheetTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ComplaintsListEachReasonWithItsCountOrSayNone()
     {
         var settlement = new BillSettlement(0, 0, 0, 0, Array.Empty<BillLine>());

@@ -19,7 +19,6 @@ public class HumanFigureTest
     private const string MissingModel = "res://Tests/Features/Shop/Components/no-such-person.glb";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AWornModelStandsAtTheFigureHeightOnItsOrigin()
     {
         var figure = AddNode(Figure());
@@ -32,7 +31,6 @@ public class HumanFigureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AWornModelIsTurnedByTheLooksYaw()
     {
         var figure = AddNode(Figure());
@@ -46,7 +44,6 @@ public class HumanFigureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AWornModelHidesThePlaceholder()
     {
         var figure = AddNode(Figure());
@@ -59,7 +56,6 @@ public class HumanFigureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AMissingModelKeepsThePlaceholderAndActsForNoTime()
     {
         var figure = AddNode(Figure());
@@ -73,7 +69,6 @@ public class HumanFigureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void IdleAndWalkLoopAndActionsDoNot()
     {
         var figure = AddNode(Figure());
@@ -88,7 +83,6 @@ public class HumanFigureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AWalkingBodyTurnsTowardItsWalkAndLoopsWalk()
     {
         var body = AddNode(new Node3D());
@@ -106,7 +100,6 @@ public class HumanFigureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ATurnTakesTimeAtTheTurnRate()
     {
         var body = AddNode(new Node3D());
@@ -120,7 +113,6 @@ public class HumanFigureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AStandingBodyTurnsTowardThePointItFaces()
     {
         var body = AddNode(new Node3D());
@@ -136,7 +128,6 @@ public class HumanFigureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void WalkingForgetsThePointToFace()
     {
         var body = AddNode(new Node3D());
@@ -151,7 +142,6 @@ public class HumanFigureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task AnActionPlaysOnceAndTheLoopComesBack()
     {
         var figure = AddNode(Figure());
@@ -168,7 +158,6 @@ public class HumanFigureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheWalkLoopWaitsForAnActionToEnd()
     {
         var body = AddNode(new Node3D());
@@ -184,7 +173,6 @@ public class HumanFigureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ALoopClipIsNoAction()
     {
         var figure = AddNode(Figure());

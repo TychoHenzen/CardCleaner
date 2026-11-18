@@ -27,7 +27,6 @@ public class SealedBoxSaveTest
     private const ulong BoxSeed = 0x5EA1EDUL;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ReloadedBoxOpensIntoTheSameCardSignaturesAsTheOriginal()
     {
         using var scene = new SaveWorld("SealedBoxWorld", addCardsToTree: false);
@@ -64,7 +63,6 @@ public class SealedBoxSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ABoxSavedWhileItOpensIsSavedAsTheEightPacksItOpensInto()
     {
         using var scene = new SaveWorld("OpeningBoxWorld", addCardsToTree: false);

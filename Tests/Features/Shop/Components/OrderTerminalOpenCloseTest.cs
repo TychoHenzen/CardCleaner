@@ -26,7 +26,6 @@ public class OrderTerminalOpenCloseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InteractOpensTheUiWithTheCurrentBalanceAndBlocksFurtherInteraction()
     {
         AssertBool(_f.Terminal.CanInteract).IsTrue();
@@ -40,7 +39,6 @@ public class OrderTerminalOpenCloseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CloseHidesTheUiAndAllowsInteractionAgain()
     {
         _f.Terminal.Interact();
@@ -53,7 +51,6 @@ public class OrderTerminalOpenCloseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CloseButtonClosesTheTerminal()
     {
         _f.Terminal.Interact();
@@ -64,7 +61,6 @@ public class OrderTerminalOpenCloseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OpenThenClose_LeavesCursorCaptured()
     {
         _f.Terminal.Interact();
@@ -79,7 +75,6 @@ public class OrderTerminalOpenCloseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CloseTwiceAndOpenTwice_ClaimsAndReleasesOnce()
     {
         _f.Terminal.Open();
@@ -95,7 +90,6 @@ public class OrderTerminalOpenCloseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FreedWhileOpen_ReleasesClaim()
     {
         _f.Terminal.Interact();
@@ -107,7 +101,6 @@ public class OrderTerminalOpenCloseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EscapeClosesTheOpenTerminal()
     {
         _f.Terminal.Interact();
@@ -119,7 +112,6 @@ public class OrderTerminalOpenCloseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EscapeDoesNothingWhileTheTerminalIsClosed()
     {
         _f.Ui._UnhandledInput(new InputEventAction { Action = "ui_cancel", Pressed = true });
@@ -129,7 +121,6 @@ public class OrderTerminalOpenCloseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void HighlightShowsAndClearsTheHighlightMesh()
     {
         var mesh = new MeshInstance3D { Visible = false };
@@ -144,14 +135,12 @@ public class OrderTerminalOpenCloseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TerminalSitsOnTheInteractableLayerSeenByThePlayerRay()
     {
         AssertBool((_f.Terminal.CollisionLayer & 4) != 0).IsTrue();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TerminalWithoutDesktopKeepsTheOverlayBehaviour()
     {
         var playerCamera = AddPlayerCamera();

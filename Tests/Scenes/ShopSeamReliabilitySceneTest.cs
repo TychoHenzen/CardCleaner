@@ -32,7 +32,6 @@ public class ShopSeamReliabilitySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CrossingOnceDoesNotTeleportAgainAndTheSeamCloses()
     {
         await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
@@ -47,7 +46,6 @@ public class ShopSeamReliabilitySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task DroppingTheCardWhileTheSeamIsOpenClosesIt()
     {
         await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
@@ -62,7 +60,6 @@ public class ShopSeamReliabilitySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PlayerPressedAgainstTheWallStillCountsAsCrossing()
     {
         await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
@@ -74,7 +71,6 @@ public class ShopSeamReliabilitySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task DroppingTheSpecialCardOfAMixedHandClosesTheSeam()
     {
         await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
@@ -88,7 +84,6 @@ public class ShopSeamReliabilitySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BlockedLandingRefusesTheCrossingAndKeepsThePlayerInTheShop()
     {
         var blocker = new StaticBody3D { Position = _rig.WorkshopEntry.GlobalPosition };

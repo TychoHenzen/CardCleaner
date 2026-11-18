@@ -11,7 +11,6 @@ namespace CardCleaner.Tests.Architecture;
 public class LouvainClusteringTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void TwoCliquesJoinedByOneEdgeGiveTwoCommunities()
     {
         var communities = LouvainClustering.Communities(Keys(10), TwoCliques(),1.0, 0);
@@ -20,7 +19,6 @@ public class LouvainClusteringTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheSameSeedGivesTheSamePartition()
     {
         for (var seed = 0; seed < 10; seed++)
@@ -32,7 +30,6 @@ public class LouvainClusteringTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ConsensusOfTwoCliquesGivesTwoModules()
     {
         var names = Enumerable.Range(0, 10).Select(i => $"C{i}").ToList();
@@ -49,7 +46,6 @@ public class LouvainClusteringTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ClassReferencedFromSixHomesIsOmnipresentAndFromFiveIsNot()
     {
         var edges = NamedCliques();
@@ -63,7 +59,6 @@ public class LouvainClusteringTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OmnipresentClassJoinsTheModuleItReferencesMost()
     {
         var edges = NamedCliques();
@@ -78,7 +73,6 @@ public class LouvainClusteringTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ClassUnderTheLooseDegreeGoesLooseAndOneAtItIsClustered()
     {
         var edges = NamedCliques();
@@ -92,7 +86,6 @@ public class LouvainClusteringTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CommunityOfThreeGoesLoose()
     {
         var edges = NamedCliques();
@@ -105,7 +98,6 @@ public class LouvainClusteringTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AddingAClassThatSortsFirstKeepsTheCliquesOfTheOthers()
     {
         // Clique members are named "<digit><letter>", so the ordinal order interleaves the three cliques
@@ -130,7 +122,6 @@ public class LouvainClusteringTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnIsolatedClassThatSortsFirstDoesNotChangeAnySeedsPartition()
     {
         // A fixed pseudo-random sparse graph of 40 classes, whose partition depends on the visit order. The extra

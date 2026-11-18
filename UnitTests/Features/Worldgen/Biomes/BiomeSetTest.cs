@@ -9,7 +9,6 @@ namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 public class BiomeSetTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void From_KeepsEnumerationOrder()
     {
         var set = BiomeSet.From(new[]
@@ -24,7 +23,6 @@ public class BiomeSetTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Get_UnknownId_ReturnsNull()
     {
         var set = BiomeSet.From(new[] { CreateTestBiome("forest") });
@@ -34,14 +32,12 @@ public class BiomeSetTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FindClosestBySignature_EmptySet_ReturnsNull()
     {
         AssertThat(BiomeSet.Empty.FindClosestBySignature(new CardSignature())).IsNull();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FindClosestBySignature_PicksNearestAffinity()
     {
         var set = BiomeSet.From(new[]

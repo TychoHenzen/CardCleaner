@@ -19,7 +19,6 @@ namespace CardCleaner.Tests.Core.Services;
 public class TileVisualLoaderTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void CompiledAtlasAvailableUsesTheAtlasTileSizeAndKeepsEveryTileInOrder()
     {
         var result = TileDataLoader.LoadTileRegistry(new GodotAssetPaths());
@@ -35,7 +34,6 @@ public class TileVisualLoaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MissingMappingFileKeepsTheOriginalTileset()
     {
         var result = TileDataLoader.LoadTileRegistry(new GodotAssetPaths());
@@ -47,7 +45,6 @@ public class TileVisualLoaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MappingWhoseAtlasImageDoesNotLoadKeepsTheOriginalTileset()
     {
         var mappingPath = $"user://tile-visual-atlas-{Guid.NewGuid():N}.json";

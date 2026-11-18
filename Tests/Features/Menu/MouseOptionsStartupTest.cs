@@ -44,7 +44,6 @@ public class MouseOptionsStartupTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Saved_mouse_options_are_applied_to_the_settings_on_startup()
     {
         var store = new OptionsStore(_path);
@@ -58,7 +57,6 @@ public class MouseOptionsStartupTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Missing_file_keeps_defaults_on_startup()
     {
         TestServices.Container.RegisterSingleton<OptionsStore>(new OptionsStore(_path));

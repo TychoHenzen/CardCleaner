@@ -12,7 +12,6 @@ public class ControlHintBoardTest
     private static readonly ControlHint Turn = new("T", "Turn");
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void HintsKeepTheOrderSourcesFirstPublishedIn()
     {
         var board = new ControlHintBoard();
@@ -27,7 +26,6 @@ public class ControlHintBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RepublishingTheSameHintsRaisesNoChange()
     {
         var board = new ControlHintBoard();
@@ -42,7 +40,6 @@ public class ControlHintBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnEmptyListAndClearBothRemoveTheSourcesHints()
     {
         var board = new ControlHintBoard();
@@ -59,7 +56,6 @@ public class ControlHintBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ClearingASourceWithNoHintsRaisesNoChange()
     {
         var board = new ControlHintBoard();

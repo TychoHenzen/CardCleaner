@@ -12,7 +12,6 @@ public class LevelBarTest
     private const int MaxLevelAmount = 5000;
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ShowsLevelOneAtZeroXp()
     {
         var progression = AutoFree(new ShopProgression());
@@ -25,7 +24,6 @@ public class LevelBarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FillsTowardTheNextLevelAndRollsOver()
     {
         var progression = AutoFree(new ShopProgression());
@@ -45,7 +43,6 @@ public class LevelBarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TopLevelShowsMaxAndAFullBar()
     {
         var progression = AutoFree(new ShopProgression());
@@ -60,7 +57,6 @@ public class LevelBarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WithoutProgressionShowsADash()
     {
         var bar = new LevelBar();
@@ -71,7 +67,6 @@ public class LevelBarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StopsFollowingProgressionOnceItLeavesTheTree()
     {
         var progression = AutoFree(new ShopProgression());

@@ -83,7 +83,6 @@ public class SimpleWorldMapScreenInitializeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AScreenThatLeftTheTreeIgnoresALateSessionService()
     {
         TestServices.Reset();
@@ -107,7 +106,6 @@ public class SimpleWorldMapScreenInitializeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AGeneratorThatGivesNoGridMapEndsTheSession()
     {
         var screen = new SimpleWorldMapScreen();
@@ -152,7 +150,6 @@ public class SimpleWorldMapScreenInitializeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnAtlasWhoseImageDoesNotLoadLeavesTheRegistryOnTheOriginalTileset()
     {
         var mappingPath = $"user://world-map-atlas-{Guid.NewGuid():N}.json";

@@ -196,7 +196,6 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
     }
 
     [TestCase(Timeout = 30000)]
-    [TestCategory("Unit")]
     public async Task ExplorationReportsCellIdsAndWorldPositions()
     {
         var events = await RunSessionToEnd(StrongAbility);
@@ -227,7 +226,6 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
     }
 
     [TestCase(Timeout = 30000)]
-    [TestCategory("Unit")]
     public async Task ALostFightReportsNoDefeatedCellAndNoLoot()
     {
         // An all-zero ability deals 1 damage a turn, so the map's enemy always wins.

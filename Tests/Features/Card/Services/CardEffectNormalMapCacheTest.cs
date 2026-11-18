@@ -29,7 +29,6 @@ public class CardEffectNormalMapCacheTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ARequestReturnsBeforeTheMapIsBakedAndHandsItOverLater()
     {
         ImageTexture? map = null;
@@ -41,7 +40,6 @@ public class CardEffectNormalMapCacheTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ManyRequestsForOneTextureShareOneBake()
     {
         var art = TwoColourArt(64, 64);
@@ -59,7 +57,6 @@ public class CardEffectNormalMapCacheTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task DifferentTexturesGetTheirOwnNormalMaps()
     {
         var first = await CardEffectBakeWait.BakeOf(TwoColourArt(64, 64));
@@ -69,7 +66,6 @@ public class CardEffectNormalMapCacheTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task TheNormalMapIsAnRgba8ImageAtTheSegmentedSize()
     {
         var map = await CardEffectBakeWait.BakeOf(TwoColourArt(256, 192));
@@ -80,7 +76,6 @@ public class CardEffectNormalMapCacheTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task TheTextureHoldsExactlyTheBakedBytes()
     {
         var image = TwoColourArt(128, 128).GetImage();
@@ -92,7 +87,6 @@ public class CardEffectNormalMapCacheTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ARealCardArtTextureHasBeveledRegions()
     {
         var map = (await CardEffectBakeWait.BakeOf(GD.Load<Texture2D>(RealArt))).GetImage();
@@ -107,7 +101,6 @@ public class CardEffectNormalMapCacheTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task AResetDropsTheBakesStillInFlight()
     {
         // A bake a test started must not hand its map to the next test.

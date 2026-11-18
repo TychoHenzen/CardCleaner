@@ -20,7 +20,6 @@ public class ShopArtSlotEditorSaveTest
     private const string ScenesRoot = "res://Scenes";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PreSaveRestoresThePlaceholderAndPostSaveHidesItAgain()
     {
         var slot = AddSlot(OwnModelPath, out var placeholder);
@@ -35,7 +34,6 @@ public class ShopArtSlotEditorSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SavingKeepsThePlaceholderVisibleWhenTheArtIsMissing()
     {
         var slot = AddSlot(MissingPath, out var placeholder);
@@ -49,7 +47,6 @@ public class ShopArtSlotEditorSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SavingASlotWithoutAPlaceholderDoesNothing()
     {
         var slot = AddNode(new ShopArtSlot { ArtPath = OwnModelPath });
@@ -61,7 +58,6 @@ public class ShopArtSlotEditorSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoSceneFileStoresAHiddenPlaceholder()
     {
         var scenes = ScenesWithArtSlots(ScenesRoot);
@@ -86,7 +82,6 @@ public class ShopArtSlotEditorSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnEditorSaveOfEverySceneWithAnArtSlotStoresNoHiddenPlaceholderAndNoArt()
     {
         var scenes = ScenesWithArtSlots(ScenesRoot);

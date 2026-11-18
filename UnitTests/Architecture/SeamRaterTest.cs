@@ -9,7 +9,6 @@ namespace CardCleaner.Tests.Architecture;
 public class SeamRaterTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void ContractsOnlySeamIsDefined()
     {
         var edges = Edges(("X", "Y", [("a", "IPort", 1), ("b", "Record", 9)]));
@@ -18,7 +17,6 @@ public class SeamRaterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CrossedConcreteClassIsLeaky()
     {
         var edges = Edges(("X", "Y", [("a", "IPort", 5), ("b", "Engine", 1)]));
@@ -30,7 +28,6 @@ public class SeamRaterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ConcreteCallbackMakesTheSeamLeaky()
     {
         var edges = Edges(("X", "Y", [("a", "IPort", 1)]), ("Y", "X", [("IPort", "a", 1)]));
@@ -40,7 +37,6 @@ public class SeamRaterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SpreadOverManyConcreteClassesIsMissing()
     {
         var spread = Enumerable.Range(0, 6).Select(i => ("a", $"C{i}", 1L)).ToArray();

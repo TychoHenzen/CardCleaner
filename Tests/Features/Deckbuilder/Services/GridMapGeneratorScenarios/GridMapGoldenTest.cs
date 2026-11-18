@@ -34,7 +34,6 @@ public class GridMapGoldenTest
     private const string RecordSwitch = "CARDCLEANER_RECORD_GRID_GOLDEN";
 
     [TestCase(Timeout = 120000)]
-    [TestCategory("Unit")]
     public static async Task GridMapForFixedCardsMatchesTheRecordedMap()
     {
         var actual = await GenerateAsync(MapCards());

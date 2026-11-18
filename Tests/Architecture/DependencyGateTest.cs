@@ -16,7 +16,6 @@ public class DependencyGateTest
     private const string BaselinePath = "res://Tests/Architecture/dependency-baseline.json";
 
     [TestCase(Timeout = 170000)]
-    [TestCategory("Unit")]
     public static void LayeredStructureStaysWithinTheBaseline()
     {
         var clock = Stopwatch.StartNew();

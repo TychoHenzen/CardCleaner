@@ -11,7 +11,6 @@ namespace CardCleaner.Tests.Architecture;
 public class ModuleOrderTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void TwoModuleDagHasNoUpEdge()
     {
         var result = ModuleOrder.Order(Middle("A", "B"), Edges(("A", "B", 3)));
@@ -22,7 +21,6 @@ public class ModuleOrderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TwoModuleCycleIsALoopOfTwoWithOneUpEdge()
     {
         var result = ModuleOrder.Order(Middle("A", "B"), Edges(("A", "B", 5), ("B", "A", 1)));
@@ -33,7 +31,6 @@ public class ModuleOrderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LayersNeverInterleaveSoMiddleToUiIsUp()
     {
         var layers = new Dictionary<string, Layer> { ["Data"] = Layer.Data, ["M0"] = Layer.Middle, ["UI"] = Layer.UI };
@@ -46,7 +43,6 @@ public class ModuleOrderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LoopThroughLooseClassesCountsAsALoopOfTwo()
     {
         var graph = new ClassGraph();
@@ -73,7 +69,6 @@ public class ModuleOrderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CycleAboveTheExactLimitIsOrderedGreedily()
     {
         var names = Enumerable.Range(0, ModuleOrder.ExactLimit + 1).Select(i => $"M{i:00}").ToArray();

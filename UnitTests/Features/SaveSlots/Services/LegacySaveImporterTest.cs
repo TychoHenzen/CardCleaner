@@ -18,7 +18,6 @@ public class LegacySaveImporterTest
     private static SaveSlotName ImportedName() => Name("imported");
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ImportWhenNoSlotsWritesLegacyPayloadToImportedSlot()
     {
         var files = new InMemorySlotFileSystem();
@@ -33,7 +32,6 @@ public class LegacySaveImporterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SuccessfulImportMakesImportedTheActiveSlot()
     {
         var files = new InMemorySlotFileSystem();
@@ -47,7 +45,6 @@ public class LegacySaveImporterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoImportLeavesTheActiveSlotUnchanged()
     {
         var files = new InMemorySlotFileSystem();
@@ -63,7 +60,6 @@ public class LegacySaveImporterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LegacyBytesAreIdenticalAfterImport()
     {
         var files = new InMemorySlotFileSystem();
@@ -76,7 +72,6 @@ public class LegacySaveImporterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SecondCallReturnsFalseAndCreatesNothing()
     {
         var files = new InMemorySlotFileSystem();
@@ -91,7 +86,6 @@ public class LegacySaveImporterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoImportWhenAnySlotExists()
     {
         var files = new InMemorySlotFileSystem();
@@ -106,7 +100,6 @@ public class LegacySaveImporterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoImportWhenLegacyFileIsAbsent()
     {
         var files = new InMemorySlotFileSystem();
@@ -118,7 +111,6 @@ public class LegacySaveImporterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FailedFirstImportLeavesNoSlotSoALaterImportSucceeds()
     {
         var files = new InMemorySlotFileSystem { FailRename = true };
@@ -133,7 +125,6 @@ public class LegacySaveImporterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EmptyOrInvalidLegacyFileIsNotImported()
     {
         foreach (var content in new[] { "", "not json", "[1]" })

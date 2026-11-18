@@ -7,7 +7,6 @@ namespace CardCleaner.Tests.Features.Menu;
 public class GameOptionsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void Clamped_limits_every_field()
     {
         var options = new GameOptions
@@ -28,7 +27,6 @@ public class GameOptionsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Clamped_replaces_nan_with_the_default()
     {
         var options = new GameOptions
@@ -48,7 +46,6 @@ public class GameOptionsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Defaults_are_already_clamped()
     {
         Assertions.AssertThat(GameOptions.Defaults.Clamped()).IsEqual(GameOptions.Defaults);

@@ -19,7 +19,6 @@ public class PlayerInvertYTest
     private const float VerticalDelta = 10f;
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InvertY_true_raises_pitch_on_positive_delta()
     {
         var headPitch = HeadPitchAfterMouseMove(new GameSettings { InvertY = true });
@@ -28,7 +27,6 @@ public class PlayerInvertYTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InvertY_false_lowers_pitch_on_positive_delta()
     {
         var headPitch = HeadPitchAfterMouseMove(new GameSettings { InvertY = false });

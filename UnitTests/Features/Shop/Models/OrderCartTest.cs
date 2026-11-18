@@ -10,7 +10,6 @@ public class OrderCartTest
     private static readonly StockEntry Locked = new("storage_rack", "Storage Rack", 30, 5);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AddTwiceMergesIntoOneLineWithQuantityTwo()
     {
         var cart = new OrderCart();
@@ -23,7 +22,6 @@ public class OrderCartTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TotalSumsPriceTimesQuantity()
     {
         var cart = new OrderCart();
@@ -36,7 +34,6 @@ public class OrderCartTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RemoveOneDropsLineAtZero()
     {
         var cart = new OrderCart();
@@ -49,7 +46,6 @@ public class OrderCartTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SetQuantityZeroRemovesLine()
     {
         var cart = new OrderCart();
@@ -62,7 +58,6 @@ public class OrderCartTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LockedEntryIsNotAdded()
     {
         var cart = new OrderCart();
@@ -73,7 +68,6 @@ public class OrderCartTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void QuantityIsCappedAt99()
     {
         var cart = new OrderCart();
@@ -91,7 +85,6 @@ public class OrderCartTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ClearEmptiesTheCart()
     {
         var cart = new OrderCart();
@@ -105,7 +98,6 @@ public class OrderCartTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnknownIdIsIgnored()
     {
         var cart = new OrderCart();

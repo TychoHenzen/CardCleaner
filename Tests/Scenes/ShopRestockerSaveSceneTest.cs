@@ -26,7 +26,6 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
     private const int IdleFrames = 120;
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Hired_restocker_survives_save_and_reload_at_home_with_empty_hands()
     {
         HireCashier();
@@ -46,7 +45,6 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Pack_carried_at_save_time_reloads_once_as_a_loose_container()
     {
         HireRestocker();
@@ -69,7 +67,6 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Saved_roster_with_an_unknown_role_or_without_the_restocker_hires_no_restocker()
     {
         var log = new RecordingLog();
@@ -90,7 +87,6 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Both_wages_are_charged_once_and_a_dismissed_restocker_stops_working()
     {
         HireCashier();

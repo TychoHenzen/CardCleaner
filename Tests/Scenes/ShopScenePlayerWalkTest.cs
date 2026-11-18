@@ -44,7 +44,6 @@ public class ShopScenePlayerWalkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PlayerSettlesOnTheFloorAtSpawn()
     {
         for (int frame = 0; frame < 30; frame++)
@@ -55,7 +54,6 @@ public class ShopScenePlayerWalkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PlayerWalksStorefrontStorageBackofficeAndBack()
     {
         using var clock = FastClock.Start();
@@ -76,7 +74,6 @@ public class ShopScenePlayerWalkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PlayerWalksInThroughTheRoadDoor()
     {
         using var clock = FastClock.Start();

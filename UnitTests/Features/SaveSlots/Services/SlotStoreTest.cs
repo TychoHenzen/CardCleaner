@@ -17,7 +17,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SaveThenLoadRoundTripsPayload()
     {
         var files = new InMemorySlotFileSystem();
@@ -31,7 +30,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LoadOfNewerVersionIsRefusedAndBytesUnchanged()
     {
         var files = new InMemorySlotFileSystem();
@@ -47,7 +45,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LoadOfInvalidJsonIsRefusedAndBytesUnchanged()
     {
         var files = new InMemorySlotFileSystem();
@@ -61,7 +58,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LoadOfEmptyFileIsRefused()
     {
         var files = new InMemorySlotFileSystem();
@@ -72,7 +68,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FailedWriteLeavesPreviousSaveLoadable()
     {
         var files = new InMemorySlotFileSystem();
@@ -86,7 +81,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FailedRenameLeavesPreviousSaveLoadable()
     {
         var files = new InMemorySlotFileSystem();
@@ -100,7 +94,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FailedFirstSaveLeavesNoSlotBehind()
     {
         var files = new InMemorySlotFileSystem { FailRename = true };
@@ -113,7 +106,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NextSaveAfterFailureOverwritesStaleTemp()
     {
         var files = new InMemorySlotFileSystem();
@@ -131,7 +123,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ListSkipsFoldersWithInvalidNames()
     {
         var files = new InMemorySlotFileSystem();
@@ -146,7 +137,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ListIsNewestFirst()
     {
         var files = new InMemorySlotFileSystem();
@@ -162,7 +152,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ListReportsSavedTimeAndReadableFlag()
     {
         var files = new InMemorySlotFileSystem();
@@ -179,7 +168,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ListPutsUnreadableLast()
     {
         var files = new InMemorySlotFileSystem();
@@ -201,7 +189,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TryCreateRefusesEmptyPathCharacterAndReservedNames()
     {
         var files = new InMemorySlotFileSystem();
@@ -218,7 +205,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TryCreateRefusesDuplicateIgnoringCase()
     {
         var files = new InMemorySlotFileSystem();
@@ -231,7 +217,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TryCreateMakesAnEmptyUnreadableSlot()
     {
         var files = new InMemorySlotFileSystem();
@@ -246,7 +231,6 @@ public class SlotStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DeleteRemovesFolder()
     {
         var files = new InMemorySlotFileSystem();

@@ -12,7 +12,6 @@ public class TilePoolSelectionPinTest
         "b,a,d,b,d,d,b,a,d,a,c,b,a,d,c,d,d,d,b,d,b,d,a,d,b,b,c,a,d,a,c,b,b,b,a,d,b,c,b,d,";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FixedSeedSequenceIsPinned()
     {
         var pool = new TilePool.Builder().Add("a", 1.0f).Add("b", 2.5f).Add("c", 0.5f).Add("d", 4.0f).Build();

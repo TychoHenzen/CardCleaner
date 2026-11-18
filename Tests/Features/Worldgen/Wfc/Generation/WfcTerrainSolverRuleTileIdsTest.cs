@@ -20,7 +20,6 @@ public class WfcTerrainSolverRuleTileIdsTest
     private const string ProbeGapTileId = "rule-snapshot-probe-gap";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RuleTileIdsAreTheTransitionIdsBeforeGapTilesAreAdded()
     {
         var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();

@@ -34,7 +34,6 @@ public class ShopWorkshopReliabilitySceneTest
     }
 
     [TestCase(Timeout = 120000)]
-    [TestCategory("Unit")]
     public async Task FinishedSessionLightsTheButtonForResetAndTheResetPressDarkensIt()
     {
         await RunSession();
@@ -56,7 +55,6 @@ public class ShopWorkshopReliabilitySceneTest
     }
 
     [TestCase(Timeout = 120000)]
-    [TestCategory("Unit")]
     public async Task SecondSessionRunsAfterTheResetOnceBothHoldersAreFilledAgain()
     {
         await RunSession();

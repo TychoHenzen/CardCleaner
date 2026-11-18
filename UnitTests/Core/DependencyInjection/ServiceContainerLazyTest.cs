@@ -28,7 +28,6 @@ public class ServiceContainerLazyTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NothingIsBuiltUntilTheFirstResolve()
     {
         _container.RegisterLazy<IData>(Build);
@@ -38,7 +37,6 @@ public class ServiceContainerLazyTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheFactoryRunsOnceAndEveryResolveSharesItsInstance()
     {
         _container.RegisterLazy<IData>(Build);
@@ -50,7 +48,6 @@ public class ServiceContainerLazyTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheExtraServiceTypesShareTheOneInstance()
     {
         _container.RegisterLazy<IData>(Build, typeof(IOtherView));
@@ -62,7 +59,6 @@ public class ServiceContainerLazyTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnExplicitRegistrationReplacesItWithoutBuildingIt()
     {
         _container.RegisterLazy<IData>(Build);
@@ -75,7 +71,6 @@ public class ServiceContainerLazyTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ItReplacesAnEarlierExplicitRegistration()
     {
         _container.RegisterSingleton<IData>(new Data());
@@ -87,7 +82,6 @@ public class ServiceContainerLazyTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AScannedClassCountsItAsRegisteredAndIsBuiltFromIt()
     {
         _container.RegisterServiceClasses(new[] { typeof(Consumer) });
@@ -101,7 +95,6 @@ public class ServiceContainerLazyTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnAppScopeEntryKeepsItsInstanceAcrossASceneDrop()
     {
         _container.RegisterLazy<IData>(Build);
@@ -115,7 +108,6 @@ public class ServiceContainerLazyTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AFactoryThatThrowsIsTriedAgainOnTheNextResolve()
     {
         var fail = true;

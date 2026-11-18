@@ -27,7 +27,6 @@ public class BackofficeCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CatalogListsTheBoxThePackAndTheBooster()
     {
         AssertThat(_catalog).IsNotNull();
@@ -35,7 +34,6 @@ public class BackofficeCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryItemHasANamePriceAndScene()
     {
         foreach (var item in _catalog.Items)
@@ -47,7 +45,6 @@ public class BackofficeCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ItemsHaveNoThumbnailYet()
     {
         foreach (var item in _catalog.Items)
@@ -57,7 +54,6 @@ public class BackofficeCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryItemSceneIsAContainerThePlayerCanCarry()
     {
         foreach (var item in _catalog.Items)
@@ -71,7 +67,6 @@ public class BackofficeCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryItemHasAnUnlockRow()
     {
         foreach (var item in _catalog.Items)

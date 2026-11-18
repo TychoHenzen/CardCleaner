@@ -8,7 +8,6 @@ public class ContainerOpeningPlanTest
     private const int Items = 8;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AContainerOnTheFloorOpensAtOnce()
     {
         var plan = ContainerOpeningPlan.For(CardContainerKind.Pack, 0f, Items);
@@ -18,7 +17,6 @@ public class ContainerOpeningPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AFallTakesAsLongAsAFreeFallButNeverLongerThanTheLongestFall()
     {
         AssertThat(ContainerOpeningPlan.FallSeconds(1.2f)).IsEqualApprox(0.4949f, 0.001f);
@@ -27,7 +25,6 @@ public class ContainerOpeningPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheSealOpensAfterTheFallAndTheItemsLeaveAfterTheSeal()
     {
         var plan = ContainerOpeningPlan.For(CardContainerKind.Box, 1.2f, Items);
@@ -38,7 +35,6 @@ public class ContainerOpeningPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ItemsLeaveOneStepApartAndEachRisesForTheRiseTime()
     {
         var plan = ContainerOpeningPlan.For(CardContainerKind.Booster, 0f, Items);
@@ -51,7 +47,6 @@ public class ContainerOpeningPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheWrapperShrinksOnlyOnceTheLastItemHasRisen()
     {
         var plan = ContainerOpeningPlan.For(CardContainerKind.Pack, 0.5f, Items);
@@ -63,7 +58,6 @@ public class ContainerOpeningPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnEmptyContainerShrinksAsSoonAsItsSealIsOpen()
     {
         var plan = ContainerOpeningPlan.For(CardContainerKind.Box, 0f, 0);
@@ -72,7 +66,6 @@ public class ContainerOpeningPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryOpeningEndsWithinThreeSeconds()
     {
         foreach (var kind in new[] { CardContainerKind.Box, CardContainerKind.Pack, CardContainerKind.Booster })
@@ -80,7 +73,6 @@ public class ContainerOpeningPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EaseStartsAndEndsAtRestAndIsClamped()
     {
         AssertThat(ContainerOpeningPlan.Ease(-1f)).IsEqual(0f);

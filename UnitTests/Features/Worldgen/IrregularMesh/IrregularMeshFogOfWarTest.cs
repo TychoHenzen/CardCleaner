@@ -25,7 +25,6 @@ public class IrregularMeshFogOfWarTest
     private static HashSet<int> Cells(params int[] cellIds) => new(cellIds);
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AllCellsStartHidden()
     {
         for (var i = 0; i < _mapData.CellCount; i++)
@@ -35,7 +34,6 @@ public class IrregularMeshFogOfWarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void VisibleCellsShowAndSeenCellsAreRevealed()
     {
         _fogOfWar.UpdateVisibility(Cells(0, 1, 2), Cells(0, 1));
@@ -50,7 +48,6 @@ public class IrregularMeshFogOfWarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ACellThatLeavesViewIsRevealed()
     {
         _fogOfWar.UpdateVisibility(Cells(0), Cells(0));
@@ -62,7 +59,6 @@ public class IrregularMeshFogOfWarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ASmallerSeenSetNeverHidesACellAgain()
     {
         _fogOfWar.UpdateVisibility(Cells(0, 1, 2), Cells(0));
@@ -77,7 +73,6 @@ public class IrregularMeshFogOfWarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CellsOutsideTheMapAreIgnored()
     {
         _fogOfWar.UpdateVisibility(Cells(0, 99), Cells(0, 99));
@@ -87,7 +82,6 @@ public class IrregularMeshFogOfWarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void VisibilityChangedNamesOnlyTheChangedCells()
     {
         _fogOfWar.UpdateVisibility(Cells(0, 1), Cells(0));
@@ -101,7 +95,6 @@ public class IrregularMeshFogOfWarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnUnchangedUpdateRaisesNoEvent()
     {
         _fogOfWar.UpdateVisibility(Cells(0, 1), Cells(0));
@@ -114,7 +107,6 @@ public class IrregularMeshFogOfWarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RevealAllShowsEveryCell()
     {
         _fogOfWar.RevealAll();
@@ -126,7 +118,6 @@ public class IrregularMeshFogOfWarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ResetHidesEveryCell()
     {
         _fogOfWar.UpdateVisibility(Cells(0, 1, 2), Cells(0));
@@ -140,7 +131,6 @@ public class IrregularMeshFogOfWarTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GetCellsWithStateListsTheCellsInThatState()
     {
         _fogOfWar.UpdateVisibility(Cells(0, 1), Cells(0));

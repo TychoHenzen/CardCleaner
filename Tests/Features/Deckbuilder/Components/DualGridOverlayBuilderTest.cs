@@ -24,7 +24,6 @@ public class DualGridOverlayBuilderTest
     private static readonly Vector2I GridSize = new(16, 12);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SingleAutoTileCellProducesTheExpectedBitmask()
     {
         var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
@@ -46,7 +45,6 @@ public class DualGridOverlayBuilderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AllBitmasksStayInCorner16Range()
     {
         var tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());

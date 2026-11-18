@@ -89,7 +89,6 @@ public class BaseCardTypeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void WeaponAssetPreservesSignatureValues()
     {
         var cardType = ResourceLoader.Load<BaseCardType>("res://Assets/CardBases/Weapon.tres");

@@ -18,7 +18,6 @@ public class TileEditorDockHostTest
     private const string PluginSource = "res://addons/tile_editor/TileEditorPlugin.cs";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ThePluginRegistersTheHostAndNeverBuildsTheDockItself()
     {
         var source = FileAccess.GetFileAsString(PluginSource);

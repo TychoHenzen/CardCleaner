@@ -13,7 +13,6 @@ public class SaveSlotNameTest
     [TestCase("")]
     [TestCase("   ")]
     [TestCase("name.")]
-    [TestCategory("Unit")]
     public static void RejectedNamesReturnFalseWithReason(string raw)
     {
         var accepted = SaveSlotName.TryCreate(raw, out _, out var reason);
@@ -23,7 +22,6 @@ public class SaveSlotNameTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NameLongerThanThirtyTwoCharactersIsRejected()
     {
         var accepted = SaveSlotName.TryCreate(new string('a', 33), out _, out var reason);
@@ -33,7 +31,6 @@ public class SaveSlotNameTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NamesThatDifferOnlyByCaseHaveEqualKey()
     {
         SaveSlotName.TryCreate("My Shop", out var upper, out _);
@@ -44,7 +41,6 @@ public class SaveSlotNameTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MyShopKeepsItsValue()
     {
         SaveSlotName.TryCreate("My Shop", out var name, out _);

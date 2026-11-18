@@ -241,7 +241,6 @@ public class SimpleMapDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestTileOutsidePassableTilesIsNeitherPassableNorTransparent()
     {
         var mapData = CreateMapDataWithUnlistedFloor();
@@ -252,7 +251,6 @@ public class SimpleMapDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestIsPassableWithoutPassableTilesOrRegistryIsFalse()
     {
         var mapData = CreateMapData(3, 3);

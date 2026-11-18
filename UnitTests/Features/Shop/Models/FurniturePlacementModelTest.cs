@@ -8,7 +8,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class FurniturePlacementModelTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void Snap_RoundsToTheGrid()
     {
         AssertThat(FurniturePlacementModel.Snap(0.26f)).IsEqual(0.5f);
@@ -18,7 +17,6 @@ public class FurniturePlacementModelTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Snap_RoundsHalfStepsAwayFromZero()
     {
         AssertThat(FurniturePlacementModel.Snap(0.25f)).IsEqual(0.5f);
@@ -26,7 +24,6 @@ public class FurniturePlacementModelTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Turn_WrapsInBothDirections()
     {
         AssertThat(FurniturePlacementModel.Turn(3, 1)).IsEqual(0);
@@ -35,7 +32,6 @@ public class FurniturePlacementModelTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RectOf_SwapsWidthAndDepthOnOddTurns()
     {
         var footprint = new FurnitureFootprint(2f, 1f);
@@ -54,7 +50,6 @@ public class FurniturePlacementModelTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void IsValid_RejectsOverlapWithPlacedFurniture()
     {
         var placed = new List<FurnitureRect> { new(3f, 3f, 5f, 4f) };
@@ -66,7 +61,6 @@ public class FurniturePlacementModelTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void IsValid_AllowsTouchingEdges()
     {
         var placed = new List<FurnitureRect> { new(3f, 3f, 5f, 4f) };
@@ -78,7 +72,6 @@ public class FurniturePlacementModelTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void IsValid_RejectsOutsideTheFloor()
     {
         var footprint = new FurnitureFootprint(2f, 1f);
@@ -91,7 +84,6 @@ public class FurniturePlacementModelTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void IsValid_UsesTheRotatedRectAgainstTheFloor()
     {
         var footprint = new FurnitureFootprint(2f, 1f);
@@ -104,7 +96,6 @@ public class FurniturePlacementModelTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void IsValid_RejectsTheWallBand()
     {
         var valid = FurniturePlacementModel.IsValid(

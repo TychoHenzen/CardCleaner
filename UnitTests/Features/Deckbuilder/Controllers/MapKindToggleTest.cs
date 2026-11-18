@@ -10,7 +10,6 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Controllers;
 public class MapKindToggleTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void EachKindTogglesToTheOther()
     {
         AssertThat(MapKindToggle.Next(MapGenerationType.RegularGrid)).IsEqual(MapGenerationType.IrregularMesh);
@@ -18,7 +17,6 @@ public class MapKindToggleTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EachKindHasItsOwnStatusText()
     {
         AssertThat(MapKindToggle.Describe(MapGenerationType.RegularGrid)).IsEqual("Map: grid");

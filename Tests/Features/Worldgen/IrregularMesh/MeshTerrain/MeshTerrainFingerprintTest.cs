@@ -25,7 +25,6 @@ public class MeshTerrainFingerprintTest
     private const string FactoryGolden = "f6d30692addfccf5cae860c8a3885223b81ad0bd4963d4c100b270556d6621ff";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FactoryPathWithCardsMatchesMasterFingerprint()
     {
         var generator = TerrainGeneratorFactory.Create(

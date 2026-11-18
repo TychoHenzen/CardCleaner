@@ -39,14 +39,12 @@ public class ShelfOfferIndexTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Empty_shelf_has_no_offers()
     {
         AssertThat(_index.Collect().Count).IsEqual(0);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Stocked_booster_is_one_offer()
     {
         var slot = _shelf.Slots.First();
@@ -61,7 +59,6 @@ public class ShelfOfferIndexTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task The_price_book_sets_the_asking_price()
     {
         var book = AddNode(new ShopPriceBook());
@@ -78,7 +75,6 @@ public class ShelfOfferIndexTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Storage_rack_stock_is_not_offered()
     {
         var rack = AddNode(GD.Load<PackedScene>(StorageRackScene).Instantiate<CardShelf>());
@@ -92,7 +88,6 @@ public class ShelfOfferIndexTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SlotFor_maps_an_offer_id_back()
     {
         var slot = _shelf.Slots.First();
@@ -104,7 +99,6 @@ public class ShelfOfferIndexTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ApproachPoint_is_in_front_of_the_slot()
     {
         _shelf.GlobalPosition = Vector3.Zero;
@@ -124,7 +118,6 @@ public class ShelfOfferIndexTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BrowsePoints_cover_every_shown_sales_slot_and_skip_racks_and_hidden_shelves()
     {
         var rack = AddNode(GD.Load<PackedScene>(StorageRackScene).Instantiate<CardShelf>());

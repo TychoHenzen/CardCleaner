@@ -17,7 +17,6 @@ public class SuiteStartGuardTest
     private const string BridgePath = "res://addons/gdUnit4/src/dotnet/GdUnit4CSharpApi.cs";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheCSharpBridgeRunsEverySuiteThroughTheWatchdog()
     {
         var source = Godot.FileAccess.GetFileAsString(BridgePath);
@@ -36,7 +35,6 @@ public class SuiteStartGuardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoSuiteBeforeHookAwaits()
     {
         var hooks = typeof(SuiteStartGuardTest).Assembly.GetTypes()

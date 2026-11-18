@@ -74,7 +74,6 @@ public class AutomationShopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task LookTurnsThePlayerThroughMouseMotion()
     {
         await Settle();
@@ -88,7 +87,6 @@ public class AutomationShopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task UnknownCommandAndMissingNodeAreErrorReplies()
     {
         var unknown = await Run("fly", new JsonObject());
@@ -99,7 +97,6 @@ public class AutomationShopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task FindByScriptTypeReturnsTheNodesThatCarryThatScript()
     {
         var reply = await Run("find", new JsonObject { ["type"] = nameof(PlayerController) });
@@ -110,7 +107,6 @@ public class AutomationShopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheAgentIsRegisteredAsAnAutoload()
     {
         // A line outside [autoload] is a plain setting, and the game would never start the agent.

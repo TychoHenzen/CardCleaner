@@ -10,7 +10,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class FurnitureSaveCodecTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void RoundTripKeepsEveryField()
     {
         var records = new List<FurnitureRecord>
@@ -35,7 +34,6 @@ public class FurnitureSaveCodecTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NullAndGarbageDecodeToEmpty()
     {
         AssertInt(FurnitureSaveCodec.Decode(null).Count).IsEqual(0);
@@ -44,7 +42,6 @@ public class FurnitureSaveCodecTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OneBadRecordIsSkippedAndTheOthersSurvive()
     {
         const string json = """

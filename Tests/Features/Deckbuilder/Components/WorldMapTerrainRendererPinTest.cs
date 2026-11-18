@@ -32,7 +32,6 @@ public class WorldMapTerrainRendererPinTest
     private static readonly Vector2I GridSize = new(16, 12);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SeededMapRendersTheSameCellsIntoAllFourLayers()
     {
         var tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());

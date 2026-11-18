@@ -23,7 +23,6 @@ public class CardPackGeneratorBoxShareTest
     private const double MinimumBoxShare = 0.90;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnalyticBoxShareWithSpecialCardIsWithinUserTarget()
     {
         var analytic = 1.0 - System.Math.Pow(1.0 - 1.0 / CardPackGenerator.SpecialCardOdds, CardsPerBox);
@@ -31,7 +30,6 @@ public class CardPackGeneratorBoxShareTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SeededBoxShareWithSpecialCardIsNearAnalyticShare()
     {
         var generator = new CardPackGenerator(RandomSources.Create(Seed));

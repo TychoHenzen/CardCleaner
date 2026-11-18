@@ -32,7 +32,6 @@ public class StaffAppTest
     public static void Teardown() => TestServices.Reset();
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Shows_cashier_card_with_fee_and_wage()
     {
         var app = Build(new OpenProgression());
@@ -45,7 +44,6 @@ public class StaffAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Locked_role_shows_level_and_disables_hire()
     {
         var app = Build(new OpenProgression(CashierUnlock));
@@ -57,7 +55,6 @@ public class StaffAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Hire_button_hires_and_updates_the_message()
     {
         var app = Build(new OpenProgression());
@@ -71,7 +68,6 @@ public class StaffAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Dismiss_button_dismisses()
     {
         var app = Build(new OpenProgression());
@@ -86,7 +82,6 @@ public class StaffAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Unaffordable_hire_shows_the_reason()
     {
         var app = Build(new OpenProgression(), balance: CashierFee - 1);
@@ -100,7 +95,6 @@ public class StaffAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Not_injected_logs_and_shows_nothing()
     {
         var log = new RecordingLog();

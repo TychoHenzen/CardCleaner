@@ -7,7 +7,6 @@ namespace CardCleaner.Tests.Architecture;
 public class LayerAnchorsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void DataThatReferencesOnlyDataIsData()
     {
         var graph = new ClassGraph();
@@ -22,7 +21,6 @@ public class LayerAnchorsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MethodFreeClassHoldingAServiceIsNotData()
     {
         var graph = new ClassGraph();
@@ -39,7 +37,6 @@ public class LayerAnchorsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void InterfaceNamingOnlyDataAndContractsIsAContract()
     {
         var graph = new ClassGraph();
@@ -60,7 +57,6 @@ public class LayerAnchorsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void InterfaceNamingUiAndUsedOnlyByUiIsAbsorbedIntoUi()
     {
         var graph = new ClassGraph();

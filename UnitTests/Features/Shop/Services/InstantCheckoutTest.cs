@@ -11,7 +11,6 @@ namespace CardCleaner.Tests.Features.Shop.Services;
 public class InstantCheckoutTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void BasketOf30And12AddsFortyTwoOnce()
     {
         var fake = new FakeMoney();
@@ -23,7 +22,6 @@ public class InstantCheckoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EmptyBasketAddsNothing()
     {
         var fake = new FakeMoney();
@@ -35,7 +33,6 @@ public class InstantCheckoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ZeroPricedBasketAddsNothing()
     {
         var fake = new FakeMoney();
@@ -47,7 +44,6 @@ public class InstantCheckoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NullCustomerThrows()
     {
         var checkout = new InstantCheckout(new FakeMoney());
@@ -56,7 +52,6 @@ public class InstantCheckoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryCustomerIsToldToLeaveOnce()
     {
         var checkout = new InstantCheckout(new FakeMoney());

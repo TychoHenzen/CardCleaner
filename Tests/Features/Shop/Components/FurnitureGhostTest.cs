@@ -24,7 +24,6 @@ public class FurnitureGhostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ValidPoseShowsTheValidTint()
     {
         _ghost.Show(new FurniturePose(8f, 6f, 0), true);
@@ -33,7 +32,6 @@ public class FurnitureGhostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InvalidPoseShowsTheInvalidTint()
     {
         _ghost.Show(new FurniturePose(8f, 6f, 0), false);
@@ -42,7 +40,6 @@ public class FurnitureGhostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void QuarterTurnOneYawsByAQuarterCircle()
     {
         _ghost.Show(new FurniturePose(8f, 6f, 1), true);
@@ -51,7 +48,6 @@ public class FurnitureGhostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GhostHasNoCollisionAndJoinsNoGroup()
     {
         AssertBool(HasCollisionDescendant(_ghost)).IsFalse();

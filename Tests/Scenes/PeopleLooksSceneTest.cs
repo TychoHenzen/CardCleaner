@@ -21,7 +21,6 @@ public class PeopleLooksSceneTest
     private const float HeightTolerance = 0.05f;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ThereAreTwelvePeopleToDrawFrom()
     {
         AssertThat(Looks().Models.Length).IsEqual(12);
@@ -29,7 +28,6 @@ public class PeopleLooksSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryLookIsARiggedPersonWithEveryClip()
     {
         var looks = Looks();
@@ -48,7 +46,6 @@ public class PeopleLooksSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryLookStandsAPersonTallOnTheFloor()
     {
         var looks = Looks();
@@ -65,7 +62,6 @@ public class PeopleLooksSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ACustomerIsDrawnFromThePeopleLooks()
     {
         var customer = GD.Load<PackedScene>(CustomerScene).Instantiate<Node3D>();
@@ -78,7 +74,6 @@ public class PeopleLooksSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheRestockerWearsAFixedLook()
     {
         var restocker = GD.Load<PackedScene>(RestockerScene).Instantiate<Node3D>();
@@ -90,7 +85,6 @@ public class PeopleLooksSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheCashierWearsAFixedLookAndFacesTheQueue()
     {
         var shop = GD.Load<PackedScene>(ShopScene).Instantiate<Node3D>();

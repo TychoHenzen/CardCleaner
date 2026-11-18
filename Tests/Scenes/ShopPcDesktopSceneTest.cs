@@ -62,7 +62,6 @@ public class ShopPcDesktopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InteractShowsTheDesktopFullscreenAndCursorVisible()
     {
         _terminal.Interact();
@@ -75,7 +74,6 @@ public class ShopPcDesktopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CloseRestoresPlayerCameraAndCapturedCursor()
     {
         var playerCamera = _player.GetNode<Camera3D>("Head/Camera3D");
@@ -93,7 +91,6 @@ public class ShopPcDesktopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task EscapeWithPcOpenClosesOnlyThePc()
     {
         _terminal.Interact();
@@ -106,7 +103,6 @@ public class ShopPcDesktopSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ReopenShowsDesktopWithStockAppClosed()
     {
         _terminal.Interact();

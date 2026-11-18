@@ -26,7 +26,6 @@ public class CombatSystemFactoryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CreatedCombatEndsAndRaisesCombatEndedOnce()
     {
         var factory = _container.Resolve<ICombatSystemFactory>();

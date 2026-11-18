@@ -13,7 +13,6 @@ namespace CardCleaner.Tests.Features.Signage;
 public class SignBoardTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheFrontPrintsTheTextFlatOnTheBoard()
     {
         var sign = AddNode(new SignBoard { Text = "Stock deliveries", Size = new Vector2(1.6f, 0.4f) });
@@ -29,7 +28,6 @@ public class SignBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ATwoSidedBoardPrintsTheBackFacingTheOtherWay()
     {
         var sign = AddNode(new SignBoard { Text = "Cabinet room", TwoSided = true });
@@ -43,7 +41,6 @@ public class SignBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NewTextRepaintsBothFaces()
     {
         var sign = AddNode(new SignBoard { Text = "Old", TwoSided = true });
@@ -55,7 +52,6 @@ public class SignBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ANewTextColourRepaintsBothFaces()
     {
         var sign = AddNode(new SignBoard { Text = "OPEN", TwoSided = true });
@@ -68,7 +64,6 @@ public class SignBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AScreenGlowsInsteadOfTakingTheRoomsLight()
     {
         var sign = AddNode(new SignBoard { Screen = true });
@@ -77,7 +72,6 @@ public class SignBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void HangingRodsRiseFromTheTopEdgeToTheirLength()
     {
         var sign = AddNode(new SignBoard
@@ -97,7 +91,6 @@ public class SignBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void APostDropsFromTheBottomEdgeToItsLength()
     {
         var sign = AddNode(new SignBoard
@@ -115,7 +108,6 @@ public class SignBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AWallSignBuildsNoMount()
     {
         var sign = AddNode(new SignBoard { Mount = SignMount.Wall, MountLength = 1f });
@@ -124,7 +116,6 @@ public class SignBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AScenePacksTheSignWithoutItsBuiltParts()
     {
         var root = AddNode(new Node3D { Name = "Root" });
@@ -144,7 +135,6 @@ public class SignBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AShortWordOnAWideBoardFits()
     {
         var sign = AddNode(new SignBoard { Text = "OPEN", Size = new Vector2(1.2f, 0.4f) });
@@ -153,7 +143,6 @@ public class SignBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AWordWiderThanTheBoardDoesNotFitAndIsNotCutInTwo()
     {
         var sign = AddNode(new SignBoard { Text = "CLOSED", Size = new Vector2(0.3f, 0.4f) });
@@ -163,7 +152,6 @@ public class SignBoardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MoreLinesThanTheBoardIsTallDoNotFit()
     {
         var sign = AddNode(new SignBoard { Text = "A\nB\nC\nD", Size = new Vector2(1.2f, 0.4f) });

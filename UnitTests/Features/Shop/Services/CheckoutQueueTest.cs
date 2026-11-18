@@ -11,7 +11,6 @@ public class CheckoutQueueTest
     private const int ThreeSpots = 3;
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EmptyQueueHasNoFront()
     {
         var queue = new CheckoutQueue();
@@ -20,7 +19,6 @@ public class CheckoutQueueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AddingTheSameCustomerTwiceIsRefused()
     {
         var queue = new CheckoutQueue();
@@ -31,7 +29,6 @@ public class CheckoutQueueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ExtraCustomersShareTheLastSpot()
     {
         var queue = new CheckoutQueue();
@@ -47,7 +44,6 @@ public class CheckoutQueueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RepeatingTheSameAssignmentTellsNobodyAgain()
     {
         var queue = new CheckoutQueue();
@@ -61,7 +57,6 @@ public class CheckoutQueueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemovingTheFrontMovesTheLineForwardAndTellsTheNewFrontItsSpot()
     {
         var queue = new CheckoutQueue();
@@ -82,7 +77,6 @@ public class CheckoutQueueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemoveDepartedDropsOnlyCustomersWhoStoppedWaiting()
     {
         var queue = new CheckoutQueue();
@@ -99,7 +93,6 @@ public class CheckoutQueueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NoSpotsMeansNobodyIsToldAndNoSpotIsRead()
     {
         var queue = new CheckoutQueue();

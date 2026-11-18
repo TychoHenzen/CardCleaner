@@ -34,7 +34,6 @@ public class AtlasMappingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AValidFileParses()
     {
         File.WriteAllText(_path, ValidJson);
@@ -47,7 +46,6 @@ public class AtlasMappingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AMissingFileGivesNullAndALaterLoadFindsTheFile()
     {
         AssertThat(AtlasMapping.Load(_path)).IsNull();
@@ -58,7 +56,6 @@ public class AtlasMappingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MalformedJsonGivesNullAndALaterLoadReadsTheFixedFile()
     {
         File.WriteAllText(_path, "not-json");
@@ -70,7 +67,6 @@ public class AtlasMappingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void JsonWithoutAnAtlasRootGivesNullAndALaterLoadReadsTheFixedFile()
     {
         File.WriteAllText(_path, "{\"version\":\"test\"}");
@@ -82,7 +78,6 @@ public class AtlasMappingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryLoadRereadsTheFile()
     {
         File.WriteAllText(_path, ValidJson);
@@ -94,7 +89,6 @@ public class AtlasMappingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AKnownCoordinateMapsToSourceZeroAndItsRect()
     {
         File.WriteAllText(_path, ValidJson);
@@ -107,7 +101,6 @@ public class AtlasMappingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnUnknownCoordinateComesBackUnchanged()
     {
         File.WriteAllText(_path, ValidJson);
@@ -120,7 +113,6 @@ public class AtlasMappingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ANullMappingReturnsTheOriginalCoordinates()
     {
         File.WriteAllText(_path, ValidJson);
@@ -133,7 +125,6 @@ public class AtlasMappingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AtlasMappingHasNoWritableStaticState()
     {
         var writable = typeof(AtlasMapping)

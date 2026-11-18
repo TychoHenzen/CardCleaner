@@ -20,7 +20,6 @@ public class MapGeneratorsScannedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ComposedRootResolvesBothMapGenerators()
     {
         // Arrange and act - the autoload composes; the scan builds each generator from the registered data
@@ -39,7 +38,6 @@ public class MapGeneratorsScannedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ComposedRootSharesOneInstancePerGenerator()
     {
         // Arrange and act

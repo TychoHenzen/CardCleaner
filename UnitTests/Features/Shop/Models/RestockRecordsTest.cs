@@ -6,7 +6,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class RestockRecordsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void Records_compare_by_value()
     {
         AssertThat(new StockSource(1, StockKind.Pack, true, 2f)).IsEqual(new StockSource(1, StockKind.Pack, true, 2f));
@@ -19,7 +18,6 @@ public class RestockRecordsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Idle_step_has_kind_Idle_and_ids_of_minus_one()
     {
         AssertThat(RestockStep.Idle.Kind).IsEqual(RestockStepKind.Idle);

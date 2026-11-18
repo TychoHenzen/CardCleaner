@@ -65,7 +65,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_Box_Held_Frozen_NoCollision_ChildOfAnchor()
     {
         var box = Make(BoxScene);
@@ -84,7 +83,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_Pack_Works()
     {
         var pack = Make(PackScene);
@@ -96,7 +94,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_Booster_Works()
     {
         var booster = Make(BoosterScene);
@@ -108,7 +105,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_WhileHolding_ReturnsFalse_HeldUnchanged()
     {
         var first = Make(BoxScene);
@@ -123,7 +119,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Drop_RestoresLayerMaskFreezeAndParent()
     {
         var box = Make(BoxScene);
@@ -141,7 +136,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Drop_PutsContainerDropDistanceInFront()
     {
         var box = Make(BoxScene);
@@ -153,7 +147,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OpenHeld_DropsThenOpens()
     {
         var box = Make(BoxScene);
@@ -167,7 +160,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void QKey_OpensHeldContainer()
     {
         var box = Make(BoxScene);
@@ -180,7 +172,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void HeldContainerFreed_ClearsHeld()
     {
         var log = new RecordingLog();
@@ -204,7 +195,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void HeldContainerOpened_ClearsHeld()
     {
         var log = new RecordingLog();
@@ -232,7 +222,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_FreedContainer_ReturnsFalse()
     {
         var log = new RecordingLog();
@@ -255,7 +244,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_OpenedContainer_ReturnsFalse()
     {
         var log = new RecordingLog();
@@ -278,7 +266,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Drop_NothingHeld_NoOp()
     {
         var log = new RecordingLog();
@@ -302,7 +289,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OpenHeld_NothingHeld_False()
     {
         var log = new RecordingLog();
@@ -324,7 +310,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task InTree_IsInContainerHoldersGroup()
     {
         var tree = _world.GetTree();
@@ -343,7 +328,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpenHeld_WithUnpackTarget_CallsTryUnpackOnceAndDoesNotOpenLoose()
     {
         var target = MakeTarget(accepts: true);
@@ -360,7 +344,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpenHeld_TargetRefuses_OpensLooseAfterOneTryUnpack()
     {
         var target = MakeTarget(accepts: false);
@@ -377,7 +360,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpenHeld_TargetBeyondUnpackReach_OpensLooseWithoutTryUnpack()
     {
         var target = MakeTarget(accepts: true, distance: 4f);
@@ -393,7 +375,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpenHeld_TargetJustInsideUnpackReach_Unpacks()
     {
         var target = MakeTarget(accepts: true, distance: 2.4f);
@@ -409,7 +390,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpenHeld_RealCardShelfAhead_OpensLoose()
     {
         var shelf = GD.Load<PackedScene>(CardShelfScene).Instantiate<Node3D>();

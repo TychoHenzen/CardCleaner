@@ -13,7 +13,6 @@ public class ShopDayServiceTest
     private const int RentAmount = 40;
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ClockBuildsFromExportsWithoutATree()
     {
         var service = AutoFree(new ShopDayService
@@ -31,7 +30,6 @@ public class ShopDayServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OpeningAndClosingMinutesAreTheExportsAsWholeMinutes()
     {
         var service = AutoFree(new ShopDayService
@@ -50,7 +48,6 @@ public class ShopDayServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CloseChargesRentOnceAndAdvancesDay()
     {
         var service = NewService(500);
@@ -67,7 +64,6 @@ public class ShopDayServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SecondDayChargesRentAgain()
     {
         var service = NewService(500);
@@ -85,7 +81,6 @@ public class ShopDayServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TakingsCountOnlyIncreasesWhileOpen()
     {
         var service = NewService(500);
@@ -106,7 +101,6 @@ public class ShopDayServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ShortBalanceNeverGoesNegative()
     {
         var service = NewService(10);
@@ -122,7 +116,6 @@ public class ShopDayServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DebtIsChargedFirstNextDay()
     {
         var service = NewService(10);
@@ -142,7 +135,6 @@ public class ShopDayServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DebtKeepsCarryingWhileUnpaid()
     {
         var service = NewService(0);
@@ -157,7 +149,6 @@ public class ShopDayServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TickClosesAtClosingTime()
     {
         var service = NewService(500);
@@ -172,7 +163,6 @@ public class ShopDayServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ClosingTimeWhileReportOpenChargesOnce()
     {
         var service = NewService(500);
@@ -189,7 +179,6 @@ public class ShopDayServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ManualCloseThenClockTickChargesOnce()
     {
         var service = NewService(500);
@@ -206,7 +195,6 @@ public class ShopDayServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ComplaintsAppearInReportAndResetNextDay()
     {
         var service = NewService(500);
@@ -229,7 +217,6 @@ public class ShopDayServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ClockDoesNotAdvanceWhilePaused()
     {
         var service = NewService(500);

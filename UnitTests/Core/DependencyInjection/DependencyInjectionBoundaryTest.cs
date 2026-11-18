@@ -25,7 +25,6 @@ public class DependencyInjectionBoundaryTest
     private const string CompositionNamespace = "CardCleaner.Scripts.Composition";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoDiTypeNamesAFeatureServiceOrCompositionType()
     {
         var types = typeof(ILog).Assembly.GetTypes().Where(type => IsIn(type, DiNamespace)).ToList();
@@ -40,7 +39,6 @@ public class DependencyInjectionBoundaryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoFeatureTypeNamesTheCompositionRoot()
     {
         var features = typeof(ILog).Assembly.GetTypes().Where(type => IsIn(type, FeaturesNamespace)).ToList();
@@ -51,7 +49,6 @@ public class DependencyInjectionBoundaryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CoreServiceInABodyIsReported()
     {
         AssertThat(ProbeHits(typeof(ProbeCoreService), IsForbiddenFromDi))
@@ -59,7 +56,6 @@ public class DependencyInjectionBoundaryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FeatureTypeInASignatureIsReported()
     {
         AssertThat(ProbeHits(typeof(ProbeFeature), IsForbiddenFromDi))
@@ -67,7 +63,6 @@ public class DependencyInjectionBoundaryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CompositionRootInABodyIsReported()
     {
         AssertThat(ProbeHits(typeof(ProbeComposition), IsComposition))
@@ -75,7 +70,6 @@ public class DependencyInjectionBoundaryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ContractAndHostReferencesAreNotReported()
     {
         AssertThat(ProbeHits(typeof(ProbeAllowed), IsForbiddenFromDi)).IsEmpty();

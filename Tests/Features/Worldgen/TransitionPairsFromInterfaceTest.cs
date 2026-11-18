@@ -10,7 +10,6 @@ namespace CardCleaner.Tests.Features.Worldgen;
 public class TransitionPairsFromInterfaceTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void PairsFromTheInterfaceEqualThePairsOfTheConcreteResolver()
     {
         var expected = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();

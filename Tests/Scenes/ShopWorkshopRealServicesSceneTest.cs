@@ -77,7 +77,6 @@ public class ShopWorkshopRealServicesSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RegistrationResolvesTheWorkshopSessionServiceAndTheShopSpawner()
     {
         AssertBool(ReferenceEquals(TestServices.Resolver.Get<IGameSessionService>(),
@@ -87,7 +86,6 @@ public class ShopWorkshopRealServicesSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RealSpawnerSeatsTheCreditCardInTheDeckHolderOnly()
     {
         var deck = _shop.GetNode<DeckSlot>("World/Workshop/Cabinet/Assembly/DeckSlot");
@@ -98,7 +96,6 @@ public class ShopWorkshopRealServicesSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TogglePicksTheIrregularMapAndPressingTheButtonExploresIt()
     {
         var workshop = _shop.GetNode<Node3D>("World/Workshop");

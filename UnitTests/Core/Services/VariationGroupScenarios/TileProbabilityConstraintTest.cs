@@ -23,7 +23,6 @@ public class TileProbabilityConstraintTest
     // non-selected variants during WFC tile placement.
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestTileProbabilityConstraint_PerGenerationVariant_SelectedGetsFullWeight()
     {
         // Setup: Create a mock registry with grass variants in a PerGeneration group
@@ -56,7 +55,6 @@ public class TileProbabilityConstraintTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestTileProbabilityConstraint_PerGenerationVariant_NonSelectedGetsZero()
     {
         // Setup: Create a mock registry with grass variants
@@ -91,7 +89,6 @@ public class TileProbabilityConstraintTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestTileProbabilityConstraint_NoSelectionMade_AllVariantsAllowed()
     {
         // Setup: Create registry with PerGeneration group but DON'T set selected variants
@@ -124,7 +121,6 @@ public class TileProbabilityConstraintTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestTileProbabilityConstraint_PerInstanceVariant_AllVariantsAllowed()
     {
         // Setup: Create registry with PerInstance group (not PerGeneration)
@@ -156,7 +152,6 @@ public class TileProbabilityConstraintTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestTileProbabilityConstraint_UngroupedTile_UsesItsProbability()
     {
         var registry = new MockTileRegistry();
@@ -169,7 +164,6 @@ public class TileProbabilityConstraintTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestTileProbabilityConstraint_UngroupedTileBelowMinModifier_ClampsToMinModifier()
     {
         var registry = new MockTileRegistry();
@@ -182,7 +176,6 @@ public class TileProbabilityConstraintTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestTileProbabilityConstraint_UnknownTile_ReturnsOne()
     {
         var constraint = new TileProbabilityConstraint(TileCatalogData.From(new MockTileRegistry()));

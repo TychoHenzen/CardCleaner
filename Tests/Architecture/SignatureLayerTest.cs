@@ -11,7 +11,6 @@ namespace CardCleaner.Tests.Architecture;
 public class SignatureLayerTest
 {
     [TestCase(Timeout = 170000)]
-    [TestCategory("Unit")]
     public static void CardSignatureIsPureDataAndNamesOnlyElement()
     {
         var root = ProjectSettings.GlobalizePath("res://");

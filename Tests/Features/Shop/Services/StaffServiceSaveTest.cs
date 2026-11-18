@@ -11,7 +11,6 @@ namespace CardCleaner.Tests.Features.Shop.Services;
 public class StaffServiceSaveTest : StaffServiceTestBase
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void Save_Load_round_trips_the_hired_set()
     {
         _staff.Hire(CashierId);
@@ -27,7 +26,6 @@ public class StaffServiceSaveTest : StaffServiceTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Load_with_unknown_and_duplicate_ids_keeps_valid_ones()
     {
         var save = new NodeSave();
@@ -41,7 +39,6 @@ public class StaffServiceSaveTest : StaffServiceTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Load_with_unreadable_json_changes_nothing()
     {
         _staff.Hire(CashierId);
@@ -55,7 +52,6 @@ public class StaffServiceSaveTest : StaffServiceTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Load_with_a_non_string_hired_value_changes_nothing()
     {
         _staff.Hire(CashierId);

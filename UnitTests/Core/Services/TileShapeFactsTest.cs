@@ -13,7 +13,6 @@ namespace CardCleaner.Tests.Core.Services;
 public class TileShapeFactsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void Corner16ResolvesAllSixteenBitmasksAndNoBounds()
     {
         var shape = TileShapeFacts.Resolve("corner16");
@@ -27,7 +26,6 @@ public class TileShapeFactsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnknownFormatResolvesToNothing()
     {
         var shape = TileShapeFacts.Resolve("no_such_format");
@@ -37,7 +35,6 @@ public class TileShapeFactsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CustomFormatResolvesItsBitmasksAndBounds()
     {
         var variantMappings = new Dictionary<int, VariantDefinition>

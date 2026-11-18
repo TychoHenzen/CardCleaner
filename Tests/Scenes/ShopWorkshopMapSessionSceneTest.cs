@@ -106,12 +106,10 @@ public class ShopWorkshopMapSessionSceneTest
     }
 
     [TestCase(Timeout = 120000)]
-    [TestCategory("Unit")]
     public async Task GridSessionReachesSessionCompleteAndSpawnsTheLoot() =>
         await PlaySessionToTheEnd(MapGenerationType.RegularGrid);
 
     [TestCase(Timeout = 120000)]
-    [TestCategory("Unit")]
     public async Task IrregularSessionReachesSessionCompleteAndSpawnsTheLoot() =>
         await PlaySessionToTheEnd(MapGenerationType.IrregularMesh);
 

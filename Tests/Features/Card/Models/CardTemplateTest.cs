@@ -16,7 +16,6 @@ public class CardTemplateTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GatherAllLayers_ReturnsCorrectLayerCount()
     {
         // Act
@@ -28,7 +27,6 @@ public class CardTemplateTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GatherAllLayers_ReturnsLayersInCorrectOrder()
     {
         // Act
@@ -40,7 +38,6 @@ public class CardTemplateTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DefaultLayers_HaveCorrectRenderingSides()
     {
         // Assert - Verify default rendering flags
@@ -55,7 +52,6 @@ public class CardTemplateTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DefaultRegions_AreWithinValidBounds()
     {
         // Act & Assert - All regions should be within 0-1 range
@@ -73,7 +69,6 @@ public class CardTemplateTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GemSocketsAndGems_HaveSameCount()
     {
         // Assert
@@ -82,7 +77,6 @@ public class CardTemplateTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GemSocketsAndGems_HaveMatchingRegions()
     {
         // Assert - Corresponding sockets and gems should have same regions
@@ -92,7 +86,6 @@ public class CardTemplateTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EnergyLayers_HaveSameRegion()
     {
         // Assert - All energy layers should occupy same space

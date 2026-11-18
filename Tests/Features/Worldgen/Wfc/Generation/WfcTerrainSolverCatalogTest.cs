@@ -15,7 +15,6 @@ namespace CardCleaner.Tests.Features.Worldgen.Wfc.Generation;
 public class WfcTerrainSolverCatalogTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void SolveGraphWithCatalogWithoutCatalogThrows()
     {
         var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();

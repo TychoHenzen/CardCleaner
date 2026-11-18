@@ -19,7 +19,6 @@ public class WfcTileSetBuilderTest
         TileCatalogData.From(WfcTestFixtures.CreateTestTileRegistry(WfcTestFixtures.TestBiomeId, "A", "B"));
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ForBiomeKeepsRuleTilesTheCatalogAllowsInTheBiome()
     {
         var ruleIds = new HashSet<string> { "A", "B", "C" };
@@ -32,7 +31,6 @@ public class WfcTileSetBuilderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void WithoutACatalogTheTileSetIsEmpty()
     {
         var ruleIds = new HashSet<string> { "A", "B", "C" };
@@ -43,7 +41,6 @@ public class WfcTileSetBuilderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ARuleTileAddedLaterIsSeen()
     {
         var ruleIds = new HashSet<string> { "A" };
@@ -57,7 +54,6 @@ public class WfcTileSetBuilderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ForAllBiomesAppliesTheTileFilter()
     {
         var ruleIds = new HashSet<string> { "A", "B" };

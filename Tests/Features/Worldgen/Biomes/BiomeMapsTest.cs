@@ -29,7 +29,6 @@ public class BiomeMapsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CreateGivesTheSameBiomesAsTheConcreteClass()
     {
         var set = _registry.ToBiomeSet();
@@ -45,7 +44,6 @@ public class BiomeMapsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CreateRejectsANullSampler()
     {
         var set = _registry.ToBiomeSet();

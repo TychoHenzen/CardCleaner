@@ -7,14 +7,12 @@ namespace CardCleaner.Tests.Features.Card.Models;
 public class CardHandHintsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnEmptyHandHasNoHints()
     {
         AssertThat(CardHandHints.For(0, aimingDrop: false).Count).IsEqual(0);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AHandOfCardsShowsTheDropKeysAndTheCount()
     {
         var hints = CardHandHints.For(3, aimingDrop: false);
@@ -24,7 +22,6 @@ public class CardHandHintsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AimingADropShowsOnlyTheRelease()
     {
         var hints = CardHandHints.For(1, aimingDrop: true);

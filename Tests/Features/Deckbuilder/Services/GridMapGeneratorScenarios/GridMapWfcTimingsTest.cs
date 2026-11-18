@@ -33,7 +33,6 @@ public class GridMapWfcTimingsTest
     };
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PipelineRecordsEachWfcStepOncePerPhaseAndOpensOnlyItsOwnScopes()
     {
         var setup = new WfcSetup();
@@ -62,7 +61,6 @@ public class GridMapWfcTimingsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SuccessfulGenerationCarriesPositiveStepTimings()
     {
         var setup = new WfcSetup();
@@ -82,7 +80,6 @@ public class GridMapWfcTimingsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FailedGenerationCarriesZeroTimings()
     {
         AssertBool(WfcGenerationResult.Failed("no tiles").Timings == WfcStepTimings.Zero).IsTrue();

@@ -32,7 +32,6 @@ public class ShopCustomerDaySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ClosingStopsArrivalsButACustomerInsideFinishes()
     {
         _rig.StockBooster();
@@ -55,7 +54,6 @@ public class ShopCustomerDaySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpeningAtTheSignBringsACustomerWhoBuys()
     {
         _rig.StockBooster();
@@ -79,7 +77,6 @@ public class ShopCustomerDaySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ZeroCustomersPerDaySpawnsNobody()
     {
         _rig.Spawner.CustomersPerDay = 0;

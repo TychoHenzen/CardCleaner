@@ -16,7 +16,6 @@ public class FurnitureFloorTest
         new(new[] { LotA, LotB }, new HashSet<string>(owned));
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NothingOwnedIsTheStorefrontTheBackRoomAndTheRightArm()
     {
         var floor = FurnitureFloor.For(Table());
@@ -27,7 +26,6 @@ public class FurnitureFloorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OwnedLotWidensOnlyTheStorefrontMinimumX()
     {
         var floor = FurnitureFloor.For(Table("lot_a"));
@@ -38,7 +36,6 @@ public class FurnitureFloorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TwoOwnedLotsTakeTheSmallestStorefrontEdge()
     {
         var floor = FurnitureFloor.For(Table("lot_a", "lot_b"));
@@ -48,7 +45,6 @@ public class FurnitureFloorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void APointInsideAnOwnedLotIsValidOnlyAfterItIsOwned()
     {
         var pose = new FurniturePose(-4f, 6f, 0);
@@ -58,7 +54,6 @@ public class FurnitureFloorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheStorageRoomsTakeFurniture()
     {
         // The starting storage rack stands in the right storage arm, and the back room holds the backoffice.
@@ -71,7 +66,6 @@ public class FurnitureFloorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void APieceAcrossTheWallBetweenTwoRoomsIsRefused()
     {
         // z 0 is the wall between the storefront and the back room, and x 16 the wall to the right arm.

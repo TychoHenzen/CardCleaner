@@ -8,21 +8,18 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class ProductMarketPricesTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void PackPriceExceedsWholesaleShare()
     {
         AssertThat(ProductMarketPrices.PackPrice > 60 / 8.0).IsTrue();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BoosterPriceExceedsWholesaleShare()
     {
         AssertThat(ProductMarketPrices.BoosterPrice > 60 / 64.0).IsTrue();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BoxHasNoMarketPrice()
     {
         AssertThat(ProductMarketPrices.HasMarketPrice(CardContainerKind.Box)).IsFalse();
@@ -31,7 +28,6 @@ public class ProductMarketPricesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SealedProductsHavePrices()
     {
         AssertThat(ProductMarketPrices.HasMarketPrice(CardContainerKind.Pack)).IsTrue();

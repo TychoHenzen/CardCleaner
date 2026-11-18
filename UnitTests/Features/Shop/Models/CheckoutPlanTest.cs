@@ -9,7 +9,6 @@ public class CheckoutPlanTest
     private static readonly StockEntry Locked = new("storage_rack", "Storage Rack", 30, 5);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EmptyCartIsRefused()
     {
         var plan = CheckoutPlan.Evaluate(new OrderCart(), 100, 1);
@@ -18,7 +17,6 @@ public class CheckoutPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TotalAboveBalanceReportsShortfall()
     {
         var cart = new OrderCart();
@@ -33,7 +31,6 @@ public class CheckoutPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LockedLineIsRefusedEvenWhenAffordable()
     {
         var cart = new OrderCart();
@@ -46,7 +43,6 @@ public class CheckoutPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ExactBalanceIsAllowed()
     {
         var cart = new OrderCart();
@@ -60,7 +56,6 @@ public class CheckoutPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LockedBeatsInsufficientFunds()
     {
         var cart = new OrderCart();

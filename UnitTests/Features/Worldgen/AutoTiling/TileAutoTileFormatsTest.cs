@@ -12,7 +12,6 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling;
 public class TileAutoTileFormatsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnknownFormatResolvesToNothing()
     {
         var tile = TileOf("nonexistent_format_xyz");
@@ -22,14 +21,12 @@ public class TileAutoTileFormatsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnknownFormatExpectsSixteenVariants()
     {
         AssertInt(TileOf("nonexistent_format_xyz").GetExpectedVariantCount()).IsEqual(16);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void KnownFormatMatchesTheRegistry()
     {
         var tile = TileOf("blob47");

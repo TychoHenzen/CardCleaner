@@ -30,7 +30,6 @@ public class CardFloorRestTest
     private const float UnreachableRestSeconds = 1000f;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ADroppedCardRestsOnTopOfTheFloor()
     {
         using var clock = FastClock.Start();
@@ -43,7 +42,6 @@ public class CardFloorRestTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ATumblingCardRestsOnTopOfTheFloor()
     {
         using var clock = FastClock.Start();
@@ -57,7 +55,6 @@ public class CardFloorRestTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ACardThatStopsInsideTheFloorIsPushedOutBeforeItFreezes()
     {
         using var clock = FastClock.Start();
@@ -74,7 +71,6 @@ public class CardFloorRestTest
     // a sleeping body gets no more IntegrateForces calls. When Jolt's count finished first, the enforcer's count never
     // did, and the card lay unfrozen. With the enforcer's own count out of reach, only Jolt's sleep can freeze it.
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ACardJoltPutsToSleepIsFrozen()
     {
         using var clock = FastClock.Start();

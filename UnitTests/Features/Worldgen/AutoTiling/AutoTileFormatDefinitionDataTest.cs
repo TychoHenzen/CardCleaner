@@ -11,7 +11,6 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling;
 public class AutoTileFormatDefinitionDataTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void TwoDefinitionsBuiltFromTheSameInputsAreEqual()
     {
         var first = CreateFormat();
@@ -22,7 +21,6 @@ public class AutoTileFormatDefinitionDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DefinitionsDifferingInNameBitmasksOrVariantsAreNotEqual()
     {
         var baseline = CreateFormat();
@@ -39,7 +37,6 @@ public class AutoTileFormatDefinitionDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ATileWithoutAFormatIsComputedAsCorner4()
     {
         var tile = new TileDefinition("grass", "grass", TilePassability.Passable, new Vector2I(0, 0));

@@ -44,7 +44,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ScenesAreTheMatchingKindsAndChainBoxToPackToBooster()
     {
         var box = Make(BoxScene);
@@ -60,7 +59,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Ready_AddsToContainersGroup()
     {
         var box = Make(BoxScene);
@@ -69,7 +67,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BoxOpensIntoEightPacksOneAfterAnother()
     {
         var box = Make(BoxScene);
@@ -85,7 +82,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PackOpensIntoEightBoosters()
     {
         var pack = Make(PackScene);
@@ -97,7 +93,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BoosterOpensIntoEightCardsWithGeneratedSignatures()
     {
         var booster = Make(BoosterScene);
@@ -112,7 +107,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ContainerCanOnlyBeOpenedOnce()
     {
         var booster = Make(BoosterScene);
@@ -125,7 +119,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BoosterWithoutACardSpawnerCannotOpen()
     {
         var booster = Make(BoosterScene);
@@ -136,7 +129,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnOpeningContainerStaysInViewButCannotBeHitOrAimedAtAgain()
     {
         var box = Make(BoxScene);
@@ -150,7 +142,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Interact_EmitsPickUpRequested_AndDoesNotOpen()
     {
         var box = Make(BoxScene);
@@ -165,7 +156,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CanInteract_FalseWhenParentIsCamera()
     {
         var box = Make(BoxScene);
@@ -179,7 +169,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ContainersJoinTheInteractionLayerAndHighlightOnLook()
     {
         foreach (var path in new[] { BoxScene, PackScene, BoosterScene })
@@ -196,7 +185,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpeningABoosterSpawnsAtMostOneCardPerFrame()
     {
         var booster = Make(BoosterScene);
@@ -216,7 +204,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task FreeingTheParentWhileOpeningStopsSpawningWithoutErrors()
     {
         var booster = Make(BoosterScene);
@@ -231,7 +218,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AContainerOpenedInTheAirFallsToTheFloorFirst()
     {
         AddFloor();
@@ -250,7 +236,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ThePackLidSwingsOpenBeforeTheBoostersRiseAndTheEmptyPackShrinksAway()
     {
         var pack = Make(PackScene);
@@ -276,7 +261,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ItemsHangFrozenAtTheirSpotsUntilTheWrapperIsGoneThenDrop()
     {
         var pack = Make(PackScene);
@@ -296,7 +280,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FinishOpeningPutsEveryItemAtItsSpotAtOnce()
     {
         var pack = Make(PackScene);
@@ -317,7 +300,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FinishOpeningDoesNothingToAContainerThatIsNotOpening()
     {
         var pack = Make(PackScene);
@@ -330,7 +312,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PacksAndBoostersOpenIntoOneColumnStraightAboveTheContainer()
     {
         foreach (var kind in new[] { CardContainerKind.Pack, CardContainerKind.Booster })
@@ -346,7 +327,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ABoxOpensIntoTwoColumnsSideBySide()
     {
         var offsets = Offsets(CardContainerKind.Box);
@@ -367,7 +347,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoItemSpawnsInsideTheContainerOrAnotherItem()
     {
         foreach (var (kind, scene, childScene) in Chain())
@@ -385,7 +364,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheHighestItemOfAContainerOnTheFloorStaysBelowTheShopCeiling()
     {
         foreach (var (kind, _, childScene) in Chain())

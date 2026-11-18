@@ -55,7 +55,6 @@ public class CardContainerFullBoxTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task WholeBoxOpensToFiveHundredAndTwelveCards()
     {
         await OpenEverything(Make(BoxScene));
@@ -64,7 +63,6 @@ public class CardContainerFullBoxTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SameSeedPutsSpecialCardsInTheSamePositionsAndCommonCardsAreAllZero()
     {
         await OpenEverything(Make(BoxScene));
@@ -84,7 +82,6 @@ public class CardContainerFullBoxTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SpawnedCardSignaturesMatchTheGeneratorOutputAndIncludeSpecialCards()
     {
         await OpenEverything(Make(BoxScene));
@@ -100,7 +97,6 @@ public class CardContainerFullBoxTest
     private static string SignatureKey(CardSignature signature) => string.Join(" ", signature.Elements);
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AFullBoxOpenedAtTheStorageDeliveryPointSpawnsEveryItemInsideTheStorageRoomOnItsOwnSpot()
     {
         AddStorageRoom();
@@ -130,7 +126,6 @@ public class CardContainerFullBoxTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void APackAndABoosterAtTheSameSpotAreNotASharedSpawnButTwoPacksAre()
     {
         var spot = new Vector3(4f, 0.5f, -5.5f);

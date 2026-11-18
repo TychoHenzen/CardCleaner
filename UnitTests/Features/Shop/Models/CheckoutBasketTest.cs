@@ -7,7 +7,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class CheckoutBasketTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void TotalIsTheSumOfTheAskingPrices()
     {
         var basket = new CheckoutBasket(new[]
@@ -21,7 +20,6 @@ public class CheckoutBasketTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EmptyBasketHasTotalZero()
     {
         var basket = new CheckoutBasket(Array.Empty<ShelfOffer>());
@@ -30,7 +28,6 @@ public class CheckoutBasketTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NullItemsThrow()
     {
         AssertThrown(() => new CheckoutBasket(null!)).IsInstanceOf<ArgumentNullException>();

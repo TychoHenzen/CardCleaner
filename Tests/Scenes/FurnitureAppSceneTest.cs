@@ -70,7 +70,6 @@ public class FurnitureAppSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BuyingAShelfUnitDeliversAFurnitureBox()
     {
         var world = _shop.GetNode("World");
@@ -94,7 +93,6 @@ public class FurnitureAppSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AnUnaffordableShelfUnitDeliversNothing()
     {
         AssertBool(_money.TrySpend(_money.Balance - UnaffordableBalance)).IsTrue();
@@ -110,7 +108,6 @@ public class FurnitureAppSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BuyThenPlaceEndsWithARealShelf()
     {
         var world = _shop.GetNode("World");

@@ -29,14 +29,12 @@ public class NeighbourhoodSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NeighbourhoodIsInstancedOnce()
     {
         AssertThat(_neighbourhood.SceneFilePath).IsEqual(ScenePath);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ContainsRoadKerbSidewalkFacadesNeighboursAndProps()
     {
         foreach (var name in new[] { "Road", "Kerb", "FarSidewalk", "NeighbourLeft", "NeighbourRight" })
@@ -56,7 +54,6 @@ public class NeighbourhoodSceneTest
     // Acceptance row AC-1: the street lies beyond the storefront (larger z), with the kerb between the shop
     // and the road, the far sidewalk past the road and the facades past the sidewalk, across from the shop.
     [TestCase]
-    [TestCategory("Unit")]
     public void StreetRunsAcrossTheRoadInFrontOfTheStorefront()
     {
         var streetEdge = NeighbourhoodBounds.ShopAndStreet.End.Y;
@@ -71,7 +68,6 @@ public class NeighbourhoodSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NeighboursFlankTheShopOnEachSide()
     {
         var shop = NeighbourhoodBounds.ShopAndStreet;

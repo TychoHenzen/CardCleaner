@@ -64,14 +64,12 @@ public class IrregularMeshMapDataPassableCellTest
     [TestCase(1, 0)]
     [TestCase(2, 5)]
     [TestCase(3, 1)]
-    [TestCategory("Unit")]
     public void FindRandomPassableCellPicksTheSeededPassableCell(int seed, int expected)
     {
         AssertCell(CreateMapData(true).FindRandomPassableCell(seed), expected);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FindRandomPassableCellNeverPicksAnImpassableCellOrTheStructure()
     {
         var mapData = CreateMapData(true);
@@ -85,7 +83,6 @@ public class IrregularMeshMapDataPassableCellTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FindNearestPassableCellTiesGoToTheLowestIndex()
     {
         // Equidistant from the centroids of quads 0 and 1.
@@ -93,7 +90,6 @@ public class IrregularMeshMapDataPassableCellTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FindNearestPassableCellSkipsTheStructureCell()
     {
         // On the centroid of quad 4, which holds a structure; quads 1, 3 and 5 tie behind it.
@@ -101,14 +97,12 @@ public class IrregularMeshMapDataPassableCellTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FindNearestPassableCellPicksTheClosestCentroidFarAway()
     {
         AssertCell(CreateMapData(true).FindNearestPassableCell(ToWorld(new Vector2(60, 30))), 5);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BothSearchesReturnNullWhenNoCellIsPassable()
     {
         var mapData = CreateMapData(false);

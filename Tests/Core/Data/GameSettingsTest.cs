@@ -20,7 +20,6 @@ public class GameSettingsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DefaultValues_AreReasonable()
     {
         // Assert - Verify sensible defaults
@@ -34,7 +33,6 @@ public class GameSettingsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Properties_CanBeModified()
     {
         // Act
@@ -51,7 +49,6 @@ public class GameSettingsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InvertY_defaults_false_and_can_be_set()
     {
         Assertions.AssertThat(_settings.InvertY).IsFalse();
@@ -62,7 +59,6 @@ public class GameSettingsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PitchBounds_AreValid()
     {
         // Assert - Min should be less than max

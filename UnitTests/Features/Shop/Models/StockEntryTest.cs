@@ -6,7 +6,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class StockEntryTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void LockedWhenLevelBelowRequired()
     {
         var entry = new StockEntry("shelf", "Shelf", 10, 3);
@@ -15,7 +14,6 @@ public class StockEntryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnlockedAtRequiredLevel()
     {
         var entry = new StockEntry("shelf", "Shelf", 10, 3);
@@ -24,7 +22,6 @@ public class StockEntryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnlockedAboveRequiredLevel()
     {
         var entry = new StockEntry("shelf", "Shelf", 10, 3);
@@ -33,7 +30,6 @@ public class StockEntryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoUnlockRowIsAlwaysLocked()
     {
         var entry = new StockEntry("shelf", "Shelf", 10, null);

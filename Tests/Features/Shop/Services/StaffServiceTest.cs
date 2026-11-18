@@ -9,7 +9,6 @@ namespace CardCleaner.Tests.Features.Shop.Services;
 public class StaffServiceTest : StaffServiceTestBase
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void Hire_locked_does_not_charge()
     {
         _staff.Progression = new OpenProgression(CashierUnlock);
@@ -20,7 +19,6 @@ public class StaffServiceTest : StaffServiceTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Hire_ok_charges_the_fee_once_and_raises_Changed_once()
     {
         var changes = 0;
@@ -33,7 +31,6 @@ public class StaffServiceTest : StaffServiceTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Hire_unaffordable_leaves_balance_and_roster_unchanged()
     {
         var poor = new MoneyService { StartingBalance = CashierFee - 1 };
@@ -49,7 +46,6 @@ public class StaffServiceTest : StaffServiceTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Hire_twice_is_AlreadyHired_and_charges_once()
     {
         _staff.Hire(CashierId);
@@ -59,7 +55,6 @@ public class StaffServiceTest : StaffServiceTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Restocker_is_hired_at_level_3_refused_at_level_2_and_not_hired_twice()
     {
         var progression = AutoFree(new ShopProgression());
@@ -78,7 +73,6 @@ public class StaffServiceTest : StaffServiceTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Hire_unknown_role_is_UnknownRole()
     {
         AssertThat(_staff.Hire("ghost")).IsEqual(StaffResult.UnknownRole);
@@ -86,7 +80,6 @@ public class StaffServiceTest : StaffServiceTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Hire_with_no_progression_is_Locked()
     {
         _staff.Progression = null;
@@ -96,7 +89,6 @@ public class StaffServiceTest : StaffServiceTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Dismiss_removes_the_role_and_refunds_nothing()
     {
         _staff.Hire(CashierId);
@@ -110,7 +102,6 @@ public class StaffServiceTest : StaffServiceTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Dismiss_unhired_is_NotHired()
     {
         var changes = 0;
@@ -121,7 +112,6 @@ public class StaffServiceTest : StaffServiceTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Null_catalog_hires_nothing()
     {
         var empty = AutoFree(new StaffService { Money = _money, Progression = new OpenProgression() });

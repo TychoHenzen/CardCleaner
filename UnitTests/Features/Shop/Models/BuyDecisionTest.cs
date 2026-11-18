@@ -14,7 +14,6 @@ public class BuyDecisionTest
     [TestCase(1.0, 1.0, 0.999)]
     [TestCase(0.5, 1.0, 0.0)]
     [TestCase(0.5, 1.0, 0.999)]
-    [TestCategory("Unit")]
     public static void AskingAtOrBelowMarketAlwaysBuys(double asking, double market, double roll)
     {
         AssertThat(BuyDecision.Decide(asking, market, roll).Buys).IsTrue();
@@ -26,7 +25,6 @@ public class BuyDecisionTest
     [TestCase(1.5, 1.0, 0.75, false)]
     [TestCase(1.75, 1.0, 0.43, true)]
     [TestCase(1.75, 1.0, 0.44, false)]
-    [TestCategory("Unit")]
     public static void AMarkupBuysOnlyBelowItsChance(double asking, double market, double roll, bool expected)
     {
         AssertThat(BuyDecision.Decide(asking, market, roll).Buys).IsEqual(expected);
@@ -34,7 +32,6 @@ public class BuyDecisionTest
 
     [TestCase(2.0, 1.0)]
     [TestCase(3.0, 1.0)]
-    [TestCategory("Unit")]
     public static void AskingTwiceTheMarketOrMoreNeverBuys(double asking, double market)
     {
         var outcome = BuyDecision.Decide(asking, market, 0.0);
@@ -53,7 +50,6 @@ public class BuyDecisionTest
     [TestCase(ProductMarketPrices.PackPrice, 10)]
     [TestCase(CardValue.MinimumCardPrice, 0)]
     [TestCase(40, 0)]
-    [TestCategory("Unit")]
     public static void TheMostProfitablePriceIsAMarkup(int market, int cost)
     {
         var ceiling = (int)(market * BuyDecision.ZeroChanceRatio);
@@ -73,7 +69,6 @@ public class BuyDecisionTest
     [TestCase(-1.0, 1.0, 0.5)]
     [TestCase(1.0, 1.0, -0.1)]
     [TestCase(1.0, 1.0, 1.0)]
-    [TestCategory("Unit")]
     public static void InvalidInputsAreRejected(double asking, double market, double roll)
     {
         AssertThrown(() => BuyDecision.Decide(asking, market, roll))

@@ -21,7 +21,6 @@ public class TmxMapDataValueTest
     private const BindingFlags InstanceMembers = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TmxMapDataIsAnImmutableRecord()
     {
         AssertThat(typeof(TmxMapData).GetMethod("<Clone>$", BindingFlags.Instance | BindingFlags.Public))
@@ -41,7 +40,6 @@ public class TmxMapDataValueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MutatingTheSourceCollectionsDoesNotChangeTheRecord()
     {
         var tilesets = new List<TmxTilesetReference> { EmptyTileset() };
@@ -59,7 +57,6 @@ public class TmxMapDataValueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ExposedCollectionsAreReadOnlyInterfaces()
     {
         var tilesetsType = typeof(TmxMapData).GetProperty(nameof(TmxMapData.Tilesets), InstanceMembers)?.PropertyType;
@@ -74,7 +71,6 @@ public class TmxMapDataValueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MutatingTheSourceTilesDoesNotChangeTheChunk()
     {
         var tiles = new[] { 7, 8, 9, 10 };

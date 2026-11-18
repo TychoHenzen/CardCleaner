@@ -10,7 +10,6 @@ public class IrregularMapsTest
     private const int MeshRings = 20;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PopulatedAppliesTheSamePlacementAsMapPopulation()
     {
         var mesh = CreateMesh();
@@ -26,7 +25,6 @@ public class IrregularMapsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RemoveEnemyRemovesOnce()
     {
         var mesh = CreateMesh();

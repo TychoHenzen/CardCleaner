@@ -7,7 +7,6 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 public class IslandTerrainAssignerTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void AssignFillsTheSameVerticesAsBefore()
     {
         IIrregularMesh mesh = MeshGenerator.Generate(3, 7);

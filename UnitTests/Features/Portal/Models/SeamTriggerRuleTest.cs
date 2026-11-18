@@ -14,21 +14,18 @@ public class SeamTriggerRuleTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SpecialCardInTheBackofficeShowsTheSeam()
     {
         AssertThat(SeamTriggerRule.ShouldShow(true, [Special()])).IsTrue();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SpecialCardOutsideTheBackofficeKeepsTheSeamHidden()
     {
         AssertThat(SeamTriggerRule.ShouldShow(false, [Special()])).IsFalse();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CommonCardsAndEmptyHandsKeepTheSeamHidden()
     {
         AssertThat(SeamTriggerRule.ShouldShow(true, [new CardSignature(), new CardSignature()])).IsFalse();
@@ -36,7 +33,6 @@ public class SeamTriggerRuleTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OneSpecialCardAmongCommonOnesIsEnough()
     {
         AssertThat(SeamTriggerRule.ShouldShow(true, [new CardSignature(), Special(), new CardSignature()])).IsTrue();

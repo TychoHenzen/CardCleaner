@@ -6,7 +6,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class ShelfPlacementRuleTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryShelfAndStockPairFollowsTheTable()
     {
         var table = new (ShelfKind Shelf, StockKind Stock, bool Expected)[]

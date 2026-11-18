@@ -32,7 +32,6 @@ public class ClassGraphExtractorTest
         """;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NestedTypesFoldIntoTheirOuterType()
     {
         var graph = Extract();
@@ -43,7 +42,6 @@ public class ClassGraphExtractorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RecordReferencingOnlyEnumsIsData()
     {
         var graph = Extract();
@@ -54,7 +52,6 @@ public class ClassGraphExtractorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MethodFreeClassHoldingAnInterfaceServiceStaysInTheMiddleLayer()
     {
         var graph = Extract();

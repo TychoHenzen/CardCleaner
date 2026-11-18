@@ -61,7 +61,6 @@ public class ShopWorkshopBuildSpaceSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BuildRoomsLieRightOfTheCabinetAndOrderingRoomsLeftOfIt()
     {
         var cabinet = _workshop.GetNode<Node3D>("Cabinet").GlobalPosition;
@@ -73,7 +72,6 @@ public class ShopWorkshopBuildSpaceSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WorkshopIsFarFromTheShopAndOverlapsNoShopGeometry()
     {
         var floor = _grid.GetNode<MeshInstance3D>("Floor/Mesh");
@@ -89,7 +87,6 @@ public class ShopWorkshopBuildSpaceSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EverySectionIsReachableFromTheEntryAroundTheProps()
     {
         var paths = new WorkshopGridPaths(_grid, ClearanceCells, WorkshopGridPaths.SolidProps(_workshop, _grid));
@@ -100,7 +97,6 @@ public class ShopWorkshopBuildSpaceSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PlayerWalksFromTheEntryThroughEverySectionWithoutFalling()
     {
         // Same fixed physics step, more steps per real second: the long route would otherwise run in real time.

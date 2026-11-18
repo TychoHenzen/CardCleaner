@@ -29,7 +29,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PriorityOrderIsPinned()
     {
         AssertThat(string.Join(",", GatedNumbers.Fields.Select(f => f.Name)))
@@ -37,7 +36,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EqualMeasurementPasses()
     {
         Record(BaselineJson);
@@ -49,7 +47,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void HigherNumberFailsNamingTheNumber()
     {
         Record(BaselineJson);
@@ -61,7 +58,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LowerNumberFailsWithTheLoweringCommand()
     {
         Record(BaselineJson);
@@ -76,7 +72,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LowerDecidingNumberAcceptsAndNamesALowerPriorityRise()
     {
         Record(BaselineJson);
@@ -95,7 +90,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void HigherDecidingNumberFailsWithoutALoweringInstruction()
     {
         Record(BaselineJson);
@@ -111,7 +105,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SwitchRewritesOnlyWhenTheDecidingNumberWentDown()
     {
         Record(BaselineJson);
@@ -140,7 +133,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SwitchLeavesTheFileUntouchedWhenNoNumberDiffers()
     {
         DependencyBaseline.Write(_path, Baseline, Lists("A -> B"));
@@ -154,7 +146,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SwitchRecordsListsWhenNumbersAreEqual()
     {
         Record(BaselineJson);
@@ -168,7 +159,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SwitchRecordsAChangedListWhenNumbersAreEqual()
     {
         DependencyBaseline.Write(_path, Baseline, Lists("A -> B"));
@@ -180,7 +170,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SwitchNeverWritesWhenTheDecidingNumberRose()
     {
         Record(BaselineJson);
@@ -194,7 +183,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void IssueTwoFiftyFiveMeasurementsDecideByPriority()
     {
         Record("{\"up_edges\": 33, \"biggest_loop\": 35, \"seams_leaky_or_missing\": 21, " +
@@ -218,7 +206,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MissingOrMalformedBaselineFailsWithItsPath()
     {
         var missing = DependencyBaseline.Apply(_path, Baseline, Lists(), update: false);
@@ -242,7 +229,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WriteThenReadKeepsNumbersAndSortedLists()
     {
         DependencyBaseline.Write(_path, Baseline, Lists("B", "A"));
@@ -255,7 +241,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FourKeyFileStillReadsWithoutLists()
     {
         Record(BaselineJson);
@@ -268,7 +253,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PartialOrNonArrayListsAreMalformed()
     {
         Record(BaselineJson[..^1] + ", \"up_edge_pairs\": []}");
@@ -282,7 +266,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RefusedRiseNamesJoinedAndLeftClasses()
     {
         DependencyBaseline.Write(_path, Baseline, Lists("A -> B", "C -> D"));
@@ -296,7 +279,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AcceptedRiseNamesJoinedAndLeftClasses()
     {
         DependencyBaseline.Write(_path, Baseline, Lists());
@@ -312,7 +294,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ListOnlyDifferenceDoesNotFailButIsNoted()
     {
         DependencyBaseline.Write(_path, Baseline, new NamedLists([], [], ["S1"], []));
@@ -325,7 +306,6 @@ public class DependencyBaselineTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BaselineWithoutListsNotesIt()
     {
         Record(BaselineJson);

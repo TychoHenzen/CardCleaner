@@ -10,7 +10,6 @@ namespace CardCleaner.Tests.Architecture;
 public class GateMetricsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void EachAnchorLayerIsOneModule()
     {
         var measurement = GateMetrics.Measure(LayeredGraph());
@@ -22,7 +21,6 @@ public class GateMetricsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MiddleClassReferencingUiCountsAsReferenceIntoUi()
     {
         var measurement = GateMetrics.Measure(LayeredGraph());
@@ -35,7 +33,6 @@ public class GateMetricsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ListsNameTheClassesBehindTheGatedNumbers()
     {
         var lists = GateMetrics.Measure(LayeredGraph()).Lists;
@@ -51,7 +48,6 @@ public class GateMetricsTest
     /// (#278) without moving the gated number, while a second defective seam still raises it by one.
     /// </summary>
     [TestCase]
-    [TestCategory("Unit")]
     public static void GatedSeamCountIgnoresWhetherASeamIsRatedMissingOrLeaky()
     {
         var measurement = GateMetrics.Measure(LayeredGraph());

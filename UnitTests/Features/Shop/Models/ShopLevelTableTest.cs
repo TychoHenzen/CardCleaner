@@ -15,14 +15,12 @@ public class ShopLevelTableTest
     [TestCase(500, 5)]
     [TestCase(100000, 5)]
     [TestCase(-7, 1)]
-    [TestCategory("Unit")]
     public static void LevelForMapsXpToTheLevelItReaches(int xp, int expectedLevel)
     {
         AssertThat(ShopLevelTable.Default.LevelFor(xp)).IsEqual(expectedLevel);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void XpIntoLevelAndSpanDescribeTheCurrentLevel()
     {
         var table = ShopLevelTable.Default;
@@ -32,7 +30,6 @@ public class ShopLevelTableTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TopLevelHasNoNextLevel()
     {
         var table = ShopLevelTable.Default;
@@ -43,7 +40,6 @@ public class ShopLevelTableTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ProgressIsTheEarnedFractionOfTheLevel()
     {
         var table = ShopLevelTable.Default;
@@ -53,28 +49,24 @@ public class ShopLevelTableTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EmptyThresholdsThrow()
     {
         AssertThrown(() => new ShopLevelTable(Array.Empty<int>())).IsInstanceOf<ArgumentException>();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FirstThresholdMustBeZero()
     {
         AssertThrown(() => new ShopLevelTable(new[] { 1, 5 })).IsInstanceOf<ArgumentException>();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ThresholdsMustBeStrictlyIncreasingWithNoRepeat()
     {
         AssertThrown(() => new ShopLevelTable(new[] { 0, 5, 5 })).IsInstanceOf<ArgumentException>();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ThresholdsMustNeverDecrease()
     {
         AssertThrown(() => new ShopLevelTable(new[] { 0, 9, 3 })).IsInstanceOf<ArgumentException>();

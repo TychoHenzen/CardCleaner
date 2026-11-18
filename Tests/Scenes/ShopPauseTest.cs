@@ -39,7 +39,6 @@ public class ShopPauseTest
     public static void Teardown() => ShopPauseRig.Teardown();
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InPlay_CursorCaptured()
     {
         AssertThat(_cursor.AppliedMode).IsEqual(Input.MouseModeEnum.Captured);
@@ -48,7 +47,6 @@ public class ShopPauseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Escape_PausesShowsMenuAndReleasesCursor()
     {
         _pause._UnhandledInput(ShopPauseRig.EscapeEvent());
@@ -59,7 +57,6 @@ public class ShopPauseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EscapeThenResumeButton_ResumesAndCaptures()
     {
         _pause._UnhandledInput(ShopPauseRig.EscapeEvent());
@@ -72,7 +69,6 @@ public class ShopPauseTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EscapeTwice_ResumesAndCaptures()
     {
         _pause._UnhandledInput(ShopPauseRig.EscapeEvent());

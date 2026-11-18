@@ -19,7 +19,6 @@ namespace CardCleaner.Tests.Features.Menu;
 public class MainMenuClickTest : MainMenuSceneTestBase
 {
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Load_button_click_activates_that_slot()
     {
         SaveSlot("older", OlderSave);
@@ -35,7 +34,6 @@ public class MainMenuClickTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Load_click_on_an_unreadable_slot_does_nothing()
     {
         SeedUnreadableSlot("broken");
@@ -49,7 +47,6 @@ public class MainMenuClickTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Delete_button_click_opens_the_confirmation_and_confirm_removes_only_that_slot()
     {
         SaveSlot("alpha", OlderSave);
@@ -69,7 +66,6 @@ public class MainMenuClickTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Delete_click_then_cancel_keeps_the_slot()
     {
         SaveSlot("alpha", OlderSave);
@@ -88,7 +84,6 @@ public class MainMenuClickTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Continue_button_click_loads_the_newest_slot()
     {
         SaveSlot("older", OlderSave);
@@ -103,7 +98,6 @@ public class MainMenuClickTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task New_game_button_click_opens_the_name_dialog()
     {
         AddMenu();
@@ -118,7 +112,6 @@ public class MainMenuClickTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Options_button_click_opens_the_options_and_back_closes_them()
     {
         AddMenu();
@@ -134,7 +127,6 @@ public class MainMenuClickTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Quit_button_click_quits()
     {
         AddMenu();
@@ -147,7 +139,6 @@ public class MainMenuClickTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task New_game_confirm_creates_the_slot_activates_it_and_opens_the_shop()
     {
         AddMenu();
@@ -165,7 +156,6 @@ public class MainMenuClickTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Unreadable_slot_delete_through_the_menu_removes_it_and_a_new_game_can_reuse_the_name()
     {
         _store.TryCreate("broken", out var broken, out _);

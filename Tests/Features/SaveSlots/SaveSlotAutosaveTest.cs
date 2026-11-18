@@ -21,7 +21,6 @@ public class SaveSlotAutosaveTest
     private const float ShortInterval = 0.05f;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task AutosaveWritesOnlyTheActiveSlot()
     {
         using var scene = new SaveWorld("SlotAutosaveWorld");

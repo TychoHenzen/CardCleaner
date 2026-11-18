@@ -14,7 +14,6 @@ public class SeamPhaseRuleTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void WithoutTriggerTheSeamIsHiddenAtAnyDistance()
     {
         AssertThat(Next(SeamPhase.Hidden, false, 0.5f)).IsEqual(SeamPhase.Hidden);
@@ -22,7 +21,6 @@ public class SeamPhaseRuleTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TriggeredSeamGlowsFarAwayAndOpensWithinRange()
     {
         AssertThat(Next(SeamPhase.Hidden, true, 6f)).IsEqual(SeamPhase.Glowing);
@@ -30,14 +28,12 @@ public class SeamPhaseRuleTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DroppingTheCardClosesAnOpenSeamImmediately()
     {
         AssertThat(Next(SeamPhase.Open, false, 1f)).IsEqual(SeamPhase.Hidden);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OpenSeamStaysOpenUntilPastTheCloseRange()
     {
         AssertThat(Next(SeamPhase.Open, true, 4.0f)).IsEqual(SeamPhase.Open);
@@ -45,7 +41,6 @@ public class SeamPhaseRuleTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void GlowingSeamDoesNotOpenInTheHysteresisBand()
     {
         AssertThat(Next(SeamPhase.Glowing, true, 4.0f)).IsEqual(SeamPhase.Glowing);

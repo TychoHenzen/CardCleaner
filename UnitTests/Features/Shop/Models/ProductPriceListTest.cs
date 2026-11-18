@@ -13,7 +13,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class ProductPriceListTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void AKindWithNoSetPriceAsksItsMarketPrice()
     {
         var prices = ProductPriceList.MarketPrices;
@@ -24,7 +23,6 @@ public class ProductPriceListTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ASetPriceIsAskedForThatKindOnly()
     {
         var prices = ProductPriceList.MarketPrices.With(CardContainerKind.Booster, 6);
@@ -35,7 +33,6 @@ public class ProductPriceListTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ASetPriceIsKeptInsideTheAllowedRange()
     {
         var prices = ProductPriceList.MarketPrices
@@ -47,7 +44,6 @@ public class ProductPriceListTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SettingAPriceLeavesTheOriginalListUnchanged()
     {
         var original = ProductPriceList.MarketPrices;
@@ -60,7 +56,6 @@ public class ProductPriceListTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ABoxHasNoPrice()
     {
         var prices = ProductPriceList.MarketPrices;

@@ -13,7 +13,6 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Components;
 public class TerrainTransitionResolverTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void ResolveUsesTheInjectedResolver()
     {
         var baseTile = new TileDefinition("a", "A", TilePassability.Passable, Vector2I.Zero);
@@ -30,7 +29,6 @@ public class TerrainTransitionResolverTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ResolveEmptyBitmaskTranslatesTheBaseTileThroughTheInjectedMapping()
     {
         var baseTile = new TileDefinition(
@@ -56,7 +54,6 @@ public class TerrainTransitionResolverTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DataErrorWithoutResolverFallsBack()
     {
         var baseTile = new TileDefinition("a", "A", TilePassability.Passable, new Vector2I(2, 2));

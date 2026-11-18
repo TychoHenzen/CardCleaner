@@ -10,7 +10,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class PricingSheetTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void BoughtInStockShowsItsCostAndProfit()
     {
         var lines = PricingSheet.Lines(market: 4, unitCost: 2, price: 5);
@@ -21,7 +20,6 @@ public class PricingSheetTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void StockWithNoCostShowsNoProfit()
     {
         var lines = PricingSheet.Lines(market: 10, unitCost: null, price: 10);
@@ -30,7 +28,6 @@ public class PricingSheetTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ALossShowsAsANegativeProfit()
     {
         var lines = PricingSheet.Lines(market: 4, unitCost: 2, price: 1);
@@ -39,7 +36,6 @@ public class PricingSheetTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheBuyShareFollowsTheBuyDecision()
     {
         foreach (var price in new[] { 2, 4, 5, 6, 7, 40 })

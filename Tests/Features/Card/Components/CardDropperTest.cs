@@ -108,7 +108,6 @@ public class CardDropperTest
     #endregion
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CardDropper_InitialState_IsNotPreparingDrop()
     {
         // Assert
@@ -116,7 +115,6 @@ public class CardDropperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Initialize_WithValidDependencies_SetsReferences()
     {
         // Act
@@ -127,7 +125,6 @@ public class CardDropperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StartDropPreparation_WithCards_SetsPreparingDropTrue()
     {
         // Arrange
@@ -143,7 +140,6 @@ public class CardDropperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StartDropPreparation_WithoutCards_DoesNotStartPreparation()
     {
         // Arrange
@@ -159,7 +155,6 @@ public class CardDropperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CancelDropPreparation_WhenPreparing_ResetsState()
     {
         // Arrange
@@ -177,7 +172,6 @@ public class CardDropperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CancelDropPreparation_WhenNotPreparing_DoesNothing()
     {
         // Arrange
@@ -192,7 +186,6 @@ public class CardDropperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CompleteDropPreparation_WhenPreparing_ResetsStateAndEmitsEvent()
     {
         // Arrange
@@ -210,7 +203,6 @@ public class CardDropperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CompleteDropPreparation_WhenNotPreparing_DoesNothing()
     {
         // Arrange
@@ -225,7 +217,6 @@ public class CardDropperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DropSingleCard_WithoutCards_DoesNothing()
     {
         // Arrange
@@ -240,7 +231,6 @@ public class CardDropperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UpdateDropPreview_WhenNotPreparing_DoesNothing()
     {
         // Arrange
@@ -254,7 +244,6 @@ public class CardDropperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DropSingleCard_WithCards_CallsCardHolderRemoveTopCard()
     {
         // Arrange
@@ -269,7 +258,6 @@ public class CardDropperTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StartDropPreparation_WithCards_CallsShowPreviewAndPositionCards()
     {
         // Arrange

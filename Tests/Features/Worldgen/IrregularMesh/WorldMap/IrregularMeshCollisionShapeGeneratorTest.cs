@@ -18,7 +18,6 @@ public class IrregularMeshCollisionShapeGeneratorTest
     private static readonly Vector2 WorldOffset = new(10f, 20f);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestNoShapesWhenNoQuadIsOpaque()
     {
         var mesh = CreateTwoByTwoMesh();
@@ -32,7 +31,6 @@ public class IrregularMeshCollisionShapeGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestOneShapePerOpaqueQuad()
     {
         var mesh = CreateTwoByTwoMesh();
@@ -48,7 +46,6 @@ public class IrregularMeshCollisionShapeGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestSetsOpaqueLayerAndClearsMaskOnStaticBody()
     {
         var staticBody = new StaticBody2D();
@@ -61,7 +58,6 @@ public class IrregularMeshCollisionShapeGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestSetsOpaqueLayerAndClearsMaskOnArea2D()
     {
         var area = new Area2D();
@@ -74,7 +70,6 @@ public class IrregularMeshCollisionShapeGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestShapeIsTheQuadCornersInWorldSpace()
     {
         var staticBody = new StaticBody2D();

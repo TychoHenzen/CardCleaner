@@ -13,7 +13,6 @@ public class MeshStatisticsImmutableTest
         BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OfMeasuresAFixedMeshWithTheSameCounts()
     {
         // Four vertices (two on the boundary) and two quads with areas 1 and 3.
@@ -41,7 +40,6 @@ public class MeshStatisticsImmutableTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryWritableMemberIsInitOnly()
     {
         var properties = typeof(MeshStatistics).GetProperties(AllInstanceMembers);

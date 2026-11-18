@@ -13,7 +13,6 @@ public class CoreMathTest
     private static readonly int[] IntEdges = { int.MinValue, -1000, -3, -2, -1, 0, 1, 2, 3, 1000, int.MaxValue };
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestUnaryFloatMembersMatchMathf()
     {
         foreach (var x in FloatEdges)
@@ -29,7 +28,6 @@ public class CoreMathTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestIntegerConversionsMatchMathf()
     {
         foreach (var x in FloatEdges)
@@ -46,7 +44,6 @@ public class CoreMathTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestIntegerMembersMatchMathf()
     {
         foreach (var a in IntEdges)
@@ -64,7 +61,6 @@ public class CoreMathTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestBinaryFloatMembersMatchMathf()
     {
         foreach (var a in FloatEdges)
@@ -82,7 +78,6 @@ public class CoreMathTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestTernaryFloatMembersMatchMathf()
     {
         foreach (var a in FloatEdges)
@@ -100,7 +95,6 @@ public class CoreMathTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestApproxEqualityMatchesMathfAtItsTolerance()
     {
         foreach (var a in new[] { 0f, 1e-7f, 1e-6f, 0.5f, 1f, 3f, 1e3f, 1e6f, -1f, -1e6f })

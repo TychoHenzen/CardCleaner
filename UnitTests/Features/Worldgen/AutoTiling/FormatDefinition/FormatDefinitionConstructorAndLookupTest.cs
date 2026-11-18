@@ -128,7 +128,6 @@ public class FormatDefinitionConstructorAndLookupTest : AutoTileFormatDefinition
     /// Mutating the collections passed to the constructor must not change the format.
     /// </summary>
     [TestCase]
-    [TestCategory("Unit")]
     public void CallerMutationAfterConstructionDoesNotChangeTheFormat()
     {
         var allowedBitmasks = new HashSet<int> { 1, 2 };

@@ -9,7 +9,6 @@ namespace CardCleaner.Tests.Core.Utilities;
 public class EleAspectsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void AllElements_HavePositiveAspects()
     {
         // Arrange & Act & Assert - Every element should have a positive aspect
@@ -25,7 +24,6 @@ public class EleAspectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AllElements_HaveNegativeAspects()
     {
         // Arrange & Act & Assert - Every element should have a negative aspect
@@ -41,7 +39,6 @@ public class EleAspectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PositiveAndNegative_AreDifferentForEachElement()
     {
         // Arrange & Act & Assert - Positive and negative aspects should be different
@@ -55,7 +52,6 @@ public class EleAspectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SpecificElementMappings_AreCorrect()
     {
         // Test specific known mappings to ensure they're correct
@@ -70,7 +66,6 @@ public class EleAspectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AllAspects_MapToValidElements()
     {
         // Arrange & Act & Assert - Every aspect should map to a valid element
@@ -86,7 +81,6 @@ public class EleAspectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ElementCount_MatchesExpectedGameDesign()
     {
         // Assert - Verify we have the expected number of elements for game balance

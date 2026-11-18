@@ -58,7 +58,6 @@ public class OptionsMenuSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Changing_master_slider_to_half_writes_the_store_and_sets_the_Master_bus()
     {
         AddScreen();
@@ -70,7 +69,6 @@ public class OptionsMenuSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Back_emits_Closed()
     {
         AddScreen();
@@ -83,7 +81,6 @@ public class OptionsMenuSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Mouse_change_reaches_IGameSettings_when_registered()
     {
         _settings = new GameSettings();
@@ -97,7 +94,6 @@ public class OptionsMenuSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Mouse_change_without_IGameSettings_only_saves()
     {
         AddScreen();
@@ -108,7 +104,6 @@ public class OptionsMenuSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Controls_start_from_the_stored_options_without_saving()
     {
         new OptionsStore(_path).Save(GameOptions.Defaults with { MasterVolume = 0.25f });
@@ -121,7 +116,6 @@ public class OptionsMenuSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Controls_start_without_sending_a_display_plan()
     {
         UseRecorder();
@@ -132,7 +126,6 @@ public class OptionsMenuSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Toggling_fullscreen_sends_ExclusiveFullscreen_live()
     {
         UseRecorder();
@@ -147,7 +140,6 @@ public class OptionsMenuSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Choosing_a_resolution_sends_that_size_live()
     {
         UseRecorder();
@@ -164,7 +156,6 @@ public class OptionsMenuSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Toggling_vsync_off_sends_Disabled_live()
     {
         UseRecorder();
@@ -178,7 +169,6 @@ public class OptionsMenuSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Toggling_invert_Y_reaches_IGameSettings_and_the_store()
     {
         _settings = new GameSettings();
@@ -192,7 +182,6 @@ public class OptionsMenuSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Changing_music_slider_to_half_writes_the_store_and_sets_the_Music_bus()
     {
         AddScreen();
@@ -204,7 +193,6 @@ public class OptionsMenuSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Changing_sfx_slider_to_half_writes_the_store_and_sets_the_SFX_bus()
     {
         AddScreen();

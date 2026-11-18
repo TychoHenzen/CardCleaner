@@ -68,7 +68,6 @@ public partial class ViewportTextureSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheCheckFlagsEveryNonLocalResourceOnTheWayToAViewportTexture()
     {
         const string text = "[sub_resource type=\"ViewportTexture\" id=\"T\"]\nresource_local_to_scene = true\n"
@@ -83,7 +82,6 @@ public partial class ViewportTextureSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryViewportTextureInASceneIsLocalToItsScene()
     {
         var files = ScannedRoots
@@ -102,7 +100,6 @@ public partial class ViewportTextureSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ThePcMonitorShowsTheDesktopViewport()
     {
         var shop = ShopOrderingRig.LoadShopWithServices();

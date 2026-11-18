@@ -13,7 +13,6 @@ public class ArrivalScheduleTest
     private const int CloseMinute = 1080;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SameSeedGivesTheSameSchedule()
     {
         var first = ArrivalSchedule.Build(OpenMinute, CloseMinute, 20, new Pcg32Random(Seed));
@@ -23,7 +22,6 @@ public class ArrivalScheduleTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ScheduleIsSortedAscending()
     {
         var schedule = ArrivalSchedule.Build(OpenMinute, CloseMinute, 50, new Pcg32Random(Seed));
@@ -34,7 +32,6 @@ public class ArrivalScheduleTest
     [TestCase(1)]
     [TestCase(7)]
     [TestCase(40)]
-    [TestCategory("Unit")]
     public static void CountIsTheRequestedCount(int count)
     {
         var schedule = ArrivalSchedule.Build(OpenMinute, CloseMinute, count, new Pcg32Random(Seed));
@@ -43,7 +40,6 @@ public class ArrivalScheduleTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ZeroCountGivesAnEmptySchedule()
     {
         var schedule = ArrivalSchedule.Build(OpenMinute, CloseMinute, 0, new Pcg32Random(Seed));
@@ -52,7 +48,6 @@ public class ArrivalScheduleTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryArrivalFallsBeforeTheLastEntryMargin()
     {
         var schedule = ArrivalSchedule.Build(OpenMinute, CloseMinute, 200, new Pcg32Random(Seed));
@@ -67,7 +62,6 @@ public class ArrivalScheduleTest
 
     [TestCase(6)]
     [TestCase(13)]
-    [TestCategory("Unit")]
     public static void EachCustomerArrivesInItsOwnSliceOfTheDay(int count)
     {
         var slice = (float)(CloseMinute - ArrivalSchedule.LastEntryMarginMinutes - OpenMinute) / count;
@@ -88,7 +82,6 @@ public class ArrivalScheduleTest
     [TestCase(600, 630, 5)]
     [TestCase(600, 620, 5)]
     [TestCase(600, 1080, -1)]
-    [TestCategory("Unit")]
     public static void InvalidWindowsAndCountsAreRejected(int open, int close, int count)
     {
         AssertThrown(() => ArrivalSchedule.Build(open, close, count, new Pcg32Random(Seed)))

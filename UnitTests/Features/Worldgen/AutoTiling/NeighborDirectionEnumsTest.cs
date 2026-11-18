@@ -10,7 +10,6 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling;
 public class NeighborDirectionEnumsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void Neighbor8_ValuesEqualTheConstantsTheyReplace()
     {
         AssertThat((int)Neighbor8.North).IsEqual(1);
@@ -29,7 +28,6 @@ public class NeighborDirectionEnumsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NeighborCorner_ValuesEqualTheConstantsTheyReplace()
     {
         AssertThat((int)NeighborCorner.NorthEast).IsEqual(1);
@@ -40,7 +38,6 @@ public class NeighborDirectionEnumsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Neighbor4_ValuesEqualTheConstantsTheyReplace()
     {
         AssertThat((int)Neighbor4.North).IsEqual(1);

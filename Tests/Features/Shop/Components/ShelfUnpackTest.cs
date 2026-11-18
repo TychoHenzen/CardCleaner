@@ -45,7 +45,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpenOntoLocksTheFirstSixBoxPacksIntoTheShelfAndSpillsTheRest()
     {
         var shelf = AddShelf();
@@ -67,7 +66,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ALoosePackFromTheSameSeedMatchesTheFirstLockedPack()
     {
         var shelf = AddShelf();
@@ -88,7 +86,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task APackOntoAShelfYieldsBoostersInTheSixSlots()
     {
         var shelf = AddShelf();
@@ -106,7 +103,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OpenOntoRefusesABoosterAndLeavesItClosed()
     {
         var shelf = AddShelf();
@@ -118,7 +114,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TryUnpackOntoAProductShelfFillsItsSixFreeSlots()
     {
         var shelf = AddShelf();
@@ -134,7 +129,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TryUnpackWithAllSlotsStockedSpillsEveryItem()
     {
         var shelf = AddShelf();
@@ -151,7 +145,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TryUnpackBoxOntoACardShelfReturnsFalseAndLeavesItClosed()
     {
         var shelf = AddShelf(CardShelfScene);
@@ -163,7 +156,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TryUnpackBoxOntoAStorageRackFillsItsFourSlots()
     {
         var rack = AddShelf(StorageRackScene);
@@ -179,7 +171,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ABoxDroppedOnACardShelfSlotIsNotLocked()
     {
         var shelf = AddShelf(CardShelfScene);
@@ -196,7 +187,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OpenOntoAShelfWithZeroFreeSlotsPlacesNothingAndSpillsEight()
     {
         var box = MakeContainer(BoxScene, Seed);
@@ -207,7 +197,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OpenOntoAShelfWithThreeFreeSlotsPlacesThreeAndSpillsFive()
     {
         var shelf = AddShelf();

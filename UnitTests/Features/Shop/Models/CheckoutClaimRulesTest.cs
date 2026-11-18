@@ -6,7 +6,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class CheckoutClaimRulesTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void New_claim_is_not_held_and_excludes_nobody()
     {
         var claim = new CheckoutClaim();
@@ -17,7 +16,6 @@ public class CheckoutClaimRulesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Held_claim_excludes_everyone_but_the_holder()
     {
         var claim = new CheckoutClaim();
@@ -32,7 +30,6 @@ public class CheckoutClaimRulesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Second_take_is_refused_and_keeps_the_first_holder()
     {
         var claim = new CheckoutClaim();
@@ -45,7 +42,6 @@ public class CheckoutClaimRulesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Only_the_holder_can_release()
     {
         var claim = new CheckoutClaim();
@@ -60,7 +56,6 @@ public class CheckoutClaimRulesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Clear_drops_the_claim_whoever_holds_it()
     {
         var claim = new CheckoutClaim();

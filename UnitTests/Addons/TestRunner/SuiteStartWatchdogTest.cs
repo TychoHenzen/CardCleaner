@@ -18,7 +18,6 @@ public class SuiteStartWatchdogTest
     private static readonly TimeSpan Settle = TimeSpan.FromMilliseconds(100);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task AnAttemptThatStartsRunsOnce()
     {
         var bridge = new FakeBridge(Starts);
@@ -31,7 +30,6 @@ public class SuiteStartWatchdogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ASilentAttemptIsAbandonedAndTheSuiteStartsAgain()
     {
         var bridge = new FakeBridge(StaysSilent, Starts);
@@ -45,7 +43,6 @@ public class SuiteStartWatchdogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task AnEventFromAnAbandonedAttemptIsDropped()
     {
         var bridge = new FakeBridge(StaysSilent, Starts);
@@ -58,7 +55,6 @@ public class SuiteStartWatchdogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task TheLastAttemptIsNeverAbandoned()
     {
         var bridge = new FakeBridge(StaysSilent, StartsLate);
@@ -71,7 +67,6 @@ public class SuiteStartWatchdogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task AnAttemptThatIgnoresItsCancellationDoesNotBlockTheNextAttempt()
     {
         var bridge = new FakeBridge(IgnoresCancellation, Starts);
@@ -85,7 +80,6 @@ public class SuiteStartWatchdogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ACancelledRunIsNotStartedAgain()
     {
         var bridge = new FakeBridge(StaysSilent, Starts);

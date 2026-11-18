@@ -28,7 +28,6 @@ public class RarityVisualTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DefaultValues_AreValid()
     {
         // Arrange
@@ -46,7 +45,6 @@ public class RarityVisualTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Properties_StoreCorrectValues()
     {
         // Assert
@@ -61,7 +59,6 @@ public class RarityVisualTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TextureArrays_CanBeEmpty()
     {
         // Act
@@ -74,7 +71,6 @@ public class RarityVisualTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AllRarityTypes_CanBeAssigned()
     {
         // Act & Assert - Test each rarity type can be assigned
@@ -86,7 +82,6 @@ public class RarityVisualTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TextureOptions_AcceptNullTextures()
     {
         // Act - Arrays can contain null textures for missing variants

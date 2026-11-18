@@ -22,7 +22,6 @@ public class IrregularMeshPreviewTest
     public void Teardown() => _preview.Free();
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ChangedRingsRevertsToItsDefault()
     {
         AssertThat(_preview.Rings).IsEqual(DefaultRings);
@@ -35,7 +34,6 @@ public class IrregularMeshPreviewTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PropertyWithoutDefaultCannotRevert()
     {
         AssertBool(_preview._PropertyCanRevert("ShowVertices")).IsFalse();

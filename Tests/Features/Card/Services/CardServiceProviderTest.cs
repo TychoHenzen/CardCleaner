@@ -36,7 +36,6 @@ public class CardServiceProviderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RegisterServices_WithValidData_RegistersAllServices()
     {
         // Act
@@ -51,7 +50,6 @@ public class CardServiceProviderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ScannedGeneratorIsBuiltFromTheProvidersArrays()
     {
         // The ICardGenerator registration moved from the provider to the [Service] scan (#273).
@@ -62,7 +60,6 @@ public class CardServiceProviderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GameScanRegistersTheGeneratorOnceTheProviderRuns()
     {
         // The composition root's own scan, not a hand-picked type list, must find the generator (#273).
@@ -75,7 +72,6 @@ public class CardServiceProviderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ScannedGeneratorIsNotRegisteredWithoutTheProvidersArrays()
     {
         _container.RegisterServiceClasses(new[] { typeof(SignatureCardGenerator) });
@@ -84,7 +80,6 @@ public class CardServiceProviderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Ready_AddsToServiceProvidersGroup()
     {
         // Act

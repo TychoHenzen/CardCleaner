@@ -10,7 +10,6 @@ namespace CardCleaner.Tests.Core.Data;
 public class InputActionTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void Constructor_RequiredProperties_MustBeSet()
     {
         // Arrange
@@ -38,7 +37,6 @@ public class InputActionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MouseAction_WithCallback_ExecutesCorrectly()
     {
         // Arrange
@@ -69,7 +67,6 @@ public class InputActionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Matches_Key_ReturnsCorrectValue()
     {
         // Arrange
@@ -86,7 +83,6 @@ public class InputActionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Matches_MouseButton_ReturnsCorrectValue()
     {
         // Arrange
@@ -103,7 +99,6 @@ public class InputActionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Matches_WhenKeyIsNull_ReturnsFalse()
     {
         // Arrange
@@ -119,7 +114,6 @@ public class InputActionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Matches_WhenMouseButtonIsNull_ReturnsFalse()
     {
         // Arrange

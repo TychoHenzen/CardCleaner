@@ -14,7 +14,6 @@ namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 public class WfcTerrainSolverFactoryTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void CreateReturnsANewSolverEachCall()
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
@@ -24,7 +23,6 @@ public class WfcTerrainSolverFactoryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CreateReportsTheRuleTileIdsOfFreshRules()
     {
         var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();

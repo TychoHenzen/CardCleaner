@@ -29,7 +29,6 @@ public class CardEffectNormalBakerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheNormalMapHasTheSegmentedSizeAndFourBytesPerPixel()
     {
         var map = BakeOneColour();
@@ -40,7 +39,6 @@ public class CardEffectNormalBakerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BakingTheSameArtTwiceIsByteForByteIdentical()
     {
         var art = CardEffectArtPainter.Paint(
@@ -53,7 +51,6 @@ public class CardEffectNormalBakerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheDeepInteriorOfARegionIsFlat()
     {
         var map = BakeOneColour();
@@ -66,7 +63,6 @@ public class CardEffectNormalBakerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheEdgeOfARegionTiltsOutwardAndCarriesBevelStrength()
     {
         var map = BakeOneColour();
@@ -84,7 +80,6 @@ public class CardEffectNormalBakerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TwoColourRegionsEachGetTheirOwnBevelAtTheSeam()
     {
         var map = BakeTwoHalves();
@@ -100,7 +95,6 @@ public class CardEffectNormalBakerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheSameShapeInOneColourHasNoBevelWhereTheSeamWouldBe()
     {
         var map = BakeOneColour();
@@ -112,7 +106,6 @@ public class CardEffectNormalBakerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EachRegionIsFlatInsideItsOwnBevel()
     {
         var map = BakeTwoHalves();
@@ -122,7 +115,6 @@ public class CardEffectNormalBakerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BevelStrengthFallsOffWithDistanceFromTheRegionEdge()
     {
         var map = BakeOneColour();
@@ -134,7 +126,6 @@ public class CardEffectNormalBakerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TransparentPixelsAreUncoveredAndCoveredPixelsAreMarkedInAlpha()
     {
         var art = CardEffectArtPainter.TwoHalves(Size, Size, Colors.Red, Colors.Transparent);
@@ -147,7 +138,6 @@ public class CardEffectNormalBakerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void StoredTiltStaysWithinTheMaximumBevelSlope()
     {
         var map = BakeTwoHalves();

@@ -58,7 +58,6 @@ public class ShopProgressionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SceneProvidersResolveTheProgressionNode()
     {
         var tree = (SceneTree)Engine.GetMainLoop();
@@ -78,7 +77,6 @@ public class ShopProgressionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ShopStartsAtLevelOneWithNoXp()
     {
         AssertThat(_progression.Xp).IsEqual(0);
@@ -86,7 +84,6 @@ public class ShopProgressionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LevelLockedBackofficeItemIsRefusedWithALockMessage()
     {
         var index = LockedIndex();
@@ -101,7 +98,6 @@ public class ShopProgressionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ReachingLevelTwoDeliversThatItem()
     {
         var index = LockedIndex();
@@ -117,7 +113,6 @@ public class ShopProgressionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryOtherBackofficeItemOrdersAtLevelOne()
     {
         _terminal.Interact();

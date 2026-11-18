@@ -72,7 +72,6 @@ public class ShopPackOpeningSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OrderedBoxIsACardContainerTheInteractionRayCanReach()
     {
         var box = OrderBox();
@@ -94,7 +93,6 @@ public class ShopPackOpeningSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpeningAnOrderedBoxLeadsThroughPacksAndBoostersToRealCardsWithGeneratedSignatures()
     {
         var box = OrderBox();
@@ -120,7 +118,6 @@ public class ShopPackOpeningSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpenedBoxLeavesEveryPackSettledInsideTheStorageRoom()
     {
         var box = OrderBox();

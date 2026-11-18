@@ -9,7 +9,6 @@ namespace CardCleaner.Tests.Features.Shop.Services;
 public class StaffWageBillSourceTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void No_one_hired_gives_no_lines()
     {
         var source = new StaffWageBillSource(new FakeStaffService(StaffDefaults.Cashier()));
@@ -18,7 +17,6 @@ public class StaffWageBillSourceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Cashier_hired_gives_one_Cashier_wage_line_with_the_role_wage()
     {
         var staff = new FakeStaffService(StaffDefaults.Cashier());
@@ -33,7 +31,6 @@ public class StaffWageBillSourceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Both_roles_hired_give_two_wage_lines_in_hire_order()
     {
         var staff = new FakeStaffService(StaffDefaults.Cashier(), StaffDefaults.Restocker());
@@ -51,7 +48,6 @@ public class StaffWageBillSourceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Dismissed_gives_no_line()
     {
         var staff = new FakeStaffService(StaffDefaults.Cashier());
@@ -63,7 +59,6 @@ public class StaffWageBillSourceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Day_does_not_change_the_wage()
     {
         var staff = new FakeStaffService(StaffDefaults.Cashier());

@@ -45,7 +45,6 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TerminalDeliversToItsOwnMarkerNotTheShopDefault()
     {
         AssertBool(ReferenceEquals(_rig.Terminal.DeliveryPoint, _rig.Delivery)).IsTrue();
@@ -53,7 +52,6 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryDeliverySlotIsFreeOfWorkshopGeometryForTheTallestItem()
     {
         var space = _rig.Shop.GetWorld3D().DirectSpaceState;
@@ -75,7 +73,6 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DeliveryClearanceIsFreeOfWorkshopGeometry()
     {
         var clearance = _rig.Delivery.FloorClearance;
@@ -106,7 +103,6 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TallestItemInTheSingleLayerClearsTheCeiling()
     {
         var ceiling = _rig.Workshop.GetNode<StaticBody3D>("WorkshopGrid/Ceiling");
@@ -117,7 +113,6 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OrderedCabinetsFillTheGridTwoAtATimeAndNeverReachEachOthersHolders()
     {
         _rig.Money.Add(WorkshopDeliveryRig.TopUp);
@@ -144,7 +139,6 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OrderedCabinetSettlesUprightOnThePadWithItsHolders()
     {
         _rig.Money.Add(WorkshopDeliveryRig.TopUp);

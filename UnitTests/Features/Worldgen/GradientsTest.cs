@@ -12,7 +12,6 @@ public class GradientsTest
     private static readonly Vector2I[] Positions = { new(0, 0), new(5, 7), new(19, 19) };
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FromCardsMatchesACardBasedGradientSeededTheSameWay()
     {
         var cards = MeshMapGeneratorFixture.TerrainCards();

@@ -21,7 +21,6 @@ public class ServiceContainerScopeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ASceneRegistrationIsGoneAfterTheDrop()
     {
         _container.SealAppScope();
@@ -33,7 +32,6 @@ public class ServiceContainerScopeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnAppRegistrationThatASceneReplacedComesBack()
     {
         var app = new SceneNode();
@@ -47,7 +45,6 @@ public class ServiceContainerScopeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AScannedClassBuiltOnlyFromTheAppScopeKeepsItsInstance()
     {
         _container.RegisterServiceClasses(new[] { typeof(AppOnly) });
@@ -60,7 +57,6 @@ public class ServiceContainerScopeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AScannedClassBuiltFromASceneServiceIsBuiltAgainForTheNextScene()
     {
         _container.RegisterServiceClasses(new[] { typeof(SceneConsumer) });
@@ -81,7 +77,6 @@ public class ServiceContainerScopeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AScannedClassBuiltFromAnotherSceneBoundClassIsBuiltAgainToo()
     {
         _container.RegisterServiceClasses(new[] { typeof(SceneConsumer), typeof(IndirectConsumer) });
@@ -99,7 +94,6 @@ public class ServiceContainerScopeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DropBeforeSealChangesNothing()
     {
         var node = new SceneNode();

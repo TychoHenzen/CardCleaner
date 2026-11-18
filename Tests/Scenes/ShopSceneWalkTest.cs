@@ -32,7 +32,6 @@ public class ShopSceneWalkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CapsuleCanSweepEveryRouteBetweenTheAreas()
     {
         AssertBool(_probe.CanWalk(ShopSceneProbe.StorefrontToStorage)).IsTrue();
@@ -41,14 +40,12 @@ public class ShopSceneWalkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StorefrontEntranceIsOpen()
     {
         AssertBool(_probe.CanWalk([new Vector2(_spawn.X, _spawn.Z), new Vector2(6.05f, 11.5f)])).IsTrue();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StreetOutsideTheEntranceIsFlooredAndBounded()
     {
         AssertBool(_probe.CanWalk([new Vector2(6.05f, 9f), new Vector2(6.05f, 15.2f)])).IsTrue();
@@ -58,7 +55,6 @@ public class ShopSceneWalkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AreasAreNotReachableThroughSolidWalls()
     {
         AssertBool(_probe.CanWalk([new Vector2(6f, 4f), new Vector2(6f, -4f)])).IsFalse();
@@ -66,7 +62,6 @@ public class ShopSceneWalkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RoadDoorRouteReachesTheDeliveryPointAndTheBackoffice()
     {
         var delivery = _shop.GetNode<Marker3D>("World/Markers/DeliveryPoint").GlobalPosition;

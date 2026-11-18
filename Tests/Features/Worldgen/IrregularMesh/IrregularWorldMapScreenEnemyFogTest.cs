@@ -72,7 +72,6 @@ public class IrregularWorldMapScreenEnemyFogTest
     private static HashSet<int> Cells(params int[] cellIds) => new(cellIds);
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EnemiesInHiddenCellsAreNotShownAboveTheFog()
     {
         AssertThat(EnemySprites().Length).IsGreater(0);
@@ -80,7 +79,6 @@ public class IrregularWorldMapScreenEnemyFogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnEnemyShowsWhileItsCellIsVisible()
     {
         var enemy = EnemySprites()[0];
@@ -93,7 +91,6 @@ public class IrregularWorldMapScreenEnemyFogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EnemiesBecomeVisibleWhenTheMapIsRevealed()
     {
         _screen.RevealAll();
@@ -102,7 +99,6 @@ public class IrregularWorldMapScreenEnemyFogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnEnemyHidesAgainOnceItsCellIsOnlySeen()
     {
         var enemy = EnemySprites()[0];

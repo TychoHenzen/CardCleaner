@@ -6,7 +6,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class ShopClockTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void AdvanceWhileClosedDoesNothing()
     {
         var clock = new ShopClock();
@@ -18,7 +17,6 @@ public class ShopClockTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AdvanceWhileOpenMovesTime()
     {
         var clock = new ShopClock();
@@ -30,7 +28,6 @@ public class ShopClockTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ReachingDayLengthSignalsClosing()
     {
         var clock = new ShopClock();
@@ -41,7 +38,6 @@ public class ShopClockTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CloseTwiceReportsTransitionOnce()
     {
         var clock = new ShopClock();
@@ -52,7 +48,6 @@ public class ShopClockTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void StartNextDayResets()
     {
         var clock = new ShopClock();
@@ -68,7 +63,6 @@ public class ShopClockTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RestoreClampsDayToOne()
     {
         var clock = new ShopClock();

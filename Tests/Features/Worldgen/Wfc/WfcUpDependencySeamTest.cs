@@ -57,7 +57,6 @@ public class WfcUpDependencySeamTest
         RegexOptions.Compiled);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void WfcNamesNeitherSimpleMapDataNorCompiledTransitionResolver()
     {
         var files = SourceScan.CsFiles(WfcRoot);
@@ -78,7 +77,6 @@ public class WfcUpDependencySeamTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void WfcNamesNoTileCatalogTypeAndImportsNoCatalogNamespace()
     {
         var files = SourceScan.CsFiles(WfcRoot);
@@ -102,7 +100,6 @@ public class WfcUpDependencySeamTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ForbiddenNamesInCodeAreReportedAndCommentsAndStringsIgnored()
     {
         const string source = "namespace Sample;\n"
@@ -122,7 +119,6 @@ public class WfcUpDependencySeamTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CatalogNamesAndNamespacesAreReportedAndNearMissesIgnored()
     {
         const string source = "namespace Sample;\n"

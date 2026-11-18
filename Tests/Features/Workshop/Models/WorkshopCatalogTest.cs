@@ -30,7 +30,6 @@ public class WorkshopCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CatalogListsConveyorArcadeCabinetAndWiring()
     {
         AssertThat(_catalog).IsNotNull();
@@ -38,7 +37,6 @@ public class WorkshopCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ItemsAreDisjointFromTheShopCatalogByIdAndScene()
     {
         var shop = GD.Load<OrderCatalog>(ShopCatalogPath);
@@ -49,7 +47,6 @@ public class WorkshopCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryItemHasANamePriceAndScene()
     {
         foreach (var item in _catalog.Items)
@@ -61,7 +58,6 @@ public class WorkshopCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ConveyorItemReusesTheExistingConveyorScene()
     {
         var conveyor = _catalog.Items.Single(i => i.Id == "conveyor").Scene!.Instantiate<Node3D>();
@@ -71,7 +67,6 @@ public class WorkshopCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OrderedCabinetIsTheSameAssemblyAsTheWorkshopCabinet()
     {
         var cabinet = _catalog.Items.Single(i => i.Id == "arcade_cabinet").Scene!.Instantiate<Node3D>();
@@ -84,7 +79,6 @@ public class WorkshopCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryItemSceneIsAPlaceableNodeWithAnArtSlotAndPlaceholderFallback()
     {
         foreach (var item in _catalog.Items)
@@ -99,7 +93,6 @@ public class WorkshopCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BodyItemsAreRigidBodiesWithACollisionShape()
     {
         foreach (var item in _catalog.Items.Where(i => i.Id != ConveyorId))
@@ -113,7 +106,6 @@ public class WorkshopCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ConveyorCollidesThroughItsNestedBeltBody()
     {
         var conveyor = _catalog.Items.Single(i => i.Id == ConveyorId).Scene!.Instantiate<Node3D>();
@@ -125,7 +117,6 @@ public class WorkshopCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryItemArtPathExistsInTheAssetsSubmodule()
     {
         foreach (var item in _catalog.Items)
@@ -139,7 +130,6 @@ public class WorkshopCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ItemSceneKeepsItsPlaceholderWhenThePackFileIsMissing()
     {
         foreach (var item in _catalog.Items)
@@ -155,7 +145,6 @@ public class WorkshopCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ItemSceneShowsThePackMeshAndHidesItsPlaceholderWhenTheFileIsImported()
     {
         foreach (var item in _catalog.Items)

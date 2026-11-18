@@ -35,7 +35,6 @@ public class WfcGridFingerprintTest
     private static readonly Vector2I GridSize = new(16, 12);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DefaultSessionGridPathMatchesMasterFingerprint()
     {
         var tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());

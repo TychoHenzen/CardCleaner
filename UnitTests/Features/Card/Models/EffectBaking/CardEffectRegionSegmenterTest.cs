@@ -34,7 +34,6 @@ public class CardEffectRegionSegmenterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OneColourImageIsOneRegionCoveringEveryPixel()
     {
         var map = SegmentFill(Colors.Red);
@@ -44,7 +43,6 @@ public class CardEffectRegionSegmenterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TwoColourHalvesAreTwoRegionsThatPartitionTheImage()
     {
         var map = SegmentRedBeside(Colors.Blue);
@@ -55,7 +53,6 @@ public class CardEffectRegionSegmenterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ColoursWithinTheThresholdMergeAndColoursBeyondItDoNot()
     {
         // 250 vs 255 on red is a distance of about 0.02, well under the 0.1 colour threshold.
@@ -67,7 +64,6 @@ public class CardEffectRegionSegmenterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PixelsBelowTheAlphaThresholdBelongToNoRegion()
     {
         var map = SegmentRedBeside(Color.Color8(255, 0, 0, 127));
@@ -78,7 +74,6 @@ public class CardEffectRegionSegmenterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FullyTransparentArtHasNoRegions()
     {
         var map = SegmentFill(Colors.Transparent);
@@ -88,7 +83,6 @@ public class CardEffectRegionSegmenterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ASpeckSmallerThanTheMergeLimitIsAbsorbedByItsNeighbour()
     {
         // A 2 x 2 blue speck is 4 pixels, under the merge limit of 5.
@@ -96,7 +90,6 @@ public class CardEffectRegionSegmenterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ASpeckOfTheMergeLimitOrMorePixelsSurvivesAsItsOwnRegion()
     {
         // A 3 x 2 blue patch is 6 pixels, not under the merge limit of 5.
@@ -104,7 +97,6 @@ public class CardEffectRegionSegmenterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ALargeImageIsScaledDownSoItsLongestSideIs128Pixels()
     {
         var map = Segment(CardEffectArtPainter.Fill(256, 192, Colors.Red), 256, 192);
@@ -115,7 +107,6 @@ public class CardEffectRegionSegmenterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ASmallImageIsScaledUpSoItsLongestSideIs128Pixels()
     {
         var map = Segment(CardEffectArtPainter.Fill(16, 32, Colors.Red), 16, 32);
@@ -125,7 +116,6 @@ public class CardEffectRegionSegmenterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SegmentingTheSameImageTwiceGivesTheSameLabels()
     {
         var art = CardEffectArtPainter.Paint(Size, Size, (x, y) => (x + y) % 40 < 20 ? Colors.Red : Colors.Blue);
@@ -138,7 +128,6 @@ public class CardEffectRegionSegmenterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LabelsAreCompactSoEveryIdBelowRegionCountIsUsed()
     {
         var map = SegmentBluePatchOnRed(3);

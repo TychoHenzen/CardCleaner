@@ -8,7 +8,6 @@ namespace CardCleaner.Tests.Features.Shop.Services;
 public class ShopProgressionTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void FreshProgressionStartsAtLevelOneWithNoXp()
     {
         var progression = AutoFree(new ShopProgression());
@@ -20,7 +19,6 @@ public class ShopProgressionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AwardingACheckoutAddsItsXpAndRaisesProgressChangedOnce()
     {
         var progression = AutoFree(new ShopProgression());
@@ -35,7 +33,6 @@ public class ShopProgressionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ANonPositiveCheckoutEarnsNothingAndRaisesNothing()
     {
         var progression = AutoFree(new ShopProgression());
@@ -50,7 +47,6 @@ public class ShopProgressionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LevelTwoItemUnlocksExactlyAtItsThreshold()
     {
         var progression = AutoFree(new ShopProgression());
@@ -63,7 +59,6 @@ public class ShopProgressionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnknownIdIsLockedAndHasNoRequiredLevel()
     {
         var progression = AutoFree(new ShopProgression());
@@ -73,7 +68,6 @@ public class ShopProgressionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LevelOneItemIsUnlockedFromTheStart()
     {
         var progression = AutoFree(new ShopProgression());
@@ -83,7 +77,6 @@ public class ShopProgressionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ReachingTheTopLevelStopsTheCurveThere()
     {
         var progression = AutoFree(new ShopProgression());

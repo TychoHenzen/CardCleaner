@@ -8,14 +8,12 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class PaymentRulesChangePartsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void Zero_due_is_empty()
     {
         AssertThat(PaymentRules.ChangeParts(0).Count).IsEqual(0);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Parts_sum_to_the_due_for_every_due_from_0_to_200()
     {
         for (var due = 0; due <= 200; due++)
@@ -33,21 +31,18 @@ public class PaymentRulesChangePartsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Largest_first()
     {
         AssertThat(string.Join(",", PaymentRules.ChangeParts(94))).IsEqual("50,20,20,1,1,1,1");
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Negative_due_throws()
     {
         AssertThrown(() => PaymentRules.ChangeParts(-1)).IsInstanceOf<ArgumentOutOfRangeException>();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Parts_satisfy_ChangeMatches()
     {
         for (var total = 1; total <= 60; total++)

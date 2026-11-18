@@ -6,7 +6,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class CheckoutPaymentGuardTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void No_register_outranks_everything()
     {
         AssertThat(CheckoutPaymentGuard.Evaluate(false, CheckoutState.AwaitingPayment, true))
@@ -15,7 +14,6 @@ public class CheckoutPaymentGuardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Missing_session_or_front_customer_is_no_sale()
     {
         AssertThat(CheckoutPaymentGuard.Evaluate(true, null, true)).IsEqual(PaymentReadiness.NoSale);
@@ -24,7 +22,6 @@ public class CheckoutPaymentGuardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Customer_who_left_outranks_unscanned_items()
     {
         AssertThat(CheckoutPaymentGuard.Evaluate(true, CheckoutState.Scanning, false))
@@ -32,7 +29,6 @@ public class CheckoutPaymentGuardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Unscanned_items_must_be_scanned_first()
     {
         AssertThat(CheckoutPaymentGuard.Evaluate(true, CheckoutState.Scanning, true))
@@ -40,7 +36,6 @@ public class CheckoutPaymentGuardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Scanned_sale_with_a_waiting_customer_is_ready()
     {
         AssertThat(CheckoutPaymentGuard.Evaluate(true, CheckoutState.AwaitingPayment, true))
@@ -48,7 +43,6 @@ public class CheckoutPaymentGuardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Messages_name_only_the_refusals_the_player_needs()
     {
         AssertThat(CheckoutPaymentGuard.MessageFor(PaymentReadiness.NoRegister))

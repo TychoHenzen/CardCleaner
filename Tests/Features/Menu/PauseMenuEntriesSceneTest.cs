@@ -49,7 +49,6 @@ public class PauseMenuEntriesSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Options_button_opens_options_and_Closed_returns_to_pause_panel()
     {
         var menu = BuildMenu(new FakeSaveGame(true), out _, out var pause);
@@ -68,7 +67,6 @@ public class PauseMenuEntriesSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Options_Back_button_closes_the_options_screen()
     {
         var menu = BuildMenu(new FakeSaveGame(true), out _, out _);
@@ -82,7 +80,6 @@ public class PauseMenuEntriesSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Quit_autosaves_then_changes_scene_to_MainMenu()
     {
         var save = new FakeSaveGame(true);
@@ -99,7 +96,6 @@ public class PauseMenuEntriesSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Quit_stays_when_autosave_fails()
     {
         var save = new FakeSaveGame(false);

@@ -34,7 +34,6 @@ public class ConstructorInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GreediestConstructorReceivesTheRegisteredServices()
     {
         var first = new TestServiceImpl();
@@ -49,7 +48,6 @@ public class ConstructorInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MissingServiceErrorNamesTheClassAndTheService()
     {
         _container.RegisterSingleton<ITestService>(new TestServiceImpl());
@@ -61,7 +59,6 @@ public class ConstructorInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GenericRegistrationBuildsThroughConstructorInjection()
     {
         var first = new TestServiceImpl();
@@ -74,7 +71,6 @@ public class ConstructorInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ScannedClassRegistersOnceItsDependencyIsRegistered()
     {
         _container.RegisterServiceClasses(new[] { typeof(ScannedConsumer) });
@@ -96,7 +92,6 @@ public class ConstructorInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ScannedClassWithoutTypesRegistersUnderItsInterfaces()
     {
         _container.RegisterServiceClasses(new[] { typeof(InterfaceOnlyService) });
@@ -106,7 +101,6 @@ public class ConstructorInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ExplicitRegistrationReplacesAScannedEntry()
     {
         _container.RegisterServiceClasses(new[] { typeof(InterfaceOnlyService) });
@@ -118,7 +112,6 @@ public class ConstructorInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ScanSkipsNodeServiceClasses()
     {
         // MoneyService is a [Service] Node: AutoServiceProvider registers the live node, the container never builds it.
@@ -129,7 +122,6 @@ public class ConstructorInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DependencyCycleIsNeverRegistered()
     {
         _container.RegisterServiceClasses(new[] { typeof(CycleA), typeof(CycleB) });
@@ -139,7 +131,6 @@ public class ConstructorInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ScanReadsOnlyTheGivenNamespace()
     {
         var game = ServiceClassScan.PlainServiceClassesIn(typeof(ILog).Assembly, "CardCleaner.Scripts").ToList();
@@ -153,7 +144,6 @@ public class ConstructorInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PendingCallbackRunsWhenAScannedServiceBecomesRegistered()
     {
         var runs = 0;

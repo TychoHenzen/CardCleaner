@@ -13,7 +13,6 @@ namespace CardCleaner.Tests.Core.Interfaces;
 public class ILogSinkTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestStaticHelpersWriteToTheSink()
     {
         var previous = ILog.Sink;
@@ -36,7 +35,6 @@ public class ILogSinkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestSinkIsTheRegisteredLoggerWhileTheRootRuns()
     {
         TestServices.Reinitialize();
@@ -45,7 +43,6 @@ public class ILogSinkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestResetClearsTheSinkAndPrintStillWorks()
     {
         try
@@ -62,7 +59,6 @@ public class ILogSinkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestSinkPrefixNamesTheCaller()
     {
         var previous = ILog.Sink;

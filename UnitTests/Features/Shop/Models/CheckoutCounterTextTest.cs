@@ -9,7 +9,6 @@ public class CheckoutCounterTextTest
         new(new[] { new CheckoutItem(0, 5), new CheckoutItem(1, 7) }, method);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnIdleCounterSaysOnlyItsLastMessage()
     {
         AssertThat(CheckoutCounterText.For(null, false, string.Empty)).IsEqual(string.Empty);
@@ -17,7 +16,6 @@ public class CheckoutCounterTextTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ScanningShowsTheProgressAndSubtotalAndThenTheMessage()
     {
         var sale = Sale(PaymentMethod.Card);
@@ -28,7 +26,6 @@ public class CheckoutCounterTextTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AScannedSaleNamesTheTotalToTake()
     {
         var card = Sale(PaymentMethod.Card);
@@ -44,7 +41,6 @@ public class CheckoutCounterTextTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AClaimedSaleSaysTheCashierServes()
     {
         AssertThat(CheckoutCounterText.For(Sale(PaymentMethod.Card), true, string.Empty))

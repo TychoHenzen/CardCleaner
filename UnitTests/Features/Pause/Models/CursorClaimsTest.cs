@@ -6,7 +6,6 @@ namespace CardCleaner.Tests.Features.Pause.Models;
 public class CursorClaimsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoClaims_HasClaimsFalse()
     {
         var claims = new CursorClaims();
@@ -15,7 +14,6 @@ public class CursorClaimsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Claim_HasClaimsTrue()
     {
         var claims = new CursorClaims();
@@ -26,7 +24,6 @@ public class CursorClaimsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ReleaseLast_HasClaimsFalse()
     {
         var claims = new CursorClaims();
@@ -39,7 +36,6 @@ public class CursorClaimsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ReleaseUnknown_NoChange()
     {
         var claims = new CursorClaims();
@@ -54,7 +50,6 @@ public class CursorClaimsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TwoOwners_ReleaseOne_StillClaimed()
     {
         var claims = new CursorClaims();
@@ -71,7 +66,6 @@ public class CursorClaimsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void HasClaimOtherThan_IgnoresSelf()
     {
         var claims = new CursorClaims();
@@ -84,7 +78,6 @@ public class CursorClaimsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ClaimTwiceBySameOwner_ReleaseOnce_Released()
     {
         var claims = new CursorClaims();

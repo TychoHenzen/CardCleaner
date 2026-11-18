@@ -61,7 +61,6 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FloorIsSolidAtGroundLevelAcrossTheWholeSquare()
     {
         // Props are left out: a ray would land on top of the cabinet or the terminal instead of the floor.
@@ -79,7 +78,6 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OuterWallClosesEverySideOfTheSquare()
     {
         var inner = WorkshopHallLayout.HalfSize - WorkshopHallLayout.WallThickness;
@@ -95,7 +93,6 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CeilingKeepsAJumpingPlayerInsideOverTheClearFloor()
     {
         var paths = new WorkshopGridPaths(_grid, ClearanceCells);
@@ -110,7 +107,6 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PlayerCapsuleFitsAcrossTheReachableFloor()
     {
         var paths = new WorkshopGridPaths(_grid, ClearanceCells, WorkshopGridPaths.SolidProps(_workshop, _grid));
@@ -128,7 +124,6 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task MovementQueriesStayCheapAmongTheSmallCells()
     {
         var hallway = _grid.GetNode<Node3D>("Sections/NorthHallway").GlobalPosition;

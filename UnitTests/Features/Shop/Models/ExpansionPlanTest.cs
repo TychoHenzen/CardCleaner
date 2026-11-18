@@ -15,7 +15,6 @@ public class ExpansionPlanTest
         new(new[] { LotB, LotA }, new HashSet<string>(owned));
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NextIsTheFirstUnownedLotByOrder()
     {
         var next = Table().Next;
@@ -25,7 +24,6 @@ public class ExpansionPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EmptyTableHasNoNext()
     {
         var plan = new ExpansionPlan(Array.Empty<ExpansionLot>(), new HashSet<string>());
@@ -34,28 +32,24 @@ public class ExpansionPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LaterLotIsOutOfOrderWhileAnEarlierOneIsUnowned()
     {
         AssertThat(Table().Decide("lot_b", true, 1000)).IsEqual(PurchaseOutcome.OutOfOrder);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LockedLotIsRefused()
     {
         AssertThat(Table().Decide("lot_a", false, 1000)).IsEqual(PurchaseOutcome.Locked);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnaffordableLotIsRefused()
     {
         AssertThat(Table().Decide("lot_a", true, 99)).IsEqual(PurchaseOutcome.Unaffordable);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AffordableLotIsBoughtAndThePlanIsImmutable()
     {
         var plan = Table();
@@ -69,7 +63,6 @@ public class ExpansionPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NextMovesToTheFollowingLotOnceOneIsOwned()
     {
         var next = Table("lot_a").Next;
@@ -79,21 +72,18 @@ public class ExpansionPlanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OwnedLotIsAlreadyOwned()
     {
         AssertThat(Table("lot_a").Decide("lot_a", true, 1000)).IsEqual(PurchaseOutcome.AlreadyOwned);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnknownIdIsUnknown()
     {
         AssertThat(Table().Decide("nope", true, 1000)).IsEqual(PurchaseOutcome.Unknown);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DuplicateOrderThrowsNamingTheOrder()
     {
         var twin = new ExpansionLot("lot_c", 1, 300, "unlock_c", 10, 1, "Lot C", -4f);

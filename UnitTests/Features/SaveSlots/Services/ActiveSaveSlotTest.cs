@@ -8,7 +8,6 @@ namespace CardCleaner.Tests.Features.SaveSlots.Services;
 public class ActiveSaveSlotTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void DefaultIsDefault()
     {
         var slot = new ActiveSaveSlot();
@@ -17,7 +16,6 @@ public class ActiveSaveSlotTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ActivateRaisesChangedOnceWithNewName()
     {
         var slot = new ActiveSaveSlot();

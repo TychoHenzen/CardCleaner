@@ -15,7 +15,6 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 public class RestockerCarryTest : RestockerTestBase
 {
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CarriedPackWithNoFreeShelfSlotGoesBackOnItsRackSlot()
     {
         HireAndOpen();
@@ -33,7 +32,6 @@ public class RestockerCarryTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CarriedBoxBelowTheThresholdGoesBackOnTheRackAndStaysThere()
     {
         HireAndOpen();
@@ -53,7 +51,6 @@ public class RestockerCarryTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CarriedPackGoesToAnotherRackSlotWhenItsOwnSlotIsTaken()
     {
         HireAndOpen();
@@ -73,7 +70,6 @@ public class RestockerCarryTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TargetSlotFilledEnRouteSendsThePackToTheRemainingSlot()
     {
         HireAndOpen();
@@ -90,7 +86,6 @@ public class RestockerCarryTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SourceFreedEnRouteIsSkippedAndTheNextPackIsShelved()
     {
         HireAndOpen();
@@ -105,7 +100,6 @@ public class RestockerCarryTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SourceTakenByThePlayerEnRouteIsLeftAlone()
     {
         HireAndOpen();
@@ -125,7 +119,6 @@ public class RestockerCarryTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task NoRackAndNoProductShelfLeavesTheRestockerIdleAtHome()
     {
         _rack.Free();
@@ -140,7 +133,6 @@ public class RestockerCarryTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PausingWhileCarryingFreezesTheWalkAndUnpausingFinishesIt()
     {
         HireAndOpen();
@@ -160,7 +152,6 @@ public class RestockerCarryTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ClosingTheShopWhileCarryingHoldsThePackUntilItReopens()
     {
         HireAndOpen();
@@ -178,7 +169,6 @@ public class RestockerCarryTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ClosingTheShopMidWalkLeavesTheRestockerStandingIdle()
     {
         HireAndOpen();

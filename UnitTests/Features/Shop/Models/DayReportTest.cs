@@ -6,7 +6,6 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 public class DayReportTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void ComplaintsGroupByReasonWithCounts()
     {
         var tally = new ComplaintTally();
@@ -24,7 +23,6 @@ public class DayReportTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BlankComplaintIgnored()
     {
         var tally = new ComplaintTally();
@@ -37,7 +35,6 @@ public class DayReportTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ClearEmptiesTally()
     {
         var tally = new ComplaintTally();

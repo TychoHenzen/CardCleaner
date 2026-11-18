@@ -6,14 +6,12 @@ namespace CardCleaner.Tests.Features.Packs.Models;
 public class CardContainerLayoutTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryContainerHoldsEightItems()
     {
         AssertThat(CardContainerLayout.ItemsPerContainer).IsEqual(8);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BoxHoldsPacksPackHoldsBoostersBoosterHoldsCards()
     {
         AssertThat(CardContainerLayout.ChildKind(CardContainerKind.Box)).IsEqual(CardContainerKind.Pack);
@@ -22,7 +20,6 @@ public class CardContainerLayoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BoxHoldsFiveHundredAndTwelveCards()
     {
         AssertThat(CardContainerLayout.CardsPerBox).IsEqual(512);

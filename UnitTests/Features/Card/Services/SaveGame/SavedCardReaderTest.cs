@@ -11,7 +11,6 @@ public class SavedCardReaderTest
     private static readonly float[] SavedElements = [0.1f, -0.2f, 0.3f, -0.4f, 0.5f, -0.6f, 0.7f, -0.8f];
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Read_DictionaryEntry_ReturnsEverySavedField()
     {
         var entry = new Dictionary<string, object>
@@ -34,7 +33,6 @@ public class SavedCardReaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Read_LookSeed_IsReadBack()
     {
         // JSON hands an integer back as a long, so the reader must convert it.
@@ -50,7 +48,6 @@ public class SavedCardReaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Read_AbsentOrNullLookSeed_GivesNull()
     {
         var absent = SavedCardReader.Read(Entry());
@@ -63,7 +60,6 @@ public class SavedCardReaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Read_Price_IsReadBack()
     {
         // JSON hands an integer back as a long.
@@ -76,7 +72,6 @@ public class SavedCardReaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Read_AbsentNullOrCorruptPrice_GivesNull()
     {
         AssertBool(SavedCardReader.Read(Entry())!.Price.HasValue).IsFalse();
@@ -99,7 +94,6 @@ public class SavedCardReaderTest
     };
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Read_UnconvertibleEntry_ReturnsNull()
     {
         var record = SavedCardReader.Read("not a saved card");

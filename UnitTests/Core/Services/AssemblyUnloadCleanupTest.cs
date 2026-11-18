@@ -12,7 +12,6 @@ namespace CardCleaner.Tests.Core.Services;
 public class AssemblyUnloadCleanupTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void ARegisteredClearRunsWhenTheListRuns()
     {
         var clears = new AssemblyUnloadCleanup.ClearList();
@@ -25,7 +24,6 @@ public class AssemblyUnloadCleanupTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AClearThatThrowsDoesNotStopTheNextOne()
     {
         var clears = new AssemblyUnloadCleanup.ClearList();

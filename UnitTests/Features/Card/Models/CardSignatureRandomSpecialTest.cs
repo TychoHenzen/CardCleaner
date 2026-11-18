@@ -11,7 +11,6 @@ public class CardSignatureRandomSpecialTest
     private const int Samples = 200;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryRandomSpecialSignatureHasMagicalPotential()
     {
         var rng = RandomSources.Create(Seed);
@@ -21,7 +20,6 @@ public class CardSignatureRandomSpecialTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RandomSpecialSignatureElementsStayInTheCardRange()
     {
         var rng = RandomSources.Create(Seed);
@@ -35,7 +33,6 @@ public class CardSignatureRandomSpecialTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SameSeedGivesTheSameSpecialSignature()
     {
         var first = SignatureRandom.CreateSpecial(RandomSources.Create(Seed));

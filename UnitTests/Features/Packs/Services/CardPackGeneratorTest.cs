@@ -20,28 +20,24 @@ public class CardPackGeneratorTest
     private static CardPackGenerator Seeded(ulong seed) => new(RandomSources.Create(seed));
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BoosterHoldsEightCards()
     {
         AssertThat(Seeded(Seed).OpenBooster().Length).IsEqual(8);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BoxHoldsFiveHundredAndTwelveCards()
     {
         AssertThat(Seeded(Seed).OpenBox().Length).IsEqual(CardContainerLayout.CardsPerBox);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SpecialOddsAreOneInTwoHundred()
     {
         AssertThat(CardPackGenerator.SpecialCardOdds).IsEqual(200);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SeededSpecialRateIsWithinToleranceOfOneInTwoHundred()
     {
         var generator = Seeded(Seed);
@@ -57,7 +53,6 @@ public class CardPackGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CommonCardsHaveAnAllZeroSignature()
     {
         var common = Seeded(Seed).OpenBox().Where(c => !c.HasMagicalPotential()).ToArray();
@@ -68,7 +63,6 @@ public class CardPackGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SpecialCardsHaveANonZeroSignature()
     {
         var generator = Seeded(Seed);
@@ -83,7 +77,6 @@ public class CardPackGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SameSeedReproducesTheSamePositionsOfSpecialCards()
     {
         static int[] SpecialPositions(CardPackGenerator generator) =>
@@ -106,7 +99,6 @@ public class CardPackGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SeededRunsProduceIdenticalSignatures()
     {
         var a = Seeded(Seed).OpenBox().Select(c => c.Elements).ToArray();
@@ -117,14 +109,12 @@ public class CardPackGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CommonSignatureHasNoMagicalPotential()
     {
         AssertThat(CardPackGenerator.CommonSignature().HasMagicalPotential()).IsFalse();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SignatureWithAnyNonZeroElementHasMagicalPotential()
     {
         for (var i = 0; i < 8; i++)

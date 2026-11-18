@@ -50,7 +50,6 @@ public class WfcSolverCancellationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Solve_CancelledWhileRunning_StopsWithinOneCollapsedCell()
     {
         using var source = new CancellationTokenSource();
@@ -68,7 +67,6 @@ public class WfcSolverCancellationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Solve_TokenCancelledBeforeTheSolve_CollapsesNoCell()
     {
         using var source = new CancellationTokenSource();
@@ -83,7 +81,6 @@ public class WfcSolverCancellationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Solve_CancelledBeforeTheSolve_ThrowsOnCollapsedGrid()
     {
         using var source = new CancellationTokenSource();
@@ -97,7 +94,6 @@ public class WfcSolverCancellationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Solve_UncancelledTokenOnFullyCollapsedGrid_Succeeds()
     {
         using var source = new CancellationTokenSource();

@@ -92,7 +92,6 @@ public class LegacyShelfSaveMigrationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AnOldSaveKeepsItsShelfStockAndDropsItsOldMarkup()
     {
         var slot = _product.GetNode<DeckSlot>("Slot2");
@@ -111,7 +110,6 @@ public class LegacyShelfSaveMigrationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ACurrentSaveIsLoadedAsItIs()
     {
         AssertBool(_product.GetNode<DeckSlot>("Slot2").TryLock(NewBooster())).IsTrue();

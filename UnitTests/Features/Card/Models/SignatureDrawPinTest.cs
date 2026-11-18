@@ -14,7 +14,6 @@ public class SignatureDrawPinTest
     private const ulong Seed = 20241007;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ScriptedDrawsFillTheElementsInIndexOrderAndClamp()
     {
         var random = new ScriptedRandom(0.5f, -0.25f, 2f, -3f, 0f, 1f, -1f, 0.125f);
@@ -26,7 +25,6 @@ public class SignatureDrawPinTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SpecialRedrawsAnAllZeroSetAndConsumesSixteenDraws()
     {
         var random = new ScriptedRandom(
@@ -40,7 +38,6 @@ public class SignatureDrawPinTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SpecialRedrawsASetBelowTheToleranceToo()
     {
         var random = new ScriptedRandom(
@@ -54,7 +51,6 @@ public class SignatureDrawPinTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SpecialKeepsAMagicalFirstSetAfterEightDraws()
     {
         var random = new ScriptedRandom(0f, 0f, 0.3f, 0f, 0f, 0f, 0f, 0f);
@@ -66,7 +62,6 @@ public class SignatureDrawPinTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SeededStreamGivesTheGoldenSignatures()
     {
         var rng = RandomSources.Create(Seed);
@@ -79,7 +74,6 @@ public class SignatureDrawPinTest
             0.953571916f, -0.677119255f, 0.567402959f, -0.687358022f });
     }
 
-    [TestCategory("Unit")]
     [TestCase(0f, false)]
     [TestCase(9.9e-07f, false)]
     [TestCase(1e-06f, true)]
@@ -93,7 +87,6 @@ public class SignatureDrawPinTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MagicalPotentialBoundaryHoldsForTheLastElementToo()
     {
         var below = new CardSignature(new[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, -9.9e-07f });

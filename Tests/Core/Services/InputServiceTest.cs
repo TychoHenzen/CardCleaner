@@ -228,7 +228,6 @@ public class InputServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SuspendedActionsIgnorePressesButStillGetMouseReleases()
     {
         _service.RegisterAction(this, "test_action", Key.Space, () => _actionCallCount++);

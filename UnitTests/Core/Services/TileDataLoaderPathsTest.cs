@@ -17,7 +17,6 @@ public class TileDataLoaderPathsTest
     private const string TiledMapPath = "res://Data/Tiled/tileset.tmx";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestEmptyRootGivesEmptyRegistryResult()
     {
         var root = TempAssetPaths.CreateTempRoot();
@@ -35,7 +34,6 @@ public class TileDataLoaderPathsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestMalformedJsonGivesFallbackResult()
     {
         var root = TempAssetPaths.CreateTempRoot();
@@ -57,7 +55,6 @@ public class TileDataLoaderPathsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestMissingTmxGivesNullMap()
     {
         var root = TempAssetPaths.CreateTempRoot();
@@ -75,7 +72,6 @@ public class TileDataLoaderPathsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestMalformedTmxGivesNullMap()
     {
         var root = TempAssetPaths.CreateTempRoot();

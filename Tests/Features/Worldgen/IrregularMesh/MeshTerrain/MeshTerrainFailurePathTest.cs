@@ -24,7 +24,6 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh.MeshTerrain;
 public class MeshTerrainFailurePathTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void FailedForegroundSolveClearsForegroundAndKeepsBackgrounds()
     {
         // ASSUMPTION: seed 4242 with these cards reaches the foreground step, as MeshTerrainFingerprintTest pins.
@@ -52,7 +51,6 @@ public class MeshTerrainFailurePathTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoForegroundCandidatesNeverCallsTheSolver()
     {
         var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
@@ -76,7 +74,6 @@ public class MeshTerrainFailurePathTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NullSamplerUsesFallbackTerrainAndNeverCallsTheSolver()
     {
         var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());

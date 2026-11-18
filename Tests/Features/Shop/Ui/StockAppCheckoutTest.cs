@@ -28,7 +28,6 @@ public class StockAppCheckoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CheckoutChargesTotalAndDeliversEveryUnit()
     {
         _f.App.CardGrid.PressAdd(0);
@@ -44,7 +43,6 @@ public class StockAppCheckoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TotalAboveBalanceChargesNothingAndKeepsCart()
     {
         _f.App.CardGrid.PressAdd(1);
@@ -59,7 +57,6 @@ public class StockAppCheckoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LockedLineAtCheckoutIsRefusedAndNothingIsCharged()
     {
         _f.Progression.Level = 4;
@@ -76,7 +73,6 @@ public class StockAppCheckoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DeliveryFullMidRunKeepsDeliveredAndLeavesRestInCart()
     {
         _f.Ordering.SucceedLimit = 1;
@@ -93,7 +89,6 @@ public class StockAppCheckoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SecondPressAfterSuccessChargesNothingMore()
     {
         _f.App.CardGrid.PressAdd(0);
@@ -107,7 +102,6 @@ public class StockAppCheckoutTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RefusedCheckoutLeavesCartUsable()
     {
         _f.App.PressCheckout();

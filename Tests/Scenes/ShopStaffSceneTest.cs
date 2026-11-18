@@ -94,7 +94,6 @@ public class ShopStaffSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StaffAppAndWorkerAreWiredToTheShop()
     {
         var desktop = _shop.GetNode<PcDesktop>($"{DesktopViewportPath}/PcDesktop");
@@ -105,7 +104,6 @@ public class ShopStaffSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task StaffAppIsReachableFromTheDesktopIcon()
     {
         _shop.GetNode<ScreenTerminal>("World/Markers/PcLocation/PcTerminal").Interact();
@@ -115,7 +113,6 @@ public class ShopStaffSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FigureHiddenUntilHiredThenVisible()
     {
         var figure = _worker.Figure!;
@@ -129,7 +126,6 @@ public class ShopStaffSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task HireThroughTheAppThenACustomerChecksOutWithNoInput()
     {
         MeetHireRequirements();
@@ -166,7 +162,6 @@ public class ShopStaffSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WageLineShowsInTheDailyBillBook()
     {
         MeetHireRequirements();

@@ -13,7 +13,6 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.CompiledResolver;
 public class TransitionMapLoaderPathsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestEmptyRootGivesEmptyMap()
     {
         var root = TempAssetPaths.CreateTempRoot();
@@ -30,7 +29,6 @@ public class TransitionMapLoaderPathsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestMalformedJsonGivesEmptyMap()
     {
         var root = TempAssetPaths.CreateTempRoot();
