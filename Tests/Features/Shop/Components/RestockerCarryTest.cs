@@ -9,9 +9,14 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 /// <summary>
 ///     The restocker while it carries a container: it puts a pack or box back on a rack slot when no shelf slot is
 ///     free, re-plans when a source or target changes on the walk, and holds the load while paused or closed.
+///     A Daily suite: every case walks the real shop and already runs on the fast clock, which cannot go faster
+///     (FastClock). On pull requests, RestockPlannerTest and RestockerJobTest check which container goes to which slot
+///     and when a pair is blocked, and RestockerTest and ShopRestockerSaveSceneTest carry a pack through the scene;
+///     putting a load back on the rack is checked only here, daily.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
+[TestCategory("Daily")]
 public class RestockerCarryTest : RestockerTestBase
 {
     [TestCase]

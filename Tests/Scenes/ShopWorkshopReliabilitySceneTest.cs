@@ -10,9 +10,13 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// Reliability of the workshop cabinet: the button returns to its dark state after a finished session so a second session can run.
+/// A Daily suite: each case plays whole sessions, which are bound by one exploration step per frame. On pull requests,
+/// ShopWorkshopMapSessionSceneTest plays a session to its end and presses reset, and IrregularWorldMapScreenTest shows a
+/// new session after the reset of the last one.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
+[TestCategory("Daily")]
 public class ShopWorkshopReliabilitySceneTest
 {
     private static readonly CardSignature SomeCard = new CardSignature().With(Element.Febris, 0.4f);
