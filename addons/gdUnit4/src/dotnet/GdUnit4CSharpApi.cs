@@ -51,14 +51,18 @@ public partial class GdUnit4CSharpApi : RefCounted
     {
         try
         {
-            // Get the list of test case descriptors from the API
-            var testCaseDescriptors = GdUnit4NetApiGodotBridge.DiscoverTestsFromScript(sourceScript);
+            // Project patch (discovery cache): the package's per-script discovery reads the whole assembly on every
+            // call, so outside the editor the tests come from one read of it, and from the package only when that
+            // cannot answer.
+            var testCaseDescriptors = SuiteDiscoveryCache.TestsOf(sourceScript)
+                ?? GdUnit4NetApiGodotBridge.DiscoverTestsFromScript(sourceScript);
 
-            // Convert each TestCaseDescriptor to a Dictionary
+            // Convert each TestCaseDescriptor to a Dictionary. A fresh id each time, as the package gives each call:
+            // the cache hands out the same descriptors whenever a script is discovered again.
             return testCaseDescriptors
                 .Select(descriptor => new Dictionary
                 {
-                    ["guid"] = descriptor.Id.ToString(),
+                    ["guid"] = Guid.NewGuid().ToString(),
                     ["managed_type"] = descriptor.ManagedType,
                     ["test_name"] = descriptor.ManagedMethod,
                     ["source_file"] = sourceScript.ResourcePath,

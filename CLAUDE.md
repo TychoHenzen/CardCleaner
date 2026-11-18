@@ -81,6 +81,17 @@ attempts in all. Each abandoned attempt prints `gdUnit4 suite start lost:` to st
 after its `[Before]` hook, so no `[Before]` hook may await. `SuiteStartGuardTest` fails when an addon update drops the
 patch or a `[Before]` hook returns a task; reapply both files after updating the addon.
 
+**Project patch in the vendored addon (discovery cache).** gdUnit discovers C# tests one script at a time, and the
+package's per-script discovery reads the whole test assembly and its symbols with Mono.Cecil on every call, about 33 ms
+each: 17 s for the 518 scripts under `res://Tests` at the start of every run. Outside the editor, `GdUnit4CSharpApi.cs`
+therefore asks `SuiteDiscoveryCache` (same folder) first. It reads the assembly once through the package's own
+whole-assembly discovery (the internal `TestCaseDiscoverer.Discover`, reached by reflection) and files each suite's tests
+under its script, so a script that is no `[TestSuite]` class gets no tests without a read. When the cache cannot be built
+it prints `gdUnit4 discovery cache unavailable` to stderr and every script goes to the package as before.
+`SuiteDiscoveryGuardTest` fails when the cache is unavailable or differs from the package on a sample of scripts, and
+`SuiteDiscoveryEquivalenceTest` (Daily) compares the two for every script; reapply `SuiteDiscoveryCache.cs` and the call
+in `GdUnit4CSharpApi.DiscoverTests` after updating the addon or the `gdUnit4.api` package.
+
 **Without PowerShell.** Start Godot from Bash through node, so no console window opens:
 
 ```bash
