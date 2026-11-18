@@ -80,6 +80,13 @@ internal static class TileVisualLoader
         var translator = new CompiledAtlasTileTranslator(atlasMapping);
         var tiles = original.Tiles.Select(tile => translator.Translate(tile)).ToList();
 
+        if (translator.UnmappedCount > 0)
+        {
+            ILog.Print(
+                $"[TileRegistry] {translator.UnmappedCount} tile coordinates have no entry in the atlas mapping " +
+                "and keep their original coordinates");
+        }
+
         ILog.Print(
             $"[TileRegistry] SUCCESS: Registered {CountDistinctIds(tiles)} tiles, " +
             "using compiled atlas for auto-tiles");

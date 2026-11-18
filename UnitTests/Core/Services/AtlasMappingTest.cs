@@ -94,10 +94,11 @@ public class AtlasMappingTest
         File.WriteAllText(_path, ValidJson);
         var mapping = AtlasMapping.Load(_path);
 
-        var (sourceId, coords) = AtlasMapping.Translate(4, new Vector2I(1, 2), mapping);
+        var translation = AtlasMapping.Translate(4, new Vector2I(1, 2), mapping);
 
-        AssertInt(sourceId).IsEqual(0);
-        AssertThat(coords).IsEqual(new Vector2I(3, 5));
+        AssertInt(translation.SourceId).IsEqual(0);
+        AssertThat(translation.AtlasCoords).IsEqual(new Vector2I(3, 5));
+        AssertBool(translation.Mapped).IsTrue();
     }
 
     [TestCase]
@@ -106,10 +107,11 @@ public class AtlasMappingTest
         File.WriteAllText(_path, ValidJson);
         var mapping = AtlasMapping.Load(_path);
 
-        var (sourceId, coords) = AtlasMapping.Translate(4, new Vector2I(9, 9), mapping);
+        var translation = AtlasMapping.Translate(4, new Vector2I(9, 9), mapping);
 
-        AssertInt(sourceId).IsEqual(4);
-        AssertThat(coords).IsEqual(new Vector2I(9, 9));
+        AssertInt(translation.SourceId).IsEqual(4);
+        AssertThat(translation.AtlasCoords).IsEqual(new Vector2I(9, 9));
+        AssertBool(translation.Mapped).IsFalse();
     }
 
     [TestCase]
@@ -118,10 +120,11 @@ public class AtlasMappingTest
         File.WriteAllText(_path, ValidJson);
         AtlasMapping.Load(_path);
 
-        var (sourceId, coords) = AtlasMapping.Translate(4, new Vector2I(1, 2), null);
+        var translation = AtlasMapping.Translate(4, new Vector2I(1, 2), null);
 
-        AssertInt(sourceId).IsEqual(4);
-        AssertThat(coords).IsEqual(new Vector2I(1, 2));
+        AssertInt(translation.SourceId).IsEqual(4);
+        AssertThat(translation.AtlasCoords).IsEqual(new Vector2I(1, 2));
+        AssertBool(translation.Mapped).IsFalse();
     }
 
     [TestCase]

@@ -16,13 +16,19 @@ internal sealed class CompiledAtlasTileTranslator
         _mapping = mapping;
     }
 
+    /// <summary>
+    /// How many coordinates this translator has met that the mapping has no entry for (base coordinates, auto-tile
+    /// variants, variations and animation frames, each counted once per tile that names it).
+    /// </summary>
+    internal int UnmappedCount { get; private set; }
+
     internal TileDefinition Translate(TileDefinition original)
     {
         // Translate base coordinates
-        var (newSourceId, newCoords) = AtlasMapping.Translate(
+        var (newSourceId, newCoords) = Count(AtlasMapping.Translate(
             original.SourceId,
             original.AtlasCoords,
-            _mapping);
+            _mapping));
 
         // Create new tile definition with translated coordinates
         return new TileDefinition(
@@ -56,8 +62,15 @@ internal sealed class CompiledAtlasTileTranslator
 
     private Vector2I TranslateCoords(int sourceId, Vector2I coords)
     {
-        var (_, translated) = AtlasMapping.Translate(sourceId, coords, _mapping);
+        var (_, translated) = Count(AtlasMapping.Translate(sourceId, coords, _mapping));
         return translated;
+    }
+
+    private AtlasCoordinateTranslation Count(AtlasCoordinateTranslation translation)
+    {
+        if (!translation.Mapped)
+            UnmappedCount++;
+        return translation;
     }
 
     private Vector2I?[]? TranslateAutoTileVariants(TileDefinition original)

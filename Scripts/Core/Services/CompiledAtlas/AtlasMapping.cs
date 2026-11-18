@@ -37,7 +37,9 @@ public static class AtlasMapping
 
     /// <summary>
     /// Translates original tile coordinates to compiled atlas coordinates using the given mapping.
-    /// The original coordinates come back when there is no mapping or no entry for them.
+    /// The original coordinates come back, with <see cref="AtlasCoordinateTranslation.Mapped"/> false, when there
+    /// is no mapping or no entry for them. It logs nothing: the catalog load translates hundreds of coordinates,
+    /// so its caller reports the unmapped ones in one line (TileVisualLoader).
     /// </summary>
     internal static AtlasCoordinateTranslation Translate(
         int originalSourceId,
@@ -53,10 +55,9 @@ public static class AtlasMapping
             coordMappings.TryGetValue(coordKey, out var rect))
         {
             // When using compiled atlas, all tiles use sourceId 0
-            return new AtlasCoordinateTranslation(0, new Vector2I(rect.X, rect.Y));
+            return new AtlasCoordinateTranslation(0, new Vector2I(rect.X, rect.Y)) { Mapped = true };
         }
 
-        ILog.Print($"[AtlasMapping] No mapping for source {originalSourceId} coord {originalAtlasCoords}");
         return original;
     }
 
