@@ -12,7 +12,8 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 
 /// <summary>
 ///     A box, pack or booster. A box or pack has a lid (<see cref="SetLidOpen" />) that the player opens in the hand
-///     to take its items out one at a time onto a shelf (<see cref="TakeOneInto" />). Opening it whole plays out over
+///     to take its items out one at a time onto a shelf (<see cref="TakeOneInto" />); a held booster opens straight
+///     into the hand of cards (<see cref="OpenInHand" />). Opening it whole plays out over
 ///     a second or two (<see cref="ContainerOpening" />): the container falls to the surface below it, its lid, flaps
 ///     or tear strip open, and its packs, boosters or cards (signatures from <see cref="CardPackGenerator" />) rise
 ///     out one by one to spots in a column above it that takes no more floor than the container, so opening never
@@ -37,7 +38,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     private const float DefaultInteractionRange = 4.5f;
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
 
-    private ContainerOpening? _opening;
+    private IContainerRun? _opening;
     private IServiceResolver? _services;
     private IRandom? _random;
     private List<OpeningPart>? _lidParts;
@@ -87,6 +88,9 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     /// <summary>True while a holder carries this container (its parent is the holder's camera).</summary>
     public bool IsHeld => GetParent() is Camera3D;
+
+    /// <summary>True while this booster opens in the player's hand (<see cref="OpenInHand" />).</summary>
+    public bool IsOpeningInHand => _opening is BoosterReveal { IsOver: false };
 
     /// <summary>True for a box or pack, whose flaps or lid open in the hand; a booster has none.</summary>
     public bool HasLid => Kind != CardContainerKind.Booster;
@@ -342,6 +346,25 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
             ? CardSpawns(parent, settled.Origin)
             : ContainerSpawns(parent, settled.Origin, TakenCount);
         StartOpening(settled, spawns);
+        return true;
+    }
+
+    /// <summary>
+    ///     Opens this held booster in front of the player (<see cref="BoosterReveal" />): its strip tears off, its cards
+    ///     spread into a fan, and the fan slides into <paramref name="hand" />. The cards are the ones <see cref="Open" />
+    ///     would let out, from the same seed. The booster stays under the hand anchor the whole time and is freed when
+    ///     the cards are in the hand. False unless this is a held, unopened booster that has its contents.
+    /// </summary>
+    public bool OpenInHand(ICardHolder hand)
+    {
+        if (Kind != CardContainerKind.Booster || IsOpened || !IsHeld || !HasContents
+            || GetParent() is not Node3D anchor)
+            return false;
+
+        IsOpened = true;
+        ClearHighlight();
+        _opening = new BoosterReveal(this, anchor, hand, CardGenerator().OpenBooster(), Spawning!);
+        SetProcess(true);
         return true;
     }
 

@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
 
@@ -8,7 +9,8 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 ///     Carries one sealed container in the player's hand. A held container is frozen, has no collision, and is
 ///     a child of the hand anchor. Q puts it back on the card spawner's node in front of the player, with its
 ///     collision and physics restored. Using it (<see cref="UseHeld" />, the right button) opens or closes a box's
-///     flaps or a pack's lid in the hand, and opens a booster where the player stands.
+///     flaps or a pack's lid in the hand, and opens a booster in front of the player into the hand of cards
+///     (<see cref="CardContainer.OpenInHand" />); the hand stays busy until those cards are in it.
 /// </summary>
 public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
 {
@@ -22,15 +24,24 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
 
     private const float DefaultDropDistance = 1.5f;
     private static readonly Vector3 DefaultHoldOffset = new(0.5f, -0.4f, -1.2f);
+    private static readonly Vector3 DefaultBoosterHoldOffset = new(-0.45f, -0.4f, -1.2f);
 
     [Export] public float DropDistance = DefaultDropDistance;
     [Export] public Vector3 HoldOffset = DefaultHoldOffset;
+
+    /// <summary>
+    ///     Where a booster is held: on the left, since a booster can be picked up with cards in hand, and the cards fan
+    ///     out on the right (<see cref="CardHolder.FanCenter" />).
+    /// </summary>
+    [Export] public Vector3 BoosterHoldOffset = DefaultBoosterHoldOffset;
 
     private IServiceResolver? _services;
     private IInputService? _inputService;
     private IControlHints? _hints;
     private Node3D? _handAnchor;
+    private ICardHolder? _cards;
     private CardContainer? _held;
+    private CardContainer? _opening;
     private uint _savedLayer;
     private uint _savedMask;
 
@@ -40,6 +51,7 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         {
             nameof(DropDistance) => true,
             nameof(HoldOffset) => true,
+            nameof(BoosterHoldOffset) => true,
             _ => base._PropertyCanRevert(property)
         };
     }
@@ -50,12 +62,14 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         {
             nameof(DropDistance) => DefaultDropDistance,
             nameof(HoldOffset) => DefaultHoldOffset,
+            nameof(BoosterHoldOffset) => DefaultBoosterHoldOffset,
             _ => base._PropertyGetRevert(property)
         };
     }
 
     public CardContainer? Held => HeldContainer();
-    public bool IsHolding => HeldContainer() != null;
+    public bool IsHolding => HeldContainer() != null || IsOpening;
+    public bool IsOpening => OpeningInHand() != null;
 
     public void Inject(IServiceResolver services) => _services = services;
 
@@ -100,15 +114,15 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         _hints?.Clear(this);
     }
 
-    public void SetReferences(Node3D handAnchor)
+    public void SetReferences(Node3D handAnchor, ICardHolder? cards = null)
     {
         _handAnchor = handAnchor;
+        _cards = cards;
     }
 
     public bool TryPickUp(CardContainer container)
     {
-        if (HeldContainer() != null || !GodotObject.IsInstanceValid(container) || container.IsOpened
-            || _handAnchor == null)
+        if (IsHolding || !GodotObject.IsInstanceValid(container) || container.IsOpened || _handAnchor == null)
             return false;
 
         // Remember the layers before clearing them, so a drop restores exactly what the container had.
@@ -118,7 +132,8 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         container.CollisionMask = 0;
         container.Freeze = true;
         container.Reparent(_handAnchor);
-        container.Transform = new Transform3D(Basis.Identity, HoldOffset);
+        container.Transform = new Transform3D(Basis.Identity,
+            container.Kind == CardContainerKind.Booster ? BoosterHoldOffset : HoldOffset);
         container.ClearHighlight();
 
         // Subscribed after the reparent, which leaves the tree and would otherwise clear the held container at once.
@@ -163,9 +178,21 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         if (container.HasLid)
             return container.SetLidOpen(!container.IsLidOpen);
 
-        // A held container cannot be opened (CanInteract is false while held), so the booster is put down first.
-        Drop();
-        return container.Open();
+        if (_cards == null || !container.OpenInHand(_cards))
+            return false;
+
+        // Opening marks the booster opened, so HeldContainer lets go of it; the hand stays busy through _opening.
+        _opening = container;
+        return true;
+    }
+
+    // The booster opening in the hand, or null once its cards are in the hand or it was freed.
+    private CardContainer? OpeningInHand()
+    {
+        if (_opening != null && (!GodotObject.IsInstanceValid(_opening) || !_opening.IsOpeningInHand))
+            _opening = null;
+
+        return _opening;
     }
 
     // The held container was freed while the hand held it, so the hand lets go of it.

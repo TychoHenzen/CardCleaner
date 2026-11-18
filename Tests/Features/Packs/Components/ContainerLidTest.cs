@@ -229,8 +229,14 @@ public class ContainerLidTest
     private static ulong[] ExpectedSeeds(int from, int to) =>
         Enumerable.Range(from, to - from).Select(i => ContainerSeeds.ChildSeed(Seed, i)).Order().ToArray();
 
-    private static CardShelf AddShelf() =>
-        AddNode(GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>());
+    // Beside the containers, which stand at the origin: packs let out by opening a box loose must not fall into the
+    // shelf's free slots and be locked there.
+    private static CardShelf AddShelf()
+    {
+        var shelf = AddNode(GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>());
+        shelf.Position = new Vector3(5f, 0f, 0f);
+        return shelf;
+    }
 
     private CardContainer MakeContainer(string scenePath)
     {

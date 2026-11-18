@@ -499,6 +499,18 @@ whole later (`Open`, or the restocker's `CardShelf.TryUnpack`) lets out only wha
 a rack. A save stores the lid and `TakenCount` with the container (`SavedContainers`: 0 to 7 for a box or pack, always
 0 for a booster, anything else is malformed). A booster has no lid (`HasLid`).
 
+**Opening a booster in hand.** A booster can be picked up while cards are held (a box or pack cannot), and it is held
+low on the left (`ContainerHolder.BoosterHoldOffset`) so the hand of cards stays in view. The right button opens it in
+front of the player (`CardContainer.OpenInHand`, run by `BoosterReveal` and timed by the Godot-free
+`BoosterRevealPlan`, under two seconds): the booster comes to the middle of the view, its strip tears off, the eight
+cards rise out one at a time into a fan (`CardFan`, the same pose math as the hand's fan), the empty wrapper shrinks
+away, and after a short look the cards slide into the hand's fan after the cards already held, in the order they left
+the booster. The cards are the ones opening that booster on the floor would give (`CardGenerator().OpenBooster()`),
+spawned under the camera, frozen and with their `CardCollision` off, so they never touch the world. While it runs the
+hand is busy (`IContainerHolder.IsOpening`, which also makes `IsHolding` true): no pick-up, no card click, no right
+button drop, no X, no stocking, and no key chips. A save finishes the reveal first (`SavedContainers.FinishOpenings`),
+so its cards are saved in the hand and no booster is stored.
+
 ### World Generation
 
 > **Architecture Document**: See `docs/WORLDGEN_ARCHITECTURE.md` for the complete worldgen architecture, including the Soft WFC approach, weight modifier system, and data definition guides.
@@ -613,8 +625,9 @@ ids stay in the payload, and the load ignores them. A payload with no such id lo
 
 Code is organized by feature under `Scripts/Features/`:
 - **Card/**: Card models, controllers, components, and services (spawning, generation). The cards in hand fan out
-  (`CardHolder.FanSpreadDegrees`, 50, over `FanFillCount`, 10, cards; the Godot-free `HandFan`): the first ten widen
-  the fan to its full spread, and every card after that closes the gaps instead of widening it.
+  (`CardHolder.FanSpreadDegrees`, 50, over `FanFillCount`, 10, cards; the Godot-free `HandFan`, posed by `CardFan`): the
+  first ten widen the fan to its full spread, and every card after that closes the gaps instead of widening it. The rest
+  of the hand keeps its layout when the top card is dropped (the fan, or the drop layout while a drop is aimed).
 - **Deckbuilder/**: Game session management, map generation, combat, exploration
 - **Worldgen/**: Procedural generation support (auto-tiling, biomes, gradients, blob generation)
 - **Player/**: Player controller and interaction system
@@ -693,8 +706,9 @@ is only an interactable a click would use now: it is judged again on every 0.05 
 `Prompt` (default "Use"); a card's reach is 4.5 m. The key chips come from `IControlHints` (`ControlHintBoard`, a
 Godot-free `[Service]` in `Scripts/Core/Services`): each source publishes its own list (`Publish(source, hints)`, an
 empty list or `Clear(source)` removes it) and the board shows them in publishing order. The sources are
-`CardHighlighter` (cards in hand, `CardHandHints`), `ContainerHolder` (a held box, pack or booster, `ContainerHints`:
-the right button opens or closes it, Q puts it down) and `FurniturePlacementController`
+`CardHighlighter` (cards in hand, `CardHandHints`, none while a container is held or a booster opens in hand),
+`ContainerHolder` (a held box, pack or booster, `ContainerHints`: the right button opens or closes it, Q puts it down)
+and `FurniturePlacementController`
 (`PlacementHints`). A new held-item mode publishes its keys the same way and clears them in `_ExitTree`.
 
 While any owner holds a cursor claim, `CursorOwner` sets `IInputService.ActionsSuspended`, so a key or click made on a

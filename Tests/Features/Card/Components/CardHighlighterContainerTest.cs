@@ -23,6 +23,7 @@ namespace CardCleaner.Tests.Features.Card.Components;
 public class CardHighlighterContainerTest
 {
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
+    private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
     private const string CardScene = "res://Scenes/Components/CardShader.tscn";
     private const string ProductShelfScene = "res://Scenes/Shop/Items/ProductShelf.tscn";
     private const ulong Seed = 777;
@@ -89,7 +90,7 @@ public class CardHighlighterContainerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ContainerClick_WhileCardsHeld_Ignored()
+    public void ContainerClick_WhileCardsHeld_IgnoresABox()
     {
         var card = MakeCard();
         Build();
@@ -101,6 +102,66 @@ public class CardHighlighterContainerTest
         AssertBool(_containerHolder.IsHolding).IsFalse();
         AssertBool(box.GetParent() == _world).IsTrue();
         AssertBool(_cardHolder.HasCards).IsTrue();
+    }
+
+    // A booster opens into the cards in hand, so it is the one container picked up while cards are held.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ContainerClick_WhileCardsHeld_TakesABooster()
+    {
+        var card = MakeCard();
+        Build();
+        _cardHolder.AddCard(card);
+        var booster = MakeBooster();
+
+        booster.Interact();
+
+        AssertThat(_containerHolder.Held).IsSame(booster);
+        AssertThat(_cardHolder.HeldCount).IsEqual(1);
+    }
+
+    // While a held booster opens into the hand, the cards in hand are not used: a card click, the right button, X and
+    // a shelf click all do nothing until its cards have joined the hand.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void WhileABoosterOpensInTheHandTheCardsInHandAreNotUsed()
+    {
+        var held = MakeCard();
+        var loose = MakeCard();
+        var highlighter = Build();
+        var shelf = AddProductShelf();
+        _cardHolder.AddCard(held);
+        var booster = MakeBooster();
+        booster.Interact();
+
+        _rightPress!.Invoke(true);
+        _rightPress.Invoke(false);
+        AssertBool(_containerHolder.IsOpening).IsTrue();
+
+        loose.Interact();
+        _rightPress.Invoke(true);
+        _dropper.DropSingleCard();
+
+        AssertThat(_cardHolder.HeldCount).IsEqual(1);
+        AssertBool(_dropper.IsPreparingDrop).IsFalse();
+        AssertObject(highlighter.Offered).IsNull();
+        AssertBool(highlighter.TryStock(shelf.Slots.First())).IsFalse();
+
+        _rightPress.Invoke(false);
+        booster.FinishOpening();
+    }
+
+    // Holding a booster with cards in hand offers the booster to a shelf, not the top card.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AHeldBoosterIsOfferedBeforeTheCardsInHand()
+    {
+        var card = MakeCard();
+        var highlighter = Build();
+        _cardHolder.AddCard(card);
+        MakeBooster().Interact();
+
+        AssertThat(highlighter.Offered).IsEqual(new StockOffer(StockKind.Booster));
     }
 
     [TestCase]
@@ -260,12 +321,16 @@ public class CardHighlighterContainerTest
         return card;
     }
 
-    private CardContainer MakeBox()
+    private CardContainer MakeBox() => Make(BoxScene);
+
+    private CardContainer MakeBooster() => Make(BoosterScene);
+
+    private CardContainer Make(string scenePath)
     {
-        var box = GD.Load<PackedScene>(BoxScene).Instantiate<CardContainer>();
-        box.Generator = new CardPackGenerator(RandomSources.Create(Seed));
-        box.Spawning = _spawner;
-        _world.AddChild(box);
-        return box;
+        var container = GD.Load<PackedScene>(scenePath).Instantiate<CardContainer>();
+        container.Generator = new CardPackGenerator(RandomSources.Create(Seed));
+        container.Spawning = _spawner;
+        _world.AddChild(container);
+        return container;
     }
 }

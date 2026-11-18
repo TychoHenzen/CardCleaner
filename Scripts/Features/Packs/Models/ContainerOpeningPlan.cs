@@ -86,7 +86,11 @@ public sealed class ContainerOpeningPlan
 
     public float VanishProgress(float time) => Fraction(time, VanishStart, Vanish);
 
-    private static float Fraction(float time, float start, float length)
+    /// <summary>
+    ///     How far <paramref name="time" /> is through the span of <paramref name="length" /> seconds that begins at
+    ///     <paramref name="start" />, from 0 to 1. A span of no length is done once it has begun.
+    /// </summary>
+    internal static float Fraction(float time, float start, float length)
     {
         if (length <= 0f)
             return time >= start ? 1f : 0f;

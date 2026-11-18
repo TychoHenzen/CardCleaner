@@ -57,8 +57,9 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
         }
 
         CardHolder.SetReferences(camera);
-        _containerHolder.SetReferences(camera);
-        CardDropper.Initialize(CardHolder, Preview, camera);
+        _containerHolder.SetReferences(camera, CardHolder);
+        // A held container occupies the hand, so X drops no card while one is held or a booster opens into the hand.
+        CardDropper.Initialize(CardHolder, Preview, camera, () => _containerHolder.IsHolding);
 
         // Register card-specific input (right-click for drop preparation)
         _services.Get<IInputService>(input =>
@@ -150,8 +151,10 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
         // Update drop preview while preparing drop
         if (CardDropper.IsPreparingDrop) CardDropper.UpdateDropPreview();
 
-        // The board drops repeated identical hints, so publishing every frame costs one comparison.
-        _hints?.Publish(this, CardHandHints.For(CardHolder.HeldCount, CardDropper.IsPreparingDrop));
+        // The board drops repeated identical hints, so publishing every frame costs one comparison. While a container
+        // occupies the hand its own hints apply, and the cards' keys do nothing, so they are not shown.
+        var usableCards = _containerHolder is { IsHolding: true } ? 0 : CardHolder.HeldCount;
+        _hints?.Publish(this, CardHandHints.For(usableCards, CardDropper.IsPreparingDrop));
     }
 
     private void OnCardInteractionRequested(CardController card)
@@ -165,8 +168,10 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
 
     private void OnContainerPickUpRequested(CardContainer container)
     {
-        // Cards in hand or a drop in progress keep the hand; the container click is ignored then.
-        if (CardHolder.HasCards || CardDropper.IsPreparingDrop) return;
+        // A drop in progress keeps the hand. Cards in hand leave room only for a booster, which opens into them; a box
+        // or pack click is ignored then.
+        if (CardDropper.IsPreparingDrop || (CardHolder.HasCards && container.Kind != CardContainerKind.Booster))
+            return;
 
         _containerHolder.TryPickUp(container);
     }
@@ -177,7 +182,11 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
         {
             // Before _Ready (or when an export is missing) the holders are not wired, so the hand offers nothing.
             if (_containerHolder == null || CardDropper.IsPreparingDrop) return null;
-            if (_containerHolder.Held is { } held) return OfferOf(held);
+
+            // A held container is what the hand offers, even with cards in it; a booster opening offers nothing.
+            if (_containerHolder.IsHolding)
+                return _containerHolder.Held is { } held ? OfferOf(held) : null;
+
             return CardHolder.TopCard != null ? new StockOffer(StockKind.Card) : null;
         }
     }
@@ -197,6 +206,7 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
     {
         if (Offered is not { } offer || !slot.CanTake(offer.Stock)) return false;
 
+        // Offered is null while a booster opens in the hand, so a held container here is always Held.
         if (_containerHolder.Held is { } held)
             return held.IsLidOpen ? held.TakeOneInto(slot) : _containerHolder.Drop() && slot.TryLock(held);
 
@@ -208,8 +218,8 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
     {
         if (pressed)
         {
-            // Right press while holding a container uses it (opens or closes a box, opens a booster); cards are
-            // untouched in that case.
+            // Right press while holding a container uses it (opens or closes a box, opens a booster into the hand);
+            // cards are untouched in that case, and while a booster opens the press does nothing.
             if (_containerHolder.IsHolding)
             {
                 _containerHolder.UseHeld();

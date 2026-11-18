@@ -9,7 +9,7 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 ///     Plays one container's opening over real time, timed by <see cref="ContainerOpeningPlan" />. Items hang frozen
 ///     at their spots until the empty wrapper is gone, so none drops back into it.
 /// </summary>
-internal sealed class ContainerOpening
+internal sealed class ContainerOpening : IContainerRun
 {
     private const float SmallestScale = 0.01f;
     private const float LongestDrop = 4f;

@@ -106,6 +106,22 @@ public partial class ContainerHolderTest
         AssertBool(booster.GetParent() == _hand).IsTrue();
     }
 
+    // A booster can be held with cards in hand, which fan out on the right, so it is held on the left.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void PickUp_Booster_HeldAtTheBoosterOffsetAndABoxAtTheUsualOne()
+    {
+        var booster = Make(BoosterScene);
+        _holder.TryPickUp(booster);
+        AssertThat(booster.Position).IsEqual(_holder.BoosterHoldOffset);
+        _holder.Drop();
+
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+        AssertThat(box.Position).IsEqual(_holder.HoldOffset);
+        AssertBool(_holder.BoosterHoldOffset.X < 0f).IsTrue();
+    }
+
     [TestCase]
     [TestCategory("Unit")]
     public void PickUp_WhileHolding_ReturnsFalse_HeldUnchanged()
@@ -180,18 +196,19 @@ public partial class ContainerHolderTest
         AssertThat(_holder.Held).IsSame(pack);
     }
 
+    // A booster opens into the hand of cards (BoosterRevealTest); a holder given no hand keeps it held and shut.
     [TestCase]
     [TestCategory("Unit")]
-    public void UseHeld_Booster_PutsItDownAndOpensIt()
+    public void UseHeld_Booster_WithNoHandOfCards_StaysHeldAndShut()
     {
         var booster = Make(BoosterScene);
         _holder.TryPickUp(booster);
 
-        AssertBool(_holder.UseHeld()).IsTrue();
+        AssertBool(_holder.UseHeld()).IsFalse();
 
-        AssertBool(_holder.IsHolding).IsFalse();
-        AssertBool(booster.IsOpened).IsTrue();
-        AssertBool(booster.GetParent() == _cardSpawner).IsTrue();
+        AssertThat(_holder.Held).IsSame(booster);
+        AssertBool(booster.IsOpened).IsFalse();
+        AssertThat(_spawner.Spawned.Count).IsEqual(0);
     }
 
     [TestCase]

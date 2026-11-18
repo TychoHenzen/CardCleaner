@@ -16,6 +16,7 @@ using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Tests.Features.Packs.Components;
 using Godot;
 using NSubstitute;
 using CardCleaner.Tests.TestUtilities;
@@ -26,7 +27,7 @@ namespace CardCleaner.Tests.Scenes;
 /// <summary>
 /// End to end in the shop scene: the player's interaction ray picks up an ordered box with a left click, a right
 /// press opens and closes it in hand, Q puts it down in front of the camera, and a held box and a card in hand block
-/// each other.
+/// each other. A booster pack is the exception: it is picked up with cards in hand and opens into them.
 /// The input service is replaced so the scene's own registered callbacks are captured and invoked directly; the
 /// interaction ray itself runs for real because the camera is aimed at the box.
 /// </summary>
@@ -166,7 +167,7 @@ public class ShopCarryingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task CardsHeld_BlocksContainerPickup()
+    public async Task CardsHeld_BlocksBoxPickup()
     {
         var box = OrderBox();
         await PhysicsFrames(SettleFrames);
@@ -179,6 +180,34 @@ public class ShopCarryingSceneTest
         AssertBool(_holder.IsHolding).IsFalse();
         AssertBool(box.GetParent() == _interaction.Camera).IsFalse();
         AssertBool(_cardHolder.HasCards).IsTrue();
+    }
+
+    // The player's whole path for a booster pack: picked up with a card already in hand, torn open with the right
+    // button, and its eight real cards join the hand after the card that was there.
+    [TestCase]
+    [TestCategory("Unit")]
+    public async Task ABoosterPickedUpWithACardInHandOpensIntoTheHand()
+    {
+        var booster = Order("booster");
+        await PhysicsFrames(SettleFrames);
+        Aim(booster);
+        await PhysicsFrames(AimFrames);
+        _cardHolder.AddCard(_card);
+
+        _leftClick!.Invoke(true);
+        AssertThat(_holder.Held).IsSame(booster);
+
+        _rightPress!.Invoke(true);
+        _rightPress.Invoke(false);
+        AssertBool(_holder.IsOpening).IsTrue();
+        await ContainerOpeningWait.Until(() => !_holder.IsOpening, "the booster opening in the hand");
+
+        var hand = _cardHolder.HeldCards;
+        AssertThat(hand.Length).IsEqual(9);
+        AssertBool(hand[0] == _card).IsTrue();
+        AssertThat(hand.Skip(1).OfType<CardController>().Count()).IsEqual(8);
+        AssertBool(GodotObject.IsInstanceValid(booster)).IsFalse();
+        AssertBool(_holder.IsHolding).IsFalse();
     }
 
     [TestCase]
@@ -228,13 +257,17 @@ public class ShopCarryingSceneTest
     // interaction ray from the camera reaches the box the way a player's aim does.
     private void Aim(CardContainer box)
     {
+        // Into the middle of the container: a box stands 0.6 m tall, a booster pack lies 0.045 m thick.
+        var height = box.Kind == CardContainerKind.Booster ? 0.02f : 0.2f;
         _player.GlobalPosition = box.GlobalPosition + new Vector3(0f, PlayerStandHeight, StandingDistance);
-        _interaction.Camera!.LookAt(box.GlobalPosition + new Vector3(0f, 0.2f, 0f));
+        _interaction.Camera!.LookAt(box.GlobalPosition + new Vector3(0f, height, 0f));
     }
 
-    private CardContainer OrderBox()
+    private CardContainer OrderBox() => Order("cardboard_box");
+
+    private CardContainer Order(string id)
     {
-        var item = Catalog().Items.Single(i => i.Id == "cardboard_box");
+        var item = Catalog().Items.Single(i => i.Id == id);
         _money.Add(item.Price);
         var result = _ordering.Order(item);
         AssertBool(result.Succeeded).IsTrue();

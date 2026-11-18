@@ -84,6 +84,36 @@ public class CardHolderRemoveTest : CardHolderTestBase
         Assertions.AssertThat(_systemUnderTest.HeldCards).NotContains(secondCard);
     }
 
+    // A single drop (X) leaves the other cards fanned in the hand, not laid out as if a drop were being aimed.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RemoveTopCard_FromTheFan_LeavesTheRestFanned()
+    {
+        var cards = CreateMultipleTestCards(3);
+        foreach (var card in cards) _systemUnderTest.AddCard(card);
+
+        _systemUnderTest.RemoveTopCard();
+
+        for (var i = 0; i < 2; i++)
+            Assertions.AssertBool(cards[i].Transform.IsEqualApprox(_systemUnderTest.FanPose(i, 2))).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void RemoveTopCard_WhileADropIsAimed_KeepsTheRestInTheDropLayout()
+    {
+        var cards = CreateMultipleTestCards(3);
+        foreach (var card in cards) _systemUnderTest.AddCard(card);
+        _systemUnderTest.PositionCardsForDrop();
+
+        _systemUnderTest.RemoveTopCard();
+
+        var aimed = cards[0].GlobalTransform;
+        _systemUnderTest.PositionCardsForDrop();
+        Assertions.AssertBool(cards[0].GlobalTransform.IsEqualApprox(aimed)).IsTrue();
+        Assertions.AssertBool(cards[0].Transform.IsEqualApprox(_systemUnderTest.FanPose(0, 2))).IsFalse();
+    }
+
     [TestCase]
     [TestCategory("Unit")]
     public void RemoveTopCard_EmptyHolder_NoErrorThrown()
