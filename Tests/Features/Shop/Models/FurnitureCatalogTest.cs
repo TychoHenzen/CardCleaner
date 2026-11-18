@@ -17,7 +17,6 @@ public class FurnitureCatalogTest
     private const float Tolerance = 0.001f;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CatalogListsEveryShelfKindAndThePackingStation()
     {
         var ids = GD.Load<FurnitureCatalog>(CatalogPath).Items.Select(item => item.Id).ToArray();
@@ -28,7 +27,6 @@ public class FurnitureCatalogTest
     // A piece collides as several boxes that follow its art (posts, boards, panels). Together they fill the
     // catalog footprint exactly: centred on the piece's origin, standing on the floor, as PlacedFurniture builds it.
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryEntryMatchesTheCollidersOfItsScene()
     {
         foreach (var item in GD.Load<FurnitureCatalog>(CatalogPath).Items)
@@ -52,7 +50,6 @@ public class FurnitureCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryShelfKindIsACardShelf()
     {
         var catalog = GD.Load<FurnitureCatalog>(CatalogPath);
@@ -72,7 +69,6 @@ public class FurnitureCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryItemSceneIsAPhysicalBodyWithCollisionAndAnArtSlot()
     {
         foreach (var item in GD.Load<FurnitureCatalog>(CatalogPath).Items)
@@ -88,7 +84,6 @@ public class FurnitureCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryItemArtPathExistsInTheAssetsSubmodule()
     {
         foreach (var item in GD.Load<FurnitureCatalog>(CatalogPath).Items)
@@ -102,7 +97,6 @@ public class FurnitureCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ItemSceneKeepsItsPlaceholderWhenThePackFileIsMissing()
     {
         foreach (var item in GD.Load<FurnitureCatalog>(CatalogPath).Items)
@@ -118,7 +112,6 @@ public class FurnitureCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ItemSceneShowsThePackMeshAndHidesItsPlaceholderWhenTheFileIsImported()
     {
         foreach (var item in GD.Load<FurnitureCatalog>(CatalogPath).Items)
@@ -136,7 +129,6 @@ public class FurnitureCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FindReturnsNullForAnUnknownId()
     {
         var catalog = GD.Load<FurnitureCatalog>(CatalogPath);
@@ -146,7 +138,6 @@ public class FurnitureCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void IdsAreUnique()
     {
         var seen = new HashSet<string>(StringComparer.Ordinal);

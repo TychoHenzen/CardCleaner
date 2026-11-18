@@ -61,7 +61,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AffordableOrderDeductsThePriceAndSpawnsAtTheDeliveryPoint()
     {
         var result = _ordering.Order(_crate);
@@ -75,7 +74,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UnaffordableOrderSpawnsNothingAndChargesNothing()
     {
         var result = _ordering.Order(MakeItem("gold", StartingBalance + 1));
@@ -88,7 +86,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SceneWithoutA3DRootIsRejectedWithoutCharging()
     {
         var root = new Node { Name = "NotSpatial" };
@@ -104,7 +101,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ItemWithoutASceneIsRejectedWithoutCharging()
     {
         var result = _ordering.Order(new OrderItem { Id = "empty", Price = 10 });
@@ -114,7 +110,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MissingDeliveryPointIsRejectedWithoutCharging()
     {
         _ordering.DeliveryPoint = null;
@@ -126,7 +121,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OrderSpawnsTheScenePackedInTheCatalogItem()
     {
         var root = new Node3D { Name = "FromCatalog" };
@@ -141,7 +135,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RepeatedOrdersChargeAndSpawnOncePerOrderAtDistinctSlots()
     {
         var first = _ordering.Order(_crate);
@@ -153,7 +146,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OrderStopsChargingOnceFundsRunOut()
     {
         _ordering.Order(_crate);
@@ -167,7 +159,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ManyOrdersNeverSpawnItemsOverlappingEachOther()
     {
         _money.Add(10000);
@@ -192,7 +183,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FirstLayerIsCentredOnTheDeliveryPointAtGroundLevelAndLaterLayersStackAbove()
     {
         _money.Add(10000);
@@ -209,7 +199,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ExplicitDeliveryPointOverridesTheDefaultAndKeepsItsOwnSlotCount()
     {
         var other = new DeliveryMarker { Position = new Vector3(-20f, 0f, 3f) };
@@ -235,7 +224,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GroundMarkerFillsItsSlotsThenRefusesATallItemWithoutCharging()
     {
         _money.Add(10000);
@@ -262,7 +250,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GroundMarkerNeverLocksWhileSmallItemsStillFitUnderItsClearance()
     {
         _money.Add(10000);
@@ -284,7 +271,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StackedDeliveryRefusesOnceTheItemNoLongerFitsUnderTheClearanceAndChargesNothing()
     {
         _money.Add(10000);
@@ -304,7 +290,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GroundMarkerReusesTheSlotOfAnItemThatWasRemoved()
     {
         _money.Add(10000);
@@ -322,7 +307,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GroundMarkerTreatsAnItemCarriedOutOfItsSlotAsGone()
     {
         _money.Add(10000);
@@ -340,7 +324,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GroundMarkerKeepsASlotTakenWhileTheItemsColliderStillOverlapsIt()
     {
         _money.Add(10000);
@@ -357,7 +340,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GroundMarkerTreatsAnItemParkedBetweenTwoSlotsAsOccupyingBoth()
     {
         _money.Add(10000);
@@ -377,7 +359,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GroundMarkerFreesTheSlotOfAnItemRemovedFromTheTreeButNotFreed()
     {
         _money.Add(10000);
@@ -396,7 +377,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FullGroundMarkerDoesNotBlockTheDefaultDeliveryPoint()
     {
         _money.Add(10000);
@@ -409,7 +389,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ItemsWhoseReachLandsOnANeighbourTakeTheNextSlotThatClearsEveryShape()
     {
         _money.Add(10000);
@@ -431,7 +410,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FloorClearanceRefusesASlotWhereTheItemWouldReachPastIt()
     {
         _money.Add(10000);
@@ -457,7 +435,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnItemIsStackedOnlyOnItemsThatHoldUpItsWholeFootprint()
     {
         _money.Add(10000);
@@ -481,7 +458,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ItemsReachingBelowTheirFeetStackOnEachOtherOnceTheGroundIsFull()
     {
         _money.Add(10000);
@@ -502,7 +478,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AStackedItemReachingBelowItsFeetDoesNotBlockANeighbourBelowThem()
     {
         _money.Add(10000);
@@ -549,7 +524,6 @@ public class OrderingServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AStackWhoseShapesLandOnANeighbourIsSkippedForTheNextLowestStack()
     {
         _money.Add(10000);

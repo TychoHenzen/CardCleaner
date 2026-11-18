@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using CardCleaner.Scripts.Core.Services.CompiledAtlas;
@@ -26,8 +27,10 @@ public static class CompiledAtlasLoader
         AllowTrailingCommas = true
     };
 
-    private static TileSet? _cachedTileSet;
-    private static string? _cachedTileSetPath;
+    // One TileSet per mapping file, built on its first load, so a TileSet built for another mapping (a test's) never
+    // replaces the game's. Its transition tiles are created as cells show them (CompiledAtlasTiles), so a replaced
+    // TileSet would lose the ones already created. A failed build caches nothing.
+    private static readonly Dictionary<string, CompiledAtlasTiles> CachedTileSets = new();
 
     static CompiledAtlasLoader()
     {
@@ -69,11 +72,11 @@ public static class CompiledAtlasLoader
     {
         ILog.Print("[CompiledAtlasLoader] LoadCompiledTileSet called");
 
-        // Return cached TileSet if available
-        if (_cachedTileSet != null && _cachedTileSetPath == (mappingPath ?? DefaultMappingPath))
+        var cacheKey = mappingPath ?? DefaultMappingPath;
+        if (CachedTileSets.TryGetValue(cacheKey, out var cached))
         {
             ILog.Print("[CompiledAtlasLoader] Returning cached TileSet");
-            return _cachedTileSet;
+            return cached.TileSet;
         }
 
         var mapping = LoadMapping(mappingPath);
@@ -99,13 +102,12 @@ public static class CompiledAtlasLoader
                 return null;
             }
 
-            var tileSet = CompiledAtlasTileSetBuilder.Build(mapping, atlasTexture, CreateJsonOptions());
+            var tiles = CompiledAtlasTileSetBuilder.Build(mapping, atlasTexture, CreateJsonOptions());
 
-            _cachedTileSet = tileSet;
-            _cachedTileSetPath = mappingPath ?? DefaultMappingPath;
-            LogTileSetDetails(tileSet);
+            CachedTileSets[cacheKey] = tiles;
+            LogTileSetDetails(tiles.TileSet);
 
-            return tileSet;
+            return tiles.TileSet;
         }
         catch (Exception ex)
         {
@@ -180,12 +182,22 @@ public static class CompiledAtlasLoader
     }
 
     /// <summary>
-    /// Clears the cached tileset.
-    /// Call this if the compiled atlas has been regenerated.
+    /// The compiled atlas whose tile set this is, or null for any other tile set (the original tileset, a test's).
     /// </summary>
-    public static void ClearCache()
+    internal static CompiledAtlasTiles? TilesFor(TileSet tileSet)
     {
-        _cachedTileSet = null;
-        _cachedTileSetPath = null;
+        var id = tileSet.GetInstanceId();
+        foreach (var tiles in CachedTileSets.Values)
+        {
+            if (tiles.TileSetId == id)
+                return tiles;
+        }
+
+        return null;
     }
+
+    // Clears every cached tileset on assembly unload (see AssemblyUnloadCleanup) and only then. A TileSet still on a
+    // layer after a clear is no longer found by TilesFor, so its deferred transition tiles would never be created and
+    // the cells that paint one would show nothing.
+    private static void ClearCache() => CachedTileSets.Clear();
 }

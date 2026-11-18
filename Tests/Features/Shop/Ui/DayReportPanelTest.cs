@@ -19,7 +19,6 @@ public partial class DayReportPanelTest
         new[] { ("Too slow", 6) });
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ShowsTheSheetAsATitleAFigureTableAndComplaints()
     {
         var panel = new DayReportPanel { Cursor = new FakeCursorOwner() };
@@ -38,7 +37,6 @@ public partial class DayReportPanelTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ASecondReportReplacesTheRowsOfTheFirst()
     {
         var panel = new DayReportPanel { Cursor = new FakeCursorOwner() };
@@ -53,7 +51,6 @@ public partial class DayReportPanelTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ContinueHidesPanelAndReleasesCursor()
     {
         var cursor = new FakeCursorOwner();
@@ -72,7 +69,6 @@ public partial class DayReportPanelTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheReportClosesAnOpenModalScreenBeforeItTakesTheCursor()
     {
         var cursor = new FakeCursorOwner();

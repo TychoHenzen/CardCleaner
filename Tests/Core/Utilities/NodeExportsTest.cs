@@ -11,7 +11,6 @@ namespace CardCleaner.Tests.Core.Utilities;
 public class NodeExportsTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestASetExportReturnsFalseAndLogsNothing()
     {
         var sink = new RecordingLog();
@@ -36,7 +35,6 @@ public class NodeExportsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestANullExportReturnsTrueAndLogsTheNameAndTarget()
     {
         var sink = new RecordingLog();

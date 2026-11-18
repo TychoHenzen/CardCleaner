@@ -31,7 +31,6 @@ public class ContainerMeshBakeTest
     private static string PathOf(string name) => $"{MeshFolder}/{name}.tres";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CommittedMeshesMatchTheRecipe()
     {
         foreach (var (name, build, vertices) in Meshes)
@@ -51,7 +50,6 @@ public class ContainerMeshBakeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ClosedContainersHaveTheirStatedSize()
     {
         AssertSize(ContainerMeshRecipe.BoosterBody().GetAabb().Merge(ContainerMeshRecipe.BoosterTearStrip().GetAabb()),

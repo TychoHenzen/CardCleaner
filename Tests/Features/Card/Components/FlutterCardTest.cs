@@ -24,7 +24,6 @@ public class FlutterCardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DefaultValues_AreReasonable()
     {
         // Arrange
@@ -40,7 +39,6 @@ public class FlutterCardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Properties_CanBeModified()
     {
         // Act
@@ -59,7 +57,6 @@ public class FlutterCardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Setup_NullCardRoot_DoesNotThrow()
     {
         // Act & Assert - Should handle null gracefully
@@ -69,7 +66,6 @@ public class FlutterCardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PhysicsProcess_DoesNotThrow()
     {
         // Act & Assert - Should not throw when called
@@ -79,7 +75,6 @@ public class FlutterCardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AerodynamicCoefficients_AcceptValidRanges()
     {
         // Act - Test boundary values

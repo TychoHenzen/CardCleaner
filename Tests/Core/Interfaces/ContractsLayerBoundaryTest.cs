@@ -38,7 +38,6 @@ public class ContractsLayerBoundaryTest
     private static readonly Regex NamespaceDeclaration = new(@"\bnamespace\s+([\w.]+)", RegexOptions.Compiled);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoContractTypeNamesATypeOutsideTheContractsLayer()
     {
         var contracts = typeof(ILog).Assembly.GetTypes().Where(type => IsContract(type.Namespace)).ToList();
@@ -56,7 +55,6 @@ public class ContractsLayerBoundaryTest
     // The type scan only sees the contracts namespace, so a file under the folder that declares another namespace
     // would escape it.
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryContractFileDeclaresAContractsNamespace()
     {
         var files = SourceScan.CsFiles(ContractsRoot);
@@ -72,7 +70,6 @@ public class ContractsLayerBoundaryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FeatureTypeInASignatureIsReported()
     {
         AssertThat(ProbeHits(typeof(ProbeFeatureSignature)))
@@ -80,14 +77,12 @@ public class ContractsLayerBoundaryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FeatureTypeThroughABareRootAliasIsReported()
     {
         AssertThat(ProbeHits(typeof(ProbeAliasedFeature))).IsEqual(Hit("ProbeAliasedFeature", typeof(CardTemplate)));
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FeatureTypeAsAGenericArgumentIsReported()
     {
         AssertThat(ProbeHits(typeof(ProbeGenericArgument)))
@@ -95,21 +90,18 @@ public class ContractsLayerBoundaryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ServiceHostInAMethodBodyIsReported()
     {
         AssertThat(ProbeHits(typeof(ProbeHostInBody))).IsEqual(Hit("ProbeHostInBody", typeof(ServiceHost)));
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NonFeatureCoreTypeIsReported()
     {
         AssertThat(ProbeHits(typeof(ProbeCoreService))).IsEqual(Hit("ProbeCoreService", typeof(LoggingService)));
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AllowedTypesAreNotReported()
     {
         AssertThat(ProbeHits(typeof(ProbeAllowed))).IsEmpty();

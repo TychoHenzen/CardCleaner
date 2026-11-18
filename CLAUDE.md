@@ -9,23 +9,21 @@ CardCleaner is a Godot 4.4+ game built with C# (.NET 8.0) featuring a card-based
 ## Build & Test Commands
 
 ```bash
-# Build the project
+# Build the game project
 dotnet build
 
-# Run all tests (requires Godot runtime)
-dotnet test
+# Unit tier, the development loop: plain .NET tests with no Godot process (budget 10 s, not counting the build)
+dotnet test UnitTests
 
-# Run tests with verbose output
-dotnet test --logger "console;verbosity=detailed"
+# One unit test class
+dotnet test UnitTests --filter "FullyQualifiedName~CardSignatureTest"
 
-# Run a specific test class
-dotnet test --filter "FullyQualifiedName~CardSignatureTest"
+# Pull-request tier: every gdUnit suite except the Daily ones, as CI runs on pull requests and pushes to master.
+# Run it while working on merging a pull request, not during development (Windows PowerShell 5.1 or PowerShell 7)
+powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot_v4.7.1-stable_mono_win64.exe> -SkipDaily
 
-# Run the whole gdUnit suite the way CI does (Windows PowerShell 5.1 or PowerShell 7)
-powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot_v4.7.1-stable_mono_win64.exe>
-
-# Only the [TestCategory("Unit")] suites, as CI runs on pull requests and pushes to master
-powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot exe> -Fast
+# Every gdUnit suite, Daily ones included, as the daily CI run does
+powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot exe>
 
 # One suite through the same runner (watchdog and resume included), reports and logs into reports/<name>
 powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot exe> -Suite res://Tests/Architecture/DependencyGateTest.cs -ReportDirectory reports/single
@@ -36,6 +34,36 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps
 # Godot download retry fixture: runs Install-Godot.ps1 against a loopback HTTP server, so no Godot or network is needed (CI runs it too)
 powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-InstallGodot.ps1
 ```
+
+**Test tiers.** Each tier has a time budget, measured without the build:
+
+- **Unit** (`UnitTests/`, budget 10 s): plain .NET suites run by `dotnet test UnitTests`, with no Godot process. Run
+  only this tier during development. A suite belongs here only when neither it nor the code it calls needs the engine:
+  a Godot native call (a node, a resource, `GD`, `ProjectSettings`) crashes the plain test host. `UnitTests/` has a
+  `.gdignore`, so its files get no `.uid` sidecars, and `CardCleaner.csproj` leaves the folder out of the game.
+- **Pull request** (`Tests/` without the Daily suites, budget 5 minutes): the gdUnit suites inside Godot, run by
+  `Run-GdUnit.ps1 -SkipDaily`. Run it while working on merging a pull request; CI runs it on every pull request and
+  push to `master`.
+- **Daily**: a suite whose class carries `[TestCategory("Daily")]`. Benchmarks belong here, and so does a check that
+  cannot be made fast without testing less. A slow suite first gets faster while checking the same thing (a smaller
+  fixture, `FastClock` below, one shared expensive setup); only when that fails does its class get the tag. CI runs
+  every suite, Daily ones included, at 03:00 UTC each day on `master`.
+
+A red daily run widens pull-request CI. While the latest finished daily run on `master` is not a success (failed,
+cancelled or timed out), every pull request runs every suite, Daily ones included, and passes when they all pass on its
+own runner, so a failure that does not happen again there (a flake) does not fail it. That is not a block: a red daily
+run still needs its own fix. The wider runs end with the next green daily run; after a flake, `gh run rerun <run-id>
+--failed` ends them sooner. `-SkipDaily` leaves a Daily file out as a whole (by name, through gdUnit's `-i`), so the tag
+must sit on the suite class: `TestSuiteNamingTest` fails when it sits on a member.
+
+**FastClock** (`Tests/TestUtilities/Helpers/FastClock.cs`). A scene test that waits on game time (a customer's walk, a
+card settling) wraps the wait in `using (FastClock.Start())`. It raises `Engine.PhysicsTicksPerSecond`,
+`Engine.TimeScale` and `Engine.MaxPhysicsStepsPerFrame` by the same factor (16 by default), so game time runs sixteen
+times faster while every physics step stays 1/60 s of game time (`FastClockTest` pins that). A process frame then spans
+about 0.11 s of game time, so a test that checks an animation stage by stage passes a smaller factor
+(`CardContainerTest` uses 4). Do not pass `--fixed-fps` to
+Godot instead: it drops the frame sleep that a headless Godot otherwise takes (its low-processor delay, about 6.9 ms, so
+about 145 frames a second), and gdUnit then lost suite starts on every run.
 
 The vendored gdUnit4 is 6.2.3, which cleans a relative `-rd` report folder correctly: `GdUnitFileAccess.delete_directory`
 resolves the folder to its absolute path before it deletes, so a direct `GdUnitCmdTool.gd` run with a relative `-rd` (as
@@ -54,6 +82,17 @@ attempts in all. Each abandoned attempt prints `gdUnit4 suite start lost:` to st
 after its `[Before]` hook, so no `[Before]` hook may await. `SuiteStartGuardTest` fails when an addon update drops the
 patch or a `[Before]` hook returns a task; reapply both files after updating the addon.
 
+**Project patch in the vendored addon (discovery cache).** gdUnit discovers C# tests one script at a time, and the
+package's per-script discovery reads the whole test assembly and its symbols with Mono.Cecil on every call, about 33 ms
+each: 17 s for the 518 scripts under `res://Tests` at the start of every run. Outside the editor, `GdUnit4CSharpApi.cs`
+therefore asks `SuiteDiscoveryCache` (same folder) first. It reads the assembly once through the package's own
+whole-assembly discovery (the internal `TestCaseDiscoverer.Discover`, reached by reflection) and files each suite's tests
+under its script, so a script that is no `[TestSuite]` class gets no tests without a read. When the cache cannot be built
+it prints `gdUnit4 discovery cache unavailable` to stderr and every script goes to the package as before.
+`SuiteDiscoveryGuardTest` fails when the cache is unavailable or differs from the package on a sample of scripts, and
+`SuiteDiscoveryEquivalenceTest` (Daily) compares the two for every script; reapply `SuiteDiscoveryCache.cs` and the call
+in `GdUnit4CSharpApi.DiscoverTests` after updating the addon or the `gdUnit4.api` package.
+
 **Without PowerShell.** Start Godot from Bash through node, so no console window opens:
 
 ```bash
@@ -66,7 +105,7 @@ node -e "const r=require('child_process').spawnSync('<godot console exe>',['--he
 
 These give one suite and the .uid import when powershell.exe cannot start. The one-liners exit with Godot's own status,
 and non-zero (1) when Godot cannot start, so a missing exe fails the command. They have no watchdog, no resume and no suite
-aggregation, so Run-GdUnit.ps1 stays the supported path for a full or -Fast run.
+aggregation, so Run-GdUnit.ps1 stays the supported path for a full or -SkipDaily run.
 
 **Physics runs on the main thread** (`physics/3d/run_on_separate_thread=false`, pinned by `PhysicsThreadSettingTest`).
 With the separate thread on, Godot 4.7.1 froze the whole process, in tests and in the game alike. A main-thread physics
@@ -104,21 +143,21 @@ worker thread (`ResourceLoader.LoadThreadedRequest`), which `PinnedResourceTest`
 unloaded: leaving the shop keeps its catalogs and the card visuals (about 3.6 MB of PNG textures) in memory. Drop the
 base class only on an engine version that contains a fix for that issue.
 
-CI scope: pull requests and pushes to `master` run only the Unit suites (`-Fast`). The full suite runs on the weekly
-schedule (Sunday 03:00 UTC) and on a manual dispatch with `full=true`, for example `gh workflow run ci.yml --ref
-<branch> -f full=true`. PR CI also fails when the latest scheduled run on `master` is not green. So a green PR or merge
-run does not prove the full suite; dispatch `full=true` on the branch (or tag) whose head needs it, e.g.
-`gh workflow run ci.yml --ref <branch> -f full=true`.
+CI scope: pull requests and pushes to `master` run the unit tier and the pull-request tier (`-SkipDaily`). Every suite
+runs on the daily schedule, on a pull request while the latest daily run is red (see Test tiers), and on a manual
+dispatch with `full=true`. A green pull request therefore does not prove the Daily suites; dispatch `full=true` on the
+branch (or tag) whose head needs them, e.g. `gh workflow run ci.yml --ref <branch> -f full=true`.
 
 The Godot download in CI goes through `Scripts/ci/Install-Godot.ps1`. It retries a failed download or unzip (an HTTP 5xx such
 as the 504 that failed the 2026-11-08 weekly run, a connection error, a truncated archive) for 3 attempts in all, waiting 15 s
 and then 30 s, and writes `Godot download attempt <n> of 3 failed: <error>` as a warning for each failure, so the retry shows in
 the run log. An archive that unzips without the executable fails at once. `Scripts/ci/Test-InstallGodot.ps1` proves the loop
-against a loopback HTTP server (no Godot and no network), and the `runner-fixture` job runs it under pwsh. The rule that a pull
-request fails while the latest scheduled master run is not green is unchanged, so a weekly run that fails for another reason still
-needs `gh run rerun <run-id> --failed`.
+against a loopback HTTP server (no Godot and no network), and the `runner-fixture` job runs it under pwsh. A daily run
+that still fails for a reason like that makes pull requests run every suite until `gh run rerun <run-id> --failed`
+turns it green.
 
-Tests use gdUnit4 framework and require the Godot runtime (`[RequireGodotRuntime]` attribute). Test files are in `Tests/` mirroring the `Scripts/` structure.
+Tests use the gdUnit4 framework. The suites in `Tests/` require the Godot runtime (`[RequireGodotRuntime]` attribute);
+the suites in `UnitTests/` run without it. Both mirror the `Scripts/` structure.
 
 gdUnit finds a C# suite by its file name, so a `[TestSuite]` class must be named after its file (`TestSuiteNamingTest`
 enforces this). `Run-GdUnit.ps1` fails when a `[TestSuite]` file never runs. When Godot prints nothing for
@@ -135,13 +174,13 @@ report folders and other files survive. Each attempt then has one log pair (`god
 `godot.resume<n>.stdout.log`). Every stall or crash also appends a line such as `crash 0xC000001D in <suite> (logs: ...)`
 to `reports/ci/interruptions.txt` (a marker left by an earlier run is removed at start). CI uploads `reports/ci`
 as the `gdunit-reports` artifact on failure, on the
-weekly and `full=true` runs, and whenever that marker exists, so a crash inside a run that resumed to green keeps its
+daily and `full=true` runs, on a pull request that runs every suite, and whenever that marker exists, so a crash inside a run that resumed to green keeps its
 logs. `Test-RunGdUnit.ps1` runs the real runner against a fake Godot and covers its build wait (a build that leaves a
 worker running), build failure, watchdog, resume, repeated-stall, crash, repeated-crash, exit-code, interruption-marker
-and report-aggregation paths. It also checks that the suite-detection patterns in `Run-GdUnit.ps1` match the ones in
-`TestSuiteNamingTest.cs`.
+and report-aggregation paths, and the Daily skip (`-SkipDaily`, on the first attempt and on a resume). It also checks
+that the suite-detection and Daily patterns in `Run-GdUnit.ps1` match the ones in `TestSuiteNamingTest.cs`.
 
-The runner prints its results to the job log, so no artifact download is needed for them: one `Suite result: <suite> cases=<n> errors=<e> failures=<f>` line per finished suite (also for suites finished in an attempt that later stalled or crashed), a `FAILED <suite> > <case>: <message>` line for each failing case before it throws, every `dependency gate:` line from all attempt logs, and a `Run summary:` line. `-Suite` takes res:// paths of `[TestSuite]` files and cannot be combined with `-Fast`. `-ReportDirectory` is relative and must lie below `reports/` (default `reports\ci`, which CI uses). A suite that stalls twice fails the run and is named.
+The runner prints its results to the job log, so no artifact download is needed for them: one `Suite result: <suite> cases=<n> errors=<e> failures=<f>` line per finished suite (also for suites finished in an attempt that later stalled or crashed), a `FAILED <suite> > <case>: <message>` line for each failing case before it throws, every `dependency gate:` line from all attempt logs, and a `Run summary:` line. `-Suite` takes res:// paths of `[TestSuite]` files and cannot be combined with `-SkipDaily`. `-ReportDirectory` is relative and must lie below `reports/` (default `reports\ci`, which CI uses). A suite that stalls twice fails the run and is named.
 
 ### Driving the Rendered Game (e2e)
 
@@ -316,7 +355,10 @@ The project uses a custom DI container with no static service state: an instance
   The compiled atlas is loaded by the stateless
   `TileVisualLoader`, which returns a `TileVisualCatalog` that `TileRegistry` exposes as `Visuals` (UI users read the
   tileset path, atlas flag and `TilesetConfig` there). `AtlasMapping` holds no static cache: `Load` reads its file on
-  every call, and `WorldMapComponents` passes the loaded mapping to `TerrainTransitions.Create`. `MeshStatistics` (a
+  every call, and `WorldMapComponents` passes the loaded mapping to `TerrainTransitions.Create`. The compiled
+  atlas's TileSet (`CompiledAtlasLoader`, one per mapping file) creates its 25,700 transition tiles only when a cell
+  first shows one (`CompiledAtlasTiles`), because creating them all took about 18 s: every cell painted on a world-map
+  layer goes through `AtlasCells.Set`, never `TileMapLayer.SetCell`. `MeshStatistics` (a
   readonly struct) and `AutoTileFormatDefinition` (a sealed record) are immutable: every property is set once.
 - **IServiceProvider**: Nodes implementing this interface and added to the `service_providers` group will have their services registered at startup
 - **Tree injection**: a node implementing `IDependent` (`Scripts/Core/Interfaces`) gets `Inject(IServiceResolver)`
@@ -341,7 +383,7 @@ and clears `ILog.Sink`), `RegisterGameServiceClasses(container)` (the root's `[S
 
 ### Dependency Gate
 
-`Tests/Architecture/DependencyGateTest.cs` (a Unit suite, so `-Fast` and PR CI run it) measures `Scripts/` as a
+`Tests/Architecture/DependencyGateTest.cs` (in the pull-request tier, so every pull request runs it) measures `Scripts/` as a
 layered architecture on every run. Its code is test code under `Tests/Architecture/DependencyGate/`: Roslyn extracts
 the class graph of every top-level type in `Scripts/` (nested types fold into their outer type; `addons/` except
 gdUnit4 is compiled alongside but not counted), plus one member-type reference per NodePath between two scripted
@@ -357,7 +399,10 @@ layer every loop of up to 20 modules takes the order with the fewest up edges, a
 
 The test prints a report (`dependency gate:` lines): counts, the module order, the loose classes, every up edge with
 its class pairs (heaviest first), every loop, and every leaky or missing seam with the concrete classes it crosses.
-It measures twice and fails if the two reports differ. It then ratchets four gated numbers (`up_edges`,
+It measures the class graph built once per test run (`RepositoryClassGraph.Shared`, which `SignatureLayerTest` reads
+too). The Daily suite `DependencyGateRepeatabilityTest` builds a second graph on a worker thread at the same time and
+fails if its report differs from the shared graph's; it is Daily because the second Roslyn compilation costs several
+seconds. The gate then ratchets four gated numbers (`up_edges`,
 `biggest_loop`, `seams_leaky_or_missing`, `refs_from_non_ui_to_ui`) against
 `Tests/Architecture/dependency-baseline.json` in that priority order (#299). The label of one seam can flip between
 leaky and missing when Louvain membership changes, so the report still prints both counts but only their sum,
@@ -478,7 +523,7 @@ the wrapper, which no longer collides. Every opening ends within three seconds (
 `FinishOpening` ends one at once (every item at its spot, the wrapper freed). `GameSaveService.Save` first finishes
 every opening container (`SavedContainers.FinishOpenings`), so a save made mid-opening stores the eight items, never a
 half-open container. Tests wait for an opening with `ContainerOpeningWait` (bounded in wall-clock time through
-`BoundedWait`, because headless frames are not throttled), or end it with `FinishOpening` when only the contents
+`BoundedWait`, because a headless frame is not paced at the game's 60 frames a second), or end it with `FinishOpening` when only the contents
 matter.
 
 Sizes: booster 0.35 x 0.045 x 0.53 m, pack 0.38 x 0.37 x 0.55 m, box 0.80 x 0.60 x 0.86 m. The product shelf's seats

@@ -18,7 +18,6 @@ public class FurnitureOrderCatalogTest
     private const string FurnitureCatalogPath = "res://Data/Shop/Furniture/FurnitureItems.tres";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryOrderItemHasAFurnitureItemAndABox()
     {
         var furniture = GD.Load<FurnitureCatalog>(FurnitureCatalogPath);
@@ -43,7 +42,6 @@ public class FurnitureOrderCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryOrderItemHasAnUnlockRow()
     {
         var catalog = GD.Load<OrderCatalog>(OrderCatalogPath);
@@ -53,7 +51,6 @@ public class FurnitureOrderCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ShelfUnitCostsOneHundredTwenty()
     {
         var order = GD.Load<OrderCatalog>(OrderCatalogPath).Items.Single(item => item.Id == "shelf_unit");
@@ -62,7 +59,6 @@ public class FurnitureOrderCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoFurnitureIdCollidesWithTheStockCatalog()
     {
         var stockIds = GD.Load<OrderCatalog>(StockCatalogPath).Items.Select(item => item.Id).ToHashSet();

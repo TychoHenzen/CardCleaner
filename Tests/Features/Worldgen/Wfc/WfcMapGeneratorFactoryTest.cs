@@ -22,29 +22,26 @@ namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 public class WfcMapGeneratorFactoryTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void CreateReturnsANewGeneratorEachCall()
     {
-        var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var pairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
         IWfcMapGeneratorFactory factory = new WfcMapGenerator.Factory();
 
         AssertBool(ReferenceEquals(factory.Create(pairs, null), factory.Create(pairs, null))).IsFalse();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CreateReturnsAGeneratorWithTheDefaultRetryCount()
     {
-        var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var pairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
 
         AssertInt(WfcMapGenerator.Factory.Build(pairs, null).MaxRetries).IsEqual(3);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CreateAcceptsNullVariantsAndKeepsAnAssignedRetryCount()
     {
-        var pairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var pairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
 
         var generator = WfcMapGenerator.Factory.Build(pairs, null);
         AssertInt(generator.MaxRetries).IsEqual(3);
@@ -55,7 +52,6 @@ public class WfcMapGeneratorFactoryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void GridMapGeneratorRejectsANullFactory()
     {
         var tiles = TileCatalogData.From(TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource()));

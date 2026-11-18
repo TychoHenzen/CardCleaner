@@ -3,7 +3,7 @@ namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug;
 using Godot;
 using System;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug.Painting;
 
 /// <summary>
@@ -24,7 +24,6 @@ public partial class IrregularMeshPreview : Node2D
 
     private IIrregularMesh? _mesh;
     private IrregularTerrainRenderer? _renderer;
-    private ITileRegistry? _tileRegistry;
     private bool _needsRebuild = true;
 
     /// <summary>
@@ -162,26 +161,17 @@ public partial class IrregularMeshPreview : Node2D
 
     public override void _Ready()
     {
-        // Initialize tile registry for proper terrain lookups
-        try
-        {
-            _tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
-            GD.Print(
-                $"[IrregularMeshPreview] Loaded TileRegistry with " +
-                $"{_tileRegistry.GetAllTiles().GetEnumerator().MoveNext()} tiles");
-        }
-        catch (Exception ex)
-        {
-            GD.PrintErr($"[IrregularMeshPreview] Failed to load TileRegistry: {ex.Message}");
-        }
-
         _renderer = new IrregularTerrainRenderer();
         AddChild(_renderer);
 
-        // Pass tile registry to renderer for proper terrain lookups
-        if (_tileRegistry != null)
+        // The preview runs outside the game's services, so it builds its own resolver for the renderer.
+        try
         {
-            _renderer.SetTileRegistry(_tileRegistry);
+            _renderer.SetTransitionResolver(TransitionResolvers.Create(new GodotAssetPaths()));
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[IrregularMeshPreview] Failed to load the transition map: {ex.Message}");
         }
 
         UpdateTransform();

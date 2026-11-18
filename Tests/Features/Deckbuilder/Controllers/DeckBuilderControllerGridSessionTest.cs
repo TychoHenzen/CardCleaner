@@ -73,7 +73,6 @@ public class DeckBuilderControllerGridSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CompletedGridSessionKeepsTheToggleDarkUntilTheResetPress()
     {
         AssertBool(_kindButton.Enabled).IsTrue();
@@ -97,7 +96,6 @@ public class DeckBuilderControllerGridSessionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void GridSessionThatFallsBackToWaitingWithoutCompletingLightsTheToggleAgain()
     {
         _button.Interact();

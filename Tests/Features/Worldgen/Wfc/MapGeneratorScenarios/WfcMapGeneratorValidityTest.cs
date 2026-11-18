@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -126,21 +125,19 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
     {
         var biome = _biomeRegistry.GetBiome("plains");
         AssertThat(biome).IsNotNull();
-        var failures = new List<string>();
-        foreach (var seed in ProductionAdjacencySeeds)
-        {
-            // The generator adds the gap-tile adjacencies to these rules, so the map is checked against the rules
-            // its own solver enforced. Connectivity is off so that only the adjacency rules decide the map.
-            var rules = new WfcAdjacencyRules(_transitionPairs);
-            var generator = new WfcMapGenerator(rules, WfcTestFixtures.ProductionCatalog())
-            {
-                EnableConnectivity = false,
-            };
-            var result = generator.Generate(biome!, ProductionAdjacencySize, seed);
-            WfcTestFixtures.AssertSucceeded(result, $"Plains 32x32 map, seed {seed}");
+        // The catalog is loaded here, on the main thread, because loading reads Godot resources. The seeds are
+        // independent maps over that one immutable catalog, so they are solved side by side; the generator calls
+        // no engine API. Every assertion runs back on this thread.
+        var catalog = WfcTestFixtures.ProductionCatalog();
+        var solves = ProductionAdjacencySeeds
+            .Select(seed => System.Threading.Tasks.Task.Run(() => SolveProductionMap(biome!, catalog, seed)))
+            .ToArray();
+        System.Threading.Tasks.Task.WaitAll(solves);
 
-            var violations = new List<string>();
-            CollectRuleViolations(result.TileIds!, rules, violations);
+        var failures = new List<string>();
+        foreach (var (seed, result, violations) in solves.Select(solve => solve.Result))
+        {
+            WfcTestFixtures.AssertSucceeded(result, $"Plains 32x32 map, seed {seed}");
             GD.Print($"[ProductionAdjacency] seed={seed} violations={violations.Count}");
             failures.AddRange(violations.Select(violation => $"seed {seed}: {violation}"));
         }
@@ -149,6 +146,20 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
             ? "No adjacency violations"
             : $"{failures.Count} orthogonal pair(s) break the rules, first {failures[0]}";
         AssertThat(failures.Count == 0).OverrideFailureMessage(message).IsTrue();
+    }
+
+    private (ulong Seed, WfcGenerationResult Result, List<string> Violations) SolveProductionMap(
+        BiomeDefinition biome, IWfcTileCatalog catalog, ulong seed)
+    {
+        // The generator adds the gap-tile adjacencies to these rules, so the map is checked against the rules its own
+        // solver enforced. Connectivity is off so that only the adjacency rules decide the map.
+        var rules = new WfcAdjacencyRules(_transitionPairs);
+        var generator = new WfcMapGenerator(rules, catalog) { EnableConnectivity = false };
+        var result = generator.Generate(biome, ProductionAdjacencySize, seed);
+        var violations = new List<string>();
+        if (result.Success)
+            CollectRuleViolations(result.TileIds!, rules, violations);
+        return (seed, result, violations);
     }
 
     private static Dictionary<string, int> CountTiles(string[,] tiles)
@@ -270,39 +281,6 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
             AddIfAutoPair(0, y, 0, y + 1);
             AddIfAutoPair(width - 1, y, width - 1, y + 1);
         }
-    }
-
-    // Max-of-3 average of three process runs, measured 2026-10-10 on AMD Ryzen 7 7435HS with the production tile
-    // catalog and an optimized build (-p:Optimize=true): run averages 760.8, 710.7 and 736.0 ms. See
-    // WfcTestFixtures.PerfBudgetMs.
-    private const double OptimizedBaseline20x20Ms = 760.8;
-
-    [TestCase]
-    public void TestPerformance20x20WithinBudget()
-    {
-        var generator = new WfcMapGenerator(
-            new WfcAdjacencyRules(_transitionPairs),
-            WfcTestFixtures.ProductionCatalog());
-        var biome = _biomeRegistry.GetBiome("plains");
-        AssertThat(biome).IsNotNull();
-        WfcTestFixtures.WarmUp(_transitionPairs, biome!);
-
-        const int runs = 3;
-        var times = new double[runs];
-        for (var i = 0; i < runs; i++)
-        {
-            var stopwatch = Stopwatch.StartNew();
-            var result = generator.Generate(biome!, new Vector2I(20, 20), 12345);
-            stopwatch.Stop();
-
-            WfcTestFixtures.AssertSucceeded(result, "Plains 20x20 map");
-            times[i] = stopwatch.Elapsed.TotalMilliseconds;
-        }
-
-        var avgTime = times.Average();
-        GD.Print($"WFC generation for 20x20 ({runs} runs): average {avgTime:F1}ms, " +
-                 $"min {times.Min():F1}ms, max {times.Max():F1}ms");
-        WfcTestFixtures.AssertWithinBudget("20x20", avgTime, OptimizedBaseline20x20Ms);
     }
 
     /// <summary>

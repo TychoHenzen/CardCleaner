@@ -77,7 +77,6 @@ public class ShopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TerminalCatalogOffersTheStockItems()
     {
         AssertThat(_stock.Catalog!.Items.Select(i => i.Id).ToArray()).IsEqual(ExpectedItems);
@@ -85,7 +84,6 @@ public class ShopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PlayerInteractionRayCanReachThePcFromInFrontOfTheDesk()
     {
         var interaction = _player.GetNode<InteractionSystem>("Head/Camera3D/InteractionSystem");
@@ -103,7 +101,6 @@ public class ShopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PcIsWithinInteractionRangeFromStandingDistance()
     {
         var eyes = _terminal.GlobalPosition + new Vector3(0f, 1.8f, StandingDistanceToPc);
@@ -112,7 +109,6 @@ public class ShopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PcStaysOutOfThePlayerRouteAndInsideTheBackoffice()
     {
         var backoffice = _shop.GetNode<StaticBody3D>("World/Backoffice/Floor");
@@ -126,7 +122,6 @@ public class ShopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OpeningThePcFreezesThePlayerAndClosingItRestoresControl()
     {
         _terminal.Interact();
@@ -144,7 +139,6 @@ public class ShopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PcOpenThenClose_LeavesCursorCaptured()
     {
         _terminal.Interact();
@@ -157,7 +151,6 @@ public class ShopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemovingTheOpenPcFromTheSceneStillRestoresPlayerControl()
     {
         _terminal.Interact();
@@ -169,7 +162,6 @@ public class ShopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PlayerStaysPutWhileThePcIsOpenAndWalksAgainAfterClosing()
     {
         for (var frame = 0; frame < 30; frame++)
@@ -200,7 +192,6 @@ public class ShopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OrderingEachItemChargesTheBalanceAndDeliversItToTheStockDeliveryArea()
     {
         var delivery = StockDelivery;
@@ -225,7 +216,6 @@ public class ShopOrderingSceneTest
     // The furniture area takes shelf-sized cells; the stock area takes cells that fit the 0.80 x 0.86 m cardboard box.
     [TestCase("World/Markers/DeliveryPoint", 2.13f, 1.0f)]
     [TestCase("World/Markers/StockDeliveryPoint", 0.8f, 0.86f)]
-    [TestCategory("Unit")]
     public void FirstLayerOfDeliverySlotsFitsInsideTheRightStorageFloor(string markerPath, float widestItem,
         float deepestItem)
     {
@@ -242,7 +232,6 @@ public class ShopOrderingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BoxesFillTheGridAndStackOnTheBoxBelow()
     {
         var delivery = StockDelivery;
@@ -263,7 +252,6 @@ public class ShopOrderingSceneTest
     // In play, six small stock orders took all six shelf-sized cells of the one delivery area, and the next furniture
     // order was refused as "The delivery area is full". Stock now has an area of its own.
     [TestCase]
-    [TestCategory("Unit")]
     public void StockOrdersLeaveTheFurnitureDeliveryAreaFree()
     {
         var furniture = _shop.GetNode<StockApp>("PcDesktopViewport/FurnitureApp");
@@ -286,7 +274,6 @@ public class ShopOrderingSceneTest
     private DeliveryMarker StockDelivery => _shop.GetNode<DeliveryMarker>("World/Markers/StockDeliveryPoint");
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OrderingBeyondTheBalanceShowsAMessageAndSpawnsNothing()
     {
         var items = _shop.GetNode("World").GetChildCount();

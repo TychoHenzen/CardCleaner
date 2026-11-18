@@ -13,7 +13,6 @@ public class StaffCatalogTest
         "res://Data/Shop/StaffCatalog.tres";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Shipped_catalog_has_the_cashier_then_the_restocker_with_default_values()
     {
         var roles = GD.Load<StaffCatalog>(ShippedCatalogPath).ToRoles();
@@ -26,7 +25,6 @@ public class StaffCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Repeated_and_empty_ids_are_skipped()
     {
         var catalog = new StaffCatalog
@@ -49,7 +47,6 @@ public class StaffCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Empty_catalog_gives_no_roles()
     {
         var roles = new StaffCatalog().ToRoles();

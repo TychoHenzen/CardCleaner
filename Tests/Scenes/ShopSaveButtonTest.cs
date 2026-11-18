@@ -70,7 +70,6 @@ public class ShopSaveButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SaveButtonWritesTheActiveSlotAndReportsSaved()
     {
         var path = SaveSlotLayout.FileFor(_slot);

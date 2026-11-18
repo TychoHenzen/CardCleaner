@@ -37,7 +37,6 @@ public class CheckoutCounterAwardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CardPaymentAwardsTheTotalOnce()
     {
         _counter.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4));
@@ -53,7 +52,6 @@ public class CheckoutCounterAwardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CashPaymentAwardsTheTotal()
     {
         _counter.Checkout(new FakeCheckoutCustomer(PaymentMethod.Cash, 3, 4));
@@ -67,7 +65,6 @@ public class CheckoutCounterAwardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WrongTotalAwardsNothing()
     {
         _counter.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4));
@@ -80,7 +77,6 @@ public class CheckoutCounterAwardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PaymentBeforeAllScannedAwardsNothing()
     {
         _counter.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4));
@@ -93,7 +89,6 @@ public class CheckoutCounterAwardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DepartedCustomerAwardsNothing()
     {
         var gone = new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4);
@@ -109,7 +104,6 @@ public class CheckoutCounterAwardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RejectedBasketAwardsNothing()
     {
         // A zero-priced offer makes CheckoutSession throw, so the counter sends this customer away unpaid.
@@ -120,7 +114,6 @@ public class CheckoutCounterAwardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MissingProgressionStillPays()
     {
         _counter.Progression = null;

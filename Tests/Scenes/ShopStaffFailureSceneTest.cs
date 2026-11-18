@@ -75,7 +75,6 @@ public class ShopStaffFailureSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Hire_when_locked_leaves_money_and_roster_unchanged()
     {
         // Level 1: the shop has earned no XP.
@@ -90,7 +89,6 @@ public class ShopStaffFailureSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Hire_when_too_poor_shows_the_reason_in_the_Staff_app_and_charges_nothing()
     {
         _progression.AwardCheckout(LevelTwoPayment);
@@ -110,7 +108,6 @@ public class ShopStaffFailureSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Cashier_does_not_serve_while_the_shop_is_closed()
     {
         HireCashier();
@@ -126,7 +123,6 @@ public class ShopStaffFailureSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Cashier_waits_while_the_tree_is_paused()
     {
         HireCashier();
@@ -150,7 +146,6 @@ public class ShopStaffFailureSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Player_scan_during_a_cashier_claim_is_refused_with_a_message_and_the_payment_screen_stays_closed()
     {
         HireCashier();
@@ -170,7 +165,6 @@ public class ShopStaffFailureSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Customer_freed_mid_claim_releases_the_claim_and_a_new_customer_is_served()
     {
         HireCashier();
@@ -198,7 +192,6 @@ public class ShopStaffFailureSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Dismissing_while_a_customer_is_claimed_lets_that_customer_finish()
     {
         HireCashier();
@@ -225,7 +218,6 @@ public class ShopStaffFailureSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Two_customers_are_each_paid_once_in_queue_order()
     {
         HireCashier();

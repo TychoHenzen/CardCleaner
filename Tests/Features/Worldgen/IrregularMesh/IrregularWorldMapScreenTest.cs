@@ -1,18 +1,17 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.Mocking;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -33,6 +32,9 @@ public class IrregularWorldMapScreenTest
 
     // Seconds to wait for the explorer's moves, combat included.
     private const double MoveBudgetSeconds = 30;
+
+    // Game time runs this many times real time while the explorer moves (FastClock).
+    private const int MoveClockFactor = 4;
 
     private static readonly IrregularMeshNs.MeshMapGenerator SmallGenerator = MeshMapGeneratorFixture.Create(2);
 
@@ -56,10 +58,7 @@ public class IrregularWorldMapScreenTest
     public async Task Setup()
     {
         TestServices.Reset();
-        TestServices.Container.RegisterSingleton<ITileRegistry>(TileCatalogLoad.Load(
-            new GodotAssetPaths(),
-            new CompiledAtlasSource()
-        ));
+        TestServices.Container.RegisterSingleton<ITransitionResolver>(GameTransitionResolver.Shared);
         _session = TestServices.CreateGameSession();
         TestServices.Container.RegisterSingleton<IGameSessionService>(_session);
         AddNode(_session);
@@ -87,7 +86,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestScreenStartsUninitialized()
     {
         var freshScreen = AutoFree(new IrregularMeshNs.IrregularWorldMapScreen())!;
@@ -100,7 +98,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LootGeneratedSpawnsCardsInARowAtTheLootPoint()
     {
         var lootPoint = new Marker3D { Name = "LootSpawnPoint", Position = new Vector3(2f, 3f, 4f) };
@@ -131,7 +128,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ASessionTheScreenStartsShowsItsMap()
     {
         var mapsShown = 0;
@@ -143,10 +139,12 @@ public class IrregularWorldMapScreenTest
         AssertThat(_screen.MapData).IsNotNull();
         AssertThat(_screen.FogOfWar).IsNotNull();
         AssertInt(mapsShown).IsEqual(1);
+        // The terrain is drawn only with the transition resolver the screen takes from its services.
+        var terrain = _screen.Viewport!.GetNode("TerrainRenderer").GetChild<MeshInstance2D>(0);
+        AssertThat(terrain.Mesh).IsNotNull();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheScreenAnimatesEachMoveToANeighbouringCell()
     {
         var cells = new List<int>();
@@ -168,8 +166,13 @@ public class IrregularWorldMapScreenTest
         var previous = _screen.MapData!.PlayerStartCell!.Value;
 
         var clock = Stopwatch.StartNew();
-        while (cells.Count < MovesToWatch && !SessionEnded() && clock.Elapsed.TotalSeconds < MoveBudgetSeconds)
-            await ISceneRunner.SyncProcessFrame;
+        // The exploration step delay and the move animation both run on game time, so a faster clock keeps their
+        // order. At four times real time a 0.15 s move still spans several frames.
+        using (FastClock.Start(MoveClockFactor))
+        {
+            while (cells.Count < MovesToWatch && !SessionEnded() && clock.Elapsed.TotalSeconds < MoveBudgetSeconds)
+                await ISceneRunner.SyncProcessFrame;
+        }
 
         AssertInt(cells.Count)
             .OverrideFailureMessage($"The explorer made {cells.Count} of {MovesToWatch} moves on the irregular map")
@@ -196,7 +199,6 @@ public class IrregularWorldMapScreenTest
     // Leaving the tree disconnects the screen from the session; entering it again must connect it again, or a start
     // made after that waits for a service that never comes.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AScreenAddedBackToTheTreeConnectsToTheSessionAgain()
     {
         var parent = _screen.GetParent();
@@ -211,7 +213,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task RevealAllShowsEveryCell()
     {
         await ShowMap();
@@ -223,7 +224,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ToggleDebugSwitchesTheDebugRenderer()
     {
         var debugRenderer = _screen.Viewport!.GetNode<CanvasItem>("DebugRenderer");
@@ -237,7 +237,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ResetClearsTheMapAndStopsShowingTheSession()
     {
         await ShowMap();
@@ -255,7 +254,6 @@ public class IrregularWorldMapScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ANewSessionShowsAfterTheResetOfTheLastOne()
     {
         await ShowMap();

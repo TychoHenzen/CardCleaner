@@ -32,13 +32,13 @@ public class ShopCustomerCheckoutSceneTest
     }
 
     [AfterTest]
-    public static void Teardown()
+    public void Teardown()
     {
+        _rig?.Dispose();
         TestServices.Reset();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CustomerHandsTheBasketOverAndWaitsAtTheCounter()
     {
         var slot = _rig.StockBooster();
@@ -58,7 +58,6 @@ public class ShopCustomerCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task QueuedCustomerWalksToItsSpotAndLeavesWhenTold()
     {
         _rig.StockBooster();
@@ -81,7 +80,6 @@ public class ShopCustomerCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task GivingUpLeavesAtOnceWithoutASale()
     {
         _rig.StockBooster();
@@ -99,7 +97,6 @@ public class ShopCustomerCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task LeaveDoesNothingForACustomerThatWasRemovedFromTheTree()
     {
         _rig.StockBooster();

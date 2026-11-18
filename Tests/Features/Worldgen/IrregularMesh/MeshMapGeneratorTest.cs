@@ -26,7 +26,6 @@ public class MeshMapGeneratorTest
     private const int PlacementRings = 6;
 
     [TestCase(Timeout = 120000)]
-    [TestCategory("Unit")]
     public static async Task GeneratesAMeshMapWithAStartAndEnemiesFromTheSharedRule()
     {
         var generated = await MeshMapGeneratorFixture.Create(PlacementRings).GenerateAsync(Config());
@@ -46,7 +45,6 @@ public class MeshMapGeneratorTest
     }
 
     [TestCase(Timeout = 120000)]
-    [TestCategory("Unit")]
     public static async Task TerrainIsTheTerrainOfTheFactoryPath()
     {
         var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
@@ -74,7 +72,6 @@ public class MeshMapGeneratorTest
     }
 
     [TestCase(Timeout = 120000)]
-    [TestCategory("Unit")]
     public static async Task TheSameSeedAndCardsGiveTheSameMap()
     {
         var generator = MeshMapGeneratorFixture.Create(SmallRings);
@@ -86,7 +83,6 @@ public class MeshMapGeneratorTest
     }
 
     [TestCase(Timeout = 120000)]
-    [TestCategory("Unit")]
     public static async Task ACancelledTokenThrowsMapGenerationCancelled()
     {
         using var cancellation = new CancellationTokenSource();
@@ -106,7 +102,6 @@ public class MeshMapGeneratorTest
     }
 
     [TestCase(Timeout = 120000)]
-    [TestCategory("Unit")]
     public static async Task GenerationRunsOffTheMainThreadAndReportsCompletion()
     {
         var mainThread = Environment.CurrentManagedThreadId;

@@ -36,13 +36,13 @@ public class ShopCustomerSceneTest
     }
 
     [AfterTest]
-    public static void Teardown()
+    public void Teardown()
     {
+        _rig?.Dispose();
         TestServices.Reset();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CustomerBuysTheStockedItemAtMarketPrice()
     {
         var slot = _rig.StockBooster();
@@ -68,7 +68,6 @@ public class ShopCustomerSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CustomerRefusesAnOverpricedItem()
     {
         var slot = _rig.StockBooster();
@@ -85,7 +84,6 @@ public class ShopCustomerSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TwoCustomersNeverTakeOneItem()
     {
         _rig.StockBooster();
@@ -100,7 +98,6 @@ public class ShopCustomerSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACustomerInAnEmptyShopLooksAtAShelfComplainsAndLeaves()
     {
         var browsePoints = new ShelfOfferIndex(_rig.Shop.GetTree()).BrowsePoints();
@@ -126,7 +123,6 @@ public class ShopCustomerSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task UnreachableTargetMakesTheCustomerLeaveAndFreesTheClaim()
     {
         var slot = _rig.StockBooster();
@@ -155,7 +151,6 @@ public class ShopCustomerSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task StuckCustomerGivesUpAndLeaves()
     {
         var slot = _rig.StockBooster();
@@ -171,7 +166,6 @@ public class ShopCustomerSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CustomerThatGivesUpAfterTakingReturnsTheItem()
     {
         var slot = _rig.StockBooster();
@@ -189,7 +183,6 @@ public class ShopCustomerSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CustomerMovesAwayFromTheSpawnWithinHalfASecond()
     {
         _rig.StockBooster();
@@ -204,7 +197,6 @@ public class ShopCustomerSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACustomerFacesTheWayItWalks()
     {
         _rig.StockBooster();
@@ -233,7 +225,6 @@ public class ShopCustomerSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EachCustomerWearsALookDrawnForIt()
     {
         var worn = new HashSet<int>();
@@ -248,7 +239,6 @@ public class ShopCustomerSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACustomerStandsStillToPickTheItemUp()
     {
         var slot = _rig.StockBooster();
@@ -267,7 +257,6 @@ public class ShopCustomerSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PausedTreeFreezesCustomers()
     {
         _rig.StockBooster();
@@ -287,7 +276,6 @@ public class ShopCustomerSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CustomerBuysASingleCardFromACardShelf()
     {
         var shelf = GD.Load<PackedScene>(CardShelfScene).Instantiate<CardShelf>();

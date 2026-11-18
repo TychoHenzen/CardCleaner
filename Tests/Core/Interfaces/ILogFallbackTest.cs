@@ -11,7 +11,6 @@ namespace CardCleaner.Tests.Core.Interfaces;
 public class ILogFallbackTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestWithoutASinkPrintAndWarningWriteToStandardOutAndErrorToStandardError()
     {
         var (output, error) = Capture(() =>
@@ -26,7 +25,6 @@ public class ILogFallbackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestWithASinkEveryMessageReachesTheSinkAndTheConsoleStaysEmpty()
     {
         var sink = new RecordingLog();
@@ -45,7 +43,6 @@ public class ILogFallbackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestAfterAServicesResetTheFallbackWritesAndTheRootSinkReturns()
     {
         try

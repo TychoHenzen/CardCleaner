@@ -70,7 +70,6 @@ public class CardHighlighterContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ContainerClick_PicksUp()
     {
         Build();
@@ -83,7 +82,6 @@ public class CardHighlighterContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ContainerClick_WhileCardsHeld_Ignored()
     {
         var card = MakeCard();
@@ -99,7 +97,6 @@ public class CardHighlighterContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CardClick_WhileContainerHeld_Ignored()
     {
         var card = MakeCard();
@@ -119,7 +116,6 @@ public class CardHighlighterContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RightPress_WhileHoldingContainer_Drops()
     {
         Build();
@@ -135,7 +131,6 @@ public class CardHighlighterContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RightPress_WithCards_StillStartsCardDrop()
     {
         var card = MakeCard();

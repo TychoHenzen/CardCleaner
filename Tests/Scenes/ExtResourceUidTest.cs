@@ -98,7 +98,6 @@ public partial class ExtResourceUidTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryExtResourceUidMatchesItsTarget()
     {
         var stale = ScannedRoots.SelectMany(root => StaleReferencesUnder(root, ProjectUidOf));
@@ -110,7 +109,6 @@ public partial class ExtResourceUidTest
     [TestCase("res://Scenes")]
     [TestCase("res://Data")]
     [TestCase("res://Assets")]
-    [TestCategory("Unit")]
     public static void EveryScannedRootHasUidReferences(string root)
     {
         // With every UID source missing each uid= reference is reported, so a root the scan cannot read fails here.
@@ -118,7 +116,6 @@ public partial class ExtResourceUidTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MismatchedUidIsReportedWithFileAndLine()
     {
         const string text = "[gd_scene format=3]\n\n" +
@@ -130,7 +127,6 @@ public partial class ExtResourceUidTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TargetWithoutUidSourceIsReported()
     {
         const string text = "[ext_resource type=\"Script\" path=\"res://A.cs\" uid=\"uid://old\" id=\"1\"]\r\n";
@@ -141,7 +137,6 @@ public partial class ExtResourceUidTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MatchingAndPathOnlyReferencesPass()
     {
         const string text = "[ext_resource type=\"Script\" uid=\"uid://same\" path=\"res://A.cs\" id=\"1\"]\n" +
@@ -152,7 +147,6 @@ public partial class ExtResourceUidTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ScriptSidecarIsTheProjectUidSource()
     {
         var sidecar = ProjectSettings.GlobalizePath("res://Tests/TestSuiteNamingTest.cs.uid");

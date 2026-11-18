@@ -49,7 +49,6 @@ public class OptionsSlotIsolationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Applying_and_saving_options_leaves_user_saves_untouched()
     {
         var before = SlotSnapshot();
@@ -81,7 +80,6 @@ public class OptionsSlotIsolationTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Options_sources_do_not_name_the_save_slot_layer()
     {
         var violations = new List<string>();

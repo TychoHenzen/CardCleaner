@@ -13,7 +13,6 @@ public class PcDesktopExpansionsTest
     private const string IconPath = "Icons/ExpansionsIcon";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AssignedExpansionsIconIsEnabled()
     {
         var (desktop, _, _) = BuildDesktop();
@@ -24,7 +23,6 @@ public class PcDesktopExpansionsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ExpansionsIconShowsExpansionsAppAndHidesOthers()
     {
         var (desktop, stockApp, expansionsApp) = BuildDesktop();
@@ -38,7 +36,6 @@ public class PcDesktopExpansionsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ResetToDesktopHidesTheExpansionsApp()
     {
         var (desktop, _, expansionsApp) = BuildDesktop();

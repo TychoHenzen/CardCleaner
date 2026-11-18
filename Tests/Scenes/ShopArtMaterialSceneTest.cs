@@ -35,7 +35,6 @@ public class ShopArtMaterialSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryPackSlotInTheShopLoadsItsMeshAndIsTextured()
     {
         var packSlots = PackSlots(_shop).ToList();
@@ -46,7 +45,6 @@ public class ShopArtMaterialSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EverySyntyModelInTheShopIsInAKnownPackFolder()
     {
         var unknown = Slots(_shop)
@@ -58,7 +56,6 @@ public class ShopArtMaterialSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryMeshOfAPackSlotHasTheAtlasAndFacesBothWays()
     {
         var packSlots = PackSlots(_shop).ToList();
@@ -82,7 +79,6 @@ public class ShopArtMaterialSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SlotsOfTheSamePackShareOneMaterial()
     {
         var walls = Slots(_shop).Where(slot => slot.ArtPath.EndsWith("SI_Env_Wall_01.fbx", StringComparison.Ordinal)).ToList();
@@ -93,7 +89,6 @@ public class ShopArtMaterialSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ASlotOutsideTheKnownPacksLoadsItsMeshUntextured()
     {
         var slot = AddNode(new ShopArtSlot { ArtPath = OwnModelPath });
@@ -103,7 +98,6 @@ public class ShopArtMaterialSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ASlotWhoseFileIsMissingStaysUntexturedAndKeepsItsPlaceholder()
     {
         var placeholder = new MeshInstance3D();

@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc.Generation;
 
@@ -20,10 +21,9 @@ public class WfcTerrainSolverRuleTileIdsTest
     private const string ProbeGapTileId = "rule-snapshot-probe-gap";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RuleTileIdsAreTheTransitionIdsBeforeGapTilesAreAdded()
     {
-        var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var transitionPairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
         var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
         // A passable tile without auto-tile variants is a gap tile. Its id is unique, so no transition names it.
         registry.RegisterTile(new TileDefinition(ProbeGapTileId, "Probe", TilePassability.Passable, Vector2I.Zero));

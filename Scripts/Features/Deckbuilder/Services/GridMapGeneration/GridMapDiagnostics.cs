@@ -6,23 +6,18 @@ namespace CardCleaner.Scripts.Features.Deckbuilder.Services.GridMapGeneration;
 
 internal static class GridMapDiagnostics
 {
+    private const float CoherenceTargetPercent = 70.0f;
+
+    /// <summary>Logs one line on how much of a generated map lies in large same-tile regions.</summary>
     public static void ValidateSpatialCoherence(string[,] tileMap, Vector2I size)
     {
         var metrics = RegionAnalyzer.Analyze(tileMap);
+        var verdict = metrics.PercentInLargeRegions < CoherenceTargetPercent ? "below" : "meets";
 
         ILog.Print(
-            $"[SpatialCoherence] {metrics.RegionCount} regions found " +
-            $"(avg size: {metrics.AverageSize:F1} tiles)");
-        ILog.Print($"[SpatialCoherence] Region sizes: min={metrics.MinSize}, max={metrics.MaxSize}");
-        ILog.Print(
-            $"[SpatialCoherence] {metrics.PercentInLargeRegions:F1}% of tiles in regions >= 30 tiles " +
-            $"({metrics.TilesInLargeRegions}/{metrics.TotalTiles})");
-
-        if (metrics.PercentInLargeRegions < 70.0f)
-        {
-            ILog.Print(
-                $"[SpatialCoherence] WARNING: Low coherence - only {metrics.PercentInLargeRegions:F1}% " +
-                "of tiles in large regions (target: 70%+)");
-        }
+            $"[SpatialCoherence] {metrics.RegionCount} regions (avg {metrics.AverageSize:F1}, " +
+            $"min {metrics.MinSize}, max {metrics.MaxSize} tiles); {metrics.PercentInLargeRegions:F1}% of tiles " +
+            $"({metrics.TilesInLargeRegions}/{metrics.TotalTiles}) in regions >= 30 tiles, {verdict} the " +
+            $"{CoherenceTargetPercent:F0}% target");
     }
 }

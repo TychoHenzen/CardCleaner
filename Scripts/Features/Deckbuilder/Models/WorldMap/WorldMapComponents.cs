@@ -1,3 +1,4 @@
+using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
@@ -29,8 +30,9 @@ internal sealed class WorldMapComponents
     internal WorldMapTerrainRenderer? Terrain { get; private set; }
     internal WorldMapBiomeOverlay? BiomeOverlay { get; private set; }
 
-    // Get tile registry for rendering and assign TileSet to layers
-    internal void Initialize(ITileRegistry registry)
+    // Get tile registry for rendering and assign TileSet to layers. The transition resolver is asked for only when
+    // the compiled atlas is in use; it is the app's shared one, because building one parses the whole transition map.
+    internal void Initialize(ITileRegistry registry, Func<ITransitionResolver> transitions)
     {
         var tileSet = LoadCompiledTileSet(registry);
         var usingCompiledAtlas = tileSet != null;
@@ -42,7 +44,7 @@ internal sealed class WorldMapComponents
             $"TileSize={TileSize}");
 
         // Initialize components that need tile registry
-        CreateComponents(registry, usingCompiledAtlas);
+        CreateComponents(registry, usingCompiledAtlas ? transitions() : null);
 
         // Assign TileSet to layers
         TileMapLayer?[] layers =
@@ -75,15 +77,15 @@ internal sealed class WorldMapComponents
         LayerTileSets.Assign(compiled, layers);
     }
 
-    private void CreateComponents(ITileRegistry registry, bool usingCompiledAtlas)
+    // A null resolver means the compiled atlas is not in use.
+    private void CreateComponents(ITileRegistry registry, ITransitionResolver? transitionResolver)
     {
         var viewport = _screen.Viewport;
         if (viewport == null) return;
 
         Fog = new WorldMapFogManager(viewport, TileSize);
         BiomeOverlay = new WorldMapBiomeOverlay(viewport, TileSize);
-        var transitionResolver = usingCompiledAtlas ? TransitionResolvers.Create(new GodotAssetPaths()) : null;
-        var atlasMapping = usingCompiledAtlas ? CompiledAtlasLoader.LoadMapping() : null;
+        var atlasMapping = transitionResolver != null ? CompiledAtlasLoader.LoadMapping() : null;
         Terrain = new WorldMapTerrainRenderer(
             _screen.TerrainLayer, _screen.DecorationLayer, _screen.StructureLayer, _screen.EffectLayer,
             registry,

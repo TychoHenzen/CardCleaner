@@ -78,8 +78,6 @@ public static class TiledTilesetLoader
             // Resolve relative TSX path
             var tsxAbsolutePath = Path.GetFullPath(Path.Combine(tmxDir, source));
 
-            ILog.Print($"[TiledTilesetLoader] Loading tileset from TMX: {source} (firstgid={firstGid})");
-
             var result = LoadFromTsx(paths, tsxAbsolutePath, shapeOf, firstGid);
             allTiles.AddRange(result.Tiles);
 

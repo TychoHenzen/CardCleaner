@@ -16,6 +16,7 @@ using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using NSubstitute;
 using CardCleaner.Tests.TestUtilities;
@@ -57,9 +58,12 @@ public class ShopCarryingSceneTest
     private Action<bool>? _rightPress;
     private Action? _qPress;
 
+    private FastClock? _clock;
+
     [BeforeTest]
     public async Task Setup()
     {
+        _clock = FastClock.Start();
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _world = _shop.GetNode<Node3D>("World");
         _player = _shop.GetNode<PlayerController>("Player");
@@ -99,13 +103,13 @@ public class ShopCarryingSceneTest
     }
 
     [AfterTest]
-    public static void Teardown()
+    public void Teardown()
     {
+        _clock?.Dispose();
         TestServices.Reset();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task LeftClick_PicksUpBox()
     {
         var box = OrderBox();
@@ -124,7 +128,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task RightPress_DropsBox_InFrontOfCamera()
     {
         var box = OrderBox();
@@ -145,7 +148,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Q_OpensHeldBox_Spawns8Packs()
     {
         var box = OrderBox();
@@ -164,7 +166,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CardsHeld_BlocksContainerPickup()
     {
         var box = OrderBox();
@@ -181,7 +182,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ContainerHeld_BlocksCardPickup()
     {
         var box = OrderBox();
@@ -202,7 +202,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PickUpDropPickUp_Works()
     {
         var box = OrderBox();

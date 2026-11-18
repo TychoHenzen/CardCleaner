@@ -17,7 +17,6 @@ namespace CardCleaner.Scripts.Features.Worldgen.Wfc;
 public class WfcTileSelector
 {
     private readonly List<IWfcConstraint> _constraints = new();
-    private bool _loggedConstraintCount;
 
     /// <summary>
     /// Registers a constraint to be applied during tile selection.
@@ -27,7 +26,6 @@ public class WfcTileSelector
     public void AddConstraint(IWfcConstraint constraint)
     {
         _constraints.Add(constraint);
-        ILog.Print($"[WfcTileSelector] Added constraint: {constraint.GetType().Name}, total: {_constraints.Count}");
     }
 
     /// <summary>
@@ -40,9 +38,7 @@ public class WfcTileSelector
     /// </summary>
     public void ClearConstraints()
     {
-        ILog.Print($"[WfcTileSelector] ClearConstraints called, had {_constraints.Count} constraints");
         _constraints.Clear();
-        _loggedConstraintCount = false;
     }
 
     /// <summary>
@@ -90,7 +86,6 @@ public class WfcTileSelector
                 return tile;
         }
 
-        LogConstraintCount(cellId);
         var weightContext = CreateWeightContext(
             biome,
             rng,
@@ -197,16 +192,5 @@ public class WfcTileSelector
             DefaultTileWeight,
             NonBiomeTilePenalty,
             ContinuityBiasMultiplier);
-    }
-
-    private void LogConstraintCount(int? cellId)
-    {
-        if (_loggedConstraintCount || !cellId.HasValue)
-            return;
-
-        _loggedConstraintCount = true;
-        ILog.Print($"[WfcTileSelector] SelectTile called with cellId, constraints: {_constraints.Count}");
-        foreach (var constraint in _constraints)
-            ILog.Print($"  - {constraint.GetType().Name}");
     }
 }

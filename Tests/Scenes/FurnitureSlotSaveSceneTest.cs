@@ -81,7 +81,6 @@ public class FurnitureSlotSaveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task APlacedShelfComesBackFromTheSlotFile()
     {
         var placed = await PlaceShelf(4f, 8f);
@@ -99,7 +98,6 @@ public class FurnitureSlotSaveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AnUnopenedBoxComesBackFromTheSlotFile()
     {
         var box = NewBox();
@@ -117,7 +115,6 @@ public class FurnitureSlotSaveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ASaveDuringAMoveComesBackAsOneShelfAtItsOldPose()
     {
         var placed = await PlaceShelf(4f, 8f);

@@ -11,7 +11,6 @@ namespace CardCleaner.Tests.Core.Utilities;
 public class GodotNoiseSourceTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void MatchesRawFastNoiseLite()
     {
         int[] seeds = [1, 42];

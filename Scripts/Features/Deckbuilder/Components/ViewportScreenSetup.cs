@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Components;
@@ -61,8 +60,6 @@ public static class ViewportScreenSetup
 
         // Assign the custom mesh
         screenMesh.Mesh = arrayMesh;
-
-        ILog.Print("[ViewportScreenSetup] Custom screen mesh with proper UVs created");
     }
 
     /// <summary>
@@ -88,7 +85,5 @@ public static class ViewportScreenSetup
 
         // Force the material as an override
         screenMesh.MaterialOverride = material;
-
-        ILog.Print("[ViewportScreenSetup] Screen material setup complete");
     }
 }

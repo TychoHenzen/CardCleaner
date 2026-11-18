@@ -16,19 +16,16 @@ public class StartScenePauseWiringTest
     private const string ScenePath = "res://Scenes/Gameplay/StartScene.tscn";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ResumeButtonExistsUnderThePauseMenuPanel() =>
         WithStartScene(scene =>
             AssertThat(scene.GetNode<Button>("Ui/PauseMenu/Panel/ResumeButton").Text).IsEqual("Resume"));
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CursorOwnerSitsUnderServices() =>
         WithStartScene(scene =>
             AssertThat(scene.GetNodeOrNull<CursorOwner>("Services/CursorOwner")).IsNotNull());
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PauseControllerStillWired() =>
         WithStartScene(scene =>
         {

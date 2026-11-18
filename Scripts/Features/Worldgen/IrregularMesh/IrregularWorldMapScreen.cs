@@ -7,7 +7,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.Debug;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 using Godot;
@@ -36,8 +36,8 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView, IDependent
     private IrregularMeshDebugRenderer? _debugRenderer;
     private Camera2D? _camera2D;
 
-    // Tile registry the render layer reads tile art from
-    private ITileRegistry? _tileRegistry;
+    // The app's shared resolver, which the render layer picks each quad's atlas tile with
+    private ITransitionResolver? _transitionResolver;
 
     private IServiceResolver? _services;
 
@@ -89,7 +89,7 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView, IDependent
             return;
         }
 
-        _services.Get<ITileRegistry>(registry => { _tileRegistry = registry; });
+        _services.Get<ITransitionResolver>(resolver => { _transitionResolver = resolver; });
         if (!_link.IsConnected)
             _services.Get<IGameSessionService>(_link.Connect);
     }
@@ -258,7 +258,7 @@ public partial class IrregularWorldMapScreen : Node3D, ISessionView, IDependent
             Viewport = Viewport,
             Camera = _camera2D,
             DebugRenderer = _debugRenderer,
-            TileRegistry = _tileRegistry
+            TransitionResolver = _transitionResolver
         };
     }
 

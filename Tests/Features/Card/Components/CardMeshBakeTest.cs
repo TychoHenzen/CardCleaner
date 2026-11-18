@@ -23,7 +23,6 @@ public class CardMeshBakeTest
     private const int ExpectedIndexCount = 0;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task CommittedMeshMatchesRecipe()
     {
         var committed = ResourceLoader.Load<ArrayMesh>(MeshPath);
@@ -35,7 +34,6 @@ public class CardMeshBakeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SpawnedCardUsesCommittedMesh()
     {
         var card = ResourceLoader.Load<PackedScene>(CardScenePath).Instantiate<Node3D>();

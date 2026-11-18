@@ -31,7 +31,6 @@ public class DeliveryFootprintExemptionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ATaggedItemInTheExemptGroupDoesNotRaiseTheStack()
     {
         var marker = NewMarker();
@@ -41,7 +40,6 @@ public class DeliveryFootprintExemptionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnUntaggedGroupItemStillCountsItsSolidTag()
     {
         var marker = NewMarker();
@@ -51,7 +49,6 @@ public class DeliveryFootprintExemptionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnExemptShapeInsideAnExemptNodeIsAlsoIgnored()
     {
         var marker = NewMarker();
@@ -61,7 +58,6 @@ public class DeliveryFootprintExemptionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheExemptionBeatsTheFootprintGroup()
     {
         var marker = NewMarker();
@@ -73,7 +69,6 @@ public class DeliveryFootprintExemptionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AFootprintGroupTriggerWithoutTheExemptionStillCounts()
     {
         var marker = NewMarker();
@@ -83,7 +78,6 @@ public class DeliveryFootprintExemptionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PriceTagSceneJoinsTheExemptGroup()
     {
         var tag = GD.Load<PackedScene>(PriceTagScene).Instantiate<Node>();
@@ -93,7 +87,6 @@ public class DeliveryFootprintExemptionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AShelfWithTagsHasTheFootprintOfAShelfWithout()
     {
         foreach (var path in new[] { ShelfScene, ProductShelfScene, StorageRackScene })

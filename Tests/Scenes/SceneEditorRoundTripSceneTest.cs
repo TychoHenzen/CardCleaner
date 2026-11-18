@@ -23,7 +23,6 @@ public class SceneEditorRoundTripSceneTest
     private const string ScenesRoot = "res://Scenes";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PackingAnySceneTheWayTheEditorDoesKeepsEveryStoredValue()
     {
         var scenes = SceneFiles.Under(ScenesRoot);

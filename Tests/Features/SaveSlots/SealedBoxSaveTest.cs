@@ -27,7 +27,6 @@ public class SealedBoxSaveTest
     private const ulong BoxSeed = 0x5EA1EDUL;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ReloadedBoxOpensIntoTheSameCardSignaturesAsTheOriginal()
     {
         using var scene = new SaveWorld("SealedBoxWorld", addCardsToTree: false);
@@ -64,7 +63,6 @@ public class SealedBoxSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ABoxSavedWhileItOpensIsSavedAsTheEightPacksItOpensInto()
     {
         using var scene = new SaveWorld("OpeningBoxWorld", addCardsToTree: false);
@@ -97,13 +95,17 @@ public class SealedBoxSaveTest
     }
 
     // Opens every closed container in the tree until no container is left. A box spawns packs, a pack spawns boosters
-    // and a booster spawns cards, so the wait lasts until the whole chain has been opened.
+    // and a booster spawns cards, so the wait lasts until the whole chain has been opened. Only the cards matter here,
+    // so each opening is finished at once instead of played out (the seeds decide the contents, not the animation).
     private static Task OpenUntilEmpty(SaveWorld scene) =>
         ContainerOpeningWait.Until(() =>
         {
             var containers = ContainersIn(scene.Tree);
             foreach (var container in containers.Where(c => c.CanInteract))
+            {
                 container.Open();
+                container.FinishOpening();
+            }
 
             return containers.Count == 0;
         }, "opening every container down to the cards");

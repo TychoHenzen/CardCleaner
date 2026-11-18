@@ -27,7 +27,6 @@ public class BiomeStrengthContractTest
     private static readonly Regex ForbiddenName = new(@"\bBiomeStrengthField\b", RegexOptions.Compiled);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void WfcNamesNoBiomeStrengthField()
     {
         var files = SourceScan.CsFiles(WfcRoot);
@@ -45,7 +44,6 @@ public class BiomeStrengthContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void WfcKeepsTheBiomeStrengthPort()
     {
         var files = SourceScan.CsFiles(WfcRoot);
@@ -57,7 +55,6 @@ public class BiomeStrengthContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheFieldImplementsThePort()
     {
         AssertThat(typeof(IBiomeStrengthField).IsAssignableFrom(typeof(BiomeStrengthField)))

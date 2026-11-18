@@ -42,7 +42,6 @@ public class BillsAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ListsEachCostLineWithTotal()
     {
         _book.Set(1, new BillLine("Rent", 40), new BillLine("Power", 12));
@@ -56,7 +55,6 @@ public class BillsAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EmptyStateWhenNoLines()
     {
         _app.Refresh();
@@ -67,7 +65,6 @@ public class BillsAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RefreshesWhenTheDayClosesAndShowsTheNewDay()
     {
         _book.Set(1, new BillLine("Rent", 40));
@@ -84,7 +81,6 @@ public class BillsAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RefreshesWhenShownAgain()
     {
         _book.Set(1, new BillLine("Rent", 40));

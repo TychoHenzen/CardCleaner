@@ -39,7 +39,6 @@ public class ShopWorkshopCabinetSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ButtonIsUnlitWhileOnlyTheCreditCardIsSeated()
     {
         AssertBool(_rig.DeckHolder.HasCards).IsTrue();
@@ -48,7 +47,6 @@ public class ShopWorkshopCabinetSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CardInTheSecondHolderLightsTheButton()
     {
         await _rig.Place(_rig.CardHolder, new CardSignature().With(Element.Febris, 0.4f));
@@ -59,7 +57,6 @@ public class ShopWorkshopCabinetSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TakingTheSecondCardBackOutPutsTheButtonOutAgain()
     {
         var card = await _rig.Place(_rig.CardHolder, new CardSignature().With(Element.Febris, 0.4f));
@@ -72,7 +69,6 @@ public class ShopWorkshopCabinetSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task UnlitButtonDoesNothingWhenPressed()
     {
         _rig.Button.Interact();
@@ -83,7 +79,6 @@ public class ShopWorkshopCabinetSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PressingTheLitButtonRunsTheSessionAndSpendsBothCards()
     {
         await _rig.Place(_rig.CardHolder, new CardSignature().With(Element.Febris, 0.4f));
@@ -101,7 +96,6 @@ public class ShopWorkshopCabinetSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PlayerCanStandAtTheEntryOnTheFloor()
     {
         var player = _rig.Shop.GetNode<CharacterBody3D>("Player");
@@ -113,21 +107,18 @@ public class ShopWorkshopCabinetSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PlayerInteractionRayReachesTheButtonFromInFrontOfTheCabinet()
     {
         AssertRayReaches(_rig.Button);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PlayerInteractionRayReachesTheKindToggleFromInFrontOfTheCabinet()
     {
         AssertRayReaches(_rig.KindButton);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void KindToggleShowsThePickedKindsScreenAndNamesTheKind()
     {
         var grid = _rig.Workshop.GetNode<SimpleWorldMapScreen>("Cabinet/SimpleTileMapScreen");

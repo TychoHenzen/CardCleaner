@@ -28,7 +28,6 @@ public class FurnitureBoxTest
     public static void TearDown() => TestServices.Reset();
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Interact_StartsPlacementWithTheBox()
     {
         var box = BuildBox(ShelfBoxPath);
@@ -41,7 +40,6 @@ public class FurnitureBoxTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CanInteract_IsFalseWhilePlacementIsActive()
     {
         var box = BuildBox(ShelfBoxPath);
@@ -54,7 +52,6 @@ public class FurnitureBoxTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CanInteract_IsFalseWithoutAnItem()
     {
         var box = BuildBox(BareBoxPath);
@@ -64,7 +61,6 @@ public class FurnitureBoxTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BoxJoinsTheFurnitureBoxesGroupAndTheInteractableLayer()
     {
         var box = BuildBox(ShelfBoxPath);

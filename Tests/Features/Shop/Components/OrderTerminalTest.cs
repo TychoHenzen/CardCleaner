@@ -29,7 +29,6 @@ public class OrderTerminalTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UiRowsAreBuiltFromTheCatalogExport()
     {
         AssertThat(_f.Ui.ItemRowCount).IsEqual(3);
@@ -40,7 +39,6 @@ public class OrderTerminalTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SecondTerminalWithItsOwnCatalogOrdersItsOwnItemsWithoutCodeChanges()
     {
         var workshopUi = new OrderTerminalUi();
@@ -58,7 +56,6 @@ public class OrderTerminalTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PressingAnAffordableItemChargesSpawnsAndUpdatesTheBalanceDisplay()
     {
         _f.Terminal.Interact();
@@ -72,7 +69,6 @@ public class OrderTerminalTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PressingAnUnaffordableItemShowsAMessageAndChangesNothing()
     {
         _f.Terminal.Interact();
@@ -85,7 +81,6 @@ public class OrderTerminalTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PressingALockedItemShowsTheLockMessageAndChangesNothing()
     {
         _f.Terminal.Interact();
@@ -100,7 +95,6 @@ public class OrderTerminalTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RapidDoubleOrderChargesAndSpawnsExactlyTwice()
     {
         _f.Money.Add(500);
@@ -114,7 +108,6 @@ public class OrderTerminalTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TerminalThatLeavesAndReentersTheTreeStillOrdersExactlyOncePerClick()
     {
         _f.World.RemoveChild(_f.Terminal);
@@ -129,7 +122,6 @@ public class OrderTerminalTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemovedTerminalNoLongerReactsToTheUi()
     {
         _f.World.RemoveChild(_f.Terminal);

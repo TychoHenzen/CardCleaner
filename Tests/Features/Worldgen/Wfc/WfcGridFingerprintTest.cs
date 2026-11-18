@@ -13,6 +13,7 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 
@@ -35,7 +36,6 @@ public class WfcGridFingerprintTest
     private static readonly Vector2I GridSize = new(16, 12);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DefaultSessionGridPathMatchesMasterFingerprint()
     {
         var tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
@@ -44,7 +44,7 @@ public class WfcGridFingerprintTest
         var rng = RandomSources.Create(GridSeed);
         var gradient = Gradients.FromCards(MapCards(), rng);
         var biomeProvider = BiomeMaps.Create(biomeRegistry.ToBiomeSet(), gradient.GetSignatureAt, GridSize);
-        var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var transitionPairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),
             TileCatalogData.From(tileRegistry));

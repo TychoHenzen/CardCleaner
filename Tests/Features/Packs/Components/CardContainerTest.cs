@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
@@ -26,15 +27,27 @@ public class CardContainerTest
     private Node3D _world = null!;
     private RecordingCardSpawner _spawner = null!;
 
+    // Several cases check the opening stage by stage (the lid swings before the boosters rise, items hang until the
+    // wrapper is gone), so a frame must span little game time; at the default factor of 16 they skipped stages.
+    private const int StageByStageFactor = 4;
+
+    private FastClock? _clock;
+
     [BeforeTest]
     public void Setup()
     {
+        _clock = FastClock.Start(StageByStageFactor);
         _world = AddNode(new Node3D());
         _spawner = new RecordingCardSpawner();
     }
 
+    [AfterTest]
+    public void StopClock()
+    {
+        _clock?.Dispose();
+    }
+
     [TestCase]
-    [TestCategory("Unit")]
     public void ScenesAreTheMatchingKindsAndChainBoxToPackToBooster()
     {
         var box = Make(BoxScene);
@@ -50,7 +63,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Ready_AddsToContainersGroup()
     {
         var box = Make(BoxScene);
@@ -59,7 +71,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BoxOpensIntoEightPacksOneAfterAnother()
     {
         var box = Make(BoxScene);
@@ -75,7 +86,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PackOpensIntoEightBoosters()
     {
         var pack = Make(PackScene);
@@ -87,7 +97,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BoosterOpensIntoEightCardsWithGeneratedSignatures()
     {
         var booster = Make(BoosterScene);
@@ -102,7 +111,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ContainerCanOnlyBeOpenedOnce()
     {
         var booster = Make(BoosterScene);
@@ -115,7 +123,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BoosterWithoutACardSpawnerCannotOpen()
     {
         var booster = Make(BoosterScene);
@@ -126,7 +133,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnOpeningContainerStaysInViewButCannotBeHitOrAimedAtAgain()
     {
         var box = Make(BoxScene);
@@ -140,7 +146,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Interact_EmitsPickUpRequested_AndDoesNotOpen()
     {
         var box = Make(BoxScene);
@@ -155,7 +160,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CanInteract_FalseWhenParentIsCamera()
     {
         var box = Make(BoxScene);
@@ -169,7 +173,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ContainersJoinTheInteractionLayerAndHighlightOnLook()
     {
         foreach (var path in new[] { BoxScene, PackScene, BoosterScene })
@@ -186,7 +189,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpeningABoosterSpawnsAtMostOneCardPerFrame()
     {
         var booster = Make(BoosterScene);
@@ -206,7 +208,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task FreeingTheParentWhileOpeningStopsSpawningWithoutErrors()
     {
         var booster = Make(BoosterScene);
@@ -221,7 +222,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AContainerOpenedInTheAirFallsToTheFloorFirst()
     {
         AddFloor();
@@ -240,7 +240,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ThePackLidSwingsOpenBeforeTheBoostersRiseAndTheEmptyPackShrinksAway()
     {
         var pack = Make(PackScene);
@@ -266,7 +265,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ItemsHangFrozenAtTheirSpotsUntilTheWrapperIsGoneThenDrop()
     {
         var pack = Make(PackScene);
@@ -286,7 +284,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FinishOpeningPutsEveryItemAtItsSpotAtOnce()
     {
         var pack = Make(PackScene);
@@ -307,7 +304,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FinishOpeningDoesNothingToAContainerThatIsNotOpening()
     {
         var pack = Make(PackScene);
@@ -320,7 +316,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PacksAndBoostersOpenIntoOneColumnStraightAboveTheContainer()
     {
         foreach (var kind in new[] { CardContainerKind.Pack, CardContainerKind.Booster })
@@ -336,7 +331,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ABoxOpensIntoTwoColumnsSideBySide()
     {
         var offsets = Offsets(CardContainerKind.Box);
@@ -357,7 +351,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoItemSpawnsInsideTheContainerOrAnotherItem()
     {
         foreach (var (kind, scene, childScene) in Chain())
@@ -375,7 +368,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheHighestItemOfAContainerOnTheFloorStaysBelowTheShopCeiling()
     {
         foreach (var (kind, _, childScene) in Chain())

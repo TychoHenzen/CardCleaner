@@ -61,7 +61,6 @@ public class ShopExpansionsAppSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ExpansionsAppIsWiredToTheDesktop()
     {
         var desktop = _rig.Shop.GetNode<PcDesktop>($"{DesktopViewportPath}/PcDesktop");
@@ -70,7 +69,6 @@ public class ShopExpansionsAppSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ListsTheLot()
     {
         // The money is not added and the shop is still level 1, so the lot reads as locked.
@@ -84,7 +82,6 @@ public class ShopExpansionsAppSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BuyThroughTheApp()
     {
         _rig.MeetTheLotRequirements();
@@ -106,7 +103,6 @@ public class ShopExpansionsAppSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task LaterLotsLockedByOrder()
     {
         _rig.MeetTheLotRequirements();
@@ -126,7 +122,6 @@ public class ShopExpansionsAppSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task RefusalsShowAMessage()
     {
         // Locked: the money is there but the shop is still level 1. Nothing is charged and the lot stays closed.

@@ -17,7 +17,6 @@ public class ShopPriceBookTest
     private const string WholesaleCatalog = "res://Data/Shop/BackofficeCatalog.tres";
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheWholesaleCostComesFromTheOrderCatalog()
     {
         var book = AutoFree(new ShopPriceBook { Wholesale = GD.Load<OrderCatalog>(WholesaleCatalog) })!;
@@ -29,7 +28,6 @@ public class ShopPriceBookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ASetPriceRaisesChanged()
     {
         var book = AutoFree(new ShopPriceBook())!;
@@ -43,7 +41,6 @@ public class ShopPriceBookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OnlyTheSetPricesAreSaved()
     {
         var book = AutoFree(new ShopPriceBook())!;
@@ -58,7 +55,6 @@ public class ShopPriceBookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ALoadReplacesEveryPrice()
     {
         var book = AutoFree(new ShopPriceBook())!;

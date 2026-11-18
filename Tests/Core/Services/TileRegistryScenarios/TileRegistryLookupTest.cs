@@ -35,7 +35,6 @@ public class TileRegistryLookupTest : TileRegistryTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnAtlasWhoseImageDoesNotLoadFallsBackToTheOriginalTileset()
     {
         var mappingPath = $"user://tile-registry-atlas-{Guid.NewGuid():N}.json";
@@ -72,7 +71,6 @@ public class TileRegistryLookupTest : TileRegistryTestBase
         {
             if (File.Exists(absolutePath))
                 File.Delete(absolutePath);
-            CompiledAtlasLoader.ClearCache();
         }
     }
 

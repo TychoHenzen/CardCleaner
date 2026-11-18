@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshTerrain;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
 namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh.MeshTerrain;
@@ -24,7 +25,6 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh.MeshTerrain;
 public class MeshTerrainFailurePathTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void FailedForegroundSolveClearsForegroundAndKeepsBackgrounds()
     {
         // ASSUMPTION: seed 4242 with these cards reaches the foreground step, as MeshTerrainFingerprintTest pins.
@@ -52,7 +52,6 @@ public class MeshTerrainFailurePathTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoForegroundCandidatesNeverCallsTheSolver()
     {
         var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
@@ -76,7 +75,6 @@ public class MeshTerrainFailurePathTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NullSamplerUsesFallbackTerrainAndNeverCallsTheSolver()
     {
         var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
@@ -99,7 +97,7 @@ public class MeshTerrainFailurePathTest
     }
 
     private static IReadOnlyList<(string tileA, string tileB)> TransitionPairs() =>
-        new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
 
     private static string AutoTileId(ITileRegistry registry) =>
         registry.GetAllTiles().First(tile => tile.HasAutoTileVariants).Id;

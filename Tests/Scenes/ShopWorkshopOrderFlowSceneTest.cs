@@ -34,7 +34,6 @@ public class ShopWorkshopOrderFlowSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemovingADeliveredItemFreesItsSlotForTheNextOrder()
     {
         _rig.Money.Add(WorkshopDeliveryRig.TopUp);
@@ -53,7 +52,6 @@ public class ShopWorkshopOrderFlowSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FullDeliveryAreaRejectsTheNextTallOrderWithAMessageAndNoCharge()
     {
         _rig.Money.Add(WorkshopDeliveryRig.TopUp);
@@ -71,7 +69,6 @@ public class ShopWorkshopOrderFlowSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OrderingNeverLocksAfterManyDeliveriesOfSmallItems()
     {
         _rig.Money.Add(WorkshopDeliveryRig.TopUp);
@@ -89,7 +86,6 @@ public class ShopWorkshopOrderFlowSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ConveyorsStackOnConveyorsOnceTheGroundIsFull()
     {
         _rig.Money.Add(WorkshopDeliveryRig.TopUp);
@@ -109,7 +105,6 @@ public class ShopWorkshopOrderFlowSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WorkshopOrdersLeaveTheShopDeliveryGridUntouched()
     {
         _rig.Money.Add(WorkshopDeliveryRig.TopUp);
@@ -126,7 +121,6 @@ public class ShopWorkshopOrderFlowSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AlternatingOrdersFromBothTerminalsKeepOneConsistentBalanceAndTwoSeparateGrids()
     {
         _rig.Money.Add(WorkshopDeliveryRig.TopUp);

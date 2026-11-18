@@ -16,7 +16,6 @@ public class DailyBillBookTest
     private const int WageAmount = 25;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LinesFollowConstructorOrderAndTotalSums()
     {
         var book = new DailyBillBook(new IDailyBillSource[]
@@ -32,7 +31,6 @@ public class DailyBillBookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EmptySourceContributesNothing()
     {
         var book = new DailyBillBook(
@@ -43,7 +41,6 @@ public class DailyBillBookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NonPositiveLinesAreDropped()
     {
         var book = new DailyBillBook(new IDailyBillSource[]
@@ -61,7 +58,6 @@ public class DailyBillBookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PassesTheDayToEachSource()
     {
         var source = new FakeSource(new BillLine("Rent", RentAmount));
@@ -74,7 +70,6 @@ public class DailyBillBookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ScanBuildsTheBookWithRent()
     {
         var container = new ServiceContainer();
@@ -94,7 +89,6 @@ public class DailyBillBookTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ScanBuildsTheBookWithTheCashierWage()
     {
         var container = new ServiceContainer();

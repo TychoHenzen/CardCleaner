@@ -38,7 +38,6 @@ public class ShopWorkshopSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ControllerExportsPointAtTheCabinetPartsLikeStartScene()
     {
         var controller = _workshop.GetNode<DeckBuilderController>("DeckbuilderController");
@@ -53,7 +52,6 @@ public class ShopWorkshopSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CreditCardSeederTargetsTheDeckHolderAndOwnsTheSpawnedCard()
     {
         var seeder = _workshop.GetNode<CreditCardSeeder>("CreditCardSeeder");
@@ -63,7 +61,6 @@ public class ShopWorkshopSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NoWiredNodePathIsNull()
     {
         var checkedPaths = 0;
@@ -81,7 +78,6 @@ public class ShopWorkshopSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SceneDoesNotSerializeRuntimeOnlyFields()
     {
         var state = _packed.GetState();
@@ -98,7 +94,6 @@ public class ShopWorkshopSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ShopSceneCarriesOneCopyOfEachCabinetSingletonAndOneSaveService()
     {
         var shop = GD.Load<PackedScene>(ShopScenePath).Instantiate<Node3D>();
@@ -118,7 +113,6 @@ public class ShopWorkshopSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SeamTargetsTheWorkshopEntryMarker()
     {
         var shop = GD.Load<PackedScene>(ShopScenePath).Instantiate<Node3D>();
@@ -135,7 +129,6 @@ public class ShopWorkshopSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ReturnDoorwayIsAlwaysOpenAndLeadsBackToTheBackoffice()
     {
         var shop = GD.Load<PackedScene>(ShopScenePath).Instantiate<Node3D>();

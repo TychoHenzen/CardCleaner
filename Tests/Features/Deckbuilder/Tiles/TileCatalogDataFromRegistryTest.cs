@@ -17,7 +17,6 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Tiles;
 public class TileCatalogDataFromRegistryTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void RegistryConstructorMatchesTheTwoArgumentPathForTheShippedRegistry()
     {
         var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
@@ -32,7 +31,6 @@ public class TileCatalogDataFromRegistryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FromReturnsTheSameSnapshotAsTheRegistryConstructor()
     {
         var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());

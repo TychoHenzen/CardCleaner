@@ -1,6 +1,7 @@
 using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.TerrainComposition;
 
@@ -17,6 +18,6 @@ public abstract class TerrainCompositionContextTestBase
     public void Setup()
     {
         _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
-        _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
+        _resolver = GameTransitionResolver.Shared;
     }
 }

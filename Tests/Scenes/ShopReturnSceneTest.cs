@@ -41,7 +41,6 @@ public class ShopReturnSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ReturnDoorwayOpensWithoutASpecialCard()
     {
         await _rig.MovePlayer(_workshop.GlobalPosition + NearTheReturn);
@@ -51,7 +50,6 @@ public class ShopReturnSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SteppingIntoTheReturnLandsInTheBackofficeWalkingAwayFromTheSeam()
     {
         await _rig.MovePlayer(_workshop.GlobalPosition + NearTheReturn);
@@ -66,7 +64,6 @@ public class ShopReturnSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ArrivingWithASpecialCardDoesNotSendThePlayerStraightBack()
     {
         await _rig.Hold(ShopSeamRig.Special());
@@ -81,7 +78,6 @@ public class ShopReturnSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ArrivingInTheWorkshopDoesNotSendThePlayerStraightBack()
     {
         await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);

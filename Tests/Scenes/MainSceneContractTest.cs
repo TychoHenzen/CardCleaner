@@ -12,7 +12,6 @@ public class MainSceneContractTest
     private const string MainMenuPath = "res://Scenes/UI/MainMenu.tscn";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ProjectMainSceneIsTheMainMenu()
     {
         var mainScene = ProjectSettings.GetSetting("application/run/main_scene").AsString();

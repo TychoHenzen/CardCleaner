@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.Pipeline;
 
@@ -19,7 +20,7 @@ public abstract class PipelineIntegrationTestBase
     public void Setup()
     {
         _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
-        _resolver = new CompiledTransitionResolver(new GodotAssetPaths());
+        _resolver = GameTransitionResolver.Shared;
     }
 
     /// <summary>

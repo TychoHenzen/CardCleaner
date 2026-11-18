@@ -29,7 +29,6 @@ public class NeighbourhoodScenerySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ScenerySolidnessAndFootprint()
     {
         var collisions = SceneNodes.Descendants(_neighbourhood).OfType<CollisionObject3D>().ToList();
@@ -49,7 +48,6 @@ public class NeighbourhoodScenerySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PropsKeepClearOfCustomerMarkers()
     {
         var propVisuals = SceneNodes.VisibleVisuals(SceneNodes.Require(_neighbourhood, "Props")).ToList();

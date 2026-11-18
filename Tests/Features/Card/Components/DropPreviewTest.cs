@@ -24,7 +24,6 @@ public class DropPreviewTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DropPreview_InitialState_PreviewIsHidden()
     {
         //Arrange
@@ -34,7 +33,6 @@ public class DropPreviewTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ShowPreview_True_MakesPreviewVisible()
     {
         // Act
@@ -45,7 +43,6 @@ public class DropPreviewTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ShowPreview_False_MakesPreviewHidden()
     {
         // Arrange - First make it visible
@@ -59,7 +56,6 @@ public class DropPreviewTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UpdatePreview_ValidOriginAndDirection_UpdatesMesh()
     {
         // Arrange
@@ -76,7 +72,6 @@ public class DropPreviewTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UpdatePreview_HorizontalDirection_UpdatesMesh()
     {
         // Arrange
@@ -91,7 +86,6 @@ public class DropPreviewTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UpdatePreview_ZeroDirection_DoesNotCrash()
     {
         // Arrange
@@ -105,7 +99,6 @@ public class DropPreviewTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UpdatePreview_ExtremeValues_DoesNotCrash()
     {
         // Arrange
@@ -119,7 +112,6 @@ public class DropPreviewTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UpdatePreview_MultipleUpdates_HandledCorrectly()
     {
         // Arrange

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
@@ -90,7 +91,7 @@ internal sealed class TerrainTransitionRenderer
         var renderPosition = variant.HasValue && variant.Value.HasOffset
             ? position + variant.Value.Offset
             : position;
-        _terrainLayer!.SetCell(renderPosition, coordinates.SourceId, coordinates.AtlasCoords);
+        AtlasCells.Set(_terrainLayer!, renderPosition, coordinates.SourceId, coordinates.AtlasCoords);
         state.TilesRendered++;
     }
 

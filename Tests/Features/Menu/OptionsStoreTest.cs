@@ -25,7 +25,6 @@ public class OptionsStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Save_then_Load_round_trips()
     {
         var options = new GameOptions
@@ -42,7 +41,6 @@ public class OptionsStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Load_of_garbage_file_returns_defaults()
     {
         WriteText(_path, "not [ a cfg");
@@ -53,7 +51,6 @@ public class OptionsStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Load_of_missing_file_returns_defaults()
     {
         var loaded = new OptionsStore(_path).Load();
@@ -62,7 +59,6 @@ public class OptionsStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Save_clamps_out_of_range_values()
     {
         var store = new OptionsStore(_path);
@@ -82,7 +78,6 @@ public class OptionsStoreTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Save_after_garbage_load_repairs_the_file()
     {
         WriteText(_path, "not [ a cfg");

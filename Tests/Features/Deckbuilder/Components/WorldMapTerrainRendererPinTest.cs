@@ -15,6 +15,7 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Components;
 
@@ -32,7 +33,6 @@ public class WorldMapTerrainRendererPinTest
     private static readonly Vector2I GridSize = new(16, 12);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SeededMapRendersTheSameCellsIntoAllFourLayers()
     {
         var tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
@@ -41,7 +41,7 @@ public class WorldMapTerrainRendererPinTest
         var rng = RandomSources.Create(GridSeed);
         var gradient = Gradients.FromCards(MapCards(), rng);
         var biomeProvider = BiomeMaps.Create(biomeRegistry.ToBiomeSet(), gradient.GetSignatureAt, GridSize);
-        var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var transitionPairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),
             TileCatalogData.From(tileRegistry));
@@ -64,7 +64,7 @@ public class WorldMapTerrainRendererPinTest
             var renderer = new WorldMapTerrainRenderer(
                 terrain, decoration, structure, effect, tileRegistry,
                 TerrainTransitions.Create(
-                    TransitionResolvers.Create(new GodotAssetPaths()),
+                    GameTransitionResolver.Shared,
                     CompiledAtlasLoader.LoadMapping()));
             renderer.RenderTerrainTransitions(map);
             renderer.RenderNonTerrainTiles(map);
@@ -73,6 +73,10 @@ public class WorldMapTerrainRendererPinTest
             // ASSUMPTION: the seeded map draws at least one terrain cell, so an empty terrain layer means the
             // render path did nothing rather than matched the golden.
             AssertThat(terrain.GetUsedCells().Count).IsGreater(0);
+            // The compiled atlas creates a transition tile only when a cell first shows it, so every painted
+            // terrain cell must have its tile.
+            var cellsWithoutTile = terrain.GetUsedCells().Where(cell => terrain.GetCellTileData(cell) == null);
+            AssertThat(string.Join(", ", cellsWithoutTile)).IsEmpty();
 
             var hash = Fingerprint(layers);
             GD.Print("[WorldMapTerrainRendererPin] hash " + hash);

@@ -29,14 +29,12 @@ public class WorkshopGridTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CoordinatesUseTheGridMapCellSize()
     {
         AssertThat(_grid.Coordinates.CellSize).IsEqual(_grid.CellSize);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WorldToCellAgreesWithGridMapThroughAMovedParent()
     {
         foreach (var world in new[] { new Vector3(66.1f, 0.05f, -4.0f), new Vector3(59.9f, -0.15f, -9.7f), new Vector3(85.3f, 0.5f, 3.3f) })
@@ -44,7 +42,6 @@ public class WorkshopGridTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CellToWorldRoundTripsThroughAMovedAndTurnedGrid()
     {
         _grid.Position = new Vector3(0.6f, 0f, -1.4f);
@@ -60,7 +57,6 @@ public class WorkshopGridTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WorldPositionOfABuiltCellMapsBackToThatCell()
     {
         foreach (var cell in _grid.GetUsedCells())
@@ -73,7 +69,6 @@ public class WorkshopGridTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FloorSlabTopAndWallCellBottomSitAtGroundLevelOfTheWorkshop()
     {
         var floor = _grid.GetNode<CollisionShape3D>("Floor/CollisionShape3D");

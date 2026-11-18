@@ -62,7 +62,6 @@ public class ShopFurnitureMoveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PickUpThenConfirmMovesTheSameShelf()
     {
         var placed = await PlaceShelf(4f, 8f);
@@ -88,7 +87,6 @@ public class ShopFurnitureMoveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task APickedUpShelfCanBePutBackWhereItStood()
     {
         var placed = await PlaceShelf(4f, 8f);
@@ -103,7 +101,6 @@ public class ShopFurnitureMoveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CancelOfAMoveRestoresThePose()
     {
         _controller.Begin(NewBox());
@@ -125,7 +122,6 @@ public class ShopFurnitureMoveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PickUpIsRefusedWhileTheShelfHoldsStock()
     {
         var placed = await PlaceShelf(4f, 8f);
@@ -147,7 +143,6 @@ public class ShopFurnitureMoveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ASaveDuringAMoveKeepsTheShelfAtItsOldPose()
     {
         var placed = await PlaceShelf(4f, 8f);
@@ -164,7 +159,6 @@ public class ShopFurnitureMoveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AControllerLeavingTheTreeMidMoveReturnsTheShelf()
     {
         var placed = await PlaceShelf(4f, 8f);
@@ -180,7 +174,6 @@ public class ShopFurnitureMoveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task NavigationGoesAroundThePlacedShelf()
     {
         await PlaceShelf(4f, 8f);
@@ -192,7 +185,6 @@ public class ShopFurnitureMoveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PickUpFreesTheWayAgain()
     {
         var placed = await PlaceShelf(4f, 8f);

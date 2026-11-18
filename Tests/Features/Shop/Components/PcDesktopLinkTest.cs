@@ -39,7 +39,6 @@ public class PcDesktopLinkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OpenWithDesktopMakesScreenCameraCurrentAndRestoresOnClose()
     {
         var playerCamera = AddPlayerCamera();
@@ -66,7 +65,6 @@ public class PcDesktopLinkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EscapeClosesTheDesktop()
     {
         var playerCamera = AddPlayerCamera();
@@ -81,7 +79,6 @@ public class PcDesktopLinkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TaskbarCloseButtonClosesTheDesktop()
     {
         var playerCamera = AddPlayerCamera();
@@ -97,7 +94,6 @@ public class PcDesktopLinkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FreeingTheTerminalWhileOpenRestoresTheCamera()
     {
         var playerCamera = AddPlayerCamera();
@@ -112,7 +108,6 @@ public class PcDesktopLinkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DoubleOpenAndDoubleCloseActOnce()
     {
         var playerCamera = AddPlayerCamera();

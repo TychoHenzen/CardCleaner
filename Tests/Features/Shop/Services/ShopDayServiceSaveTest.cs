@@ -15,7 +15,6 @@ public class ShopDayServiceSaveTest
     private const int RentAmount = 40;
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SaveRunsAfterTheDayAdvances()
     {
         var service = NewService(10);
@@ -41,7 +40,6 @@ public class ShopDayServiceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SaveFailureStillRaisesClosed()
     {
         var service = NewService(500);
@@ -59,7 +57,6 @@ public class ShopDayServiceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NoSaveCommandStillCloses()
     {
         var service = NewService(500);
@@ -74,7 +71,6 @@ public class ShopDayServiceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SaveLoadKeepsDay()
     {
         var first = NewService(500);
@@ -93,7 +89,6 @@ public class ShopDayServiceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SaveLoadKeepsDebt()
     {
         var first = NewService(10);
@@ -110,7 +105,6 @@ public class ShopDayServiceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TreeJsonRoundTrip()
     {
         var firstRoot = AutoFree(new Node());
@@ -132,7 +126,6 @@ public class ShopDayServiceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MidDaySaveRestoresClosedAtOpening()
     {
         var first = NewService(500);
@@ -156,7 +149,6 @@ public class ShopDayServiceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MissingKeysLoadDayOne()
     {
         var service = NewService(500);
@@ -168,7 +160,6 @@ public class ShopDayServiceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MalformedStateLoadsDayOne()
     {
         var service = NewService(500);
@@ -183,7 +174,6 @@ public class ShopDayServiceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OutOfRangeLoadsDayOne()
     {
         var service = NewService(500);
@@ -198,7 +188,6 @@ public class ShopDayServiceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NegativeDayClampsToOne()
     {
         var service = NewService(500);
@@ -212,7 +201,6 @@ public class ShopDayServiceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NegativeDebtClampsToZero()
     {
         var service = NewService(500);

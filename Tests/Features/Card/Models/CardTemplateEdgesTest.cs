@@ -8,7 +8,6 @@ namespace CardCleaner.Tests.Features.Card.Models;
 public class CardTemplateEdgesTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void EdgeLayersAreVisibleByDefault()
     {
         var template = new CardTemplate();
@@ -17,7 +16,6 @@ public class CardTemplateEdgesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void HidingEdgesTurnsOffEverySocketAndGemButNothingElse()
     {
         var template = new CardTemplate();
@@ -30,7 +28,6 @@ public class CardTemplateEdgesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EdgesCanBeShownAgain()
     {
         var template = new CardTemplate();
@@ -42,7 +39,6 @@ public class CardTemplateEdgesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void HidingTheEnergyOrbTurnsOffOnlyItsThreeLayers()
     {
         var template = new CardTemplate();
@@ -58,7 +54,6 @@ public class CardTemplateEdgesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheEnergyOrbCanBeShownAgain()
     {
         var template = new CardTemplate();
@@ -72,7 +67,6 @@ public class CardTemplateEdgesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void HidingTheEnergyOrbKeepsTheTwentySevenShaderLayers()
     {
         var template = new CardTemplate();

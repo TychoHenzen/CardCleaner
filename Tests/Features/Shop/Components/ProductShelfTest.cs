@@ -30,7 +30,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ProductShelfHasSixSlotsAndJoinsTheSalesGroupOnly()
     {
         AssertThat(_shelf.Kind).IsEqual(ShelfKind.ProductShelf);
@@ -40,7 +39,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BoosterAndPackLockOntoTheProductSlots()
     {
         var slots = _shelf.Slots.ToArray();
@@ -58,7 +56,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardIsNotLockedOntoAProductSlot()
     {
         var slot = _shelf.Slots.ElementAt(2);
@@ -73,7 +70,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ReparentingABoosterAwayFreesItsSlot()
     {
         var slot = _shelf.Slots.First();
@@ -87,7 +83,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ABoosterDroppedOnAFullProductSlotIsEjected()
     {
         var slot = _shelf.Slots.First();

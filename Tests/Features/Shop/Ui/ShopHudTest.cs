@@ -11,7 +11,6 @@ namespace CardCleaner.Tests.Features.Shop.Ui;
 public class ShopHudTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void ShowsMoneyDayAndTime()
     {
         var days = new FakeShopDayService { Day = 4, MinutesOfDay = 480 };

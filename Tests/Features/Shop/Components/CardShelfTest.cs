@@ -10,7 +10,6 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 public class CardShelfTest : CardShelfTestBase
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void ShelfSceneHasSeveralOneCardSlotsAndJoinsTheShelfGroup()
     {
         AssertThat(_shelf.SlotCount).IsGreater(1);
@@ -18,7 +17,6 @@ public class CardShelfTest : CardShelfTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CardShelfJoinsTheCardAndSalesGroupsButNotTheStorageGroup()
     {
         AssertThat(_shelf.Kind).IsEqual(ShelfKind.CardShelf);
@@ -27,7 +25,6 @@ public class CardShelfTest : CardShelfTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardDroppedOnASlotIsLockedAndShownOnTheShelf()
     {
         var slot = _shelf.Slots.First();
@@ -42,7 +39,6 @@ public class CardShelfTest : CardShelfTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PickingTheCardUpTakesItOffTheShelfAgain()
     {
         var slot = _shelf.Slots.First();
@@ -56,7 +52,6 @@ public class CardShelfTest : CardShelfTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ReleaseFreesTheSlotForTheNextCard()
     {
         var slot = _shelf.Slots.First();
@@ -72,14 +67,12 @@ public class CardShelfTest : CardShelfTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EmptySlotConsumesNoSignature()
     {
         AssertThat(_shelf.Slots.First().ConsumeCardSignature()).IsNull();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardIsLockedWhateverItsNodeIsNamed()
     {
         var slot = _shelf.Slots.First();

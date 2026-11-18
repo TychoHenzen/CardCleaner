@@ -11,7 +11,6 @@ namespace CardCleaner.Tests.Scenes;
 public class ShopSceneLayoutWalkTest : ShopSceneContractTestBase
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void StorageAndBackofficeAreOneRoom()
     {
         AssertThat(_shop.GetNodeOrNull("World/Walls/BackRoomDivider")).IsNull();
@@ -28,7 +27,6 @@ public class ShopSceneLayoutWalkTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RightArmWrapsTheStorefront()
     {
         AssertBool(IsInsideArea("RightStorage", new Vector3(23f, 0f, -7f))).IsTrue();
@@ -49,7 +47,6 @@ public class ShopSceneLayoutWalkTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RoadDoorJoinsStreetAndRightArm()
     {
         var street = _shop.GetNode<CollisionShape3D>("World/Street/Floor/CollisionShape3D");
@@ -76,7 +73,6 @@ public class ShopSceneLayoutWalkTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ExpansionLotIsLockedLeftOfTheStorefront()
     {
         // Storefront side, stopped by LeftWall at x = 0.

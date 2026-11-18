@@ -38,8 +38,7 @@ internal sealed class WorldMapRenderLayer
         viewport.MoveChild(terrainRenderer, 0);
 
         terrainRenderer.Scale = new Vector2(scale, scale);
-        if (_settings.TileRegistry != null)
-            terrainRenderer.SetTileRegistry(_settings.TileRegistry);
+        terrainRenderer.SetTransitionResolver(_settings.TransitionResolver);
         terrainRenderer.RenderTerrain(_mesh);
 
         if (_settings.FogOfWarEnabled && fogOfWar != null)

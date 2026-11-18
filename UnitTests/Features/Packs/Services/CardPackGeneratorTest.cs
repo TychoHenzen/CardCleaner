@@ -1,0 +1,123 @@
+using System.Linq;
+using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Packs.Models;
+using CardCleaner.Scripts.Features.Packs.Services;
+using CardCleaner.Scripts.Core.Randomness;
+using Godot;
+
+namespace CardCleaner.Tests.Features.Packs.Services;
+
+[TestSuite]
+public class CardPackGeneratorTest
+{
+    private const ulong Seed = 20240531;
+    private const int BoxesForRateCheck = 400;
+    private const int CardsPerBox = 512;
+
+    /// <summary>About 4 standard deviations of the special count over <see cref="BoxesForRateCheck" /> boxes.</summary>
+    private const double RateTolerance = 0.20;
+
+    private static CardPackGenerator Seeded(ulong seed) => new(RandomSources.Create(seed));
+
+    [TestCase]
+    public static void BoosterHoldsEightCards()
+    {
+        AssertThat(Seeded(Seed).OpenBooster().Length).IsEqual(8);
+    }
+
+    [TestCase]
+    public static void BoxHoldsFiveHundredAndTwelveCards()
+    {
+        AssertThat(Seeded(Seed).OpenBox().Length).IsEqual(CardContainerLayout.CardsPerBox);
+    }
+
+    [TestCase]
+    public static void SpecialOddsAreOneInTwoHundred()
+    {
+        AssertThat(CardPackGenerator.SpecialCardOdds).IsEqual(200);
+    }
+
+    [TestCase]
+    public static void SeededSpecialRateIsWithinToleranceOfOneInTwoHundred()
+    {
+        var generator = Seeded(Seed);
+        var specials = 0;
+
+        for (var i = 0; i < BoxesForRateCheck; i++)
+            specials += generator.OpenBox().Count(c => c.HasMagicalPotential());
+
+        var expected = BoxesForRateCheck * CardsPerBox / CardPackGenerator.SpecialCardOdds;
+        AssertThat(specials).IsBetween(
+            (int)(expected * (1 - RateTolerance)),
+            (int)(expected * (1 + RateTolerance)));
+    }
+
+    [TestCase]
+    public static void CommonCardsHaveAnAllZeroSignature()
+    {
+        var common = Seeded(Seed).OpenBox().Where(c => !c.HasMagicalPotential()).ToArray();
+
+        AssertThat(common.Length).IsGreater(0);
+        foreach (var card in common)
+            AssertThat(card.Elements).IsEqual(new float[8]);
+    }
+
+    [TestCase]
+    public static void SpecialCardsHaveANonZeroSignature()
+    {
+        var generator = Seeded(Seed);
+        var special = Enumerable.Range(0, BoxesForRateCheck)
+            .SelectMany(_ => generator.OpenBox())
+            .Where(c => c.HasMagicalPotential())
+            .ToArray();
+
+        AssertThat(special.Length).IsGreater(0);
+        foreach (var card in special)
+            AssertThat(card.Elements.Any(e => e != 0f)).IsTrue();
+    }
+
+    [TestCase]
+    public static void SameSeedReproducesTheSamePositionsOfSpecialCards()
+    {
+        static int[] SpecialPositions(CardPackGenerator generator) =>
+            generator.OpenBox().Select((c, i) => (c, i)).Where(t => t.c.HasMagicalPotential()).Select(t => t.i)
+                .ToArray();
+
+        // Twenty boxes hold about twenty special cards, so the comparison is not vacuous.
+        var first = Seeded(Seed);
+        var second = Seeded(Seed);
+        var specialSeen = 0;
+        for (var box = 0; box < 20; box++)
+        {
+            var a = SpecialPositions(first);
+            var b = SpecialPositions(second);
+            AssertThat(a).IsEqual(b);
+            specialSeen += a.Length;
+        }
+
+        AssertThat(specialSeen).IsGreater(0);
+    }
+
+    [TestCase]
+    public static void SeededRunsProduceIdenticalSignatures()
+    {
+        var a = Seeded(Seed).OpenBox().Select(c => c.Elements).ToArray();
+        var b = Seeded(Seed).OpenBox().Select(c => c.Elements).ToArray();
+
+        for (var i = 0; i < a.Length; i++)
+            AssertThat(a[i]).IsEqual(b[i]);
+    }
+
+    [TestCase]
+    public static void CommonSignatureHasNoMagicalPotential()
+    {
+        AssertThat(CardPackGenerator.CommonSignature().HasMagicalPotential()).IsFalse();
+    }
+
+    [TestCase]
+    public static void SignatureWithAnyNonZeroElementHasMagicalPotential()
+    {
+        for (var i = 0; i < 8; i++)
+            AssertThat(new CardSignature().With(i, 0.4f).HasMagicalPotential()).IsTrue();
+    }
+}

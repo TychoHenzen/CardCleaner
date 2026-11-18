@@ -18,7 +18,6 @@ public class ShopProgressionSaveTest
     private const int ThirdAward = 1100;
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SavedXpRestoresOnAFreshNode()
     {
         var first = AutoFree(new ShopProgression());
@@ -34,7 +33,6 @@ public class ShopProgressionSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LoadingASaveWithNoXpEntryStartsAtZero()
     {
         var progression = AutoFree(new ShopProgression());
@@ -47,7 +45,6 @@ public class ShopProgressionSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NegativeXpLoadsAsZero()
     {
         var progression = AutoFree(new ShopProgression());
@@ -60,7 +57,6 @@ public class ShopProgressionSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NonNumericXpLoadsAsZeroWithoutThrowing()
     {
         var progression = AutoFree(new ShopProgression());
@@ -73,7 +69,6 @@ public class ShopProgressionSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void HugeXpLoadsClampedToTheCeiling()
     {
         var progression = AutoFree(new ShopProgression());
@@ -87,7 +82,6 @@ public class ShopProgressionSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LoadRaisesProgressChangedExactlyOnce()
     {
         var progression = AutoFree(new ShopProgression());
@@ -102,7 +96,6 @@ public class ShopProgressionSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task EachSlotRestoresItsOwnXp()
     {
         using var scene = new SaveWorld("ShopProgressionWorld");

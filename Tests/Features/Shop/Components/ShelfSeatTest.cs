@@ -38,7 +38,6 @@ public class ShelfSeatTest
     [TestCase(ProductShelfScene, "res://Scenes/Shop/Items/Pack.tscn")]
     [TestCase(RackScene, "res://Scenes/Shop/Items/Booster.tscn")]
     [TestCase(RackScene, "res://Scenes/Shop/Items/CardboardBox.tscn")]
-    [TestCategory("Unit")]
     public static void StockRestsOnABoardOfTheShelfModel(string shelfScene, string stock)
     {
         var shelf = TurnedShelf(shelfScene);
@@ -66,7 +65,6 @@ public class ShelfSeatTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryCardStandsOnItsStandOnABoardFacingTheFront()
     {
         var shelf = TurnedShelf(ShelfScene);
@@ -112,7 +110,6 @@ public class ShelfSeatTest
     // A player standing in front of the card shelf sees every card's art: the line from a standing eye to the card's
     // centre and to the middle of its top edge passes no part of the shelf, its price tags included.
     [TestCase]
-    [TestCategory("Unit")]
     public static void AStandingPlayerSeesEveryCardsArt()
     {
         var shelf = TurnedShelf(ShelfScene);
@@ -142,7 +139,6 @@ public class ShelfSeatTest
     [TestCase(ShelfScene)]
     [TestCase(ProductShelfScene)]
     [TestCase(RackScene)]
-    [TestCategory("Unit")]
     public static void TheUnpackAimCoversTheWholeShelf(string shelfScene)
     {
         var shelf = TurnedShelf(shelfScene);

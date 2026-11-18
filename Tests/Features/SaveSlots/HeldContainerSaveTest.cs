@@ -26,7 +26,6 @@ public class HeldContainerSaveTest
     private const ulong BoxSeed = 0x4E1DUL;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task SaveWhileHeld_RestoresHeldAndUnopened()
     {
         using var scene = new SaveWorld("HeldSaveWorld", addCardsToTree: false);
@@ -48,7 +47,6 @@ public class HeldContainerSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task SaveOnFloor_RestoresOnFloor()
     {
         using var scene = new SaveWorld("FloorSaveWorld", addCardsToTree: false);
@@ -74,7 +72,6 @@ public class HeldContainerSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RestoreHeld_WithoutHolder_FallsBackToPosition()
     {
         using var scene = new SaveWorld("NoHolderWorld", addCardsToTree: false);
@@ -105,7 +102,6 @@ public class HeldContainerSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RestoreHeld_WhenHolderBusy_FallsBackToPosition()
     {
         using var scene = new SaveWorld("BusyHolderWorld", addCardsToTree: false);
@@ -128,7 +124,6 @@ public class HeldContainerSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task RestoreOverCarriedContainer_ReleasesHolder()
     {
         using var scene = new SaveWorld("ReleaseHolderWorld", addCardsToTree: false);
@@ -149,7 +144,6 @@ public class HeldContainerSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OldSlotWithoutHeldKey_ReadsAsFloor()
     {
         // A record written before the held flag existed: no Held key and no Seed key.

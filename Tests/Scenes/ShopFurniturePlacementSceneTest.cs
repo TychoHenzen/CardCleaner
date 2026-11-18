@@ -54,7 +54,6 @@ public class ShopFurniturePlacementSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PathCrossesTheShelfRectBeforePlacement()
     {
         // Control: with no furniture placed, the straight route from A to B passes where the shelf will stand.
@@ -64,7 +63,6 @@ public class ShopFurniturePlacementSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BeginShowsAGhostAtTheSnappedAim()
     {
         AssertBool(_controller.Begin(NewBox())).IsTrue();
@@ -78,7 +76,6 @@ public class ShopFurniturePlacementSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BeginRefusesASecondSession()
     {
         AssertBool(_controller.Begin(NewBox())).IsTrue();
@@ -86,7 +83,6 @@ public class ShopFurniturePlacementSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ConfirmOnAnInvalidPoseIsRefused()
     {
         var box = NewBox();
@@ -104,7 +100,6 @@ public class ShopFurniturePlacementSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ConfirmOnAValidPoseBecomesTheRealShelf()
     {
         var box = NewBox();
@@ -125,7 +120,6 @@ public class ShopFurniturePlacementSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RotateSwapsTheFootprint()
     {
         _controller.Begin(NewBox());
@@ -142,7 +136,6 @@ public class ShopFurniturePlacementSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PlacedFurnitureBlocksAnOverlappingPose()
     {
         await PlaceShelf(4f, 8f);
@@ -155,7 +148,6 @@ public class ShopFurniturePlacementSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task APhysicsBodyBlocksThePose()
     {
         var body = new StaticBody3D { Name = "Blocker", Position = new Vector3(4f, 1f, 6f) };
@@ -177,7 +169,6 @@ public class ShopFurniturePlacementSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ConfirmRightAfterARotateJudgesTheRotatedPose()
     {
         // The 2 x 2 blocker clears the shelf at (4, 8) as it stands, but not once it is turned a quarter.
@@ -201,7 +192,6 @@ public class ShopFurniturePlacementSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CancelKeepsTheBox()
     {
         var box = NewBox();

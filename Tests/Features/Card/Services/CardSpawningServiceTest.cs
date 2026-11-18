@@ -92,7 +92,6 @@ public class CardSpawningServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestSpawnRandomCardCreatesCard()
     {
         // Arrange
@@ -110,7 +109,6 @@ public class CardSpawningServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestSpawnRandomCardGivesTheSignatureRandomCreateSignature()
     {
         _rng.Seed = 42;
@@ -126,7 +124,6 @@ public class CardSpawningServiceTest
 
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestSpawnCardWithSpecificSignature()
     {
         // Arrange
@@ -145,7 +142,6 @@ public class CardSpawningServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestZeroSignatureCardsGetDifferentLookSeeds()
     {
         var first = (CardController)_service.SpawnCard(new CardSignature(), Transform3D.Identity, _cardParent)!;
@@ -162,7 +158,6 @@ public class CardSpawningServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestSpecialSignatureCardHasNoLookSeed()
     {
         var signature = new CardSignature(new[] { 0.5f, -0.3f, 0.8f, -0.1f, 0.2f, -0.7f, 0.9f, -0.4f });
@@ -174,7 +169,6 @@ public class CardSpawningServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestExplicitLookSeedIsUsedAndRngIsNotAdvanced()
     {
         _rng.Seed = 7;
@@ -188,7 +182,6 @@ public class CardSpawningServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TestLookSeedReachesTheGenerator()
     {
         var tree = (SceneTree)Engine.GetMainLoop();

@@ -22,7 +22,6 @@ public class CardShaderRendererTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CardShaderRenderer_CanBeInstantiated()
     {
         // Assert
@@ -31,7 +30,6 @@ public class CardShaderRendererTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SetGemEmission_ValidParameters_DoesNotThrow()
     {
         // Arrange
@@ -46,7 +44,6 @@ public class CardShaderRendererTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SetGemEmission_BoundaryIndices_DoesNotThrow()
     {
         // Act & Assert - Should handle boundary indices gracefully
@@ -57,7 +54,6 @@ public class CardShaderRendererTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SetGemEmission_InvalidIndices_DoesNotThrow()
     {
         // Act & Assert - Should handle invalid indices gracefully
@@ -69,7 +65,6 @@ public class CardShaderRendererTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ArtEffectsEnabled_WithoutAMaterialManager_ReadsFalseEvenWhenSetTrue()
     {
         // Arrange: a renderer that was never set up has no material manager to hold the flag.

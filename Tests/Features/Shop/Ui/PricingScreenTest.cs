@@ -33,7 +33,6 @@ public class PricingScreenTest
     public void Teardown() => TestServices.Reset();
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OpenShowsTheStockAndItsFiguresAndHoldsTheCursor()
     {
         var stock = new FakeStock();
@@ -49,7 +48,6 @@ public class PricingScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheFiguresFollowTheEntry()
     {
         _screen.Open(new FakeStock());
@@ -61,7 +59,6 @@ public class PricingScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SetPriceAppliesTheEntryAndCloses()
     {
         var stock = new FakeStock();
@@ -77,7 +74,6 @@ public class PricingScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TypedTextCountsWithoutEnter()
     {
         var stock = new FakeStock();
@@ -96,7 +92,6 @@ public class PricingScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MarketPriceMovesTheEntryToTheMarketPrice()
     {
         var stock = new FakeStock();
@@ -109,7 +104,6 @@ public class PricingScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ThePriceCannotGoBelowOne()
     {
         var stock = new FakeStock { Price = 1 };
@@ -122,7 +116,6 @@ public class PricingScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CancelAndEscapeCloseWithoutAChange()
     {
         var stock = new FakeStock();
@@ -141,7 +134,6 @@ public class PricingScreenTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AReopenShowsTheNewStockWithoutASecondClaim()
     {
         _screen.Open(new FakeStock());

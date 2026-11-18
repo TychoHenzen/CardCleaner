@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
@@ -50,6 +51,7 @@ public class ShopWorkshopRealServicesSceneTest
             new GodotAssetPaths(),
             new CompiledAtlasSource()
         ));
+        TestServices.Container.RegisterSingleton<ITransitionResolver>(GameTransitionResolver.Shared);
         TestServices.Container.RegisterSingleton<IMeshMapGenerator>(
             MeshMapGeneratorFixture.Create(WorkshopSceneRig.SmallMeshRings));
 
@@ -77,7 +79,6 @@ public class ShopWorkshopRealServicesSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RegistrationResolvesTheWorkshopSessionServiceAndTheShopSpawner()
     {
         AssertBool(ReferenceEquals(TestServices.Resolver.Get<IGameSessionService>(),
@@ -87,7 +88,6 @@ public class ShopWorkshopRealServicesSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RealSpawnerSeatsTheCreditCardInTheDeckHolderOnly()
     {
         var deck = _shop.GetNode<DeckSlot>("World/Workshop/Cabinet/Assembly/DeckSlot");
@@ -98,7 +98,6 @@ public class ShopWorkshopRealServicesSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TogglePicksTheIrregularMapAndPressingTheButtonExploresIt()
     {
         var workshop = _shop.GetNode<Node3D>("World/Workshop");

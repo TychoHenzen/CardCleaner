@@ -9,7 +9,6 @@ namespace CardCleaner.Tests.Features.Shop.Ui;
 public class ShopHudLevelTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void HudCarriesTheLevelBarInItsStackAndFollowsProgression()
     {
         var hud = new ShopHud();
@@ -26,7 +25,6 @@ public class ShopHudLevelTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LevelBarNeverTakesMouseInput()
     {
         var hud = new ShopHud();

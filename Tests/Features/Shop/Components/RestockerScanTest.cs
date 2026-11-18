@@ -35,7 +35,6 @@ public class RestockerScanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PackOnARackSlotIsARackSource()
     {
         var pack = Container(PackScene, new Vector3(0f, 1f, 0f));
@@ -49,7 +48,6 @@ public class RestockerScanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LoosePackNearARackIsAFloorSourceAndAFarOneIsSkipped()
     {
         Container(PackScene, new Vector3(2f, 1f, 0f));
@@ -63,7 +61,6 @@ public class RestockerScanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OpenedHeldAndCarriedContainersAreSkipped()
     {
         var opened = Container(PackScene, new Vector3(1f, 1f, 0f));
@@ -83,7 +80,6 @@ public class RestockerScanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OnlyEmptySalesShelfSlotsAreFreeTargets()
     {
         var filled = Container(PackScene, new Vector3(30f, 1f, 0f));
@@ -97,7 +93,6 @@ public class RestockerScanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void IdsFollowTreeOrder()
     {
         var first = Container(BoxScene, new Vector3(1f, 1f, 0f));
@@ -111,7 +106,6 @@ public class RestockerScanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AContainerKeepsItsIdWhenAnEarlierOneLeaves()
     {
         var first = Container(BoxScene, new Vector3(1f, 1f, 0f));
@@ -127,7 +121,6 @@ public class RestockerScanTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CarriedContainerIsTheOnlySourceAndRackSlotsListTheEmptyOnes()
     {
         var pack = Container(PackScene, new Vector3(1f, 1f, 0f));

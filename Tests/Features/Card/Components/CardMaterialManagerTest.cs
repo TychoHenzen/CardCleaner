@@ -209,7 +209,6 @@ public class CardMaterialManagerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SetArtEffectsReachesTheMaterialAsShaderParameters()
     {
         var normalMap = CreateMockTexture();
@@ -225,7 +224,6 @@ public class CardMaterialManagerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SetArtEffectsWithoutANormalMapLeavesTheShaderDefault()
     {
         _manager.CardMaterialTemplate = LoadCardMaterial();
@@ -238,7 +236,6 @@ public class CardMaterialManagerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ArtEffectsSetAfterTheMaterialIsAppliedReachTheAppliedMaterial()
     {
         // A card's bevel map is baked off the main thread, so it can arrive after the material is on the mesh.
@@ -256,7 +253,6 @@ public class CardMaterialManagerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ClearingTheNormalMapAfterTheMaterialIsAppliedClearsItOnTheMaterial()
     {
         _manager.CardMaterialTemplate = LoadCardMaterial();
@@ -270,7 +266,6 @@ public class CardMaterialManagerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AMapForASupersededRequestIsIgnored()
     {
         _manager.CardMaterialTemplate = LoadCardMaterial();
@@ -286,7 +281,6 @@ public class CardMaterialManagerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AMaterialAppliedWhileTheEffectsAreOffShowsNone()
     {
         _manager.CardMaterialTemplate = LoadCardMaterial();
@@ -305,7 +299,6 @@ public class CardMaterialManagerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheArtTextureStaysAtItsLayerIndexWhenEarlierLayersHaveNoTexture()
     {
         var template = new CardTemplate();
@@ -325,7 +318,6 @@ public class CardMaterialManagerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ALayerWithoutATextureDrawsNothingInsteadOfShiftingTheOthers()
     {
         var layers = new LayerData[]

@@ -54,7 +54,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InteractableButton_DefaultValues_AreReasonable()
     {
         // Arrange
@@ -69,7 +68,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InteractableButton_InitialState_CorrectInterfaceValues()
     {
         // Assert - IInteractable implementation
@@ -79,7 +77,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Ready_WithButtonMesh_SetsInitialVisibility()
     {
         // Assert - Button mesh should be initially hidden and highlight should be hidden
@@ -88,7 +85,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Ready_SetsCorrectCollisionLayer()
     {
         // Assert
@@ -96,7 +92,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CanInteract_WhenEnabled_ReturnsTrue()
     {
         // Arrange
@@ -107,7 +102,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CanInteract_WhenDisabled_ReturnsFalse()
     {
         // Arrange
@@ -118,7 +112,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Interact_WhenEnabled_EmitsButtonPressedSignal()
     {
         // Arrange
@@ -132,7 +125,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Interact_WhenDisabled_DoesNotEmitSignal()
     {
         // Arrange
@@ -146,7 +138,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Highlight_WhenEnabled_ShowsHighlightMesh()
     {
         // Arrange
@@ -160,7 +151,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Highlight_WhenDisabled_DoesNotShowHighlight()
     {
         // Arrange
@@ -174,7 +164,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ClearHighlight_HidesHighlightMesh()
     {
         // Arrange
@@ -188,7 +177,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SetEnabled_True_EnablesButton()
     {
         // Arrange
@@ -204,7 +192,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SetEnabled_False_DisablesButton()
     {
         // Arrange
@@ -222,7 +209,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Properties_CanBeModified()
     {
         // Act
@@ -237,7 +223,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Interact_WithNullButtonMesh_DoesNotCrash()
     {
         // Arrange
@@ -250,7 +235,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Highlight_WithNullHighlightMesh_DoesNotCrash()
     {
         // Arrange
@@ -264,7 +248,6 @@ public class InteractableButtonTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MultipleInteractions_EmitMultipleSignals()
     {
         // Act

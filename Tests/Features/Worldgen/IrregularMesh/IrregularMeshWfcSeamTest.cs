@@ -54,7 +54,6 @@ public class IrregularMeshWfcSeamTest
         RegexOptions.Compiled);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void IrregularMapNamesOnlyTheWfcFrontDoor()
     {
         var declared = DeclaredWfcNames();
@@ -87,7 +86,6 @@ public class IrregularMeshWfcSeamTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DelegateDeclarationsAreCollectedAndAnonymousMethodsIgnored()
     {
         const string source = "namespace Sample;\n"
@@ -104,7 +102,6 @@ public class IrregularMeshWfcSeamTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SubNamespaceReferenceFlagsSubNamespacesAndSkipsTheRootNamespace()
     {
         AssertBool(SubNamespaceReference.IsMatch(

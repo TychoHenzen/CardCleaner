@@ -57,7 +57,6 @@ public class ShopStockAppClickPathSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ClickPathFromPcToDeliveredItem()
     {
         // The cardboard box unlocks at shop level 1, which a new shop already is, so its Add button is enabled here.
@@ -93,7 +92,6 @@ public class ShopStockAppClickPathSceneTest
     // Review thread 4469813403: a full-viewport app that stops the mouse over the taskbar made Home and Close
     // unreachable by a real click while an app was open. Both apps are opened here and both buttons are clicked.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TaskbarStaysClickableWhileAnAppIsOpen()
     {
         var desktop = _shop.GetNode<PcDesktop>($"{DesktopViewportPath}/PcDesktop");

@@ -30,7 +30,6 @@ public class NeighbourhoodArtSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ArtComesFromTheCityPack()
     {
         foreach (var slot in Slots())
@@ -54,7 +53,6 @@ public class NeighbourhoodArtSceneTest
     // window; the look is judged by eye and never gates merging). After the shop loads, every slot must have
     // loaded its pack mesh, hidden its placeholder and carry a material on each of its meshes.
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryArtSlotLoadedItsMeshHidPlaceholderAndHasMaterial()
     {
         foreach (var slot in Slots())
@@ -80,7 +78,6 @@ public class NeighbourhoodArtSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SkyAndSunReplaceTheFlatBackground()
     {
         var environment = _shop.GetNodeOrNull<WorldEnvironment>("Environment");

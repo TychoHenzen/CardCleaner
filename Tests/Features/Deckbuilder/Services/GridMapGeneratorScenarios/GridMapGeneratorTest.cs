@@ -25,7 +25,6 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenar
 public class GridMapGeneratorTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task GenerationReportsProgressRisingToCompleteAndReturnsAGridMap()
     {
         var progress = new RecordingProgress();
@@ -41,7 +40,6 @@ public class GridMapGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task CancelledTokenStopsTheGeneration()
     {
         using var cancellation = new CancellationTokenSource();
@@ -61,7 +59,6 @@ public class GridMapGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task TwoGeneratorsOnOneCatalogAndSeedMakeEqualMaps()
     {
         var tiles = TileCatalogData.From(TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource()));

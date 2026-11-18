@@ -19,7 +19,6 @@ public class ShopArtSlotTest
     private const string MeshArtPath = "res://Assets/Synty/SimpleShopInterior/MeshArtTest.tscn";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ArtSceneWithoutAnyMeshIsLoadedButNotTextured()
     {
         var scene = RegisterArtScene(MeshlessArtPath, new Node3D());
@@ -37,7 +36,6 @@ public class ShopArtSlotTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ArtSceneWithAMeshIsTextured()
     {
         var scene = RegisterArtScene(MeshArtPath, new MeshInstance3D());
@@ -56,7 +54,6 @@ public class ShopArtSlotTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TintIsMultipliedIntoTheAtlasPerTint()
     {
         var tint = new Color(1f, 0.9f, 0.8f);

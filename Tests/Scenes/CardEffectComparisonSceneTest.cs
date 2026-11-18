@@ -62,14 +62,12 @@ public class CardEffectComparisonSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheSceneHoldsFifteenCards()
     {
         AssertThat(Cards("Cards").Length).IsEqual(15);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryRarityAndTierHasALabelledCard()
     {
         foreach (var rarity in Enum.GetValues<CardRarity>())
@@ -84,7 +82,6 @@ public class CardEffectComparisonSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task EveryCardShowsTheEffectsOfItsCell()
     {
         await AssertEveryCellShowsItsEffects();
@@ -109,7 +106,6 @@ public class CardEffectComparisonSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheCardsStayWhereTheyAreLaidOut()
     {
         var card = _scene.GetNode<CardController>($"Cards/{CardRarity.Epic}_{IntensityTier.Active}");
@@ -118,7 +114,6 @@ public class CardEffectComparisonSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryCardIsInViewAndLargeEnoughToCompare()
     {
         foreach (var card in Cards("Cards"))
@@ -130,7 +125,6 @@ public class CardEffectComparisonSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheGridIsRefittedWhenTheWindowChangesShape()
     {
         var before = _window.GetCamera3D().Position;
@@ -144,14 +138,12 @@ public class CardEffectComparisonSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheRandomCardKeysAreSwitchedOff()
     {
         AssertThat(_scene.GetNode<CardSpawner>("Cards").SpawnKeys).IsFalse();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BatchesOfTenAndAHundredAddFrozenCardsThatStayInView()
     {
         _scene.SpawnBatch(10);
@@ -172,7 +164,6 @@ public class CardEffectComparisonSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task KeyTwoAddsTenCardsAndKeyESwitchesTheEffectsOff()
     {
         _window.PushInput(new InputEventKey { Keycode = Key.Key2, Pressed = true });
@@ -184,7 +175,6 @@ public class CardEffectComparisonSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AHundredCardsBakeEachArtOnceAndKeepTheirSeeds()
     {
         _scene.SpawnBatch(100);
@@ -218,7 +208,6 @@ public class CardEffectComparisonSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ZeroSignatureCardsFromTheRealSpawnerLookDifferent()
     {
         // Through the real spawning service, not a test double: each mundane card draws its own look seed.
@@ -247,7 +236,6 @@ public class CardEffectComparisonSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheEffectsCanBeSwitchedOffAndBackOnToCompareFrameTimes()
     {
         // Switch off only once every bevel map is in, so no map arrives while the effects are off.
@@ -266,7 +254,6 @@ public class CardEffectComparisonSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SwitchingTheEffectsBackOnAfterClearingTheBatchRestoresTheRemainingCards()
     {
         _scene.SpawnBatch(10);

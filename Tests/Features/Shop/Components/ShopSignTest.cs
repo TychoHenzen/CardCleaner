@@ -32,7 +32,6 @@ public class ShopSignTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InteractOpensClosedShop()
     {
         _days.IsOpen = false;
@@ -44,7 +43,6 @@ public class ShopSignTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InteractClosesOpenShop()
     {
         _days.IsOpen = true;
@@ -56,7 +54,6 @@ public class ShopSignTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LabelFollowsState()
     {
         AssertThat(_board.Text).IsEqual(ClosedText);
@@ -76,7 +73,6 @@ public class ShopSignTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RestoredShowsClosed()
     {
         _days.IsOpen = true;

@@ -14,7 +14,6 @@ namespace CardCleaner.Tests.Features.Pause.Components;
 public class CursorOwnerTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void Ready_NoClaims_Captured()
     {
         var owner = AddNode(new CursorOwner());
@@ -23,7 +22,6 @@ public class CursorOwnerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Claim_Visible()
     {
         var owner = AddNode(new CursorOwner());
@@ -34,7 +32,6 @@ public class CursorOwnerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ReleaseLastClaim_Captured()
     {
         var owner = AddNode(new CursorOwner());
@@ -47,7 +44,6 @@ public class CursorOwnerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TwoClaims_ReleaseOne_StillVisible()
     {
         var owner = AddNode(new CursorOwner());
@@ -62,7 +58,6 @@ public class CursorOwnerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ReleaseUnknownOwner_WhileClaimed_StaysVisible()
     {
         var owner = AddNode(new CursorOwner());
@@ -74,7 +69,6 @@ public class CursorOwnerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void HasClaimOtherThan_ForeignOwner_True()
     {
         var owner = AddNode(new CursorOwner());
@@ -86,7 +80,6 @@ public class CursorOwnerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AClaimSuspendsTheWorldActionsUntilTheLastRelease()
     {
         // The test's own input service replaces the app's for this case; the reset at the end drops it again, as the
@@ -118,7 +111,6 @@ public class CursorOwnerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void IsRegisteredUnderICursorOwner()
     {
         var attributes = typeof(CursorOwner).GetCustomAttributes(typeof(ServiceAttribute), false)

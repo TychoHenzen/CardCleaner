@@ -21,6 +21,10 @@ public partial class InteractionSystem : Node3D, IDependent
     private IServiceResolver? _services;
     private float _timeSinceLastRaycast;
 
+    // One query for every scan. A new query per scan left a finalizable wrapper behind 20 times a game second, and
+    // Godot listed thousands of them as leaked when it shut down.
+    private readonly PhysicsRayQueryParameters3D _ray = new() { CollideWithBodies = true, CollideWithAreas = false };
+
     [Export] public Camera3D? Camera { get; set; }
     [Export] public float RayLength { get; set; } = DefaultRayLength;
     [Export] public uint InteractableCollisionMask { get; set; } = DefaultInteractableCollisionMask;
@@ -102,14 +106,10 @@ public partial class InteractionSystem : Node3D, IDependent
         var origin = Camera.GlobalTransform.Origin;
         var forward = -Camera.GlobalTransform.Basis.Z;
 
-        var result = GetWorld3D().DirectSpaceState.IntersectRay(new PhysicsRayQueryParameters3D
-        {
-            From = origin,
-            To = origin + forward * RayLength,
-            CollideWithBodies = true,
-            CollideWithAreas = false,
-            CollisionMask = InteractableCollisionMask
-        });
+        _ray.From = origin;
+        _ray.To = origin + forward * RayLength;
+        _ray.CollisionMask = InteractableCollisionMask;
+        var result = GetWorld3D().DirectSpaceState.IntersectRay(_ray);
 
         return result.Count > 0 && result["collider"].Obj is Node3D body ? body : null;
     }

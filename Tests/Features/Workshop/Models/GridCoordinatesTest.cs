@@ -17,28 +17,24 @@ public class GridCoordinatesTest
     private static readonly GridCoordinates Grid = new(new Vector3(CellEdge, CellEdge, CellEdge));
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OriginBelongsToTheCellOnItsPositiveSide()
     {
         AssertThat(Grid.LocalToCell(Vector3.Zero)).IsEqual(Vector3I.Zero);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PositionInsideACellMapsToThatCell()
     {
         AssertThat(Grid.LocalToCell(new Vector3(0.45f, 0.05f, 1.01f))).IsEqual(new Vector3I(2, 0, 5));
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NegativePositionsFloorTowardsNegativeInfinity()
     {
         AssertThat(Grid.LocalToCell(new Vector3(-0.01f, -0.21f, -0.19f))).IsEqual(new Vector3I(-1, -2, -1));
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CellCentreRoundTripsToTheSameCell()
     {
         foreach (var cell in new[] { Vector3I.Zero, new Vector3I(30, -1, 0), new Vector3I(-7, 3, -250), new Vector3I(340, 0, 110) })
@@ -46,7 +42,6 @@ public class GridCoordinatesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CellCentreIsHalfACellAboveItsMinCorner()
     {
         var cell = new Vector3I(-3, 2, 5);
@@ -57,7 +52,6 @@ public class GridCoordinatesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MinCornerBelongsToItsOwnCellForBoundariesOfEitherSign()
     {
         for (var i = -40; i <= 40; i++)
@@ -69,7 +63,6 @@ public class GridCoordinatesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MatchesGridMapForBoundariesAndNegativeCells()
     {
         var gridMap = new GridMap { CellSize = new Vector3(CellEdge, CellEdge, CellEdge) };
@@ -94,7 +87,6 @@ public class GridCoordinatesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CellsMayDifferInSizePerAxis()
     {
         var tall = new GridCoordinates(new Vector3(0.2f, 1f, 0.5f));

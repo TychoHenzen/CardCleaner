@@ -46,6 +46,13 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
     // never queries physics space from its input callback, where Godot rejects the query.
     private IUnpackTarget? _unpackTarget;
 
+    // One query for every physics step a container is held, instead of a new finalizable wrapper each step. Only its
+    // end points change between steps.
+    private readonly PhysicsRayQueryParameters3D _unpackRay = new()
+    {
+        CollideWithBodies = true, CollideWithAreas = true, CollisionMask = UnpackLayerBit
+    };
+
     public override bool _PropertyCanRevert(StringName property)
     {
         return property.ToString() switch
@@ -196,15 +203,9 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         if (_handAnchor == null || !_handAnchor.IsInsideTree()) return null;
 
         var origin = _handAnchor.GlobalPosition;
-        var to = origin - _handAnchor.GlobalBasis.Z * UnpackReach;
-        var result = _handAnchor.GetWorld3D().DirectSpaceState.IntersectRay(new PhysicsRayQueryParameters3D
-        {
-            From = origin,
-            To = to,
-            CollideWithBodies = true,
-            CollideWithAreas = true,
-            CollisionMask = UnpackLayerBit
-        });
+        _unpackRay.From = origin;
+        _unpackRay.To = origin - _handAnchor.GlobalBasis.Z * UnpackReach;
+        var result = _handAnchor.GetWorld3D().DirectSpaceState.IntersectRay(_unpackRay);
 
         return result.Count > 0 && result["collider"].Obj is Node3D body ? FindUnpackTargetInHierarchy(body) : null;
     }

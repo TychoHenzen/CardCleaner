@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -45,7 +46,6 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TerminalDeliversToItsOwnMarkerNotTheShopDefault()
     {
         AssertBool(ReferenceEquals(_rig.Terminal.DeliveryPoint, _rig.Delivery)).IsTrue();
@@ -53,7 +53,6 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryDeliverySlotIsFreeOfWorkshopGeometryForTheTallestItem()
     {
         var space = _rig.Shop.GetWorld3D().DirectSpaceState;
@@ -75,7 +74,6 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DeliveryClearanceIsFreeOfWorkshopGeometry()
     {
         var clearance = _rig.Delivery.FloorClearance;
@@ -106,7 +104,6 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TallestItemInTheSingleLayerClearsTheCeiling()
     {
         var ceiling = _rig.Workshop.GetNode<StaticBody3D>("WorkshopGrid/Ceiling");
@@ -117,7 +114,6 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OrderedCabinetsFillTheGridTwoAtATimeAndNeverReachEachOthersHolders()
     {
         _rig.Money.Add(WorkshopDeliveryRig.TopUp);
@@ -144,13 +140,14 @@ public class ShopWorkshopDeliverySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OrderedCabinetSettlesUprightOnThePadWithItsHolders()
     {
         _rig.Money.Add(WorkshopDeliveryRig.TopUp);
         _rig.Terminal.Interact();
         var cabinet = (RigidBody3D)_rig.Presses.PressForDelivery(_rig.Terminal, _rig.IndexOf("arcade_cabinet"));
         _rig.Terminal.Close();
+        // The settle counts physics steps, each still 1/60 s of game time; the fast clock only runs them sooner.
+        using var clock = FastClock.Start();
         for (var i = 0; i < SettleFrames; i++)
             await ISceneRunner.SyncPhysicsFrame;
 

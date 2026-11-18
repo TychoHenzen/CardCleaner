@@ -13,7 +13,6 @@ public class CardShelfPhysicsTest : CardShelfTestBase
     private const float StabilityTolerance = 0.01f;
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ARigidBodyThatOnlyHasCardInItsNameIsNotLockedIntoASlot()
     {
         var box = new RigidBody3D { Name = "CardboardBox" };
@@ -29,7 +28,6 @@ public class CardShelfPhysicsTest : CardShelfTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task StockedCardsAndTheShelfStayStillWhilePhysicsRuns()
     {
         var slots = _shelf.Slots.ToArray();

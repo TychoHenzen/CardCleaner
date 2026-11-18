@@ -29,7 +29,6 @@ public class StorageRackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StorageRackHasFourSlotsAndJoinsTheStorageGroupOnly()
     {
         AssertThat(_rack.Kind).IsEqual(ShelfKind.StorageRack);
@@ -40,7 +39,6 @@ public class StorageRackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardboardBoxLocksOntoARackSlot()
     {
         var slot = _rack.Slots.First();
@@ -54,7 +52,6 @@ public class StorageRackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardIsNotLockedOntoARackSlot()
     {
         var slot = _rack.Slots.ElementAt(1);

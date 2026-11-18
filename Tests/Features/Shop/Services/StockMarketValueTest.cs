@@ -20,7 +20,6 @@ public class StockMarketValueTest
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AZeroSignatureCardIsWorthTheMinimum()
     {
         var card = AddNode(ShopTestCards.Create(new CardSignature()));
@@ -29,7 +28,6 @@ public class StockMarketValueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ASpecialCardIsWorthAtLeastTheMultiplier()
     {
         var card = AddNode(ShopTestCards.Create(new CardSignature().With(Element.Lumines, 0.4f)));
@@ -38,7 +36,6 @@ public class StockMarketValueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ACardWithoutASignatureIsWorthZero()
     {
         var card = AddNode(new CardController { Name = "Card1" });
@@ -47,7 +44,6 @@ public class StockMarketValueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NullIsWorthZero()
     {
         AssertThat(StockMarketValue.ForCard(null)).IsEqual(0);
@@ -55,7 +51,6 @@ public class StockMarketValueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BoosterAndPackUseTheProductPrices()
     {
         var booster = AddNode(GD.Load<PackedScene>(BoosterScene).Instantiate<CardContainer>());
@@ -66,7 +61,6 @@ public class StockMarketValueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ABoxIsWorthZeroAndDoesNotThrow()
     {
         var box = AddNode(GD.Load<PackedScene>(BoxScene).Instantiate<CardContainer>());
@@ -75,7 +69,6 @@ public class StockMarketValueTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnyOtherBodyIsWorthZero()
     {
         var body = AddNode(new RigidBody3D());

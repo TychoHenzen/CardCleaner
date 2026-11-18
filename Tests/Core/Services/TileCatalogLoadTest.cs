@@ -12,7 +12,6 @@ namespace CardCleaner.Tests.Core.Services;
 public class TileCatalogLoadTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void LoadReturnsTheSameTilesOnEveryCall()
     {
         var loaded = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
@@ -26,7 +25,6 @@ public class TileCatalogLoadTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LoadBuildsANewRegistryOnEveryCall()
     {
         var first = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());

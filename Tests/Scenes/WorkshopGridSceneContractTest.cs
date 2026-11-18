@@ -50,7 +50,6 @@ public class WorkshopGridSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CellsAreTwentyCentimetresOnEveryAxis()
     {
         AssertThat(_grid.CellSize).IsEqual(new Vector3(ExpectedCellSize, ExpectedCellSize, ExpectedCellSize));
@@ -58,7 +57,6 @@ public class WorkshopGridSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BakedCellsAreExactlyTheLayoutWalls()
     {
         var used = _grid.GetUsedCells();
@@ -70,7 +68,6 @@ public class WorkshopGridSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WallItemHasAGrayMeshAndACollisionShape()
     {
         var library = _grid.MeshLibrary;
@@ -82,7 +79,6 @@ public class WorkshopGridSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FloorAndCeilingSlabsCoverTheWholeSquare()
     {
         foreach (var slab in new[] { "Floor", "Ceiling" })
@@ -96,7 +92,6 @@ public class WorkshopGridSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NearlyAllOfTheSquareIsUsableFloor()
     {
         var paths = new WorkshopGridPaths(_grid, 0);
@@ -107,7 +102,6 @@ public class WorkshopGridSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SectionMarkersMatchTheLayoutSections()
     {
         var markers = _grid.GetNode("Sections").GetChildren().OfType<Marker3D>().ToList();
@@ -122,7 +116,6 @@ public class WorkshopGridSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EverySectionIsReachableFromTheCabinetRoomThroughThreeMetreOpenings()
     {
         var paths = new WorkshopGridPaths(_grid, ThreeMetreClearanceCells);
@@ -133,7 +126,6 @@ public class WorkshopGridSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NorthHallwayForksIntoBothNorthernRooms()
     {
         var paths = new WorkshopGridPaths(_grid, ArmClearanceCells);
@@ -144,7 +136,6 @@ public class WorkshopGridSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RouteFromTheCabinetRoomToTheOrderOfficeTurnsSeveralTimes()
     {
         var paths = new WorkshopGridPaths(_grid, ArmClearanceCells);
@@ -155,7 +146,6 @@ public class WorkshopGridSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SceneDoesNotSerializeRuntimeOnlyFields()
     {
         var state = _packed.GetState();

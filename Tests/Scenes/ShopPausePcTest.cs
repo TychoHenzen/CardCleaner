@@ -37,7 +37,6 @@ public class ShopPausePcTest
     public static void Teardown() => ShopPauseRig.Teardown();
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PcOpenClose_LeavesCursorCaptured()
     {
         _terminal.Interact();
@@ -49,7 +48,6 @@ public class ShopPausePcTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EscapeWithPcOpen_ClosesOnlyThePc()
     {
         _terminal.Interact();

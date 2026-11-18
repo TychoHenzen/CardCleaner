@@ -13,6 +13,7 @@ using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using NSubstitute;
 using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
@@ -44,10 +45,14 @@ public class ShopCarryingPoseSceneTest
     private MoneyService _money = null!;
     private OrderingService _ordering = null!;
     private Vector2I _savedRootSize;
+    private FastClock? _clock;
 
     [BeforeTest]
     public async Task Setup()
     {
+        // Every wait here counts physics steps or game time (the box opening plays over game time), so the suite runs
+        // game time fast, as ShopCarryingSceneTest does.
+        _clock = FastClock.Start();
         // A headless window is 64x64, which would collapse the camera frustum, so the root takes a real size.
         var root = ((SceneTree)Engine.GetMainLoop()).Root;
         _savedRootSize = root.Size;
@@ -75,13 +80,13 @@ public class ShopCarryingPoseSceneTest
     [AfterTest]
     public void Teardown()
     {
+        _clock?.Dispose();
         Input.ActionRelease("ui_up");
         ((SceneTree)Engine.GetMainLoop()).Root.Size = _savedRootSize;
         TestServices.Reset();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task HeldBoxSitsInFrontOfTheCamera()
     {
         var box = OrderBox();
@@ -106,7 +111,6 @@ public class ShopCarryingPoseSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CarryLoopWorksThroughAWalkDropPickUpAndOpen()
     {
         var box = OrderBox();

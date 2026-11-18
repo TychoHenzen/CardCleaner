@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
@@ -35,17 +36,25 @@ public class CardContainerFullBoxTest
     private Node3D _world = null!;
     private RecordingCardSpawner _spawner = null!;
 
+    private FastClock? _clock;
+
     [BeforeTest]
     public void Setup()
     {
+        _clock = FastClock.Start();
         _world = AddNode(new Node3D());
         _spawner = new RecordingCardSpawner();
         _packSpawns.Clear();
         _boosterSpawns.Clear();
     }
 
+    [AfterTest]
+    public void StopClock()
+    {
+        _clock?.Dispose();
+    }
+
     [TestCase]
-    [TestCategory("Unit")]
     public async Task WholeBoxOpensToFiveHundredAndTwelveCards()
     {
         await OpenEverything(Make(BoxScene));
@@ -54,7 +63,6 @@ public class CardContainerFullBoxTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SameSeedPutsSpecialCardsInTheSamePositionsAndCommonCardsAreAllZero()
     {
         await OpenEverything(Make(BoxScene));
@@ -74,7 +82,6 @@ public class CardContainerFullBoxTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SpawnedCardSignaturesMatchTheGeneratorOutputAndIncludeSpecialCards()
     {
         await OpenEverything(Make(BoxScene));
@@ -90,7 +97,6 @@ public class CardContainerFullBoxTest
     private static string SignatureKey(CardSignature signature) => string.Join(" ", signature.Elements);
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AFullBoxOpenedAtTheStorageDeliveryPointSpawnsEveryItemInsideTheStorageRoomOnItsOwnSpot()
     {
         AddStorageRoom();
@@ -120,7 +126,6 @@ public class CardContainerFullBoxTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void APackAndABoosterAtTheSameSpotAreNotASharedSpawnButTwoPacksAre()
     {
         var spot = new Vector3(4f, 0.5f, -5.5f);

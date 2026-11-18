@@ -30,7 +30,6 @@ public class CoreCardBoundaryTest
         RegexOptions.Compiled);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CoreFilesOutsideInterfacesNameNoCardType()
     {
         var root = ProjectSettings.GlobalizePath(ScriptsRoot);
@@ -56,7 +55,6 @@ public class CoreCardBoundaryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UsingTheCardNamespaceInCoreIsReported()
     {
         const string source = "using CardCleaner.Scripts.Features.Card.Models;\npublic class Helper {}\n";
@@ -65,7 +63,6 @@ public class CoreCardBoundaryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NamingACardTypeInCoreIsReported()
     {
         const string source = "public class Helper\n{\n    private CardDesigner? _designer;\n}\n";
@@ -77,7 +74,6 @@ public class CoreCardBoundaryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CommentsAndStringsMentioningCardTypesAreIgnored()
     {
         const string source = "// CardDesigner and Features.Card are described here\nvar text = \"CardDesigner\";\n";
@@ -86,7 +82,6 @@ public class CoreCardBoundaryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryKindOfCardTypeDeclarationIsCollected()
     {
         const string source = "public sealed record struct Pose(int X);\n" +

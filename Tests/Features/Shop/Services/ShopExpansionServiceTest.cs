@@ -50,7 +50,6 @@ public class ShopExpansionServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TryBuyChargesThePriceOnceAndRaisesOpenedOnce()
     {
         var opened = new List<string>();
@@ -66,7 +65,6 @@ public class ShopExpansionServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RefusedPurchasesChargeNothingAndRaiseNothing()
     {
         var opened = new List<string>();
@@ -84,7 +82,6 @@ public class ShopExpansionServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UnaffordableLotChargesNothing()
     {
         var opened = new List<string>();
@@ -98,7 +95,6 @@ public class ShopExpansionServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WithoutAProgressionServiceEveryPurchaseIsLocked()
     {
         _expansion.Progression = null;
@@ -109,7 +105,6 @@ public class ShopExpansionServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RentSourceHasNoLinesWhenNothingIsOwned()
     {
         var source = new ExpansionRentBillSource(_expansion);
@@ -118,7 +113,6 @@ public class ShopExpansionServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RentSourceHasOneNamedLinePerOwnedLot()
     {
         var source = new ExpansionRentBillSource(_expansion);
@@ -132,7 +126,6 @@ public class ShopExpansionServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ExtraCustomersPerDayIsTheOwnedSum()
     {
         _expansion.TryBuy("lot_a");
@@ -142,7 +135,6 @@ public class ShopExpansionServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RentSourceHasOneLinePerOwnedLotWithItsOwnAmount()
     {
         var source = new ExpansionRentBillSource(_expansion);
@@ -159,7 +151,6 @@ public class ShopExpansionServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ShippedLotsFileHoldsTheSideWingLot()
     {
         var catalog = GD.Load<ExpansionLotCatalog>(ShippedLotsPath);

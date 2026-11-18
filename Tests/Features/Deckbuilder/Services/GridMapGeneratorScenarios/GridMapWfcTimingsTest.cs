@@ -13,6 +13,7 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenarios;
 
@@ -33,7 +34,6 @@ public class GridMapWfcTimingsTest
     };
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PipelineRecordsEachWfcStepOncePerPhaseAndOpensOnlyItsOwnScopes()
     {
         var setup = new WfcSetup();
@@ -62,7 +62,6 @@ public class GridMapWfcTimingsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SuccessfulGenerationCarriesPositiveStepTimings()
     {
         var setup = new WfcSetup();
@@ -82,7 +81,6 @@ public class GridMapWfcTimingsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FailedGenerationCarriesZeroTimings()
     {
         AssertBool(WfcGenerationResult.Failed("no tiles").Timings == WfcStepTimings.Zero).IsTrue();
@@ -106,7 +104,7 @@ public class GridMapWfcTimingsTest
             Gradient = Gradients.FromCards(MapCards(), Rng);
             BiomeProvider = BiomeMaps.Create(BiomeRegistry.ToBiomeSet(), Gradient.GetSignatureAt, Size);
             var transitionPairs =
-                new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+                GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
             WfcGenerator = new WfcMapGenerator(
                 new WfcAdjacencyRules(transitionPairs),
                 TileCatalogData.From(TileRegistry));
