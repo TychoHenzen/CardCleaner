@@ -500,7 +500,7 @@ a rack. A save stores the lid and `TakenCount` with the container (`SavedContain
 0 for a booster, anything else is malformed). A booster has no lid (`HasLid`).
 
 **Opening a booster in hand.** A booster can be picked up while cards are held (a box or pack cannot), and it is held
-low on the left (`ContainerHolder.BoosterHoldOffset`) so the hand of cards stays in view. The right button opens it in
+upright on the left, front to the player (`ContainerHolder.BoosterHoldOffset`), so the hand of cards stays in view. The right button opens it in
 front of the player (`CardContainer.OpenInHand`, run by `BoosterReveal` and timed by the Godot-free
 `BoosterRevealPlan`, under two seconds): the booster comes to the middle of the view, its strip tears off, the eight
 cards rise out one at a time into a fan (`CardFan`, the same pose math as the hand's fan), the empty wrapper shrinks

@@ -30,8 +30,8 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
     [Export] public Vector3 HoldOffset = DefaultHoldOffset;
 
     /// <summary>
-    ///     Where a booster is held: on the left, since a booster can be picked up with cards in hand, and the cards fan
-    ///     out on the right (<see cref="CardHolder.FanCenter" />).
+    ///     Where a booster is held, upright and facing the player: on the left, since a booster can be picked up with
+    ///     cards in hand, and the cards fan out on the right (<see cref="CardHolder.FanCenter" />).
     /// </summary>
     [Export] public Vector3 BoosterHoldOffset = DefaultBoosterHoldOffset;
 
@@ -132,8 +132,11 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         container.CollisionMask = 0;
         container.Freeze = true;
         container.Reparent(_handAnchor);
-        container.Transform = new Transform3D(Basis.Identity,
-            container.Kind == CardContainerKind.Booster ? BoosterHoldOffset : HoldOffset);
+        // A booster is held upright with its front to the player, as a pack about to be torn open is; a box or pack is
+        // carried level.
+        container.Transform = container.Kind == CardContainerKind.Booster
+            ? new Transform3D(CardFan.FacingCamera, BoosterHoldOffset)
+            : new Transform3D(Basis.Identity, HoldOffset);
         container.ClearHighlight();
 
         // Subscribed after the reparent, which leaves the tree and would otherwise clear the held container at once.

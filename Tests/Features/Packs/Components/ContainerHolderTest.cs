@@ -1,5 +1,6 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Tests.TestUtilities;
@@ -106,19 +107,22 @@ public partial class ContainerHolderTest
         AssertBool(booster.GetParent() == _hand).IsTrue();
     }
 
-    // A booster can be held with cards in hand, which fan out on the right, so it is held on the left.
+    // A booster can be held with cards in hand, which fan out on the right, so it is held on the left, upright and
+    // facing the player; a box is carried level.
     [TestCase]
     [TestCategory("Unit")]
-    public void PickUp_Booster_HeldAtTheBoosterOffsetAndABoxAtTheUsualOne()
+    public void PickUp_Booster_HeldUprightAtTheBoosterOffsetAndABoxLevelAtTheUsualOne()
     {
         var booster = Make(BoosterScene);
         _holder.TryPickUp(booster);
         AssertThat(booster.Position).IsEqual(_holder.BoosterHoldOffset);
+        AssertBool(booster.Basis.IsEqualApprox(CardFan.FacingCamera)).IsTrue();
         _holder.Drop();
 
         var box = Make(BoxScene);
         _holder.TryPickUp(box);
         AssertThat(box.Position).IsEqual(_holder.HoldOffset);
+        AssertBool(box.Basis.IsEqualApprox(Basis.Identity)).IsTrue();
         AssertBool(_holder.BoosterHoldOffset.X < 0f).IsTrue();
     }
 
