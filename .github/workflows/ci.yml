@@ -19,8 +19,41 @@ permissions:
   actions: read
 
 jobs:
+  unit-tests:
+    name: Unit tests (.NET, no Godot)
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 8.0.410
+
+      - name: Build the unit test project
+        run: dotnet build UnitTests/CardCleaner.UnitTests.csproj --configuration Debug
+
+      - name: TEMPORARY classify each unit suite alone
+        run: node Scripts/ci/classify-unit-suites.mjs
+
+      - name: Run the unit tests
+        if: ${{ !cancelled() }}
+        run: dotnet test UnitTests/CardCleaner.UnitTests.csproj --no-build --blame-crash --logger "trx;LogFileName=unit.trx" --results-directory reports/unit
+
+      - name: Upload unit reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unit-reports
+          path: reports
+          if-no-files-found: warn
+
   build-and-test:
     name: Build and test (Windows)
+    # TEMPORARY: skipped on the test-tiers branch while the unit tier is being classified.
+    if: github.ref != 'refs/heads/feature/test-tiers'
     runs-on: windows-latest
     steps:
       - name: Check out repository

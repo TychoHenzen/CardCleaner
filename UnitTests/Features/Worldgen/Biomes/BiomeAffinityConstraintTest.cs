@@ -1,0 +1,220 @@
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
+using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen;
+using CardCleaner.Scripts.Features.Worldgen.Biomes;
+using CardCleaner.Scripts.Features.Worldgen.Wfc;
+using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
+using Godot;
+
+namespace CardCleaner.Tests.Features.Worldgen.Biomes;
+
+[TestSuite]
+public partial class BiomeAffinityConstraintTest
+{
+    private BiomeRegistry _registry = null!;
+    private TileRegistry _tileRegistry = null!;
+    private TileCatalogData _tileCatalog = null!;
+    private WfcGrid _grid = null!;
+
+    [BeforeTest]
+    public void Setup()
+    {
+        _registry = new BiomeRegistry();
+        _grid = new WfcGrid(10, 10, new[] { "fire_tile", "water_tile", "neutral_tile" });
+
+        // Create tile registry with tiles that have AllowedBiomes set
+        _tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
+        _tileRegistry.RegisterTile(new TileDefinition(
+            "fire_tile",
+            "Fire Tile",
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = new HashSet<string> { "fire" }
+            }));
+        _tileRegistry.RegisterTile(new TileDefinition(
+            "water_tile",
+            "Water Tile",
+            TilePassability.Passable,
+            Vector2I.Zero,
+            new TileDefinitionOptions
+            {
+                AllowedBiomes = new HashSet<string> { "water" }
+            }));
+        // neutral_tile has no AllowedBiomes (universal/neutral)
+        _tileRegistry.RegisterTile(new TileDefinition(
+            "neutral_tile",
+            "Neutral Tile",
+            TilePassability.Passable,
+            Vector2I.Zero));
+        _tileCatalog = TileCatalogData.From(_tileRegistry);
+
+        // Create test biomes with tiles
+        var fireSignature = new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f });
+        var waterSignature = new CardSignature(new[] { 0f, -1f, 0f, 0f, 0f, 0f, 0f, 0f });
+
+        var firePool = new TilePool.Builder().Add("fire_tile").Build();
+        var waterPool = new TilePool.Builder().Add("water_tile").Build();
+        var emptyPool = TilePool.Empty;
+
+        _registry.Register(new BiomeDefinition("fire", fireSignature, firePool, emptyPool));
+        _registry.Register(new BiomeDefinition("water", waterSignature, waterPool, emptyPool));
+    }
+
+    [TestCase]
+    public void BiomeAffinityConstraint_PositiveBiome_ReturnsBoost()
+    {
+        // Arrange: Create gradient that returns fire-like signature (high strength for fire biome)
+        var gradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
+        var strengthGrid = BiomeStrengthGrid.Sample(
+            new Vector2I(10, 10), gradient.GetSignatureAt, _registry.ToBiomeSet());
+        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry.ToBiomeSet(), _tileCatalog);
+
+        var context = new WfcConstraintContext
+        {
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
+            TileId = "fire_tile", // Belongs to fire biome
+            Topology = _grid
+        };
+
+        // Act
+        var modifier = constraint.GetProbabilityModifier(context);
+
+        // Assert: Should boost since fire biome has high strength at this position
+        AssertFloat(modifier).IsGreater(1.0f);
+    }
+
+    [TestCase]
+    public void BiomeAffinityConstraint_NegativeBiome_ReturnsPenalty()
+    {
+        // Arrange: Create gradient that returns water-like signature (negative strength for fire biome)
+        var gradient = new FixedGradient(new CardSignature(new[] { 0f, -1f, 0f, 0f, 0f, 0f, 0f, 0f }));
+        var strengthGrid = BiomeStrengthGrid.Sample(
+            new Vector2I(10, 10), gradient.GetSignatureAt, _registry.ToBiomeSet());
+        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry.ToBiomeSet(), _tileCatalog);
+
+        var context = new WfcConstraintContext
+        {
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
+            TileId = "fire_tile", // Belongs to fire biome, but biome has negative strength here
+            Topology = _grid
+        };
+
+        // Act
+        var modifier = constraint.GetProbabilityModifier(context);
+
+        // Assert: Should penalize since fire biome has negative strength at water-like position
+        AssertFloat(modifier).IsLess(1.0f);
+    }
+
+    [TestCase]
+    public void BiomeAffinityConstraint_NeutralBiome_ReturnsOne()
+    {
+        // Arrange: Create gradient that returns neutral signature
+        var gradient = new FixedGradient(new CardSignature()); // All zeros
+        var strengthGrid = BiomeStrengthGrid.Sample(
+            new Vector2I(10, 10), gradient.GetSignatureAt, _registry.ToBiomeSet());
+        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry.ToBiomeSet(), _tileCatalog);
+
+        var context = new WfcConstraintContext
+        {
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
+            TileId = "neutral_tile", // Not in any biome
+            Topology = _grid
+        };
+
+        // Act
+        var modifier = constraint.GetProbabilityModifier(context);
+
+        // Assert: Should be neutral since tile doesn't belong to any biome
+        AssertFloat(modifier).IsEqual(1.0f);
+    }
+
+    [TestCase]
+    public void BiomeAffinityConstraint_TileNotInAnyBiome_ReturnsOne()
+    {
+        // Arrange
+        var gradient = new FixedGradient(new CardSignature(new[] { 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f }));
+        var strengthGrid = BiomeStrengthGrid.Sample(
+            new Vector2I(10, 10), gradient.GetSignatureAt, _registry.ToBiomeSet());
+        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry.ToBiomeSet(), _tileCatalog);
+
+        var context = new WfcConstraintContext
+        {
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
+            TileId = "unknown_tile", // Not registered in any biome
+            Topology = _grid
+        };
+
+        // Act
+        var modifier = constraint.GetProbabilityModifier(context);
+
+        // Assert: Tiles not in any biome should get neutral modifier
+        AssertFloat(modifier).IsEqual(1.0f);
+    }
+
+    [TestCase]
+    public void BiomeAffinityConstraint_ModifierNeverBelowMinimum()
+    {
+        // Arrange: Create extremely negative conditions
+        var gradient = new FixedGradient(new CardSignature(new[] { 0f, -1f, 0f, 0f, 0f, 0f, 0f, 0f }));
+        var strengthGrid = BiomeStrengthGrid.Sample(
+            new Vector2I(10, 10), gradient.GetSignatureAt, _registry.ToBiomeSet());
+        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry.ToBiomeSet(), _tileCatalog)
+        {
+            BoostFactor = 2.0f, // Higher boost factor to test minimum clamp
+            MinModifier = 0.1f
+        };
+
+        var context = new WfcConstraintContext
+        {
+            CellId = _grid.PositionToCellId(new Vector2I(5, 5)),
+            TileId = "fire_tile",
+            Topology = _grid
+        };
+
+        // Act
+        var modifier = constraint.GetProbabilityModifier(context);
+
+        // Assert: Should never go below minimum
+        AssertFloat(modifier).IsGreaterEqual(0.1f);
+    }
+
+    [TestCase]
+    public void BiomeAffinityConstraint_ImplementsIWfcConstraint()
+    {
+        // Arrange
+        var gradient = new FixedGradient(new CardSignature());
+        var strengthGrid = BiomeStrengthGrid.Sample(
+            new Vector2I(10, 10), gradient.GetSignatureAt, _registry.ToBiomeSet());
+
+        // Act
+        var constraint = new BiomeAffinityConstraint(strengthGrid, _registry.ToBiomeSet(), _tileCatalog);
+
+        // Assert
+        AssertThat(constraint is IWfcConstraint).IsTrue();
+    }
+
+    /// <summary>
+    /// Test gradient that returns a fixed signature for all positions.
+    /// </summary>
+    private sealed partial class FixedGradient : BaselineGradient
+    {
+        private readonly CardSignature _signature;
+
+        public FixedGradient(CardSignature signature)
+        {
+            _signature = signature;
+        }
+
+        public override CardSignature GetSignatureAt(Vector2I position, Vector2I mapSize)
+        {
+            return _signature;
+        }
+    }
+}

@@ -157,8 +157,8 @@ dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.CA1833.severity = none
 dotnet_diagnostic.CA5351.severity = none
 
-# Tests - allow more flexibility
-[Tests/**/*.cs]
+# Tests (Godot-hosted Tests/ and plain .NET UnitTests/) - allow more flexibility
+[{Tests,UnitTests}/**/*.cs]
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CS8625.severity = suggestion
 # Nullable reference warnings - tests can have simpler null handling

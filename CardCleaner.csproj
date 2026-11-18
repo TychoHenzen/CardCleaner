@@ -15,6 +15,10 @@
         <!-- tools/ holds standalone helper programs with their own projects (tools/e2e/README.md). -->
         <Compile Remove="tools/**" />
         <None Remove="tools/**" />
+        <!-- UnitTests/ is the plain .NET test project (UnitTests/CardCleaner.UnitTests.csproj), not game code. -->
+        <Compile Remove="UnitTests/**" />
+        <None Remove="UnitTests/**" />
+        <InternalsVisibleTo Include="CardCleaner.UnitTests" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="gdUnit4.analyzers" Version="1.0.0">
