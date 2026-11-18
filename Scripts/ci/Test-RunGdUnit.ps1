@@ -568,7 +568,7 @@ function Invoke-Runner {
     $runnerArguments = @(
         '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $Context.Wrapper,
         '-RunnerPath', $Context.Runner, '-GodotBinary', $Context.Fake,
-        '-StallSeconds', '10', '-MaxResumes', [string]$MaxResumes
+        '-StallSeconds', '3', '-MaxResumes', [string]$MaxResumes
     )
     if ($Fast) {
         $runnerArguments += '-Fast'
@@ -913,7 +913,7 @@ function Test-StallResumes {
     $result = Invoke-Runner -Context $Context
     $output = Get-FlatRunnerOutput $result
     Assert-ExitCode -Result $result -Expected 0 -Message 'a run that resumes after one stall exits 0'
-    $stallWarning = 'WARNING: GdUnit stalled in ' + $SuiteAlphaTwo + ' (no output for 10 s). Last result: ' +
+    $stallWarning = 'WARNING: GdUnit stalled in ' + $SuiteAlphaTwo + ' (no output for 3 s). Last result: ' +
         $SuiteAlphaTwo + ' > First PASSED'
     Assert-Contains $output $stallWarning 'the stall names the unfinished suite and its last result'
     $resumeLine = 'Resuming with 2 unfinished suite(s): ' + $SuiteAlphaTwo + ' res://Tests/Beta'

@@ -7,9 +7,10 @@ param(
     [switch]$Fast,
 
     # Seconds without new GdUnit output before Godot counts as stalled. Healthy suites print a line every few
-    # seconds and the slowest single cases take about 3 s; the bounds keep a typo from disabling the watchdog.
+    # seconds and the slowest single cases take about 3 s; the upper bound keeps a typo from disabling the watchdog.
+    # The runner fixture uses a few seconds so its stall scenarios stay short; real runs keep the default.
     [Parameter()]
-    [ValidateRange(10, 3600)]
+    [ValidateRange(2, 3600)]
     [int]$StallSeconds = 180,
 
     # How many times one run may restart Godot on the unfinished suites after a stall or a crash. More than a
@@ -31,8 +32,9 @@ $ErrorActionPreference = 'Stop'
 
 # Runs on Windows PowerShell 5.1 (local) and PowerShell 7 (CI). PowerShell 5.1 has no backtick-e escape for
 # the ESC character, so ESC is written as [char]27 below, and it has no Split-Path -LeafBase.
-# Output growth is checked this often; small against the stall timeout, cheap against a 5-minute run.
-$PollSeconds = 5
+# Output growth is checked this often: a quarter of the stall timeout, at most 5 s. The wait returns as soon as the
+# process exits, so a short run pays no part of it.
+$PollMilliseconds = [Math]::Min(5000, $StallSeconds * 250)
 # After taskkill, wait this long for the killed tree to exit and release its log files.
 $KillWaitMilliseconds = 15000
 # Attempts, one second apart, to read a log the killed tree may still hold open.
@@ -262,8 +264,7 @@ function Invoke-GodotWatched {
     $null = $process.Handle # keeps ExitCode readable after exit
     $lastLength = -1
     $quietSince = Get-Date
-    while (-not $process.HasExited) {
-        Start-Sleep -Seconds $PollSeconds
+    while (-not $process.WaitForExit($PollMilliseconds)) {
         $length = (Get-Item -LiteralPath $StdoutPath).Length
         if ($length -ne $lastLength) {
             $lastLength = $length
