@@ -50,8 +50,12 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
         HireRestocker();
         OpenRegisteredDay();
         var pack = StockRackPack();
-        var timeout = await BoundedWait.Until(
-            () => pack.GetParent()?.Name.ToString() == HandName, "the restocker to carry the pack");
+        string? timeout;
+        // The walk to the rack counts physics steps, each still 1/60 s of game time; the fast clock only runs them
+        // sooner. It stops before the save, so the reload runs at the game's own rate.
+        using (FastClock.Start())
+            timeout = await BoundedWait.Until(
+                () => pack.GetParent()?.Name.ToString() == HandName, "the restocker to carry the pack");
         if (timeout != null)
             AssertBool(false).OverrideFailureMessage(timeout).IsTrue();
         var before = PackCount();
@@ -95,8 +99,11 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
         AssertThat(_rig.Staff.Dismiss(StaffDefaults.RestockerId)).IsEqual(StaffResult.Dismissed);
         var pack = StockRackPack();
 
-        for (var i = 0; i < IdleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
+        using (FastClock.Start())
+        {
+            for (var i = 0; i < IdleFrames; i++)
+                await ISceneRunner.SyncPhysicsFrame;
+        }
 
         AssertBool(_rig.Restocker.Visible).IsFalse();
         AssertBool(RackSlot().Cards.Contains(pack)).IsTrue();

@@ -13,9 +13,11 @@ namespace CardCleaner.Tests.Addons.TestRunner;
 [TestSuite]
 public class SuiteStartWatchdogTest
 {
-    private static readonly TimeSpan Bound = TimeSpan.FromMilliseconds(250);
+    // Every silent attempt waits out the whole bound, so the bound is kept short; 100 ms is still far longer than an
+    // attempt that starts takes to send its first event (one Task.Yield).
+    private static readonly TimeSpan Bound = TimeSpan.FromMilliseconds(100);
     private const int Attempts = 3;
-    private static readonly TimeSpan Settle = TimeSpan.FromMilliseconds(100);
+    private static readonly TimeSpan Settle = TimeSpan.FromMilliseconds(50);
 
     [TestCase]
     public static async Task AnAttemptThatStartsRunsOnce()
@@ -100,10 +102,10 @@ public class SuiteStartWatchdogTest
         receive($"event {attempt}");
     }
 
-    // The attempt sends its event only after four start bounds, then finishes.
+    // The attempt sends its event only after two start bounds, well past the bound, then finishes.
     private static async Task StartsLate(int attempt, Action<string> receive, CancellationToken token)
     {
-        await Task.Delay(Bound * 4, CancellationToken.None);
+        await Task.Delay(Bound * 2, CancellationToken.None);
         receive($"event {attempt}");
     }
 

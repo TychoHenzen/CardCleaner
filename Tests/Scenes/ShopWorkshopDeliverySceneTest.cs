@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -145,6 +146,8 @@ public class ShopWorkshopDeliverySceneTest
         _rig.Terminal.Interact();
         var cabinet = (RigidBody3D)_rig.Presses.PressForDelivery(_rig.Terminal, _rig.IndexOf("arcade_cabinet"));
         _rig.Terminal.Close();
+        // The settle counts physics steps, each still 1/60 s of game time; the fast clock only runs them sooner.
+        using var clock = FastClock.Start();
         for (var i = 0; i < SettleFrames; i++)
             await ISceneRunner.SyncPhysicsFrame;
 
