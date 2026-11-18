@@ -26,7 +26,7 @@ internal sealed class CompiledAtlasTiles
 
     internal TileSet TileSet { get; }
 
-    /// <summary>Whether a cell may show these atlas coordinates: the tile exists or is created when first painted.</summary>
+    /// <summary>Whether a cell may show these atlas coordinates: the tile exists, or it is created when painted.</summary>
     internal bool Knows(Vector2I atlasCoords) => _source.HasTile(atlasCoords) || _deferred.Contains(atlasCoords);
 
     /// <summary>Creates the tile at these atlas coordinates if it is a transition tile not created yet.</summary>

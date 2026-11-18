@@ -160,17 +160,11 @@ internal static class CompiledAtlasTileSetBuilder
             return;
 
         var regionSize = atlasSource.TextureRegionSize;
-        var width = texture.GetWidth();
-        var height = texture.GetHeight();
+        var textureSize = new Vector2I(texture.GetWidth(), texture.GetHeight());
         var alreadyTiles = 0;
-        foreach (var entry in transitions.Values)
-        foreach (var variantOptions in entry.Variants ?? [])
-        foreach (var variant in variantOptions ?? [])
+        foreach (var atlasCoords in TransitionCoordinates(transitions))
         {
-            var atlasCoords = variant.GetAtlasCoordinates();
-            if (atlasCoords.X < 0 || atlasCoords.Y < 0
-                || atlasCoords.X * regionSize.X >= width
-                || atlasCoords.Y * regionSize.Y >= height)
+            if (!InsideTexture(atlasCoords, regionSize, textureSize))
                 continue;
 
             if (atlasSource.HasTile(atlasCoords))
@@ -182,6 +176,20 @@ internal static class CompiledAtlasTileSetBuilder
         ILog.Print(
             $"[CompiledAtlasLoader] Transition tiles: {deferred.Count} deferred, {alreadyTiles} already mapped tiles");
     }
+
+    private static IEnumerable<Vector2I> TransitionCoordinates(Dictionary<string, TransitionEntry> transitions)
+    {
+        foreach (var entry in transitions.Values)
+        foreach (var variantOptions in entry.Variants ?? [])
+        foreach (var variant in variantOptions ?? [])
+            yield return variant.GetAtlasCoordinates();
+    }
+
+    // Whether the tile at these atlas coordinates starts inside the texture.
+    private static bool InsideTexture(Vector2I atlasCoords, Vector2I regionSize, Vector2I textureSize) =>
+        atlasCoords.X >= 0 && atlasCoords.Y >= 0
+        && atlasCoords.X * regionSize.X < textureSize.X
+        && atlasCoords.Y * regionSize.Y < textureSize.Y;
 
     private sealed class TransitionMapData
     {
