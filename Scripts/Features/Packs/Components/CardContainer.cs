@@ -11,17 +11,21 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Packs.Components;
 
 /// <summary>
-///     A box, pack or booster the player opens by interacting. Opening plays out over a second or two
-///     (<see cref="ContainerOpening" />): the container falls to the surface below it, its lid, flaps or tear strip
-///     open, and its 8 packs, boosters or cards (signatures from <see cref="CardPackGenerator" />) rise out one by one
-///     to spots in a column above it that takes no more floor than the container, so opening never throws items
-///     through walls or into each other. They hang there while the empty wrapper shrinks away, and drop once it is
-///     freed.
+///     A box, pack or booster. A box or pack has a lid (<see cref="SetLidOpen" />) that the player opens in the hand
+///     to take its items out one at a time onto a shelf (<see cref="TakeOneInto" />). Opening it whole plays out over
+///     a second or two (<see cref="ContainerOpening" />): the container falls to the surface below it, its lid, flaps
+///     or tear strip open, and its packs, boosters or cards (signatures from <see cref="CardPackGenerator" />) rise
+///     out one by one to spots in a column above it that takes no more floor than the container, so opening never
+///     throws items through walls or into each other. They hang there while the empty wrapper shrinks away, and drop
+///     once it is freed.
 /// </summary>
 public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 {
     // Half the gap between the two columns a box's packs rise to: a pack is 0.38 m wide.
     private const float BoxColumnOffset = 0.2f;
+
+    // Seconds a box's flaps or a pack's lid take to swing open or shut in the hand.
+    private const float LidSeconds = 0.4f;
 
     /// <summary>
     ///     Raised when the player interacts with a container that can be opened or carried. The holder that
@@ -36,6 +40,10 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     private ContainerOpening? _opening;
     private IServiceResolver? _services;
     private IRandom? _random;
+    private List<OpeningPart>? _lidParts;
+
+    // How far the lid is open, from 0 (shut) to 1 (open); it moves toward the target IsLidOpen sets.
+    private float _lidProgress;
 
     /// <summary>What this container is. Decides what opening it produces.</summary>
     [Export]
@@ -80,6 +88,20 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     /// <summary>True while a holder carries this container (its parent is the holder's camera).</summary>
     public bool IsHeld => GetParent() is Camera3D;
 
+    /// <summary>True for a box or pack, whose flaps or lid open in the hand; a booster has none.</summary>
+    public bool HasLid => Kind != CardContainerKind.Booster;
+
+    /// <summary>True while the lid or flaps are open (<see cref="SetLidOpen" />).</summary>
+    public bool IsLidOpen { get; private set; }
+
+    /// <summary>
+    ///     Items taken out one at a time (<see cref="TakeOneInto" />). A save stores it, so a reload keeps them out.
+    /// </summary>
+    public int TakenCount { get; internal set; }
+
+    /// <summary>Items still inside: the 8 it was packed with, less <see cref="TakenCount" />.</summary>
+    public int Remaining => CardContainerLayout.ItemsPerContainer - TakenCount;
+
     public bool CanInteract => !IsOpened && !IsHeld && HasContents;
 
     public Node3D InteractionBody => this;
@@ -95,13 +117,21 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     public void Inject(IServiceResolver services) => _services = services;
 
     // Sealed containers in this group are saved by GameSaveService, so a slot restores what was left on the floor.
-    public override void _EnterTree() => AddToGroup("card_containers");
+    // Every reparent (a pick-up, a drop, a slot locking it) leaves the tree, which stops processing, so a lid still
+    // swinging picks its motion up again here.
+    public override void _EnterTree()
+    {
+        AddToGroup("card_containers");
+        if (IsNodeReady())
+            SetProcess(LidMoving);
+    }
 
     public override void _Ready()
     {
         CollisionLayer |= InteractableLayerBit;
         ClearHighlight();
         SetProcess(false);
+        PoseLid();
         // The card highlighter finds every container through this group, including ones Open() spawns later.
         AddToGroup("Containers");
 
@@ -130,8 +160,89 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     public override void _Process(double delta)
     {
-        if (_opening?.Advance((float)delta) == true)
+        if (_opening != null)
+        {
+            if (_opening.Advance((float)delta))
+                QueueFree();
+            return;
+        }
+
+        _lidProgress = Mathf.MoveToward(_lidProgress, LidTarget, (float)delta / LidSeconds);
+        PoseLid();
+        if (!LidMoving)
+            SetProcess(false);
+    }
+
+    /// <summary>
+    ///     Opens or closes the flaps of a box or the lid of a pack. They swing over a fraction of a second, or move at
+    ///     once when <paramref name="instantly" /> (a load). Nothing comes out: items leave an open container one at a
+    ///     time through <see cref="TakeOneInto" />. False for a booster or a container already opened.
+    /// </summary>
+    public bool SetLidOpen(bool open, bool instantly = false)
+    {
+        if (!HasLid || IsOpened)
+            return false;
+
+        IsLidOpen = open;
+        if (instantly)
+        {
+            _lidProgress = LidTarget;
+            PoseLid();
+        }
+
+        SetProcess(LidMoving);
+        return true;
+    }
+
+    private float LidTarget => IsLidOpen ? 1f : 0f;
+
+    private bool LidMoving => _opening == null && !Mathf.IsEqualApprox(_lidProgress, LidTarget);
+
+    // The parts keep their rest pose from their own _Ready, so they are posed only once this container is ready. A
+    // booster's tear strip is left to its opening.
+    private void PoseLid()
+    {
+        if (!HasLid || !IsNodeReady())
+            return;
+
+        _lidParts ??= GetNodeOrNull<Node3D>("Visual") is { } visual
+            ? OpeningPart.Under(visual)
+            : new List<OpeningPart>();
+        foreach (var part in _lidParts)
+            part.Pose(_lidProgress);
+    }
+
+    /// <summary>
+    ///     Takes the next item out of this open box or pack and locks it into <paramref name="slot" />. The item gets
+    ///     the seed <see cref="Open" /> would have given it, so taking a box apart by hand gives the same stock. When the
+    ///     last item leaves, the container is used up: it counts as opened and is freed. False, with nothing taken,
+    ///     when the lid is shut, nothing is left or the slot refuses the item.
+    /// </summary>
+    public bool TakeOneInto(DeckSlot slot)
+    {
+        if (!IsLidOpen || IsOpened || Remaining <= 0)
+            return false;
+
+        if (SpawnContainer(slot, slot.SeatPosition(slot.Cards.Count), TakenCount) is not CardContainer item)
+            return false;
+
+        if (!slot.TryLock(item))
+        {
+            // Freed at once, before any physics step can report it entering the slot's trigger.
+            slot.RemoveChild(item);
+            item.Free();
+            return false;
+        }
+
+        TakenCount++;
+        if (Remaining == 0)
+        {
+            IsOpened = true;
+            ClearHighlight();
             QueueFree();
+        }
+
+        return true;
     }
 
     // A wrapper taken out of the tree mid-opening (a load clears the scene's containers) lets its rising items fall.
@@ -229,13 +340,13 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         var settled = BeginOpening();
         var spawns = Kind == CardContainerKind.Booster
             ? CardSpawns(parent, settled.Origin)
-            : ContainerSpawns(parent, settled.Origin, 0);
+            : ContainerSpawns(parent, settled.Origin, TakenCount);
         StartOpening(settled, spawns);
         return true;
     }
 
     /// <summary>
-    ///     Unpacks a box or pack onto a shelf: the first items it holds are spawned and locked into
+    ///     Unpacks a box or pack onto a shelf: the items still inside are spawned and locked into
     ///     <paramref name="freeSlots" /> in order, and the rest spill onto the floor above the container, as
     ///     <see cref="Open" /> does. An item whose slot refuses it stays loose. Returns false when this container
     ///     cannot be unpacked (a booster, or one that is not openable).
@@ -246,16 +357,16 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
             return false;
 
         var settled = BeginOpening();
-        var placeable = Math.Min(CardContainerLayout.ItemsPerContainer, freeSlots.Count);
+        var placeable = Math.Min(Remaining, freeSlots.Count);
         for (var i = 0; i < placeable; i++)
         {
             // The same index as Open() uses, so each placed child gets the seed it would have got when opened loose.
-            var child = SpawnContainer(parent, settled.Origin + SpawnOffset(i, Kind), i);
+            var child = SpawnContainer(parent, settled.Origin + SpawnOffset(i, Kind), TakenCount + i);
             if (child is CardContainer container && freeSlots[i].TryLock(container))
                 PlacedCount++;
         }
 
-        StartOpening(settled, ContainerSpawns(parent, settled.Origin, placeable));
+        StartOpening(settled, ContainerSpawns(parent, settled.Origin, TakenCount + placeable));
         return true;
     }
 
@@ -274,7 +385,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     private void StartOpening(Transform3D settled, IReadOnlyList<Func<Node3D?>> spawns)
     {
-        _opening = new ContainerOpening(this, settled, spawns);
+        _opening = new ContainerOpening(this, settled, spawns, _lidProgress);
         SetProcess(true);
     }
 

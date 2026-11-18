@@ -1,11 +1,15 @@
 using System;
+using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Packs.Components;
+using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Scripts.Features.Player.Controllers;
+using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
@@ -20,6 +24,7 @@ public class CardHighlighterContainerTest
 {
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const string CardScene = "res://Scenes/Components/CardShader.tscn";
+    private const string ProductShelfScene = "res://Scenes/Shop/Items/ProductShelf.tscn";
     private const ulong Seed = 777;
 
     private Node3D _world = null!;
@@ -112,15 +117,15 @@ public class CardHighlighterContainerTest
         card.Interact();
         AssertBool(_cardHolder.HasCards).IsFalse();
 
-        // Once the box is dropped, the same card click is accepted, which proves the click is wired.
-        _rightPress!.Invoke(true);
+        // Once the box is put down, the same card click is accepted, which proves the click is wired.
+        _containerHolder.Drop();
         card.Interact();
         AssertBool(_cardHolder.HasCards).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void RightPress_WhileHoldingContainer_Drops()
+    public void RightPress_WhileHoldingABox_OpensThenClosesItInTheHand()
     {
         Build();
         var box = MakeBox();
@@ -128,10 +133,86 @@ public class CardHighlighterContainerTest
         AssertBool(_containerHolder.IsHolding).IsTrue();
 
         _rightPress!.Invoke(true);
+        _rightPress.Invoke(false);
 
-        AssertBool(_containerHolder.IsHolding).IsFalse();
-        AssertBool(box.GetParent() == _cardSpawner).IsTrue();
+        AssertBool(box.IsLidOpen).IsTrue();
+        AssertThat(_containerHolder.Held).IsSame(box);
         AssertBool(_dropper.IsPreparingDrop).IsFalse();
+
+        _rightPress.Invoke(true);
+        _rightPress.Invoke(false);
+
+        AssertBool(box.IsLidOpen).IsFalse();
+        AssertThat(_containerHolder.Held).IsSame(box);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TheHandOffersAShutBoxWholeAndAnOpenBoxOnePackAtATime()
+    {
+        var highlighter = Build();
+        var box = MakeBox();
+        box.Interact();
+
+        AssertThat(highlighter.Offered).IsEqual(new StockOffer(StockKind.Box));
+
+        _containerHolder.UseHeld();
+
+        AssertThat(highlighter.Offered).IsEqual(new StockOffer(StockKind.Pack, 8));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void StockingFromAnOpenBoxPutsOnePackInTheSlotAndKeepsTheBoxInHand()
+    {
+        var highlighter = Build();
+        var shelf = AddProductShelf();
+        var box = MakeBox();
+        box.Interact();
+        _containerHolder.UseHeld();
+        var slot = shelf.Slots.First();
+
+        AssertBool(highlighter.TryStock(slot)).IsTrue();
+
+        AssertThat(slot.Cards.Count).IsEqual(1);
+        AssertThat(((CardContainer)slot.Cards[0]).Kind).IsEqual(CardContainerKind.Pack);
+        AssertThat(_containerHolder.Held).IsSame(box);
+        AssertThat(highlighter.Offered).IsEqual(new StockOffer(StockKind.Pack, 7));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void AShutBoxIsNotStockedOnAProductShelf()
+    {
+        var highlighter = Build();
+        var shelf = AddProductShelf();
+        var box = MakeBox();
+        box.Interact();
+
+        AssertBool(highlighter.TryStock(shelf.Slots.First())).IsFalse();
+
+        AssertThat(shelf.StockedCount).IsEqual(0);
+        AssertThat(_containerHolder.Held).IsSame(box);
+    }
+
+    // An emptied box is freed only at the end of the frame, so within that frame its count must stop a ninth take.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void TheLastPackTakenEmptiesTheHandInTheSameFrame()
+    {
+        var highlighter = Build();
+        var shelf = AddProductShelf();
+        var box = MakeBox();
+        box.Interact();
+        _containerHolder.UseHeld();
+
+        foreach (var slot in shelf.Slots)
+            AssertBool(highlighter.TryStock(slot)).IsTrue();
+
+        AssertThat(shelf.StockedCount).IsEqual(8);
+        AssertBool(box.IsOpened).IsTrue();
+        AssertObject(highlighter.Offered).IsNull();
+        AssertBool(_containerHolder.IsHolding).IsFalse();
     }
 
     [TestCase]
@@ -162,6 +243,14 @@ public class CardHighlighterContainerTest
         _world.AddChild(_interaction);
         _world.AddChild(highlighter);
         return highlighter;
+    }
+
+    private CardShelf AddProductShelf()
+    {
+        var shelf = GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>();
+        _world.AddChild(shelf);
+        shelf.Position = new Vector3(5f, 0f, 0f);
+        return shelf;
     }
 
     private CardController MakeCard()

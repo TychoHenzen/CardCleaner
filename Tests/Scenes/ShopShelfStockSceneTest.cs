@@ -170,7 +170,7 @@ public class ShopShelfStockSceneTest
         AssertBool(ReferenceEquals(_interaction.Target, target))
             .OverrideFailureMessage($"aimed at {Describe(_interaction.Target)}, expected {target.Name}")
             .IsTrue();
-        AssertThat(_interaction.Target!.Prompt).IsEqual("Put the booster here");
+        AssertThat(_interaction.Target!.Prompt).IsEqual("Put the booster pack here");
         _leftClick!.Invoke(true);
 
         AssertBool(_holder.IsHolding).IsFalse();

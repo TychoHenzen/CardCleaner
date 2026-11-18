@@ -12,9 +12,16 @@ public interface IContainerHolder
     bool IsHolding { get; }
 
     bool TryPickUp(CardContainer container);
+
     /// <summary>Sets the held container down. False when nothing was released.</summary>
     bool Drop();
-    bool OpenHeld();
+
+    /// <summary>
+    ///     Opens or closes the held box's flaps or pack's lid; a held booster is put down and opened. False when
+    ///     nothing is held or nothing happened.
+    /// </summary>
+    bool UseHeld();
+
     void SetReferences(Node3D handAnchor);
 
     event ContainerHolder.ContainerPickedUpEventHandler ContainerPickedUp;

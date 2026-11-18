@@ -19,22 +19,28 @@ internal sealed class ContainerOpening
     private readonly ContainerOpeningPlan _plan;
     private readonly IReadOnlyList<Func<Node3D?>> _spawns;
     private readonly List<RisingItem> _rising = new();
-    private readonly List<OpeningPart> _parts = new();
+    private readonly List<OpeningPart> _parts;
     private readonly Node3D? _visual;
     private readonly Transform3D _from;
     private readonly Transform3D _to;
+    private readonly float _unsealFrom;
     private float _time;
 
-    public ContainerOpening(CardContainer wrapper, Transform3D settled, IReadOnlyList<Func<Node3D?>> spawns)
+    /// <param name="unsealFrom">
+    ///     How far the wrapper's lid or flaps are already open (0 to 1), so a box opened in the hand first does not
+    ///     snap shut before it unseals.
+    /// </param>
+    public ContainerOpening(CardContainer wrapper, Transform3D settled, IReadOnlyList<Func<Node3D?>> spawns,
+        float unsealFrom = 0f)
     {
         _wrapper = wrapper;
         _spawns = spawns;
         _from = wrapper.GlobalTransform;
         _to = settled;
+        _unsealFrom = unsealFrom;
         _plan = ContainerOpeningPlan.For(wrapper.Kind, _from.Origin.Y - _to.Origin.Y, spawns.Count);
         _visual = wrapper.GetNodeOrNull<Node3D>("Visual");
-        if (_visual != null)
-            CollectParts(_visual);
+        _parts = _visual != null ? OpeningPart.Under(_visual) : new List<OpeningPart>();
     }
 
     /// <summary>Items that have left the wrapper so far.</summary>
@@ -105,23 +111,13 @@ internal sealed class ContainerOpening
 
     public bool IsOver => Released == _spawns.Count && _rising.Count == 0 && _time >= _plan.Duration;
 
-    private void CollectParts(Node node)
-    {
-        foreach (var child in node.GetChildren())
-        {
-            if (child is OpeningPart part)
-                _parts.Add(part);
-            CollectParts(child);
-        }
-    }
-
     private void PoseWrapper()
     {
         var fall = _plan.SettleProgress(_time);
         var rotation = _from.Basis.GetRotationQuaternion().Slerp(_to.Basis.GetRotationQuaternion(), fall);
         _wrapper.GlobalTransform = new Transform3D(new Basis(rotation), _from.Origin.Lerp(_to.Origin, fall * fall));
 
-        var unseal = _plan.UnsealProgress(_time);
+        var unseal = Mathf.Max(_unsealFrom, _plan.UnsealProgress(_time));
         foreach (var part in _parts)
             part.Pose(unseal);
 

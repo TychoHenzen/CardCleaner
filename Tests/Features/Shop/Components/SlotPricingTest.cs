@@ -173,7 +173,7 @@ public class SlotPricingTest
         _pricing.Interact();
 
         var stock = _screen.Opened!;
-        AssertThat(stock.ItemName).IsEqual("Booster");
+        AssertThat(stock.ItemName).IsEqual("Booster pack");
         AssertThat(stock.MarketValue).IsEqual(ProductMarketPrices.BoosterPrice);
         AssertBool(stock.UnitCost == BoosterWholesale).IsTrue();
 

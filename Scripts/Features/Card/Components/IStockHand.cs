@@ -1,4 +1,4 @@
-using Godot;
+using CardCleaner.Scripts.Features.Shop.Models;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
@@ -8,9 +8,10 @@ namespace CardCleaner.Scripts.Features.Card.Components;
 public interface IStockHand
 {
     /// <summary>
-    ///     The held container, else the top card in hand. Null when the hand is empty or a drop is being aimed.
+    ///     The held shut container, else one item out of the held open box or pack, else the top card in hand. Null
+    ///     when the hand is empty, a drop is being aimed, or nothing is left in the open container.
     /// </summary>
-    RigidBody3D? Offered { get; }
+    StockOffer? Offered { get; }
 
     /// <summary>
     ///     Moves <see cref="Offered" /> from the hand into the slot; false, with nothing moved, when it cannot.

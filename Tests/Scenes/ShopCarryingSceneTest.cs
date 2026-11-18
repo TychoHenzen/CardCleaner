@@ -19,14 +19,14 @@ using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 using NSubstitute;
 using CardCleaner.Tests.TestUtilities;
-using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 using System;
 
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// End to end in the shop scene: the player's interaction ray picks up an ordered box with a left click, a right
-/// press drops it in front of the camera, Q opens it in hand, and a held box and a card in hand block each other.
+/// press opens and closes it in hand, Q puts it down in front of the camera, and a held box and a card in hand block
+/// each other.
 /// The input service is replaced so the scene's own registered callbacks are captured and invoked directly; the
 /// interaction ray itself runs for real because the camera is aimed at the box.
 /// </summary>
@@ -94,7 +94,7 @@ public class ShopCarryingSceneTest
         input.When(x => x.RegisterAction(Arg.Any<object>(), "card_drop_prepare", MouseButton.Right,
                 Arg.Any<Action<bool>>()))
             .Do(ci => _rightPress = ci.Arg<Action<bool>>());
-        input.When(x => x.RegisterAction(Arg.Any<object>(), "container_open", Key.Q, Arg.Any<Action>()))
+        input.When(x => x.RegisterAction(Arg.Any<object>(), "container_put_down", Key.Q, Arg.Any<Action>()))
             .Do(ci => _qPress = ci.Arg<Action>());
     }
 
@@ -125,7 +125,7 @@ public class ShopCarryingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task RightPress_DropsBox_InFrontOfCamera()
+    public async Task Q_PutsTheBoxDown_InFrontOfCamera()
     {
         var box = OrderBox();
         await PhysicsFrames(SettleFrames);
@@ -135,7 +135,7 @@ public class ShopCarryingSceneTest
         var camera = _interaction.Camera!;
         var expected = camera.GlobalPosition + (-camera.GlobalBasis.Z * _holder.DropDistance);
 
-        _rightPress!.Invoke(true);
+        _qPress!.Invoke();
 
         AssertBool(_holder.IsHolding).IsFalse();
         AssertBool(box.GetParent() == _shop.GetNode("World/Cards")).IsTrue();
@@ -146,7 +146,7 @@ public class ShopCarryingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task Q_OpensHeldBox_Spawns8Packs()
+    public async Task RightPress_OpensTheHeldBoxInHandAndSpillsNothing()
     {
         var box = OrderBox();
         await PhysicsFrames(SettleFrames);
@@ -154,13 +154,14 @@ public class ShopCarryingSceneTest
         await PhysicsFrames(AimFrames);
         _leftClick!.Invoke(true);
 
-        _qPress!.Invoke();
+        _rightPress!.Invoke(true);
+        _rightPress.Invoke(false);
+        await PhysicsFrames(AimFrames);
 
-        AssertBool(_holder.IsHolding).IsFalse();
-        AssertBool(box.IsOpened).IsTrue();
-        await UntilOpened(box);
-        var packs = Containers(CardContainerKind.Pack);
-        AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
+        AssertThat(_holder.Held).IsSame(box);
+        AssertBool(box.IsLidOpen).IsTrue();
+        AssertBool(box.IsOpened).IsFalse();
+        AssertThat(Containers(CardContainerKind.Pack).Length).IsEqual(0);
     }
 
     [TestCase]
@@ -195,8 +196,8 @@ public class ShopCarryingSceneTest
         _card.Interact();
         AssertBool(_cardHolder.HasCards).IsFalse();
 
-        // Once the box is dropped, the same card click is accepted, which proves the click is wired.
-        _rightPress!.Invoke(true);
+        // Once the box is put down, the same card click is accepted, which proves the click is wired.
+        _qPress!.Invoke();
         _card.Interact();
         AssertBool(_cardHolder.HasCards).IsTrue();
     }
@@ -210,7 +211,7 @@ public class ShopCarryingSceneTest
         Aim(box);
         await PhysicsFrames(AimFrames);
         _leftClick!.Invoke(true);
-        _rightPress!.Invoke(true);
+        _qPress!.Invoke();
         AssertBool(_holder.IsHolding).IsFalse();
 
         await PhysicsFrames(SettleFrames);

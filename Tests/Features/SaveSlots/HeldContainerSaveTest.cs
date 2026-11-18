@@ -148,6 +148,68 @@ public class HeldContainerSaveTest
         await scene.TwoFrames();
     }
 
+    // A box opened in the hand and partly taken apart onto a shelf comes back open in the hand, with the taken packs
+    // still out of it, so opening it whole later lets out only the rest.
+    [TestCase]
+    [TestCategory("Unit")]
+    public static async Task AnOpenPartlyTakenBoxInHandComesBackOpenWithTheSameItemsLeft()
+    {
+        using var scene = new SaveWorld("OpenBoxSaveWorld", addCardsToTree: false);
+        Assertions.AddNode(scene.World, autoFree: false);
+        scene.Enter();
+        var (holder, _) = BuildHolder(scene);
+        var box = PlacedBox(scene, Vector3.Zero);
+        AssertBool(holder.TryPickUp(box)).IsTrue();
+        box.SetLidOpen(true, instantly: true);
+        box.TakenCount = 3;
+
+        SavedContainers.Restore(scene.Tree, CaptureAndParse(scene), scene.World);
+        await scene.TwoFrames();
+
+        var restored = OnlyRestoredBox(scene);
+        AssertBool(holder.Held == restored).IsTrue();
+        AssertBool(restored.IsLidOpen).IsTrue();
+        AssertThat(restored.TakenCount).IsEqual(3);
+        AssertThat(restored.Remaining).IsEqual(CardContainerLayout.ItemsPerContainer - 3);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void AShutBoxSavedOnTheFloorReadsShutWithNothingTaken()
+    {
+        using var scene = new SaveWorld("ShutBoxSaveWorld", addCardsToTree: false);
+        Assertions.AddNode(scene.World, autoFree: false);
+        scene.Enter();
+        PlacedBox(scene, Vector3.Zero);
+
+        var record = CaptureAndParse(scene).Single();
+
+        AssertBool(record.LidOpen).IsFalse();
+        AssertThat(record.Taken).IsEqual(0);
+    }
+
+    // An emptied box is freed, never saved, and a booster pack has nothing to take out one at a time.
+    [TestCase("Box", 8)]
+    [TestCase("Box", -1)]
+    [TestCase("Booster", 1)]
+    [TestCategory("Unit")]
+    public static void ARecordWithAnImpossibleTakenCountIsMalformed(string kind, int taken)
+    {
+        var raw = new List<object>
+        {
+            new Dictionary<string, object>
+            {
+                ["ScenePath"] = BoxScene,
+                ["Kind"] = kind,
+                ["Position"] = new Vector3(1f, 0f, 2f),
+                ["Rotation"] = Vector3.Zero,
+                ["Taken"] = taken,
+            },
+        };
+
+        Assertions.AssertThrown(() => SavedContainers.Parse(raw)).IsInstanceOf<FormatException>();
+    }
+
     [TestCase]
     [TestCategory("Unit")]
     public static void OldSlotWithoutHeldKey_ReadsAsFloor()

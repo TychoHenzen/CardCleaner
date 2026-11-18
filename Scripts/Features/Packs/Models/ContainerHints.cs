@@ -7,14 +7,12 @@ namespace CardCleaner.Scripts.Features.Packs.Models;
 public static class ContainerHints
 {
     /// <summary>
-    ///     Q unpacks onto the shelf the player faces when <paramref name="atShelf" /> is true, else opens the container
-    ///     where the player stands; the right button puts it down.
+    ///     The right button opens or closes a box or pack (<paramref name="lidOpen" /> says which it is now) and opens
+    ///     a booster; Q puts the container down.
     /// </summary>
-    public static IReadOnlyList<ControlHint> For(CardContainerKind kind, bool atShelf) =>
+    public static IReadOnlyList<ControlHint> For(CardContainerKind kind, bool lidOpen) =>
     [
-        new("Q", atShelf
-            ? $"Unpack the {CardContainerKindText.ContentsOf(kind)} onto this shelf"
-            : $"Open the {CardContainerKindText.NameOf(kind)}"),
-        new("RMB", "Put it down"),
+        new("RMB", $"{(lidOpen ? "Close" : "Open")} the {CardContainerKindText.NameOf(kind)}"),
+        new("Q", "Put it down"),
     ];
 }

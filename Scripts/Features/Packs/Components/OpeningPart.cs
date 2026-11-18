@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
 
@@ -32,6 +33,24 @@ public partial class OpeningPart : Node3D
     public bool VanishWhenOpen { get; set; }
 
     public override void _Ready() => _rest = Transform;
+
+    /// <summary>Every opening part under <paramref name="node" />, at any depth, in tree order.</summary>
+    public static List<OpeningPart> Under(Node node)
+    {
+        var parts = new List<OpeningPart>();
+        Collect(node, parts);
+        return parts;
+    }
+
+    private static void Collect(Node node, List<OpeningPart> parts)
+    {
+        foreach (var child in node.GetChildren())
+        {
+            if (child is OpeningPart part)
+                parts.Add(part);
+            Collect(child, parts);
+        }
+    }
 
     /// <summary>Poses the part at <paramref name="unseal" />, the container's unseal progress from 0 to 1.</summary>
     public void Pose(float unseal)

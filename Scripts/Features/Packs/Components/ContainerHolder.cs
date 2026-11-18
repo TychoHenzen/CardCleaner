@@ -6,8 +6,9 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 
 /// <summary>
 ///     Carries one sealed container in the player's hand. A held container is frozen, has no collision, and is
-///     a child of the hand anchor. Dropping puts it back on the card spawner's node in front of the player,
-///     with its collision and physics restored. Opening it drops it first, then opens it where it lies.
+///     a child of the hand anchor. Q puts it back on the card spawner's node in front of the player, with its
+///     collision and physics restored. Using it (<see cref="UseHeld" />, the right button) opens or closes a box's
+///     flaps or a pack's lid in the hand, and opens a booster where the player stands.
 /// </summary>
 public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
 {
@@ -19,20 +20,11 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
 
     public const string GroupName = "container_holders";
 
-    /// <summary>Physics layer 5: the bodies a carried container can be unpacked onto (shelves and racks).</summary>
-    public const uint UnpackLayerBit = 16;
-
     private const float DefaultDropDistance = 1.5f;
-    private const float DefaultUnpackReach = 3.0f;
     private static readonly Vector3 DefaultHoldOffset = new(0.5f, -0.4f, -1.2f);
 
     [Export] public float DropDistance = DefaultDropDistance;
     [Export] public Vector3 HoldOffset = DefaultHoldOffset;
-
-    /// <summary>
-    /// How far in front of the hand the ray looks for an unpack target when Q opens a carried container.
-    /// </summary>
-    [Export] public float UnpackReach = DefaultUnpackReach;
 
     private IServiceResolver? _services;
     private IInputService? _inputService;
@@ -42,17 +34,12 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
     private uint _savedLayer;
     private uint _savedMask;
 
-    // The unpack target found by the last physics frame while a container was held, or null. OpenHeld reads it, so Q
-    // never queries physics space from its input callback, where Godot rejects the query.
-    private IUnpackTarget? _unpackTarget;
-
     public override bool _PropertyCanRevert(StringName property)
     {
         return property.ToString() switch
         {
             nameof(DropDistance) => true,
             nameof(HoldOffset) => true,
-            nameof(UnpackReach) => true,
             _ => base._PropertyCanRevert(property)
         };
     }
@@ -63,7 +50,6 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         {
             nameof(DropDistance) => DefaultDropDistance,
             nameof(HoldOffset) => DefaultHoldOffset,
-            nameof(UnpackReach) => DefaultUnpackReach,
             _ => base._PropertyGetRevert(property)
         };
     }
@@ -79,22 +65,17 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         SetPhysicsProcess(true);
     }
 
-    public override void _PhysicsProcess(double delta)
-    {
-        var held = HeldContainer();
-        _unpackTarget = held != null ? FindUnpackTarget() : null;
-        PublishHints(held);
-    }
-
     // The board drops repeated identical hints, so publishing every frame costs one comparison.
-    private void PublishHints(CardContainer? held)
+    public override void _PhysicsProcess(double delta)
     {
         if (_hints == null)
             return;
+
+        var held = HeldContainer();
         if (held == null)
             _hints.Clear(this);
         else
-            _hints.Publish(this, ContainerHints.For(held.Kind, _unpackTarget?.CanUnpack(held) == true));
+            _hints.Publish(this, ContainerHints.For(held.Kind, held.IsLidOpen));
     }
 
     public override void _Ready()
@@ -108,7 +89,7 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         _services.Get<IInputService>(input =>
         {
             _inputService = input;
-            _inputService.RegisterAction(this, "container_open", Key.Q, () => OpenHeld());
+            _inputService.RegisterAction(this, "container_put_down", Key.Q, () => Drop());
         });
         _services.Get<IControlHints>(hints => _hints = hints);
     }
@@ -174,51 +155,17 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         return true;
     }
 
-    public bool OpenHeld()
+    public bool UseHeld()
     {
         var container = HeldContainer();
         if (container == null) return false;
 
-        // The target is the one the last physics frame cached while the container was held. It is cleared here so a
-        // later Q never reuses it. The drop comes first because a held container cannot be opened (CanInteract is
-        // false while held).
-        var target = _unpackTarget;
-        _unpackTarget = null;
+        if (container.HasLid)
+            return container.SetLidOpen(!container.IsLidOpen);
+
+        // A held container cannot be opened (CanInteract is false while held), so the booster is put down first.
         Drop();
-        return target?.TryUnpack(container) == true || container.Open();
-    }
-
-    // The unpack target the hand points at within UnpackReach, or null. The ray starts at the hand anchor and runs
-    // along its forward axis, so it follows the player's view, not the holder's position. It hits areas too: a shelf's
-    // aim volume is a trigger on the unpack layer, so the ray finds the shelf between its boards.
-    private IUnpackTarget? FindUnpackTarget()
-    {
-        if (_handAnchor == null || !_handAnchor.IsInsideTree()) return null;
-
-        var origin = _handAnchor.GlobalPosition;
-        var to = origin - _handAnchor.GlobalBasis.Z * UnpackReach;
-        var result = _handAnchor.GetWorld3D().DirectSpaceState.IntersectRay(new PhysicsRayQueryParameters3D
-        {
-            From = origin,
-            To = to,
-            CollideWithBodies = true,
-            CollideWithAreas = true,
-            CollisionMask = UnpackLayerBit
-        });
-
-        return result.Count > 0 && result["collider"].Obj is Node3D body ? FindUnpackTargetInHierarchy(body) : null;
-    }
-
-    // Walks from the hit body up through its parents, as InteractionSystem does, so a shelf's child body still counts.
-    private static IUnpackTarget? FindUnpackTargetInHierarchy(Node3D startNode)
-    {
-        for (Node? current = startNode; current != null; current = current.GetParent())
-        {
-            if (current is IUnpackTarget target)
-                return target;
-        }
-
-        return null;
+        return container.Open();
     }
 
     // The held container was freed while the hand held it, so the hand lets go of it.
@@ -227,8 +174,9 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         _held = null;
     }
 
-    // The container the hand holds, or null. A container that was freed or opened is no longer held, so the hand
-    // lets go of it here and unsubscribes from it, so a later held container is never cleared by a stale handler.
+    // The container the hand holds, or null. A container that was freed or opened (an emptied box counts as opened)
+    // is no longer held, so the hand lets go of it here and unsubscribes from it, so a later held container is never
+    // cleared by a stale handler.
     private CardContainer? HeldContainer()
     {
         if (_held == null) return null;

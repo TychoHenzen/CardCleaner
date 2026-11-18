@@ -1,16 +1,15 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
-using CardCleaner.Scripts.Features.Packs.Components;
-using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     The click target of one free shelf slot. Aimed at with a card or a container in hand, a click puts that stock
-///     in the slot. The body covers the slot's trigger box and is on the interaction layer only while the shelf is
-///     shown and the slot is empty, or holds a partial stack that takes what the hand offers now. So a full slot, or
-///     a partial booster stack aimed at with nothing that fits it, leaves the stock itself to be clicked and picked up.
+///     The click target of one free shelf slot. Aimed at with a card, a shut container or an open box or pack in hand,
+///     a click puts that stock (for an open one, the next item inside) in the slot. The body covers the slot's
+///     trigger box and is on the interaction layer only while the shelf is shown and the slot is empty, or holds a
+///     partial stack that takes what the hand offers now. So a full slot, or a partial booster stack aimed at with
+///     nothing that fits it, leaves the stock itself to be clicked and picked up.
 /// </summary>
 public partial class ShelfSlotTarget : StaticBody3D, IInteractable, IDependent
 {
@@ -27,15 +26,13 @@ public partial class ShelfSlotTarget : StaticBody3D, IInteractable, IDependent
     /// <summary>The slot this target stocks.</summary>
     public DeckSlot? Slot => _slot;
 
-    public bool CanInteract => _slot != null && _hand?.Offered is { } body && _slot.CanTake(body);
+    public bool CanInteract => _slot != null && _hand?.Offered is { } offer && _slot.CanTake(offer.Stock);
 
     public Node3D InteractionBody => this;
 
     public float InteractionRange => StockReach;
 
-    public string Prompt => _hand?.Offered is CardContainer container
-        ? $"Put the {CardContainerKindText.NameOf(container.Kind)} here"
-        : "Put the card here";
+    public string Prompt => _hand?.Offered?.Prompt ?? "Put the card here";
 
     /// <summary>
     ///     Builds the target for <paramref name="slot" /> as a child of <paramref name="shelf" />. It covers the
@@ -138,7 +135,7 @@ public partial class ShelfSlotTarget : StaticBody3D, IInteractable, IDependent
     private void RefreshLayer()
     {
         var open = _slot != null && IsInstanceValid(_slot) && _slot.HasRoom && IsVisibleInTree()
-                   && (!_slot.HasCards || (_hand?.Offered is { } offer && _slot.CanTake(offer)));
+                   && (!_slot.HasCards || (_hand?.Offered is { } offer && _slot.CanTake(offer.Stock)));
         CollisionLayer = open ? InteractableLayerBit : 0;
         if (!open)
             ClearHighlight();

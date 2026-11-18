@@ -40,8 +40,17 @@ public sealed record ProductPriceList
         return new ProductPriceList(_set.SetItem(kind, ShopPrice.Clamp(price)));
     }
 
-    /// <summary>The key a save stores the kind's price under.</summary>
-    public static string SaveKeyFor(CardContainerKind kind) => CardContainerKindText.NameOf(kind);
+    /// <summary>
+    ///     The id of the kind: its item id in the order catalog (<c>BackofficeCatalog.tres</c>), and the key a save
+    ///     stores its price under. Never the name the player reads, which may change.
+    /// </summary>
+    public static string IdOf(CardContainerKind kind) => kind switch
+    {
+        CardContainerKind.Box => "cardboard_box",
+        CardContainerKind.Pack => "pack",
+        CardContainerKind.Booster => "booster",
+        _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown container kind")
+    };
 
     private static void RequirePriced(CardContainerKind kind)
     {

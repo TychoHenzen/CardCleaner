@@ -9,33 +9,41 @@ public class ContainerHintsTest
 {
     [TestCase]
     [TestCategory("Unit")]
-    public static void AtAShelfQUnpacksTheContents()
+    public static void AShutBoxOpensWithTheRightButtonAndQPutsItDown()
     {
-        var hints = ContainerHints.For(CardContainerKind.Box, atShelf: true);
+        var hints = ContainerHints.For(CardContainerKind.Box, lidOpen: false);
 
         AssertThat(hints.Select(hint => $"{hint.Key}: {hint.Action}").ToArray()).IsEqual(new[]
         {
-            "Q: Unpack the packs onto this shelf",
-            "RMB: Put it down",
+            "RMB: Open the cardboard box",
+            "Q: Put it down",
         });
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void AwayFromAShelfQOpensTheContainer()
+    public static void AnOpenBoxClosesWithTheRightButton()
     {
-        var hints = ContainerHints.For(CardContainerKind.Booster, atShelf: false);
+        var hints = ContainerHints.For(CardContainerKind.Pack, lidOpen: true);
 
-        AssertThat(hints[0].Action).IsEqual("Open the booster");
+        AssertThat(hints[0].Action).IsEqual("Close the booster box");
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void EveryKindHasAName()
+    public static void ABoosterPackOpensWithTheRightButton()
     {
-        AssertThat(CardContainerKindText.NameOf(CardContainerKind.Box)).IsEqual("booster box");
-        AssertThat(CardContainerKindText.NameOf(CardContainerKind.Pack)).IsEqual("pack");
-        AssertThat(CardContainerKindText.ContentsOf(CardContainerKind.Pack)).IsEqual("boosters");
-        AssertThat(CardContainerKindText.ContentsOf(CardContainerKind.Booster)).IsEqual("cards");
+        var hints = ContainerHints.For(CardContainerKind.Booster, lidOpen: false);
+
+        AssertThat(hints[0].Action).IsEqual("Open the booster pack");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void EveryKindHasTheNameThePlayerReads()
+    {
+        AssertThat(CardContainerKindText.NameOf(CardContainerKind.Box)).IsEqual("cardboard box");
+        AssertThat(CardContainerKindText.NameOf(CardContainerKind.Pack)).IsEqual("booster box");
+        AssertThat(CardContainerKindText.NameOf(CardContainerKind.Booster)).IsEqual("booster pack");
     }
 }

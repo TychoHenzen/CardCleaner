@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Shop.Components;
 using Godot;
 
@@ -136,26 +135,26 @@ public class ShelfSeatTest
         }
     }
 
-    // The colliders leave the space between two boards open, so the hand aims at one box over the whole shelf, on the
-    // unpack layer only and colliding with nothing. It is a trigger that a delivery counts as footprint, never a body,
-    // which the navigation bake would parse even while the shelf is carried.
+    // The colliders leave the space between two boards open, so a delivered shelf stacks as one box over the whole
+    // shelf, on no layer and colliding with nothing. It is a trigger that a delivery counts as footprint, never a
+    // body, which the navigation bake would parse even while the shelf is carried.
     [TestCase(ShelfScene)]
     [TestCase(ProductShelfScene)]
     [TestCase(RackScene)]
     [TestCategory("Unit")]
-    public static void TheUnpackAimCoversTheWholeShelf(string shelfScene)
+    public static void TheFootprintVolumeCoversTheWholeShelf(string shelfScene)
     {
         var shelf = TurnedShelf(shelfScene);
-        var aim = shelf.AimVolume;
-        AssertObject(aim).IsNotNull();
+        var footprint = shelf.FootprintVolume;
+        AssertObject(footprint).IsNotNull();
 
-        AssertThat(aim!.CollisionLayer).IsEqual(ContainerHolder.UnpackLayerBit);
-        AssertThat(aim.CollisionMask).IsEqual(0u);
-        AssertBool(aim.IsInGroup(DeliveryMarker.FootprintGroup)).IsTrue();
-        var box = ShapesIn(shelf, aim.GetChildren().OfType<CollisionShape3D>().Single());
+        AssertThat(footprint!.CollisionLayer).IsEqual(0u);
+        AssertThat(footprint.CollisionMask).IsEqual(0u);
+        AssertBool(footprint.IsInGroup(DeliveryMarker.FootprintGroup)).IsTrue();
+        var box = ShapesIn(shelf, footprint.GetChildren().OfType<CollisionShape3D>().Single());
         var bounds = ColliderBounds(shelf);
         AssertBool(box.Position.IsEqualApprox(bounds.Position) && box.Size.IsEqualApprox(bounds.Size))
-            .OverrideFailureMessage($"aim box {box}, shelf colliders {bounds}").IsTrue();
+            .OverrideFailureMessage($"footprint box {box}, shelf colliders {bounds}").IsTrue();
     }
 
     private static CardShelf TurnedShelf(string scene)

@@ -34,11 +34,9 @@ public partial class ShopPriceBook : Node, IPriceBook, ISaveable
         Changed?.Invoke();
     }
 
-    // ASSUMPTION: the order catalog names a booster "booster" and a pack "pack", the same words as
-    // CardContainerKindText.NameOf; BackofficeCatalogTest pins those ids (Risk Low).
     public int? WholesaleFor(CardContainerKind kind)
     {
-        var id = CardContainerKindText.NameOf(kind);
+        var id = ProductPriceList.IdOf(kind);
         return Wholesale?.Items.FirstOrDefault(item => item.Id == id)?.Price;
     }
 
@@ -46,7 +44,7 @@ public partial class ShopPriceBook : Node, IPriceBook, ISaveable
     public void Save(NodeSave save)
     {
         foreach (var (kind, price) in _prices.SetPrices)
-            save.SetOrAddProperty(ProductPriceList.SaveKeyFor(kind), price);
+            save.SetOrAddProperty(ProductPriceList.IdOf(kind), price);
     }
 
     // Read as object: a typed read of a corrupt value throws, and that would stop the rest of the tree load. JSON
@@ -56,7 +54,7 @@ public partial class ShopPriceBook : Node, IPriceBook, ISaveable
         _prices = ProductPriceList.MarketPrices;
         foreach (var kind in ProductPriceList.PricedKinds)
         {
-            var key = ProductPriceList.SaveKeyFor(kind);
+            var key = ProductPriceList.IdOf(kind);
             if (!save.TryGetProperty<object>(key, out var raw))
                 continue;
 

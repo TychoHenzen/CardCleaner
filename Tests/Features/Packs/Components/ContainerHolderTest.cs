@@ -18,7 +18,6 @@ public partial class ContainerHolderTest
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
-    private const string CardShelfScene = "res://Scenes/Shop/Items/Shelf.tscn";
     private const ulong Seed = 777;
 
     private Node3D _world = null!;
@@ -51,7 +50,7 @@ public partial class ContainerHolderTest
 
         var input = Substitute.For<IInputService>();
         TestServices.Container.RegisterSingleton(input);
-        input.When(x => x.RegisterAction(Arg.Any<object>(), "container_open", Key.Q, Arg.Any<Action>()))
+        input.When(x => x.RegisterAction(Arg.Any<object>(), "container_put_down", Key.Q, Arg.Any<Action>()))
             .Do(ci => _qPress = ci.Arg<Action>());
         _holder = TestServices.Inject(new ContainerHolder());
         _world.AddChild(_holder);
@@ -154,29 +153,74 @@ public partial class ContainerHolderTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void OpenHeld_DropsThenOpens()
+    public void UseHeld_Box_OpensItsLidInTheHandAndSpillsNothing()
     {
         var box = Make(BoxScene);
         _holder.TryPickUp(box);
 
-        AssertBool(_holder.OpenHeld()).IsTrue();
+        AssertBool(_holder.UseHeld()).IsTrue();
 
-        AssertBool(_holder.IsHolding).IsFalse();
-        AssertBool(box.IsOpened).IsTrue();
-        AssertBool(box.GetParent() == _cardSpawner).IsTrue();
+        AssertBool(box.IsLidOpen).IsTrue();
+        AssertBool(box.IsOpened).IsFalse();
+        AssertThat(_holder.Held).IsSame(box);
+        AssertThat(box.Remaining).IsEqual(8);
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void QKey_OpensHeldContainer()
+    public void UseHeld_OpenPack_ClosesItsLid()
+    {
+        var pack = Make(PackScene);
+        _holder.TryPickUp(pack);
+        _holder.UseHeld();
+
+        AssertBool(_holder.UseHeld()).IsTrue();
+
+        AssertBool(pack.IsLidOpen).IsFalse();
+        AssertThat(_holder.Held).IsSame(pack);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void UseHeld_Booster_PutsItDownAndOpensIt()
+    {
+        var booster = Make(BoosterScene);
+        _holder.TryPickUp(booster);
+
+        AssertBool(_holder.UseHeld()).IsTrue();
+
+        AssertBool(_holder.IsHolding).IsFalse();
+        AssertBool(booster.IsOpened).IsTrue();
+        AssertBool(booster.GetParent() == _cardSpawner).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void QKey_PutsTheHeldContainerDownShut()
     {
         var box = Make(BoxScene);
         _holder.TryPickUp(box);
 
         _qPress!.Invoke();
 
-        AssertBool(box.IsOpened).IsTrue();
         AssertBool(_holder.IsHolding).IsFalse();
+        AssertBool(box.IsOpened).IsFalse();
+        AssertBool(box.GetParent() == _cardSpawner).IsTrue();
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void QKey_PutsAnOpenBoxDownWithItsLidStillOpen()
+    {
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+        _holder.UseHeld();
+
+        _qPress!.Invoke();
+
+        AssertBool(_holder.IsHolding).IsFalse();
+        AssertBool(box.IsLidOpen).IsTrue();
+        AssertBool(box.IsOpened).IsFalse();
     }
 
     [TestCase]
@@ -303,7 +347,7 @@ public partial class ContainerHolderTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void OpenHeld_NothingHeld_False()
+    public void UseHeld_NothingHeld_False()
     {
         var log = new RecordingLog();
         var previous = ILog.Sink;
@@ -312,9 +356,10 @@ public partial class ContainerHolderTest
         {
             var box = Make(BoxScene);
 
-            AssertBool(_holder.OpenHeld()).IsFalse();
+            AssertBool(_holder.UseHeld()).IsFalse();
 
             AssertBool(box.IsOpened).IsFalse();
+            AssertBool(box.IsLidOpen).IsFalse();
             AssertThat(log.Errors).IsEmpty();
         }
         finally
@@ -340,118 +385,6 @@ public partial class ContainerHolderTest
 
         AssertBool(GodotObject.IsInstanceValid(holder)).IsFalse();
         AssertThat(tree.GetNodesInGroup(ContainerHolder.GroupName).Count).IsEqual(1);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task OpenHeld_WithUnpackTarget_CallsTryUnpackOnceAndDoesNotOpenLoose()
-    {
-        var target = MakeTarget(accepts: true);
-        var box = Make(BoxScene);
-        _holder.TryPickUp(box);
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-
-        AssertBool(_holder.OpenHeld()).IsTrue();
-
-        AssertThat(target.Calls).IsEqual(1);
-        AssertBool(box.IsOpened).IsFalse();
-        AssertBool(_holder.IsHolding).IsFalse();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task OpenHeld_TargetRefuses_OpensLooseAfterOneTryUnpack()
-    {
-        var target = MakeTarget(accepts: false);
-        var box = Make(BoxScene);
-        _holder.TryPickUp(box);
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-
-        AssertBool(_holder.OpenHeld()).IsTrue();
-
-        AssertThat(target.Calls).IsEqual(1);
-        AssertBool(box.IsOpened).IsTrue();
-        AssertBool(_holder.IsHolding).IsFalse();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task OpenHeld_TargetBeyondUnpackReach_OpensLooseWithoutTryUnpack()
-    {
-        var target = MakeTarget(accepts: true, distance: 4f);
-        var box = Make(BoxScene);
-        _holder.TryPickUp(box);
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-
-        AssertBool(_holder.OpenHeld()).IsTrue();
-
-        AssertThat(target.Calls).IsEqual(0);
-        AssertBool(box.IsOpened).IsTrue();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task OpenHeld_TargetJustInsideUnpackReach_Unpacks()
-    {
-        var target = MakeTarget(accepts: true, distance: 2.4f);
-        var box = Make(BoxScene);
-        _holder.TryPickUp(box);
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-
-        AssertBool(_holder.OpenHeld()).IsTrue();
-
-        AssertThat(target.Calls).IsEqual(1);
-        AssertBool(box.IsOpened).IsFalse();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task OpenHeld_RealCardShelfAhead_OpensLoose()
-    {
-        var shelf = GD.Load<PackedScene>(CardShelfScene).Instantiate<Node3D>();
-        _world.AddChild(shelf);
-        shelf.Position = new Vector3(0f, 0f, -1.5f);
-        // The shelf is on the unpack layer, so the holder's ray can find it and the card shelf itself refuses.
-        AssertThat(((CollisionObject3D)shelf).CollisionLayer & ContainerHolder.UnpackLayerBit)
-            .IsEqual(ContainerHolder.UnpackLayerBit);
-        var box = Make(BoxScene);
-        _holder.TryPickUp(box);
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-
-        AssertBool(_holder.OpenHeld()).IsTrue();
-
-        AssertBool(box.IsOpened).IsTrue();
-    }
-
-    // A physics body on the unpack layer, distance metres in front of the hand, so the holder's ray hits it when the
-    // distance is within UnpackReach.
-    private StubUnpackTarget MakeTarget(bool accepts, float distance = 1.5f)
-    {
-        var target = new StubUnpackTarget { Accepts = accepts, CollisionLayer = ContainerHolder.UnpackLayerBit };
-        target.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = Vector3.One } });
-        _world.AddChild(target);
-        target.Position = new Vector3(0f, 0f, -distance);
-        return target;
-    }
-
-    private sealed partial class StubUnpackTarget : StaticBody3D, IUnpackTarget
-    {
-        public bool Accepts { get; set; }
-
-        public int Calls { get; private set; }
-
-        public bool TryUnpack(CardContainer container)
-        {
-            Calls++;
-            return Accepts;
-        }
-
-        public bool CanUnpack(CardContainer container) => Accepts;
     }
 
     private sealed class RecordingLog : ILog

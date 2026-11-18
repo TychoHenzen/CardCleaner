@@ -5,7 +5,9 @@ using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Packs.Components;
+using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
+using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
@@ -169,36 +171,48 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
         _containerHolder.TryPickUp(container);
     }
 
-    public RigidBody3D? Offered
+    public StockOffer? Offered
     {
         get
         {
             // Before _Ready (or when an export is missing) the holders are not wired, so the hand offers nothing.
             if (_containerHolder == null || CardDropper.IsPreparingDrop) return null;
-            return _containerHolder.Held ?? CardHolder.TopCard;
+            if (_containerHolder.Held is { } held) return OfferOf(held);
+            return CardHolder.TopCard != null ? new StockOffer(StockKind.Card) : null;
         }
+    }
+
+    // A shut container offers itself. An open box or pack offers the next item inside while any is left: an emptied
+    // one is freed only at the end of the frame, so the count, not its absence, stops a second take.
+    private static StockOffer? OfferOf(CardContainer held)
+    {
+        if (!held.IsLidOpen) return new StockOffer(ShelfPlacementRule.From(held.Kind));
+
+        return held.Remaining > 0 && CardContainerLayout.ChildKind(held.Kind) is { } inside
+            ? new StockOffer(ShelfPlacementRule.From(inside), held.Remaining)
+            : null;
     }
 
     public bool TryStock(DeckSlot slot)
     {
-        var body = Offered;
-        if (body == null || !slot.CanTake(body)) return false;
+        if (Offered is not { } offer || !slot.CanTake(offer.Stock)) return false;
 
-        var released = body is CardContainer ? _containerHolder.Drop() : CardHolder.HandOver(body);
-        if (!released)
-            return false;
+        if (_containerHolder.Held is { } held)
+            return held.IsLidOpen ? held.TakeOneInto(slot) : _containerHolder.Drop() && slot.TryLock(held);
 
-        return slot.TryLock(body);
+        var card = CardHolder.TopCard;
+        return card != null && CardHolder.HandOver(card) && slot.TryLock(card);
     }
 
     private void OnRightPress(bool pressed)
     {
         if (pressed)
         {
-            // Right press while holding a container drops it; cards are untouched in that case.
+            // Right press while holding a container uses it (opens or closes a box, opens a booster); cards are
+            // untouched in that case.
             if (_containerHolder.IsHolding)
             {
-                _containerHolder.Drop();
+                _containerHolder.UseHeld();
                 return;
             }
 
