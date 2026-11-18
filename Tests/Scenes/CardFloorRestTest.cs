@@ -33,10 +33,11 @@ public class CardFloorRestTest
     [TestCategory("Unit")]
     public static async Task ADroppedCardRestsOnTopOfTheFloor()
     {
+        using var clock = FastClock.Start();
         AddFloor();
         var card = AddCard(new Vector3(0f, 0.5f, 0f), Vector3.Zero);
 
-        AssertThat(await BoundedWait.PhysicsFrames(SettleFrames)).IsNull();
+        await SettleOrFreeze(card);
 
         AssertRestsOnTop(card);
     }
@@ -45,11 +46,12 @@ public class CardFloorRestTest
     [TestCategory("Unit")]
     public static async Task ATumblingCardRestsOnTopOfTheFloor()
     {
+        using var clock = FastClock.Start();
         AddFloor();
         var card = AddCard(new Vector3(0f, 1.2f, 0f), new Vector3(35f, 20f, 160f));
         card.AngularVelocity = new Vector3(2f, 0f, 3f);
 
-        AssertThat(await BoundedWait.PhysicsFrames(SettleFrames)).IsNull();
+        await SettleOrFreeze(card);
 
         AssertRestsOnTop(card);
     }
@@ -58,11 +60,12 @@ public class CardFloorRestTest
     [TestCategory("Unit")]
     public static async Task ACardThatStopsInsideTheFloorIsPushedOutBeforeItFreezes()
     {
+        using var clock = FastClock.Start();
         // The state a landing card is in on the frame the floor stops it: still, and partly inside the floor.
         AddFloor();
         var card = AddCard(new Vector3(0f, -0.001f, 0f), Vector3.Zero);
 
-        AssertThat(await BoundedWait.PhysicsFrames(SettleFrames)).IsNull();
+        await SettleOrFreeze(card);
 
         AssertRestsOnTop(card);
     }
@@ -74,13 +77,14 @@ public class CardFloorRestTest
     [TestCategory("Unit")]
     public static async Task ACardJoltPutsToSleepIsFrozen()
     {
+        using var clock = FastClock.Start();
         AddFloor();
         var card = GD.Load<PackedScene>(CardScene).Instantiate<CardController>();
         card.GetNode<CardSleepEnforcer>("SleepEnforcer").RestSeconds = UnreachableRestSeconds;
         card.Position = new Vector3(0f, 0.5f, 0f);
         AddNode(card);
 
-        AssertThat(await BoundedWait.PhysicsFrames(SettleFrames)).IsNull();
+        await SettleOrFreeze(card);
 
         AssertRestsOnTop(card);
     }
@@ -98,6 +102,16 @@ public class CardFloorRestTest
         card.Position = position;
         card.RotationDegrees = rotationDegrees;
         return AddNode(card);
+    }
+
+    // Waits until the card freezes, or SettleFrames physics frames at most. A frozen card no longer moves, so checking it
+    // as soon as it freezes sees what the full wait would see, and a card that freezes inside the floor still fails.
+    private static async Task SettleOrFreeze(CardController card)
+    {
+        var first = Engine.GetPhysicsFrames();
+        AssertThat(await BoundedWait.Until(
+            () => card.Freeze || Engine.GetPhysicsFrames() - first >= SettleFrames,
+            $"the card to freeze, or {SettleFrames} physics frames")).IsNull();
     }
 
     // The card lies on the floor with its top face clear of it, and the sleep enforcer has frozen it there.

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -215,7 +216,10 @@ public class ShopNavigationSceneTest
         mover.GlobalPosition = _spawn;
         agent.TargetPosition = _shelf;
 
-        for (int frame = 0; frame < AgentMaxFrames && !agent.IsNavigationFinished(); frame++)
+        // Four physics frames per real one; each step is still one frame of the game's physics.
+        using var clock = FastClock.Start();
+        for (int frame = 0; frame < AgentMaxFrames && !agent.IsNavigationFinished()
+                            && HorizontalDistance(mover.GlobalPosition, _shelf) > PathTolerance; frame++)
         {
             await ISceneRunner.SyncPhysicsFrame;
             var next = agent.GetNextPathPosition();

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Threading.Tasks;
 using CardCleaner.Tests.Architecture.DependencyGate;
 using Godot;
 
@@ -20,8 +21,10 @@ public class DependencyGateTest
     {
         var clock = Stopwatch.StartNew();
         var root = ProjectSettings.GlobalizePath("res://");
+        // The two measurements share no state, so they run side by side: the second on a worker thread.
+        var secondRun = Task.Run(() => Measure(root, clock, 2));
         var first = Measure(root, clock, 1);
-        var second = Measure(root, clock, 2);
+        var second = secondRun.GetAwaiter().GetResult();
         var firstReport = string.Join("\n", GateReport.Lines(first));
         foreach (var line in GateReport.Lines(first)) GD.Print("dependency gate: " + line);
         AssertThat(string.Join("\n", GateReport.Lines(second))).IsEqual(firstReport);

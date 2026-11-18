@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Composition;
 using CardCleaner.Scripts.Core.DependencyInjection;
@@ -32,13 +34,16 @@ namespace CardCleaner.Tests.Scenes;
 [RequireGodotRuntime]
 public class ShopWorkshopMapSessionSceneTest
 {
-    // Wall-clock budget for the whole session, generation included (about 16 s of it for the grid on the dev machine).
+    // Wall-clock budget for the whole session, generation included.
     private const double SessionBudgetSeconds = 90;
 
-    // Exploration steps take 0.1 s, irregular move animations 0.15 s and combat turns 1.0 s of game time, about 50 s
-    // for the grid with this map card. The test runs game time faster instead of changing those rules; a step still
-    // happens at most once per frame.
+    // Exploration steps take 0.1 s, irregular move animations 0.15 s and combat turns 1.0 s of game time. The test
+    // runs game time faster instead of changing those rules; a step still happens at most once per frame.
     private const double SessionTimeScale = 10;
+
+    // Side of the grid map the grid session plays. The map card asks for 51 x 51, whose WFC solve alone took about
+    // 15 s on the dev machine; this size still has room for the start and its 2 or 3 enemies (MapPopulation).
+    private const int SmallGridSide = 24;
 
     // The LootPoint sits 2.25 m left of and 2 m in front of the cabinet origin, and the row of at most 10 cards,
     // 0.5 m apart, runs 4.5 m to its right, so every card lands within about 3 m (XZ) of the cabinet origin. The
@@ -66,6 +71,11 @@ public class ShopWorkshopMapSessionSceneTest
         // to explore than the budget allows. Registered before the shop enters the tree, so the cabinet resolves it.
         TestServices.Container.RegisterSingleton<IMeshMapGenerator>(
             MeshMapGeneratorFixture.Create(WorkshopSceneRig.SmallMeshRings));
+
+        // The grid kind plays a small map for the same reason. The scanned generator still builds it; only the size
+        // the session asks for shrinks.
+        TestServices.Container.RegisterSingleton<IGridMapGenerator>(
+            new SmallGridMapGenerator(TestServices.Resolver.Get<IGridMapGenerator>()));
 
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _tree.Root.AddChild(_shop);
@@ -205,5 +215,23 @@ public class ShopWorkshopMapSessionSceneTest
         AssertInt(screen.MapData!.EnemySpawnCells.Count)
             .OverrideFailureMessage("A defeated enemy is still on the irregular map")
             .IsEqual(0);
+    }
+
+    /// <summary>The scanned grid generator, asked for a <see cref="SmallGridSide"/> square map whatever the card.</summary>
+    private sealed class SmallGridMapGenerator(IGridMapGenerator inner) : IGridMapGenerator
+    {
+        public Task<IGeneratedMap> GenerateAsync(
+            MapGenerationConfig config,
+            IProgress<float>? progress = null,
+            CancellationToken cancellationToken = default) =>
+            inner.GenerateAsync(
+                new MapGenerationConfig
+                {
+                    Size = new Vector2I(SmallGridSide, SmallGridSide),
+                    Seed = config.Seed,
+                    MapSeeds = config.MapSeeds,
+                },
+                progress,
+                cancellationToken);
     }
 }
