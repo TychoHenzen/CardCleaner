@@ -9,6 +9,9 @@ public partial class DropPreview : Node3D, IDropPreview
     private ImmediateMesh _previewMesh = null!;
     private const float RayLength = 100f;
 
+    // One query for every frame the preview updates, instead of a new finalizable wrapper each frame.
+    private PhysicsRayQueryParameters3D? _ray;
+
     public override void _Ready()
     {
         _previewMesh = new ImmediateMesh();
@@ -33,10 +36,10 @@ public partial class DropPreview : Node3D, IDropPreview
     public void UpdatePreview(Vector3 origin, Vector3 direction)
     {
         var to = origin + direction * RayLength;
-        var result = GetWorld3D().DirectSpaceState.IntersectRay(new PhysicsRayQueryParameters3D
-        {
-            From = origin, To = to, CollideWithBodies = true
-        });
+        _ray ??= new PhysicsRayQueryParameters3D { CollideWithBodies = true };
+        _ray.From = origin;
+        _ray.To = to;
+        var result = GetWorld3D().DirectSpaceState.IntersectRay(_ray);
 
         var hit = result.Count > 0 ? (Vector3)result["position"] : to;
 

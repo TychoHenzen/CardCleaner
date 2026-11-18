@@ -25,8 +25,9 @@ public class ShopCustomerDaySceneTest
     }
 
     [AfterTest]
-    public static void Teardown()
+    public void Teardown()
     {
+        _rig?.Dispose();
         TestServices.Reset();
     }
 

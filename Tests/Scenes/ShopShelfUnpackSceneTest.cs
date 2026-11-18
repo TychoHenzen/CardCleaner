@@ -12,6 +12,7 @@ using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using NSubstitute;
 using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
@@ -49,9 +50,12 @@ public class ShopShelfUnpackSceneTest
     private Action? _qPress;
     private string _optionsPath = null!;
 
+    private FastClock? _clock;
+
     [BeforeTest]
     public async Task Setup()
     {
+        _clock = FastClock.Start();
         // The shop's pause and options menus resolve OptionsStore when they ready, so the test registers one on its own
         // temp file (the same pattern as OptionsMenuSceneTest) instead of reading the player's settings.
         _optionsPath = $"user://test_shop_shelf_unpack_{Guid.NewGuid():N}.cfg";
@@ -80,6 +84,7 @@ public class ShopShelfUnpackSceneTest
     [AfterTest]
     public void Teardown()
     {
+        _clock?.Dispose();
         TestServices.Reset();
         if (FileAccess.FileExists(_optionsPath))
             DirAccess.RemoveAbsolute(ProjectSettings.GlobalizePath(_optionsPath));

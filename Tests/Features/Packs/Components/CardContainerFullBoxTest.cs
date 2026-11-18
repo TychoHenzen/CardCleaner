@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
@@ -35,13 +36,22 @@ public class CardContainerFullBoxTest
     private Node3D _world = null!;
     private RecordingCardSpawner _spawner = null!;
 
+    private FastClock? _clock;
+
     [BeforeTest]
     public void Setup()
     {
+        _clock = FastClock.Start();
         _world = AddNode(new Node3D());
         _spawner = new RecordingCardSpawner();
         _packSpawns.Clear();
         _boosterSpawns.Clear();
+    }
+
+    [AfterTest]
+    public void StopClock()
+    {
+        _clock?.Dispose();
     }
 
     [TestCase]
