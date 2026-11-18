@@ -387,7 +387,10 @@ layer every loop of up to 20 modules takes the order with the fewest up edges, a
 
 The test prints a report (`dependency gate:` lines): counts, the module order, the loose classes, every up edge with
 its class pairs (heaviest first), every loop, and every leaky or missing seam with the concrete classes it crosses.
-It measures twice and fails if the two reports differ. It then ratchets four gated numbers (`up_edges`,
+It measures twice and fails if the two reports differ: the first measurement uses the class graph built once per test
+run (`RepositoryClassGraph.Shared`, which `SignatureLayerTest` reads too), and the second builds its own graph on a
+worker thread at the same time, so a test run pays for one Roslyn compilation on the main thread. It then ratchets
+four gated numbers (`up_edges`,
 `biggest_loop`, `seams_leaky_or_missing`, `refs_from_non_ui_to_ui`) against
 `Tests/Architecture/dependency-baseline.json` in that priority order (#299). The label of one seam can flip between
 leaky and missing when Louvain membership changes, so the report still prints both counts but only their sum,

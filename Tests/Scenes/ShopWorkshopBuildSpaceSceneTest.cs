@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Workshop.Components;
 using Godot;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 
 namespace CardCleaner.Tests.Scenes;
 
@@ -20,11 +21,13 @@ public class ShopWorkshopBuildSpaceSceneTest
 {
     private const float PlayerStartHeight = 1.2f;
     private const int ClearanceCells = 4;
-    private const double WalkTimeScale = 4.0;
     private const float MaxHeightVariation = 0.05f;
     private const float MaxAirborneShare = 0.01f;
     private const float FallLimitY = -1f;
     private const float MinimumDistanceFromShop = 30f;
+    private const int MaxSettleSteps = 120;
+    private const int SettledSteps = 3;
+    private const float SettledHeightChange = 0.0005f;
 
     private Node3D _shop = null!;
     private Node3D _workshop = null!;
@@ -34,6 +37,7 @@ public class ShopWorkshopBuildSpaceSceneTest
     private float _highest = float.MinValue;
     private int _airborneFrames;
     private int _frames;
+    private FastClock? _clock;
 
     [BeforeTest]
     public async Task Setup()
@@ -53,10 +57,10 @@ public class ShopWorkshopBuildSpaceSceneTest
     }
 
     [AfterTest]
-    public static void Teardown()
+    public void Teardown()
     {
         Input.ActionRelease("ui_up");
-        Engine.TimeScale = 1.0;
+        _clock?.Dispose();
         TestServices.Reset();
     }
 
@@ -99,8 +103,8 @@ public class ShopWorkshopBuildSpaceSceneTest
     [TestCase]
     public async Task PlayerWalksFromTheEntryThroughEverySectionWithoutFalling()
     {
-        // Same fixed physics step, more steps per real second: the long route would otherwise run in real time.
-        Engine.TimeScale = WalkTimeScale;
+        // The game's physics step, more steps per real second: the long route would otherwise run in real time.
+        _clock = FastClock.Start();
         var entry = _workshop.GetNode<Node3D>("WorkshopEntry").GlobalPosition;
         _player.GlobalPosition = new Vector3(entry.X, PlayerStartHeight, entry.Z);
         await Settle();
@@ -147,9 +151,22 @@ public class ShopWorkshopBuildSpaceSceneTest
         _frames += walk.Frames;
     }
 
-    private static async Task Settle()
+    // The player drops from PlayerStartHeight onto the floor. A fixed count of physics steps is not enough: at the
+    // game's 1/60 s step, 10 steps left it still falling when the first walk started. IsOnFloor reports the last
+    // MoveAndSlide, from before the move, so the wait steps at least once and then wants the height to hold.
+    private async Task Settle()
     {
-        for (var i = 0; i < 10; i++)
+        var still = 0;
+        var lastY = float.NaN;
+        for (var step = 0; step < MaxSettleSteps && still < SettledSteps; step++)
+        {
             await ISceneRunner.SyncPhysicsFrame;
+            var y = _player.GlobalPosition.Y;
+            still = _player.IsOnFloor() && Mathf.Abs(y - lastY) < SettledHeightChange ? still + 1 : 0;
+            lastY = y;
+        }
+
+        AssertInt(still).OverrideFailureMessage($"The player did not land within {MaxSettleSteps} physics steps")
+            .IsEqual(SettledSteps);
     }
 }

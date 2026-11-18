@@ -20,9 +20,10 @@ public class DependencyGateTest
     {
         var clock = Stopwatch.StartNew();
         var root = ProjectSettings.GlobalizePath("res://");
-        // The two measurements share no state, so they run side by side: the second on a worker thread.
-        var secondRun = Task.Run(() => Measure(root, clock, 2));
-        var first = Measure(root, clock, 1);
+        // The first run measures the graph this test run shares with the other architecture suites; the second builds
+        // its own on a worker thread at the same time, so the two measurements share no state.
+        var secondRun = Task.Run(() => Measure(RepositoryClassGraph.Build(root), clock, 2));
+        var first = Measure(RepositoryClassGraph.Shared, clock, 1);
         var second = secondRun.GetAwaiter().GetResult();
         var firstReport = string.Join("\n", GateReport.Lines(first));
         foreach (var line in GateReport.Lines(first)) GD.Print("dependency gate: " + line);
@@ -37,19 +38,12 @@ public class DependencyGateTest
         AssertThat(string.Join("\n", result.Failures)).IsEmpty();
     }
 
-    private static GateMeasurement Measure(string root, Stopwatch clock, int run)
+    private static GateMeasurement Measure(RepositoryClassGraph.Graph graph, Stopwatch clock, int run)
     {
-        var scripts = RepositorySources.Scripts(root);
-        var addons = RepositorySources.Addons(root);
-        var references = CompilationReferences.FromHost();
-        GD.Print($"dependency gate: run {run} read {scripts.Count} scripts, {addons.Count} addon files, " +
-                 $"{references.Count} references at {clock.ElapsedMilliseconds} ms");
-        var extracted = ClassGraphExtractor.Extract(scripts, addons, references);
-        var links = SceneLinkReader.Read(RepositorySources.Scenes(root), extracted.ClassesByFile);
-        foreach (var link in links) extracted.Graph.AddEdge(link.From, link.To, EdgeKind.MemberType, link.Count);
-        GD.Print($"dependency gate: run {run} extracted ({extracted.ScriptErrors} script errors, {links.Count} scene " +
-                 $"links) at {clock.ElapsedMilliseconds} ms");
-        var measurement = GateMetrics.Measure(extracted.Graph);
+        GD.Print($"dependency gate: run {run} has the graph of {graph.Scripts} scripts, {graph.AddonFiles} addon " +
+                 $"files, {graph.References} references ({graph.ScriptErrors} script errors, {graph.SceneLinks} " +
+                 $"scene links) at {clock.ElapsedMilliseconds} ms");
+        var measurement = GateMetrics.Measure(graph.Classes);
         GD.Print($"dependency gate: run {run} measured at {clock.ElapsedMilliseconds} ms");
         return measurement;
     }

@@ -125,21 +125,19 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
     {
         var biome = _biomeRegistry.GetBiome("plains");
         AssertThat(biome).IsNotNull();
-        var failures = new List<string>();
-        foreach (var seed in ProductionAdjacencySeeds)
-        {
-            // The generator adds the gap-tile adjacencies to these rules, so the map is checked against the rules
-            // its own solver enforced. Connectivity is off so that only the adjacency rules decide the map.
-            var rules = new WfcAdjacencyRules(_transitionPairs);
-            var generator = new WfcMapGenerator(rules, WfcTestFixtures.ProductionCatalog())
-            {
-                EnableConnectivity = false,
-            };
-            var result = generator.Generate(biome!, ProductionAdjacencySize, seed);
-            WfcTestFixtures.AssertSucceeded(result, $"Plains 32x32 map, seed {seed}");
+        // The catalog is loaded here, on the main thread, because loading reads Godot resources. The seeds are
+        // independent maps over that one immutable catalog, so they are solved side by side; the generator calls
+        // no engine API. Every assertion runs back on this thread.
+        var catalog = WfcTestFixtures.ProductionCatalog();
+        var solves = ProductionAdjacencySeeds
+            .Select(seed => System.Threading.Tasks.Task.Run(() => SolveProductionMap(biome!, catalog, seed)))
+            .ToArray();
+        System.Threading.Tasks.Task.WaitAll(solves);
 
-            var violations = new List<string>();
-            CollectRuleViolations(result.TileIds!, rules, violations);
+        var failures = new List<string>();
+        foreach (var (seed, result, violations) in solves.Select(solve => solve.Result))
+        {
+            WfcTestFixtures.AssertSucceeded(result, $"Plains 32x32 map, seed {seed}");
             GD.Print($"[ProductionAdjacency] seed={seed} violations={violations.Count}");
             failures.AddRange(violations.Select(violation => $"seed {seed}: {violation}"));
         }
@@ -148,6 +146,20 @@ public class WfcMapGeneratorValidityTest : WfcMapGeneratorIntegrationTestBase
             ? "No adjacency violations"
             : $"{failures.Count} orthogonal pair(s) break the rules, first {failures[0]}";
         AssertThat(failures.Count == 0).OverrideFailureMessage(message).IsTrue();
+    }
+
+    private (ulong Seed, WfcGenerationResult Result, List<string> Violations) SolveProductionMap(
+        BiomeDefinition biome, IWfcTileCatalog catalog, ulong seed)
+    {
+        // The generator adds the gap-tile adjacencies to these rules, so the map is checked against the rules its own
+        // solver enforced. Connectivity is off so that only the adjacency rules decide the map.
+        var rules = new WfcAdjacencyRules(_transitionPairs);
+        var generator = new WfcMapGenerator(rules, catalog) { EnableConnectivity = false };
+        var result = generator.Generate(biome, ProductionAdjacencySize, seed);
+        var violations = new List<string>();
+        if (result.Success)
+            CollectRuleViolations(result.TileIds!, rules, violations);
+        return (seed, result, violations);
     }
 
     private static Dictionary<string, int> CountTiles(string[,] tiles)
