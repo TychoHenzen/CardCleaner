@@ -12,9 +12,9 @@ public class CardMeshBakeTest
     private const string MeshPath = "res://Data/Card/CardMesh.tres";
     private const string CardScenePath = "res://Scenes/Components/CardShader.tscn";
     private const string RegenerateSwitch = "CARDCLEANER_REGENERATE_CARD_MESH";
-    private const float Width = 0.32f;
-    private const float Height = 0.45f;
-    private const float Thickness = 0.005f;
+    internal const float Width = 0.32f;
+    internal const float Height = 0.45f;
+    internal const float Thickness = 0.005f;
 
     // Observed with RegenerateCommittedMesh, then pinned. They are checked before any element comparison, so an
     // empty or changed mesh fails here rather than comparing equal to another empty mesh.
