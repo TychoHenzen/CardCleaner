@@ -147,8 +147,8 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     /// <summary>
     ///     The seed to write into a save: the one this container has, else one drawn now from the shared random
-    ///     source (the only time a container draws a seed, so opening unseeded containers keeps its draw order). Null when
-    ///     no random source was injected.
+    ///     source (the only time a container draws a seed, so opening unseeded containers keeps its draw order).
+    ///     Null when no random source was injected.
     /// </summary>
     internal ulong? SeedForSave()
     {

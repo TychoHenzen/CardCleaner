@@ -7,8 +7,8 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 /// <summary>
 ///     A moving part of a container's wrapper: a cardboard box's flap or a booster's tear strip. While the container
 ///     opens (a box's flaps swing open in the hand, a booster tears open there), the part turns by
-///     <see cref="OpenRotationDegrees" /> about its own origin (its hinge) and moves by <see cref="OpenOffset" /> in its
-///     own frame, over the share of the opening from <see cref="StartAt" /> to <see cref="EndAt" />. A part that
+///     <see cref="OpenRotationDegrees" /> about its own origin (its hinge) and moves by <see cref="OpenOffset" />
+///     in its own frame, over the share of the opening from <see cref="StartAt" /> to <see cref="EndAt" />. A part that
 ///     <see cref="VanishWhenOpen" /> shrinks away over the end of its motion.
 /// </summary>
 public partial class OpeningPart : Node3D
