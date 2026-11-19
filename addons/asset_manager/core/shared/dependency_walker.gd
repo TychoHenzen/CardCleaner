@@ -5,7 +5,7 @@ extends RefCounted
 ## Finds every file an asset needs, mirrors them into a destination root, and
 ## repoints the references afterwards. Works in either direction.
 
-const REFERENCING_EXTENSIONS: PackedStringArray = ["tscn", "tres", "material", "mesh", "res", "gd", "gltf"]
+const REFERENCING_EXTENSIONS: PackedStringArray = ["tscn", "tres", "material", "mesh", "res", "gd", "gltf", "fbx"]
 const REWRITABLE_EXTENSIONS: PackedStringArray = ["tscn", "tres", "gd"]
 
 ## A res:// literal in a script is only followed when it names something we'd
@@ -118,6 +118,10 @@ static func collect_dependencies(file_path: String, pack_root: String, pack_dest
 		_collect_gltf_dependencies(file_path, pack_root, pack_dest_root, copy_map)
 		return
 
+	if file_path.get_extension().to_lower() == "fbx":
+		_collect_fbx_dependencies(file_path, pack_root, pack_dest_root, copy_map)
+		return
+
 	for raw_path in _read_ext_resource_paths(file_path):
 		var dep_source := PackPaths.resolve_pack_path(raw_path, file_path.get_base_dir(), pack_root)
 		if dep_source.is_empty() or not FileAccess.file_exists(dep_source):
@@ -137,6 +141,30 @@ static func _collect_gltf_dependencies(file_path: String, pack_root: String, pac
 			push_warning("AssetManager: missing model dependency, not copied: " + dep_source)
 			continue
 		if copy_map.has(dep_source):
+			continue
+		copy_map[dep_source] = _mirrored_dest(dep_source, pack_root, pack_dest_root)
+
+## An FBX names its textures in binary, so ModelLoader's locator finds them.
+## Each lands on its mirrored path like every other dependency: distinct
+## sources keep distinct destinations, a texture shared with a .gltf or a
+## scene stays at the path they name, and a relative reference inside the pack
+## still points at the copy, which is where Godot's FBX importer looks for it.
+static func _collect_fbx_dependencies(file_path: String, pack_root: String, pack_dest_root: String, copy_map: Dictionary) -> void:
+	# ASSUMPTION: the locator searches the model's own pack (TextureLocator.
+	# PackRootFor), not the walker's pack_root, which on ingest is the whole
+	# project and would let a fallback match pick another pack's texture. A
+	# model in Models/ whose texture sits in a sibling Textures/ folder outside
+	# that pack is not found yet; Godot's own subfolder walk would find it.
+	# A fallback match (a .psd that never shipped) is copied but not linked to
+	# its materials; only FbxExport, on Send to Project of the model, links it.
+	for entry: Dictionary in ModelLoader.resolved_textures(file_path):
+		var dep_source: String = entry["path"]
+		if copy_map.has(dep_source):
+			continue
+		# Only a relative reference that climbs out of the pack resolves
+		# outside it, and such a file has no mirrored path.
+		if not dep_source.begins_with(pack_root.rstrip("/") + "/"):
+			push_warning("AssetManager: FBX texture outside the pack, not copied: " + dep_source)
 			continue
 		copy_map[dep_source] = _mirrored_dest(dep_source, pack_root, pack_dest_root)
 
