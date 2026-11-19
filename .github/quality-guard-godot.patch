@@ -1,3 +1,21 @@
+diff --git a/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-duplicate.mjs b/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-duplicate.mjs
+--- a/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-duplicate.mjs
++++ b/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-duplicate.mjs
+@@ -4,11 +4,13 @@ import { suggestionFor } from "./rule-suggestions.mjs";
+ const TRIVIAL_LINE = /^[\s{}()[\];,]*$/;
+ const COMMENT_LINE = /^\s*(\/\/|#|\*|\/\*)/;
+ const IMPORT_LINE = /^\s*(import|export)\b[^;]*\bfrom\b/;
++// C# using directives are imports as well, so files that list the same namespaces are not duplicated code.
++const USING_LINE = /^\s*(global\s+)?using\s+(static\s+)?[\w.]+(\s*=\s*[\w.<>, ]+)?\s*;\s*$/;
+ const MIN_DISTINCT_LINES = 4;
+ 
+ function normalizeLines(file) {
+   return file.lines.map((line) => {
+-    if (COMMENT_LINE.test(line) || IMPORT_LINE.test(line)) return "";
++    if (COMMENT_LINE.test(line) || IMPORT_LINE.test(line) || USING_LINE.test(line)) return "";
+     return line.trim().replace(/\s+/g, " ");
+   });
+ }
 diff --git a/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-reachability.mjs b/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-reachability.mjs
 --- a/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-reachability.mjs
 +++ b/packages/quality-guard/skills/quality-refactor/scripts/lib/rules-reachability.mjs
