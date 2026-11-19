@@ -93,6 +93,11 @@ it prints `gdUnit4 discovery cache unavailable` to stderr and every script goes 
 `SuiteDiscoveryEquivalenceTest` (Daily) compares the two for every script; reapply `SuiteDiscoveryCache.cs` and the call
 in `GdUnit4CSharpApi.DiscoverTests` after updating the addon or the `gdUnit4.api` package.
 
+**Project patch in the vendored asset_manager.** The headless editor import (`Run-GdUnit.ps1`, CI) starts every enabled
+editor plugin even with `--recovery-mode`, and Godot compiles everything a plugin script preloads. So
+`addons/asset_manager/plugin.gd` returns at once in a headless editor and loads its main screen and context menu at run
+time, which took about 1.1 s off each import. `AssetManagerLazyOpenTest` fails when an addon update drops the patch.
+
 **Without PowerShell.** Start Godot from Bash through node, so no console window opens:
 
 ```bash
