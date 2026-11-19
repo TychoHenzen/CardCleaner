@@ -65,7 +65,7 @@ internal sealed class BoosterReveal
 
     public bool IsOver => _given;
 
-    /// <summary>Advances the reveal by <paramref name="delta" /> seconds. True once the cards are in the hand.</summary>
+    /// <summary>Moves the reveal on by <paramref name="delta" /> seconds. True once the cards are in the hand.</summary>
     public bool Advance(float delta)
     {
         if (_given)

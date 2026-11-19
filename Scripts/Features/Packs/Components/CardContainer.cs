@@ -291,10 +291,10 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     /// <summary>
     ///     Opens this held booster in front of the player (<see cref="BoosterReveal" />): its strip tears off, its
-    ///     cards spread into a fan, and the fan slides into <paramref name="hand" />. The cards come from this booster's
-    ///     seed (<see cref="CardPackGenerator.OpenBooster" />). The booster stays under the hand anchor the whole time
-    ///     and is freed when the cards are in the hand. False unless this is a held, unopened booster that has its
-    ///     contents.
+    ///     cards spread into a fan, and the fan slides into <paramref name="hand" />. The cards come from this
+    ///     booster's seed (<see cref="CardPackGenerator.OpenBooster" />). The booster stays under the hand anchor the
+    ///     whole time and is freed when the cards are in the hand. False unless this is a held, unopened booster that
+    ///     has its contents.
     /// </summary>
     public bool OpenInHand(ICardHolder hand)
     {
