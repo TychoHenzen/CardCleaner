@@ -86,8 +86,7 @@ public class OptionsMenuSceneTest
     [TestCategory("Unit")]
     public void Mouse_change_reaches_IGameSettings_when_registered()
     {
-        _settings = new GameSettings();
-        TestServices.Container.RegisterSingleton<IGameSettings>(_settings);
+        UseSettings();
         AddScreen();
 
         GetSlider("Layout/SensitivitySlider").Value = 0.3;
@@ -181,8 +180,7 @@ public class OptionsMenuSceneTest
     [TestCategory("Unit")]
     public void Toggling_invert_Y_reaches_IGameSettings_and_the_store()
     {
-        _settings = new GameSettings();
-        TestServices.Container.RegisterSingleton<IGameSettings>(_settings);
+        UseSettings();
         AddScreen();
 
         GetNode<CheckButton>("Layout/InvertYCheck").ButtonPressed = true;
@@ -227,6 +225,15 @@ public class OptionsMenuSceneTest
     private T GetNode<T>(string path) where T : Node => _node!.GetNode<T>(path);
 
     private HSlider GetSlider(string path) => GetNode<HSlider>(path);
+
+    // In the tree, as the shop's GameSettings node is: a node left outside it counts as an orphan when the test
+    // returns, before the teardown frees it.
+    private void UseSettings()
+    {
+        _settings = new GameSettings();
+        TestServices.Container.RegisterSingleton<IGameSettings>(_settings);
+        Assertions.AddNode(_settings, autoFree: false);
+    }
 
     private void AddScreen()
     {

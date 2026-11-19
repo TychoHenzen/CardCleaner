@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using Saveable;
 
@@ -72,6 +73,8 @@ public class ShopFurniturePackSceneTest
         AssertInt(_region.RebakeCount).IsEqual(rebakes + 1);
         var box = BoxesAt(4f, 8f).Single();
         AssertThat(box.Item!.Id).IsEqual("shelf_unit");
+        // Packing takes the piece out of the tree and queues it; let it go before the test returns.
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]
