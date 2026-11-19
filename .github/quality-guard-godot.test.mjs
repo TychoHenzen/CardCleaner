@@ -13,12 +13,13 @@ const scannerRoot = resolve(
 );
 const moduleAt = (relativePath) =>
   pathToFileURL(resolve(scannerRoot, relativePath)).href;
-const [{ checkReachability }, { strip }, { lineIndex }, { buildConfig }] =
+const [{ checkReachability }, { strip }, { lineIndex }, { buildConfig }, { checkDuplication }] =
   await Promise.all([
     import(moduleAt("lib/rules-reachability.mjs")),
     import(moduleAt("lib/strip.mjs")),
     import(moduleAt("lib/offsets.mjs")),
     import(moduleAt("lib/config.mjs")),
+    import(moduleAt("lib/rules-duplicate.mjs")),
   ]);
 
 function fileAt(rel, source, isTest = false) {
@@ -105,4 +106,37 @@ assert.equal(testOnlyViolations.length, 1);
 assert.equal(testOnlyViolations[0].rule, "test-only-export");
 assert.equal(testOnlyViolations[0].severity, "medium");
 
-process.stdout.write("quality-guard-godot: reachability fixtures passed\n");
+// C# using directives count as imports in the duplicate-block rule: three files that open with the same namespace
+// list are not duplicated code, while three files that share a block of statements still are.
+const sharedUsings = [
+  "using System;",
+  "using System.Collections.Generic;",
+  "using static System.Math;",
+  "global using System.Linq;",
+  "using Vec = Godot.Vector3;",
+  "using Godot;",
+];
+const sharedBody = [
+  "var total = 0;",
+  "using var stream = Open(path);",
+  "total += stream.Length;",
+  "Log(total);",
+  "Flush(stream);",
+  "return total;",
+];
+const duplicateFile = (rel, lines) => ({ rel, lines, lang: "cs", isTest: false });
+const usingOnly = ["A", "B", "C"].map((name) =>
+  duplicateFile(`Scripts/${name}.cs`, [...sharedUsings, `public class ${name} { }`]),
+);
+assert.deepEqual(checkDuplication(usingOnly, buildConfig()), []);
+
+// The shared body includes a `using var` statement, which is code, not an import: blanking it would empty a line of
+// every window and hide this duplicate.
+const bodyShared = ["D", "E", "F"].map((name) =>
+  duplicateFile(`Scripts/${name}.cs`, [`public class ${name}`, ...sharedBody]),
+);
+const bodyFindings = checkDuplication(bodyShared, buildConfig());
+assert.equal(bodyFindings.length, 3);
+for (const finding of bodyFindings) assert.equal(finding.rule, "duplicate-block");
+
+process.stdout.write("quality-guard-godot: reachability and duplicate fixtures passed\n");

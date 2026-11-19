@@ -213,10 +213,12 @@ jobs:
         run: |
           set -euo pipefail
           patch_file="$GITHUB_WORKSPACE/.github/quality-guard-godot.patch"
-          target="packages/quality-guard/skills/quality-refactor/scripts/lib/rules-reachability.mjs"
+          lib="packages/quality-guard/skills/quality-refactor/scripts/lib"
+          # Every file the patch changes, sorted; .github/quality-gate-cache.mjs checks the same list.
+          expected="$(printf '%s\n' "$lib/rules-duplicate.mjs" "$lib/rules-reachability.mjs" | sort)"
           git -C .dod-guard apply --check --whitespace=error "$patch_file"
           git -C .dod-guard apply --whitespace=error "$patch_file"
-          test "$(git -C .dod-guard diff --name-only)" = "$target"
+          test "$(git -C .dod-guard diff --name-only | sort)" = "$expected"
 
       - name: Test Godot quality-guard reachability compatibility
         run: node .github/quality-guard-godot.test.mjs --scanner-root=.dod-guard/packages/quality-guard/skills/quality-refactor/scripts
