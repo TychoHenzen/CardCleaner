@@ -100,6 +100,7 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
 
     private void ConnectToCard(CardController card)
     {
+        card.PickUpAllowed = CanTakeCard;
         if (!card.IsConnected(CardController.SignalName.CardInteractionRequested,
                 Callable.From<CardController>(OnCardInteractionRequested)))
             card.CardInteractionRequested += OnCardInteractionRequested;
@@ -143,7 +144,10 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
         var cards = GetTree().GetNodesInGroup("Cards");
         foreach (var node in cards)
             if (node is CardController card)
+            {
                 card.CardInteractionRequested -= OnCardInteractionRequested;
+                card.PickUpAllowed = null;
+            }
 
         GetTree().NodeAdded -= OnNodeAdded;
         foreach (var node in GetTree().GetNodesInGroup("Containers"))
@@ -164,12 +168,12 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
 
     private void OnCardInteractionRequested(CardController card)
     {
-        // A held container occupies the hand, so a card click does nothing until it is dropped or opened.
-        if (_containerHolder.IsHolding) return;
-
-        // Handle card pickup through the generic interaction system
-        if (!CardDropper.IsPreparingDrop) CardHolder.AddCard(card);
+        if (CanTakeCard()) CardHolder.AddCard(card);
     }
+
+    // A held container occupies the hand, a drop in progress keeps it, and a full hand takes no more cards.
+    private bool CanTakeCard() =>
+        _containerHolder is { IsHolding: false } && !CardDropper.IsPreparingDrop && CardHolder.Room > 0;
 
     private void OnContainerPickUpRequested(CardContainer container)
     {

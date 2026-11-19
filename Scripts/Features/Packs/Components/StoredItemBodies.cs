@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
@@ -51,7 +52,7 @@ internal static class StoredItemBodies
     {
         return item switch
         {
-            StoredCard card => BuildCard(card, parent, at, box),
+            StoredCard card => BuildCard(card, parent, at, box.Spawning),
             StoredContainer container => BuildContainer(container, parent, at, box),
             _ => null
         };
@@ -60,9 +61,14 @@ internal static class StoredItemBodies
     private static bool IsWhole(CardContainer container) =>
         !container.IsOpened && !container.IsLidOpen && !string.IsNullOrEmpty(container.SceneFilePath);
 
-    private static CardController? BuildCard(StoredCard stored, Node3D parent, Transform3D at, CardContainer box)
+    /// <summary>
+    ///     Spawns the card <paramref name="stored" /> describes under <paramref name="parent" /> at
+    ///     <paramref name="at" />, with its signature (or none), look and price. Null when it could not be spawned.
+    /// </summary>
+    public static CardController? BuildCard(StoredCard stored, Node3D parent, Transform3D at,
+        ICardSpawningService? spawning)
     {
-        if (box.Spawning?.SpawnCard(stored.Signature ?? new CardSignature(), stored.LookSeed, at, parent)
+        if (spawning?.SpawnCard(stored.Signature ?? new CardSignature(), stored.LookSeed, at, parent)
             is not CardController card)
             return null;
 

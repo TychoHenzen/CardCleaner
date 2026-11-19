@@ -11,6 +11,7 @@ using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Tests.Features.Packs;
+using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
 using Godot;
@@ -185,6 +186,27 @@ public class CardHighlighterContainerTest
         _containerHolder.Drop();
         card.Interact();
         AssertBool(_cardHolder.HasCards).IsTrue();
+    }
+
+    // A full hand offers no click on a loose card, so the aim prompt never promises a pick-up that does nothing.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ACardIsNotOfferedToAFullHand()
+    {
+        var card = MakeCard();
+        Build();
+        for (var i = 0; i < CardHolder.MostCards; i++)
+        {
+            var held = ShopTestCards.Create(null);
+            _world.AddChild(held);
+            _cardHolder.AddCard(held);
+        }
+
+        AssertBool(card.CanInteract).IsFalse();
+        card.Interact();
+
+        AssertThat(_cardHolder.HeldCount).IsEqual(CardHolder.MostCards);
+        AssertBool(card.GetParent() == _world).IsTrue();
     }
 
     [TestCase]

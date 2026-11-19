@@ -78,6 +78,16 @@ public class ContainerHintsTest
         });
     }
 
+    // A booster pack opens into the hand, so it waits while the hand has no room for its eight cards.
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void ABoosterPackDoesNotOpenIntoAFullHand()
+    {
+        var hints = ContainerHints.For(CardContainerKind.Booster, lidOpen: false, held: 3, cardsFit: false);
+
+        AssertThat(hints[0].Action).IsEqual("No room in your hand for its cards");
+    }
+
     [TestCase]
     [TestCategory("Unit")]
     public static void ABoosterPackOpensWithTheRightButton()

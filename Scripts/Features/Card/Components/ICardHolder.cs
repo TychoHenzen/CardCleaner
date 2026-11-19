@@ -8,7 +8,11 @@ public interface ICardHolder
     int HeldCount { get; }
     RigidBody3D[] HeldCards { get; }
 
-    void AddCard(RigidBody3D card);
+    /// <summary>How many more cards the hand takes before it is full (<see cref="CardHolder.MostCards" />).</summary>
+    int Room { get; }
+
+    /// <summary>Takes a card into the hand; false when the hand already holds it or is full.</summary>
+    bool AddCard(RigidBody3D card);
     void RemoveCard(RigidBody3D card);
     void RemoveTopCard();
     void RemoveAllCards();

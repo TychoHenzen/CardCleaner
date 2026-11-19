@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
@@ -49,8 +50,14 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
 
     private bool IsHeld => GetParent() is Camera3D; // Check if reparented to camera
 
-    // IInteractable implementation
-    public bool CanInteract => !IsHeld;
+    /// <summary>
+    ///     Says whether the player's hand would take this card now (it has room and is not busy). The hand sets it when
+    ///     it starts listening to the card; null means nothing stops a pick-up.
+    /// </summary>
+    public Func<bool>? PickUpAllowed { get; set; }
+
+    // IInteractable implementation. A card the hand would not take offers no click, so the prompt never lies.
+    public bool CanInteract => !IsHeld && (PickUpAllowed?.Invoke() ?? true);
     public Node3D InteractionBody => this;
 
     // Arm's reach, as for boxes and packs (CardContainer); a card across the room is not picked up.

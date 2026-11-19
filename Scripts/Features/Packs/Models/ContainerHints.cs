@@ -11,10 +11,11 @@ public static class ContainerHints
     ///     booster box into the hand and opens a booster pack; Q puts the container down. An open cardboard box also
     ///     names the left button: with <paramref name="itemsInside" /> above zero it sets one item down on the floor, and
     ///     an empty one goes in a trash can. With more than one booster pack <paramref name="held" />, the right button
-    ///     opens one of them and Q puts one down.
+    ///     opens one of them and Q puts one down. A booster pack whose cards do not all fit in the hand
+    ///     (<paramref name="cardsFit" /> false) says so instead of offering to open it.
     /// </summary>
     public static IReadOnlyList<ControlHint> For(CardContainerKind kind, bool lidOpen, int itemsInside = 0,
-        int held = 1)
+        int held = 1, bool cardsFit = true)
     {
         var name = CardContainerKindText.NameOf(kind);
         var hints = new List<ControlHint>
@@ -23,6 +24,7 @@ public static class ContainerHints
             {
                 CardContainerKind.Box => $"{(lidOpen ? "Close" : "Open")} the {name}",
                 CardContainerKind.Pack => $"Empty the {name} into your hand",
+                _ when !cardsFit => "No room in your hand for its cards",
                 _ when held > 1 => $"Open one of the {held} {name}s",
                 _ => $"Open the {name}",
             }),

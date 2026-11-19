@@ -317,6 +317,24 @@ public partial class ContainerHolderTest
         AssertThat(_spawner.Spawned.Count).IsEqual(0);
     }
 
+    // The hand holds at most CardHolder.MostCards cards, so a booster waits until all eight of its cards fit.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void UseHeld_Booster_WithAHandTooFullForItsCards_StaysHeldAndShut()
+    {
+        var cards = Substitute.For<ICardHolder>();
+        cards.Room.Returns(CardContainerLayout.ItemsPerContainer - 1);
+        _holder.SetReferences(_hand, cards);
+        var booster = Make(BoosterScene);
+        _holder.TryPickUp(booster);
+
+        AssertBool(_holder.UseHeld()).IsFalse();
+
+        AssertThat(_holder.Held).IsSame(booster);
+        AssertBool(_holder.IsOpening).IsFalse();
+        AssertThat(_spawner.Spawned.Count).IsEqual(0);
+    }
+
     [TestCase]
     [TestCategory("Unit")]
     public void QKey_PutsTheHeldContainerDownShut()

@@ -34,7 +34,7 @@ public class CartonStorageTest
     private const int FallFrames = 120;
 
     private Node3D _world = null!;
-    private CardBuilder _cards = null!;
+    private ShopTestCardSpawner _cards = null!;
 
     [Before]
     public static void SetupSuite()
@@ -47,7 +47,7 @@ public class CartonStorageTest
     {
         TestServices.Reset();
         _world = AddNode(new Node3D());
-        _cards = new CardBuilder();
+        _cards = new ShopTestCardSpawner();
 
         // Loose items go under the card spawner's node, so they are freed with the world.
         var spawner = new Mocking.MockCardSpawner { Name = "Spawner" };
@@ -300,25 +300,5 @@ public class CartonStorageTest
         }
 
         return done();
-    }
-
-    // Builds real card bodies for items taken out of a box, with the signature and look the box kept.
-    private sealed class CardBuilder : ICardSpawningService
-    {
-        public Node3D? SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent) =>
-            SpawnCard(signature, null, spawnTransform, parent);
-
-        public Node3D? SpawnCard(CardSignature signature, int? lookSeed, Transform3D spawnTransform, Node3D parent)
-        {
-            var card = ShopTestCards.Create(signature);
-            card.LookSeed = lookSeed;
-            parent.AddChild(card);
-            card.GlobalTransform = spawnTransform;
-            return card;
-        }
-
-        public Node3D? SpawnRandomCard(Transform3D spawnTransform, Node3D parent) => null;
-
-        public Vector3 GetRandomOffset(Vector3 offsetRange) => Vector3.Zero;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -8,6 +9,12 @@ namespace CardCleaner.Scripts.Features.Card.Components;
 
 public partial class CardHolder : Node3D, ICardHolder, IDependent
 {
+    /// <summary>The most cards a hand holds; strapping them into a deck makes room.</summary>
+    public const int MostCards = 100;
+
+    /// <summary>The group every card holder joins, so a load can hand saved cards back to the player's hand.</summary>
+    public const string GroupName = "card_holders";
+
     [Signal]
     public delegate void CardAddedEventHandler(RigidBody3D card);
 
@@ -88,24 +95,33 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
     public int HeldCount => _heldCards.Count;
     public bool HasCards => _heldCards.Count > 0;
 
+    /// <summary>How many more cards the hand takes before it holds <see cref="MostCards" />.</summary>
+    public int Room => Math.Max(0, MostCards - _heldCards.Count);
+
     /// <summary>The card a single drop or a stock click takes first, or null when the hand is empty.</summary>
     public RigidBody3D? TopCard => _heldCards.Count > 0 ? _heldCards[^1] : null;
 
     public void Inject(IServiceResolver services) => _services = services;
+
+    public override void _EnterTree() => AddToGroup(GroupName);
 
     public void SetReferences(Node3D handAnchor)
     {
         _handParent = handAnchor;
     }
 
-    public void AddCard(RigidBody3D card)
+    /// <summary>
+    ///     Takes <paramref name="card" /> into the hand. False, with the card left where it is, when the hand already
+    ///     holds it or holds <see cref="MostCards" />.
+    /// </summary>
+    public bool AddCard(RigidBody3D card)
     {
-        if (_heldCards.Contains(card)) return;
+        if (_heldCards.Contains(card) || Room == 0) return false;
 
         // A held card is out of play: frozen, its shape off, and on no collision layer, so no slot trigger it still
         // overlaps takes it back (DeckSlot.IsFreeStock).
         card.Freeze = true;
-        var shape = card.GetNode<CollisionShape3D>("CardCollision");
+        var shape = card.GetNodeOrNull<CollisionShape3D>("CardCollision");
         if (shape != null) shape.Disabled = true;
         card.CollisionLayer = 0;
 
@@ -118,6 +134,7 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
 
         PositionCards();
         EmitSignal(SignalName.CardAdded, card);
+        return true;
     }
 
     public void RemoveCard(RigidBody3D card)
@@ -220,7 +237,7 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
     private void EnablePhysics(RigidBody3D card)
     {
         card.Freeze = false;
-        var shape = card.GetNode<CollisionShape3D>("CardCollision");
+        var shape = card.GetNodeOrNull<CollisionShape3D>("CardCollision");
         if (shape != null) shape.Disabled = false;
         card.CollisionLayer = CardCollisionLayer;
     }

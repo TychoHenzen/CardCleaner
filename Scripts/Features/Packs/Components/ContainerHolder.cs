@@ -113,7 +113,8 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         if (held == null)
             _hints.Clear(this);
         else
-            _hints.Publish(this, ContainerHints.For(held.Kind, held.IsLidOpen, held.Remaining, HeldCount));
+            _hints.Publish(this,
+                ContainerHints.For(held.Kind, held.IsLidOpen, held.Remaining, HeldCount, BoosterFitsInHand));
     }
 
     public override void _Ready()
@@ -242,9 +243,12 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
                && held.All(item => item.Container.Kind == CardContainerKind.Booster && item.Container != container);
     }
 
+    // A booster's cards all go into the hand, so it opens only while the hand has room for every one of them.
+    private bool BoosterFitsInHand => _cards == null || _cards.Room >= CardContainerLayout.ItemsPerContainer;
+
     private bool OpenInHand(CardContainer booster)
     {
-        if (_cards == null || !booster.OpenInHand(_cards))
+        if (_cards == null || !BoosterFitsInHand || !booster.OpenInHand(_cards))
             return false;
 
         // Opening marks the booster opened, so the hand lets go of it; the hand stays busy through _opening.

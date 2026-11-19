@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using Godot;
@@ -12,11 +13,7 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 /// </summary>
 public partial class CartonView : Node3D
 {
-    private const string CardBackPath = "res://Assets/Graphics/Card back.png";
     private const float Epsilon = 1e-4f;
-    private const float BackLift = 0.0005f;
-    private static readonly Color CardEdgeColor = new(0.93f, 0.91f, 0.86f);
-    private static readonly Color PlainBackColor = new(0.16f, 0.2f, 0.36f);
 
     // One still copy per scene, copied again for each item; the copies are freed with the view.
     private readonly Dictionary<string, StockItemLook?> _looks = new();
@@ -104,29 +101,9 @@ public partial class CartonView : Node3D
         var centre = CartonSpace.CenterOf(bottom);
         centre.Y = CartonSpace.Floor + bottom.Min.Y + height / 2f;
         var card = ItemShapes.Size(ItemShape.Card);
-        var basis = BasisOf(bottom.Pose);
-        AddChild(new MeshInstance3D
-        {
-            Mesh = new BoxMesh { Size = new Vector3(card.X, height, card.Z) },
-            MaterialOverride = _edgeMaterial ??= new StandardMaterial3D { AlbedoColor = CardEdgeColor },
-            Transform = new Transform3D(basis, centre),
-        });
-        AddChild(new MeshInstance3D
-        {
-            Mesh = new PlaneMesh { Size = new Vector2(card.X, card.Z) },
-            MaterialOverride = _backMaterial ??= BackMaterial(),
-            Transform = new Transform3D(basis, centre + Vector3.Up * (height / 2f + BackLift)),
-        });
-    }
-
-    private static StandardMaterial3D BackMaterial()
-    {
-        var material = new StandardMaterial3D();
-        if (ResourceLoader.Exists(CardBackPath))
-            material.AlbedoTexture = ResourceLoader.Load<Texture2D>(CardBackPath);
-        else
-            material.AlbedoColor = PlainBackColor;
-        return material;
+        CardBlockLook.AddBlock(this, new Vector3(card.X, height, card.Z),
+            new Transform3D(BasisOf(bottom.Pose), centre),
+            _edgeMaterial ??= CardBlockLook.EdgeMaterial(), _backMaterial ??= CardBlockLook.BackMaterial());
     }
 
     private StockItemLook? LookOf(string scenePath)

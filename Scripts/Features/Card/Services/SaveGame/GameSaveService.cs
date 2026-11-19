@@ -228,11 +228,7 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
             return;
         }
 
-        var respawner = new SavedCardRespawner(
-            GetTree(),
-            _cardSpawningService,
-            worldNode,
-            (card, camera) => Callable.From(() => ReparentToCamera(card, camera)).CallDeferred());
+        var respawner = new SavedCardRespawner(GetTree(), _cardSpawningService, worldNode);
 
         var recreatedCount = 0;
         foreach (var cardDataObj in _pendingCardData)
@@ -261,18 +257,6 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         {
             ILog.Error($"Failed to recreate card: {ex.Message}");
             return false;
-        }
-    }
-
-    private static void ReparentToCamera(CardController card, Camera3D camera)
-    {
-        // Deferred, so the card or the camera may have been freed in between (a scene change).
-        if (!IsInstanceValid(card) || !IsInstanceValid(camera))
-            return;
-        if (card.GetParent() != camera)
-        {
-            card.GetParent()?.RemoveChild(card);
-            camera.AddChild(card);
         }
     }
 
