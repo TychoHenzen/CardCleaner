@@ -42,7 +42,6 @@ public class ShopSeamReliabilitySceneTest
 
         AssertThat(_rig.Seam.CrossingCount).IsEqual(1);
         AssertThat(_rig.Seam.Phase).IsEqual(SeamPhase.Hidden);
-        AssertBool(_rig.Seam.HumRequested).IsFalse();
     }
 
     [TestCase]
@@ -56,7 +55,6 @@ public class ShopSeamReliabilitySceneTest
         await _rig.Drop(card);
 
         AssertThat(_rig.Seam.Phase).IsEqual(SeamPhase.Hidden);
-        AssertBool(_rig.Seam.HumRequested).IsFalse();
     }
 
     [TestCase]

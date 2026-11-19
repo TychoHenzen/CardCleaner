@@ -7,31 +7,92 @@ namespace CardCleaner.Tests.Features.Packs.Models;
 public class ContainerHintsTest
 {
     [TestCase]
-    public static void AtAShelfQUnpacksTheContents()
+    public static void AShutBoxOpensWithTheRightButtonAndQPutsItDown()
     {
-        var hints = ContainerHints.For(CardContainerKind.Box, atShelf: true);
+        var hints = ContainerHints.For(CardContainerKind.Box, lidOpen: false);
 
         AssertThat(hints.Select(hint => $"{hint.Key}: {hint.Action}").ToArray()).IsEqual(new[]
         {
-            "Q: Unpack the packs onto this shelf",
-            "RMB: Put it down",
+            "RMB: Open the cardboard box",
+            "Q: Put it down",
         });
     }
 
     [TestCase]
-    public static void AwayFromAShelfQOpensTheContainer()
+    public static void AnOpenBoxClosesWithTheRightButton()
     {
-        var hints = ContainerHints.For(CardContainerKind.Booster, atShelf: false);
+        var hints = ContainerHints.For(CardContainerKind.Box, lidOpen: true);
 
-        AssertThat(hints[0].Action).IsEqual("Open the booster");
+        AssertThat(hints[0].Action).IsEqual("Close the cardboard box");
     }
 
     [TestCase]
-    public static void EveryKindHasAName()
+    public static void AnOpenCardboardBoxSetsOneItemDownWithTheLeftButton()
     {
-        AssertThat(CardContainerKindText.NameOf(CardContainerKind.Box)).IsEqual("booster box");
-        AssertThat(CardContainerKindText.NameOf(CardContainerKind.Pack)).IsEqual("pack");
-        AssertThat(CardContainerKindText.ContentsOf(CardContainerKind.Pack)).IsEqual("boosters");
-        AssertThat(CardContainerKindText.ContentsOf(CardContainerKind.Booster)).IsEqual("cards");
+        var hints = ContainerHints.For(CardContainerKind.Box, lidOpen: true, itemsInside: 3);
+
+        AssertThat(hints.Select(hint => $"{hint.Key}: {hint.Action}").ToArray()).IsEqual(new[]
+        {
+            "RMB: Close the cardboard box",
+            "Q: Put it down",
+            "LMB: Put one on the floor",
+        });
+    }
+
+    [TestCase]
+    public static void AnEmptyOpenCardboardBoxGoesInATrashCan()
+    {
+        var hints = ContainerHints.For(CardContainerKind.Box, lidOpen: true, itemsInside: 0);
+
+        AssertThat(hints[^1].Action).IsEqual("Throw it in a trash can");
+    }
+
+    [TestCase]
+    public static void ABoosterBoxEmptiesIntoTheHandWithTheRightButton()
+    {
+        var hints = ContainerHints.For(CardContainerKind.Pack, lidOpen: false, itemsInside: 8);
+
+        AssertThat(hints.Select(hint => $"{hint.Key}: {hint.Action}").ToArray()).IsEqual(new[]
+        {
+            "RMB: Empty the booster box into your hand",
+            "Q: Put it down",
+        });
+    }
+
+    [TestCase]
+    public static void AHandOfBoosterPacksOpensOneAndPutsOneDown()
+    {
+        var hints = ContainerHints.For(CardContainerKind.Booster, lidOpen: false, held: 3);
+
+        AssertThat(hints.Select(hint => $"{hint.Key}: {hint.Action}").ToArray()).IsEqual(new[]
+        {
+            "RMB: Open one of the 3 booster packs",
+            "Q: Put one down",
+        });
+    }
+
+    // A booster pack opens into the hand, so it waits while the hand has no room for its eight cards.
+    [TestCase]
+    public static void ABoosterPackDoesNotOpenIntoAFullHand()
+    {
+        var hints = ContainerHints.For(CardContainerKind.Booster, lidOpen: false, held: 3, cardsFit: false);
+
+        AssertThat(hints[0].Action).IsEqual("No room in your hand for its cards");
+    }
+
+    [TestCase]
+    public static void ABoosterPackOpensWithTheRightButton()
+    {
+        var hints = ContainerHints.For(CardContainerKind.Booster, lidOpen: false);
+
+        AssertThat(hints[0].Action).IsEqual("Open the booster pack");
+    }
+
+    [TestCase]
+    public static void EveryKindHasTheNameThePlayerReads()
+    {
+        AssertThat(CardContainerKindText.NameOf(CardContainerKind.Box)).IsEqual("cardboard box");
+        AssertThat(CardContainerKindText.NameOf(CardContainerKind.Pack)).IsEqual("booster box");
+        AssertThat(CardContainerKindText.NameOf(CardContainerKind.Booster)).IsEqual("booster pack");
     }
 }

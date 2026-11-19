@@ -2,19 +2,19 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
-using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     A shelf that displays stock in its slots. Each slot is a one-card <see cref="DeckSlot" /> child:
-///     a body dropped on a slot locks and shows there, and picking it up releases it again. The
-///     <see cref="Kind" /> decides which stock the slots take and which group the shelf joins. A shelf is also an
-///     <see cref="IUnpackTarget" />: a carried box or pack pointed at it unpacks into its free slots.
+///     A shelf that displays stock in its slots. Each slot is a <see cref="DeckSlot" /> child that holds one kind of
+///     stock (one card, one pack, or a stack of boosters; see <see cref="ShelfPlacementRule" />): a body dropped on a
+///     slot locks and shows there, and picking it up releases it again. The
+///     <see cref="Kind" /> decides which stock the slots take and which group the shelf joins. The restocker unpacks a
+///     cardboard box into its free slots (<see cref="TryUnpack" />).
 /// </summary>
-public partial class CardShelf : RigidBody3D, IUnpackTarget
+public partial class CardShelf : RigidBody3D
 {
     /// <summary>Scene-tree group of every product shelf and card shelf, for shop code that lists sales stock.</summary>
     public const string SalesGroupName = "sales_shelves";
@@ -69,34 +69,34 @@ public partial class CardShelf : RigidBody3D, IUnpackTarget
             ShelfSlotTarget.Cover(this, slot);
         }
 
-        CollisionLayer |= ContainerHolder.UnpackLayerBit;
-        AddAimVolume();
+        AddFootprintVolume();
     }
 
-    /// <summary>The box over this shelf's whole bounds that the hand aims at to unpack onto it.</summary>
-    public Area3D? AimVolume => GetNodeOrNull<Area3D>(AimVolumeName);
+    /// <summary>The box over this shelf's whole bounds, on no physics layer.</summary>
+    public Area3D? FootprintVolume => GetNodeOrNull<Area3D>(FootprintVolumeName);
 
-    private const string AimVolumeName = "UnpackAim";
+    private const string FootprintVolumeName = "ShelfFootprint";
 
-    // The shelf's colliders follow its model's parts, so a ray aimed between two boards passes through them. One
-    // trigger box over the bounds of those colliders, on the unpack layer only, lets the hand aim at the whole shelf.
-    // It is a trigger, not a body: the navigation bake parses static bodies by their layer, so a body here would keep
-    // a carried shelf (whose own layers are off) in the mesh. It is in DeliveryMarker.FootprintGroup, so a delivered
-    // shelf stacks as its bounding box, the way PlacedFurniture's footprint box stands for a placed one. Built here
-    // with no owner, so no scene ever stores it.
-    private void AddAimVolume()
+    // The shelf's colliders follow its model's parts, so they leave the space between two boards open. One trigger
+    // box over the bounds of those colliders is in DeliveryMarker.FootprintGroup, so a delivered shelf stacks as its
+    // bounding box, the way PlacedFurniture's footprint box stands for a placed one. The delivery check reads shapes
+    // from the tree, so the box is on no layer and no ray or body ever meets it. It is a trigger, not a body: the
+    // navigation bake parses static bodies, so a body here would keep a carried shelf in the mesh. Built here with no
+    // owner, so no scene ever stores it.
+    private void AddFootprintVolume()
     {
         var shapes = GetChildren().OfType<CollisionShape3D>().ToList();
-        if (shapes.Count == 0 || AimVolume != null)
+        if (shapes.Count == 0 || FootprintVolume != null)
             return;
 
         var bounds = shapes.Skip(1).Aggregate(BoundsOf(shapes[0]), (box, shape) => box.Merge(BoundsOf(shape)));
         var area = new Area3D
         {
-            Name = AimVolumeName,
-            CollisionLayer = ContainerHolder.UnpackLayerBit,
+            Name = FootprintVolumeName,
+            CollisionLayer = 0,
             CollisionMask = 0,
-            Monitoring = false
+            Monitoring = false,
+            Monitorable = false
         };
         area.AddToGroup(DeliveryMarker.FootprintGroup);
         area.AddChild(new CollisionShape3D
@@ -111,22 +111,10 @@ public partial class CardShelf : RigidBody3D, IUnpackTarget
     public IEnumerable<ShelfSlotTarget> SlotTargets => GetChildren().OfType<ShelfSlotTarget>();
 
     /// <summary>
-    ///     Unpacks a box or pack into this shelf's free slots, when the shelf takes the items it holds (a box or pack
-    ///     onto a product shelf or storage rack; a card shelf takes none). False when the shelf does not take them,
-    ///     so the holder opens the container loose.
+    ///     Unpacks a cardboard box into this shelf's free slots: every item a free slot takes moves in, the last in
+    ///     first, and the box stays a box with the rest inside. False, with nothing moved, when no slot takes any of
+    ///     its items or the container is not a cardboard box (a booster box or booster pack is opened in the hand).
     /// </summary>
-    public bool TryUnpack(CardContainer container)
-    {
-        if (!TakesContentsOf(container))
-            return false;
-
-        return container.OpenOnto(Slots.Where(slot => !slot.HasCards).ToList());
-    }
-
-    public bool CanUnpack(CardContainer container) =>
-        TakesContentsOf(container) && Slots.Any(slot => !slot.HasCards);
-
-    private bool TakesContentsOf(CardContainer container) =>
-        CardContainerLayout.ChildKind(container.Kind) is { } kind
-        && ShelfPlacementRule.Accepts(Kind, ShelfPlacementRule.From(kind));
+    public bool TryUnpack(CardContainer container) =>
+        container.Storage is { } storage && storage.MoveInto(Slots.ToList()) > 0;
 }

@@ -6,7 +6,8 @@ import { dirname, join } from "node:path";
 
 const PATCH_FILE = ".github/quality-guard-godot.patch";
 export const SCRIPTS = "packages/quality-guard/skills/quality-refactor/scripts";
-const PATCHED_FILE = `${SCRIPTS}/lib/rules-reachability.mjs`;
+// Every file the patch changes, sorted as `git diff --name-only` lists them. ci.yml's patch step checks the same list.
+const PATCHED_FILES = [`${SCRIPTS}/lib/rules-duplicate.mjs`, `${SCRIPTS}/lib/rules-reachability.mjs`];
 
 export function git(cwd, args) {
   return execFileSync("git", args, {
@@ -36,16 +37,17 @@ export function ensureCache(repo, gate) {
   return cache;
 }
 
-// A cache whose patched file is stale or hand-edited is reset to the pin
-// (that one file only) and patched again, so it always equals the current
+// A cache whose patched files are stale or hand-edited is reset to the pin
+// (those files only) and patched again, so it always equals the current
 // patch. Any other changed path in the cache fails the run by name.
 export function applyPatch(repo, cache) {
   const patch = join(repo, PATCH_FILE);
-  git(cache, ["checkout", "--", PATCHED_FILE]);
+  git(cache, ["checkout", "--", ...PATCHED_FILES]);
   git(cache, ["apply", "--check", "--whitespace=error", patch]);
   git(cache, ["apply", "--whitespace=error", patch]);
-  const changed = git(cache, ["diff", "--name-only"]).trim();
-  if (changed !== PATCHED_FILE) {
-    fail(`cache changed ${JSON.stringify(changed)}, expected ${PATCHED_FILE}`);
+  const changed = git(cache, ["diff", "--name-only"]).trim().split("\n").sort().join("\n");
+  const expected = [...PATCHED_FILES].sort().join("\n");
+  if (changed !== expected) {
+    fail(`cache changed ${JSON.stringify(changed)}, expected ${JSON.stringify(expected)}`);
   }
 }

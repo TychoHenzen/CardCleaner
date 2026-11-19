@@ -22,7 +22,7 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// The shop player carries an ordered container in the hand: the held box sits in front of the camera, and
-/// the walk, drop, pick-up and open loop keeps the box, its physics and its packs consistent.
+/// the walk, put-down, pick-up and open-in-hand loop keeps the box, its physics and its packs consistent.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -111,7 +111,7 @@ public class ShopCarryingPoseSceneTest
     }
 
     [TestCase]
-    public async Task CarryLoopWorksThroughAWalkDropPickUpAndOpen()
+    public async Task CarryLoopWorksThroughAWalkPutDownPickUpAndOpenInHand()
     {
         var box = OrderBox();
         // Recorded before the first click: the pickup clears the layers and the drop must restore these.
@@ -137,7 +137,7 @@ public class ShopCarryingPoseSceneTest
         var walked = new Vector2(_player.GlobalPosition.X, _player.GlobalPosition.Z).DistanceTo(startXz);
         AssertBool(walked >= 1.5f).OverrideFailureMessage($"player walked only {walked} m").IsTrue();
 
-        await ClickAsync(MouseButton.Right);
+        await PressKeyAsync(Key.Q);
 
         await AssertDroppedAhead(box, holder, layer, mask);
 
@@ -148,14 +148,17 @@ public class ShopCarryingPoseSceneTest
             .OverrideFailureMessage(Describe(box))
             .IsTrue();
 
-        await PressKeyAsync(Key.Q);
+        // The right button opens the box in the hand: it stays held and nothing comes out until it is stocked.
+        await ClickAsync(MouseButton.Right);
+        await Until(() => !box.IsProcessing(), "the box's flaps swinging open");
 
-        AssertBool(box.IsOpened).IsTrue();
-        AssertBool(holder.Held == null).IsTrue();
-        await UntilOpened(box);
+        AssertBool(box.IsLidOpen).IsTrue();
+        AssertBool(box.IsOpened).IsFalse();
+        AssertBool(ReferenceEquals(holder.Held, box)).IsTrue();
+        AssertBool(box.Transform.IsEqualApprox(carriedTransform)).IsTrue();
         var packs = SpawnerNode().GetChildren().OfType<CardContainer>()
-            .Where(c => c.Kind == CardContainerKind.Pack && !c.IsOpened).ToArray();
-        AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
+            .Where(c => c.Kind == CardContainerKind.Pack).ToArray();
+        AssertThat(packs.Length).IsEqual(0);
     }
 
     // What the interaction ray sees, for a failure message when a click does not pick the box up.

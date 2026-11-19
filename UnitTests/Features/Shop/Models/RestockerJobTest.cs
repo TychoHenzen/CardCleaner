@@ -5,7 +5,7 @@ namespace CardCleaner.Tests.Features.Shop.Models;
 [TestSuite]
 public class RestockerJobTest
 {
-    private static readonly RestockStep Step = new(RestockStepKind.Move, 4, 9);
+    private static readonly RestockStep Step = new(RestockStepKind.Move, 4, 9, 3);
 
     [TestCase]
     public static void Begin_then_Arrived_twice_ends_Idle_and_the_second_returns_true()
@@ -48,7 +48,7 @@ public class RestockerJobTest
     }
 
     [TestCase]
-    public static void NoPath_behaves_like_TargetLost()
+    public static void NoPath_blocks_the_pair_and_the_whole_shelf_for_that_source()
     {
         var job = new RestockerJob();
         job.Begin(Step);
@@ -57,6 +57,21 @@ public class RestockerJobTest
 
         AssertThat(job.Phase).IsEqual(RestockerPhase.Idle);
         AssertBool(job.BlockedPairs.Contains((4, 9))).IsTrue();
+        AssertBool(job.UnreachableShelves.Contains((4, 3))).IsTrue();
+
+        job.Tick(RestockerJob.BlockSeconds);
+        AssertThat(job.UnreachableShelves.Count).IsEqual(0);
+    }
+
+    [TestCase]
+    public static void TargetLost_leaves_the_rest_of_the_shelf_open()
+    {
+        var job = new RestockerJob();
+        job.Begin(Step);
+
+        job.TargetLost();
+
+        AssertThat(job.UnreachableShelves.Count).IsEqual(0);
     }
 
     [TestCase]

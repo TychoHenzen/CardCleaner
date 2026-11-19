@@ -9,13 +9,13 @@ namespace CardCleaner.Scripts.Features.Portal.Components;
 
 /// <summary>
 ///     A glowing seam in a wall that opens into a doorway between the shop and the workshop. The backoffice seam
-///     stays hidden and silent until the player stands in the backoffice carrying a special card, then glows and
-///     hums; the workshop's way back is <see cref="AlwaysOpen" />. Coming close opens it into a doorway, and
-///     stepping into the doorway moves the player to <see cref="Exit" /> with no cut: the camera
-///     keeps its offset to the doorway and its facing relative to it. The node sits at the wall marker and
-///     the doorway faces its local +Z, into the room. The decisions live in <see cref="SeamTriggerRule" />,
-///     <see cref="SeamPhaseRule" /> and <see cref="PortalTransform" />; this node reads the scene, animates
-///     the glow, door and hum, and applies the teleport (including the landing clearance check).
+///     stays hidden until the player stands in the backoffice carrying a special card, then glows; the workshop's
+///     way back is <see cref="AlwaysOpen" />. Coming close opens it into a doorway, and stepping into the doorway
+///     moves the player to <see cref="Exit" /> with no cut: the camera keeps its offset to the doorway and its
+///     facing relative to it. The node sits at the wall marker and the doorway faces its local +Z, into the room.
+///     The decisions live in <see cref="SeamTriggerRule" />, <see cref="SeamPhaseRule" /> and
+///     <see cref="PortalTransform" />; this node reads the scene, animates the glow and door, and applies the
+///     teleport (including the landing clearance check). It makes no sound.
 /// </summary>
 public partial class WallSeam : Node3D
 {
@@ -63,9 +63,6 @@ public partial class WallSeam : Node3D
     [Export]
     public Node3D? Door { get; set; }
 
-    [Export]
-    public AudioStreamPlayer3D? Hum { get; set; }
-
     /// <summary>Optional pack texture for the glow. A missing file leaves the plain emissive material.</summary>
     [Export]
     public string GlowTexturePath { get; set; } = string.Empty;
@@ -94,20 +91,12 @@ public partial class WallSeam : Node3D
 
     public bool GlowTextureLoaded { get; private set; }
 
-    /// <summary>
-    ///     True while the hum should be audible: the seam is glowing or open. Tracked apart from the
-    ///     player node because a headless run has no audio driver and never reports playing.
-    /// </summary>
-    public bool HumRequested { get; private set; }
-
     /// <summary>How many times the player has been moved through the doorway.</summary>
     public int CrossingCount { get; private set; }
 
     public override void _Ready()
     {
         GlowTextureLoaded = TryApplyGlowTexture();
-        if (Hum != null)
-            Hum.Stream = CreateHumStream();
         ApplyPhase(SeamPhase.Hidden, false);
     }
 
@@ -126,7 +115,9 @@ public partial class WallSeam : Node3D
             TryCross();
     }
 
-    /// <summary>True when the doorway is always open, or the player is in the backoffice with a special card in hand.</summary>
+    /// <summary>
+    ///     True when the doorway is always open, or the player is in the backoffice with a special card in hand.
+    /// </summary>
     public bool IsTriggered()
     {
         if (AlwaysOpen)
@@ -156,20 +147,7 @@ public partial class WallSeam : Node3D
         if (phase != SeamPhase.Open)
             _refusedThisOpening = false;
 
-        SetHum(phase != SeamPhase.Hidden);
         SetDoor(phase == SeamPhase.Open, animate);
-    }
-
-    private void SetHum(bool on)
-    {
-        HumRequested = on;
-        if (Hum == null)
-            return;
-
-        if (on && !Hum.Playing)
-            Hum.Play();
-        else if (!on && Hum.Playing)
-            Hum.Stop();
     }
 
     private void SetDoor(bool open, bool animate)
@@ -267,20 +245,5 @@ public partial class WallSeam : Node3D
         textured.EmissionTexture = texture;
         Glow.MaterialOverride = textured;
         return true;
-    }
-
-    private static AudioStreamWav CreateHumStream()
-    {
-        var pcm = SeamTone.Pcm16();
-        return new AudioStreamWav
-        {
-            Format = AudioStreamWav.FormatEnum.Format16Bits,
-            MixRate = SeamTone.SampleRate,
-            Stereo = false,
-            Data = pcm,
-            LoopMode = AudioStreamWav.LoopModeEnum.Forward,
-            LoopBegin = 0,
-            LoopEnd = pcm.Length / sizeof(short)
-        };
     }
 }

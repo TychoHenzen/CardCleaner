@@ -3,6 +3,7 @@ using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using static CardCleaner.Tests.Scenes.ShopCustomerRig;
 
@@ -55,6 +56,11 @@ public class ShopCustomerCheckoutSceneTest
         AssertBool(handed.Method == PaymentMethod.Card || handed.Method == PaymentMethod.Cash).IsTrue();
         AssertBool(slot.HasCards).IsFalse();
         AssertThat(_rig.Money.Balance).IsEqual(balanceBefore);
+
+        // A waiting customer holds its basket's still copies outside the tree until the counter takes them; freeing
+        // it discards them (Customer._ExitTree), so the test leaves no orphan behind.
+        customer!.QueueFree();
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]

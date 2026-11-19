@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Packs.Components;
@@ -23,8 +24,9 @@ using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// End to end in the shop scene: an ordered cardboard box can be found by the player's interaction ray and
-/// opened down to packs, boosters and finally real cards carrying the signatures the generator rolled.
+/// End to end in the shop scene: an ordered cardboard box can be found by the player's interaction ray, and an
+/// ordered booster box empties into the player's hand as booster packs, the top one of which opens into real cards
+/// carrying the signatures the generator rolled. A cardboard box is storage and never opens whole.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -32,14 +34,8 @@ public class ShopPackOpeningSceneTest
 {
     private const ulong Seed = 4242;
     private const float StandingDistance = 2.0f;
-    private const int SettleFrames = 180;
-    private const float FallLimitY = -0.5f;
-
-    // The right storage arm of the shop scene, where the delivery point is, inside its walls.
-    private static readonly Rect2 StorageRoom = new(16f, -8f, 8f, 20f);
 
     private Node3D _shop = null!;
-    private Node3D _world = null!;
     private PlayerController _player = null!;
     private MoneyService _money = null!;
     private OrderingService _ordering = null!;
@@ -51,7 +47,6 @@ public class ShopPackOpeningSceneTest
     {
         _clock = FastClock.Start();
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
-        _world = _shop.GetNode<Node3D>("World");
         _player = _shop.GetNode<PlayerController>("Player");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
@@ -74,7 +69,7 @@ public class ShopPackOpeningSceneTest
     [TestCase]
     public async Task OrderedBoxIsACardContainerTheInteractionRayCanReach()
     {
-        var box = OrderBox();
+        var box = Order("cardboard_box");
         await ISceneRunner.SyncPhysicsFrame;
         await ISceneRunner.SyncPhysicsFrame;
         var interaction = _player.GetNode<InteractionSystem>("Head/Camera3D/InteractionSystem");
@@ -92,54 +87,31 @@ public class ShopPackOpeningSceneTest
         AssertBool(box.CanInteract).IsTrue();
     }
 
+    // The player's hand empties an ordered booster box into its eight booster packs, and the top one opens into eight
+    // real cards. The booster box was ordered unseeded, so its cards come from the shared random source.
     [TestCase]
-    public async Task OpeningAnOrderedBoxLeadsThroughPacksAndBoostersToRealCardsWithGeneratedSignatures()
+    public async Task AnOrderedBoosterBoxOpensInTheHandToRealCardsWithGeneratedSignatures()
     {
-        var box = OrderBox();
-        box.Open();
-        await UntilOpened(box);
+        var holder = _player.GetNode<ContainerHolder>("CardInteraction/ContainerHolder");
+        var hand = _player.GetNode<CardHolder>("CardInteraction/CardHolder");
+        var pack = Order("pack");
 
-        var packs = Containers(CardContainerKind.Pack);
-        AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
+        AssertBool(holder.TryPickUp(pack)).IsTrue();
+        AssertBool(holder.UseHeld()).IsTrue();
+        AssertThat(holder.HeldCount).IsEqual(CardContainerLayout.ItemsPerContainer);
+        AssertBool(holder.UseHeld()).IsTrue();
+        await Until(() => !holder.IsOpening, "the booster opening in the hand");
 
-        packs[0].Open();
-        await UntilOpened(packs[0]);
-        var boosters = Containers(CardContainerKind.Booster);
-        AssertThat(boosters.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
-
-        boosters[0].Open();
-        await UntilOpened(boosters[0]);
-        var cards = _world.GetChildren().OfType<CardController>().ToArray();
-
+        var cards = hand.HeldCards.OfType<CardController>().ToArray();
         var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBooster();
         AssertThat(cards.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
         for (var i = 0; i < cards.Length; i++)
             AssertThat(cards[i].Signature.Elements).IsEqual(expected[i].Elements);
     }
 
-    [TestCase]
-    public async Task OpenedBoxLeavesEveryPackSettledInsideTheStorageRoom()
+    private CardContainer Order(string id)
     {
-        var box = OrderBox();
-        await PhysicsFrames(SettleFrames);
-        box.Open();
-        await UntilOpened(box);
-        await PhysicsFrames(SettleFrames);
-
-        var packs = Containers(CardContainerKind.Pack);
-        AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
-        foreach (var pack in packs)
-        {
-            var at = pack.GlobalPosition;
-            AssertBool(StorageRoom.HasPoint(new Vector2(at.X, at.Z)) && at.Y > FallLimitY)
-                .OverrideFailureMessage($"pack settled at {at}, outside the storage room")
-                .IsTrue();
-        }
-    }
-
-    private CardContainer OrderBox()
-    {
-        var item = Catalog().Items.Single(i => i.Id == "cardboard_box");
+        var item = Catalog().Items.Single(i => i.Id == id);
         _money.Add(item.Price);
         var result = _ordering.Order(item);
         AssertBool(result.Succeeded).IsTrue();
@@ -148,13 +120,4 @@ public class ShopPackOpeningSceneTest
 
     private OrderCatalog Catalog() =>
         _shop.GetNode<StockApp>("PcDesktopViewport/StockApp").Catalog!;
-
-    private CardContainer[] Containers(CardContainerKind kind) =>
-        _world.GetChildren().OfType<CardContainer>().Where(c => c.Kind == kind && !c.IsOpened).ToArray();
-
-    private static async Task PhysicsFrames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
 }

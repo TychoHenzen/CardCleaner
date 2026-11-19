@@ -26,10 +26,13 @@ internal sealed class CarriedStock
         .Select(item => GodotObject.IsInstanceValid(item.Body) ? StockItemLook.Capture(item.Body) : null)
         .ToList();
 
-    /// <summary>Takes the slot's first card. False when the slot does not give it up.</summary>
+    /// <summary>
+    ///     Takes the top of the slot's stack, so the rest of a booster stack stays where it lies. False when the slot
+    ///     does not give it up.
+    /// </summary>
     public bool TryTake(DeckSlot slot, ShelfOffer offer)
     {
-        var body = slot.Cards[0];
+        var body = slot.Cards[^1];
         if (!slot.ReleaseCard(body))
             return false;
 

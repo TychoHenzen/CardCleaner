@@ -18,6 +18,7 @@ public class ProductShelfTest
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
     private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const int SettleFrames = 2;
+    private const float Near = 1e-4f;
 
     private CardShelf _shelf = null!;
 
@@ -25,15 +26,18 @@ public class ProductShelfTest
     public async Task Setup()
     {
         _shelf = GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>();
+        // Away from the origin, where the containers are made, so none lands in a bottom-board slot's trigger on its own.
+        _shelf.Position = new Vector3(0, 0, -5);
         AddNode(_shelf);
         await Frames(SettleFrames);
     }
 
     [TestCase]
-    public void ProductShelfHasSixSlotsAndJoinsTheSalesGroupOnly()
+    public void ProductShelfHasSixteenSlotsAndJoinsTheSalesGroupOnly()
     {
+        // Four slots on each of its four boards.
         AssertThat(_shelf.Kind).IsEqual(ShelfKind.ProductShelf);
-        AssertThat(_shelf.SlotCount).IsEqual(6);
+        AssertThat(_shelf.SlotCount).IsEqual(16);
         AssertBool(_shelf.IsInGroup(CardShelf.SalesGroupName)).IsTrue();
         AssertBool(_shelf.IsInGroup(CardShelf.StorageGroupName)).IsFalse();
     }
@@ -83,21 +87,61 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    public async Task ABoosterDroppedOnAFullProductSlotIsEjected()
+    public async Task FourBoostersStackInOneSlotAndAFifthIsEjected()
     {
         var slot = _shelf.Slots.First();
-        var stocked = MakeContainer(BoosterScene);
-        await Drop(slot, stocked);
+        for (var i = 0; i < ShelfPlacementRule.BoostersPerProductSlot; i++)
+            await Drop(slot, MakeContainer(BoosterScene));
         var extra = MakeContainer(BoosterScene);
         extra.Freeze = false;
 
         await Drop(slot, extra);
 
-        AssertBool(GodotObject.IsInstanceValid(extra)).IsTrue();
+        AssertThat(slot.Cards.Count).IsEqual(4);
+        for (var i = 0; i < slot.Cards.Count; i++)
+            AssertVector(slot.Cards[i].GlobalPosition)
+                .IsEqualApprox(slot.SeatPosition(i), new Vector3(Near, Near, Near));
         AssertBool(extra.Freeze).IsFalse();
         AssertBool(slot.Cards.Contains(extra)).IsFalse();
-        AssertThat(slot.Cards.Count).IsEqual(1);
-        AssertThat(_shelf.StockedCount).IsEqual(1);
+    }
+
+    [TestCase]
+    public async Task ASlotHoldingAPackTakesNothingMore()
+    {
+        var slot = _shelf.Slots.First();
+        await Drop(slot, MakeContainer(PackScene));
+        var booster = MakeContainer(BoosterScene);
+        booster.Freeze = false;
+
+        await Drop(slot, booster);
+
+        AssertBool(slot.HasRoom).IsFalse();
+        AssertBool(slot.Cards.Contains(booster)).IsFalse();
+        AssertBool(booster.Freeze).IsFalse();
+    }
+
+    [TestCase]
+    public async Task APackIsEjectedFromASlotHoldingBoosters()
+    {
+        var slot = _shelf.Slots.First();
+        await Drop(slot, MakeContainer(BoosterScene));
+        var pack = MakeContainer(PackScene);
+        pack.Freeze = false;
+
+        await Drop(slot, pack);
+
+        AssertBool(slot.HasRoom).IsTrue();
+        AssertBool(slot.CanTake(StockKind.Pack)).IsFalse();
+        AssertBool(slot.CanTake(StockKind.Booster)).IsTrue();
+        AssertBool(slot.Cards.Contains(pack)).IsFalse();
+        AssertBool(pack.Freeze).IsFalse();
+    }
+
+    [TestCase]
+    public void AFullProductShelfHoldsSixteenPacksOrSixtyFourBoosters()
+    {
+        AssertThat(_shelf.Slots.Sum(slot => slot.SeatsFor(StockKind.Pack))).IsEqual(16);
+        AssertThat(_shelf.Slots.Sum(slot => slot.SeatsFor(StockKind.Booster))).IsEqual(64);
     }
 
     private static CardContainer MakeContainer(string scenePath)

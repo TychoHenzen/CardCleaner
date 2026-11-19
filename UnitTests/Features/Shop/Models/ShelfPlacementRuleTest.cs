@@ -27,4 +27,19 @@ public class ShelfPlacementRuleTest
         foreach (var (shelf, stock, expected) in table)
             AssertThat(ShelfPlacementRule.Accepts(shelf, stock)).IsEqual(expected);
     }
+
+    [TestCase]
+    public static void AProductShelfSlotHoldsOnePackOrFourBoosters()
+    {
+        AssertThat(ShelfPlacementRule.StackLimit(ShelfKind.ProductShelf, StockKind.Pack)).IsEqual(1);
+        AssertThat(ShelfPlacementRule.StackLimit(ShelfKind.ProductShelf, StockKind.Booster)).IsEqual(4);
+    }
+
+    [TestCase]
+    public static void OtherSlotsAreLimitedOnlyByTheirCapacity()
+    {
+        AssertThat(ShelfPlacementRule.StackLimit(ShelfKind.CardShelf, StockKind.Card)).IsNull();
+        AssertThat(ShelfPlacementRule.StackLimit(ShelfKind.StorageRack, StockKind.Box)).IsNull();
+        AssertThat(ShelfPlacementRule.StackLimit(ShelfKind.StorageRack, StockKind.Booster)).IsNull();
+    }
 }

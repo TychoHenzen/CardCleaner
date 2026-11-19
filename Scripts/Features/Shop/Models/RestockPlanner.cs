@@ -5,9 +5,10 @@ using System.Linq;
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>
-///     Picks the restocker's next step from the stock and the free slots. A pack or booster that fits a free
-///     product-shelf slot goes first; otherwise a box is unpacked onto the emptiest product shelf once enough slots
-///     are free; otherwise the restocker idles. Pure, so it is tested without a scene.
+///     Picks the restocker's next step from the stock and the slots with room. A pack or booster that fits a
+///     product-shelf slot goes first, a booster onto a part-filled booster stack before an empty slot; otherwise a box
+///     is unpacked onto the emptiest product shelf once enough slots are empty (<see cref="FreeSlotsToUnpack" />);
+///     otherwise the restocker idles. Pure, so it is tested without a scene.
 /// </summary>
 public static class RestockPlanner
 {
@@ -16,59 +17,74 @@ public static class RestockPlanner
         IReadOnlyList<FreeSlot> slots,
         IReadOnlySet<(int Source, int Target)> blocked,
         Func<int, int, float> sourceToSlotDistance,
-        int boxUnpackThreshold = 8)
+        int boxUnpackThreshold = 8,
+        IReadOnlySet<(int Source, int Shelf)>? unreachable = null)
     {
+        unreachable ??= new HashSet<(int Source, int Shelf)>();
         var productSlots = slots.Where(s => s.Shelf == ShelfKind.ProductShelf).ToList();
-        var move = PlanMove(sources, productSlots, blocked, sourceToSlotDistance);
+        var move = PlanMove(sources, productSlots, blocked, unreachable, sourceToSlotDistance);
         if (move != null)
         {
             return move;
         }
 
-        return PlanUnpack(sources, productSlots, blocked, boxUnpackThreshold) ?? RestockStep.Idle;
+        return PlanUnpack(sources, productSlots, blocked, unreachable, boxUnpackThreshold) ?? RestockStep.Idle;
     }
+
+    // ASSUMPTION: a partly emptied box is unpacked as soon as its rest fits (Risk Low); the threshold only keeps a
+    // full box from being opened for a slot or two.
+    /// <summary>Empty product-shelf slots needed to unpack a box of <paramref name="products" /> items.</summary>
+    public static int FreeSlotsToUnpack(int threshold, int products) => Math.Max(1, Math.Min(threshold, products));
 
     private static RestockStep? PlanMove(
         IReadOnlyList<StockSource> sources,
         List<FreeSlot> productSlots,
         IReadOnlySet<(int Source, int Target)> blocked,
+        IReadOnlySet<(int Source, int Shelf)> unreachable,
         Func<int, int, float> sourceToSlotDistance)
     {
+        // ASSUMPTION: a booster tops up a part-filled stack before it takes an empty slot (Risk Low), so empty slots
+        // stay open for booster boxes, which fill a slot alone.
         var best = (from source in sources
                 where source.Kind is StockKind.Pack or StockKind.Booster
                 from slot in productSlots
-                where ShelfPlacementRule.Accepts(slot.Shelf, source.Kind) && !blocked.Contains((source.Id, slot.Id))
-                orderby source.DistanceFromRestocker, sourceToSlotDistance(source.Id, slot.Id), slot.Id, source.Id
+                where slot.Takes(source.Kind) && !blocked.Contains((source.Id, slot.Id))
+                      && !unreachable.Contains((source.Id, slot.ShelfId))
+                orderby source.DistanceFromRestocker, slot.IsEmpty, sourceToSlotDistance(source.Id, slot.Id), slot.Id,
+                    source.Id
                 select (source, slot))
             .Cast<(StockSource source, FreeSlot slot)?>()
             .FirstOrDefault();
-        return best is { } pair ? new RestockStep(RestockStepKind.Move, pair.source.Id, pair.slot.Id) : null;
+        return best is { } pair
+            ? new RestockStep(RestockStepKind.Move, pair.source.Id, pair.slot.Id, pair.slot.ShelfId)
+            : null;
     }
 
     private static RestockStep? PlanUnpack(
         IReadOnlyList<StockSource> sources,
         List<FreeSlot> productSlots,
         IReadOnlySet<(int Source, int Target)> blocked,
+        IReadOnlySet<(int Source, int Shelf)> unreachable,
         int threshold)
     {
-        if (productSlots.Count < threshold)
-        {
-            return null;
-        }
-
-        var shelves = productSlots.GroupBy(s => s.ShelfId)
+        // A box holds booster boxes, which fill a slot alone, so only empty slots count toward unpacking one.
+        var empty = productSlots.Where(s => s.IsEmpty).ToList();
+        var shelves = empty.GroupBy(s => s.ShelfId)
             .OrderByDescending(g => g.Count())
             .ThenBy(g => g.Key)
             .Select(g => g.Key)
             .ToList();
         var best = (from box in sources
                 where box.Kind == StockKind.Box
+                      && empty.Count >= FreeSlotsToUnpack(threshold, box.Products)
                 from shelfId in shelves
-                where !blocked.Contains((box.Id, shelfId))
+                where !blocked.Contains((box.Id, shelfId)) && !unreachable.Contains((box.Id, shelfId))
                 orderby box.DistanceFromRestocker, box.Id, shelves.IndexOf(shelfId)
                 select (box, shelfId))
             .Cast<(StockSource box, int shelfId)?>()
             .FirstOrDefault();
-        return best is { } pair ? new RestockStep(RestockStepKind.UnpackBox, pair.box.Id, pair.shelfId) : null;
+        return best is { } pair
+            ? new RestockStep(RestockStepKind.UnpackBox, pair.box.Id, pair.shelfId, pair.shelfId)
+            : null;
     }
 }
