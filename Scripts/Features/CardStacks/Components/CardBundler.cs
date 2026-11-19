@@ -133,8 +133,16 @@ public partial class CardBundler : Node, IDependent
         var spawning = _services.Get<ICardSpawningService>();
         var parent = _services.Get<ICardSpawner>().GetNode();
         var at = bundle.GlobalTransform;
+        var lost = 0;
         foreach (var stored in bundle.Take(count))
+        {
             if (StoredItemBodies.BuildCard(stored, parent, at, spawning) is { } card)
                 CardHolder.AddCard(card);
+            else
+                lost++;
+        }
+
+        if (lost > 0)
+            ILog.Error($"{lost} cards taken from a {bundle.Kind} could not be spawned and were lost");
     }
 }

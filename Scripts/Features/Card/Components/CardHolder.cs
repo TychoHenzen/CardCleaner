@@ -21,7 +21,7 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
     [Signal]
     public delegate void CardRemovedEventHandler(RigidBody3D card);
 
-    public RigidBody3D[] HeldCards => _heldCards.ToArray();
+    public RigidBody3D[] HeldCards => Held().ToArray();
     private readonly List<RigidBody3D> _heldCards = new();
     private Node3D _handParent = null!;
     private IServiceResolver? _services;
@@ -92,14 +92,14 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
         };
     }
 
-    public int HeldCount => _heldCards.Count;
-    public bool HasCards => _heldCards.Count > 0;
+    public int HeldCount => Held().Count;
+    public bool HasCards => Held().Count > 0;
 
     /// <summary>How many more cards the hand takes before it holds <see cref="MostCards" />.</summary>
-    public int Room => Math.Max(0, MostCards - _heldCards.Count);
+    public int Room => Math.Max(0, MostCards - Held().Count);
 
     /// <summary>The card a single drop or a stock click takes first, or null when the hand is empty.</summary>
-    public RigidBody3D? TopCard => _heldCards.Count > 0 ? _heldCards[^1] : null;
+    public RigidBody3D? TopCard => Held().Count > 0 ? _heldCards[^1] : null;
 
     public void Inject(IServiceResolver services) => _services = services;
 
@@ -116,7 +116,7 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
     /// </summary>
     public bool AddCard(RigidBody3D card)
     {
-        if (_heldCards.Contains(card) || Room == 0) return false;
+        if (Held().Contains(card) || Room == 0) return false;
 
         // A held card is out of play: frozen, its shape off, and on no collision layer, so no slot trigger it still
         // overlaps takes it back (DeckSlot.IsFreeStock).
@@ -186,20 +186,20 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
 
     public void RemoveTopCard()
     {
-        if (_heldCards.Count == 0) return;
-        var topCard = _heldCards[^1];
-        RemoveCard(topCard);
+        if (TopCard is { } topCard)
+            RemoveCard(topCard);
     }
 
     public void RemoveAllCards()
     {
-        while (_heldCards.Count > 0) RemoveCard(_heldCards[^1]);
+        while (Held().Count > 0) RemoveCard(_heldCards[^1]);
     }
 
     /// <summary>Lays the held cards out as a fan in front of the hand anchor (see <see cref="FanPose" />).</summary>
     public void PositionCards()
     {
         _laidForDrop = false;
+        Held();
         for (var i = 0; i < _heldCards.Count; i++)
             _heldCards[i].Transform = FanPose(i, _heldCards.Count);
     }
@@ -224,6 +224,7 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
         var downOffset = forwardCam * HoldDistance;
         var upAxis = Vector3.Up;
 
+        Held();
         for (var i = 0; i < _heldCards.Count; i++)
         {
             var card = _heldCards[i];
@@ -232,6 +233,14 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
             var worldPos = camTransform.Origin + downOffset + upAxis * (i * thickness);
             card.GlobalTransform = new Transform3D(faceYaw, worldPos);
         }
+    }
+
+    // What the hand still holds. A card that was freed or taken off the hand anchor without the hand letting go (a
+    // load removes the scene's cards) is dropped here, so Room counts only the cards really in the hand.
+    private List<RigidBody3D> Held()
+    {
+        _heldCards.RemoveAll(card => !IsInstanceValid(card) || card.GetParent() != _handParent);
+        return _heldCards;
     }
 
     private void EnablePhysics(RigidBody3D card)

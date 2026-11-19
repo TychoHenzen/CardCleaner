@@ -20,7 +20,7 @@ public partial class CartonStorage : Node3D, IDependent
 {
     // The space over the box's top that catches what lands there: the box's footprint, from just below its top.
     private static readonly Vector3 CatchSize = new(0.8f, 0.3f, 0.86f);
-    private const float CatchCenterY = 0.75f;
+    private static readonly Transform3D CatchOffset = new(Basis.Identity, new Vector3(0f, 0.75f, 0f));
 
     // Containers lie on layer 1 and cards on layer 2.
     private const uint CatchMask = 0b11;
@@ -34,7 +34,11 @@ public partial class CartonStorage : Node3D, IDependent
     private BoxContents? _preview;
     private CartonView? _view;
     private IServiceResolver? _services;
-    private readonly BoxShape3D _catchShape = new() { Size = CatchSize };
+    private PhysicsShapeQueryParameters3D? _catchQuery;
+
+    // Bodies that found no room, so a body resting on a full box is not packed again every frame. Any change to what
+    // the box holds clears it, since room may have opened up.
+    private readonly HashSet<ulong> _noRoom = new();
 
     /// <summary>True until anything goes in or out: the box still holds the eight booster boxes it came with.</summary>
     public bool IsFresh => _contents == null;
@@ -64,6 +68,7 @@ public partial class CartonStorage : Node3D, IDependent
     public void Restore(IReadOnlyList<StoredItem>? items)
     {
         _contents = null;
+        _noRoom.Clear();
         if (items != null)
         {
             var (contents, unfit) = BoxContents.Packed(CartonSpace.Packer(), items);
@@ -104,15 +109,16 @@ public partial class CartonStorage : Node3D, IDependent
         if (Box is not { } box || !IsCatching(box))
             return;
 
-        var query = new PhysicsShapeQueryParameters3D
+        // One query, built once: a body keeps its RID when it moves, so only the transform changes each frame.
+        _catchQuery ??= new PhysicsShapeQueryParameters3D
         {
-            Shape = _catchShape,
-            Transform = box.GlobalTransform * new Transform3D(Basis.Identity, new Vector3(0f, CatchCenterY, 0f)),
+            Shape = new BoxShape3D { Size = CatchSize },
             CollisionMask = CatchMask,
             CollideWithAreas = false,
             Exclude = [box.GetRid()],
         };
-        foreach (var hit in GetWorld3D().DirectSpaceState.IntersectShape(query, MostCaughtPerFrame))
+        _catchQuery.Transform = box.GlobalTransform * CatchOffset;
+        foreach (var hit in GetWorld3D().DirectSpaceState.IntersectShape(_catchQuery, MostCaughtPerFrame))
         {
             if (hit["collider"].AsGodotObject() is RigidBody3D body)
                 TryPut(body);
@@ -126,16 +132,23 @@ public partial class CartonStorage : Node3D, IDependent
     public bool TryPut(RigidBody3D body)
     {
         if (body == Box || !DeckSlot.IsFreeStock(body) || body.GetParent() is Camera3D
-            || StoredItemBodies.ShapeOf(body) == null)
+            || StoredItemBodies.ShapeOf(body) is not { } shape || _noRoom.Contains(body.GetInstanceId()))
             return false;
+
+        // Room is checked on what the box shows, which packs the same shapes in the same places, so an item that does
+        // not fit draws no seed: a fresh box stays fresh and the landing container stays unseeded.
+        if (!Shown.HasRoomFor(shape))
+        {
+            _noRoom.Add(body.GetInstanceId());
+            return false;
+        }
 
         if (Contents().With(StoredItemBodies.RecordOf(body)) is not { } contents)
             return false;
 
-        _contents = contents;
+        Change(contents);
         body.GetParent()?.RemoveChild(body);
         body.QueueFree();
-        _view?.Show(contents);
         return true;
     }
 
@@ -145,7 +158,8 @@ public partial class CartonStorage : Node3D, IDependent
     /// </summary>
     public bool TakeInto(DeckSlot slot)
     {
-        if (Box is not { } box)
+        // The slot is asked about what the box shows first, so a slot that takes none of it draws no seed.
+        if (Box is not { } box || Shown.LastIndexOf(item => slot.CanTake(ShelfPlacementRule.From(item))) < 0)
             return false;
 
         var contents = Contents();
@@ -216,14 +230,21 @@ public partial class CartonStorage : Node3D, IDependent
     private void TakeAt(int index, CardContainer box)
     {
         var (contents, spilled) = Contents().Without(index);
-        _contents = contents;
+        Change(contents);
         for (var i = 0; i < spilled.Count; i++)
         {
             var beside = box.GlobalTransform.Origin + box.GlobalBasis.X * SpillSide
                          + Vector3.Up * (SpillStep * (i + 1));
-            StoredItemBodies.Build(spilled[i], LooseParent(box), new Transform3D(Basis.Identity, beside), box);
+            if (StoredItemBodies.Build(spilled[i], LooseParent(box), new Transform3D(Basis.Identity, beside), box)
+                == null)
+                ILog.Error($"A {spilled[i].Shape} spilled from a cardboard box could not be set down and was lost");
         }
+    }
 
+    private void Change(BoxContents contents)
+    {
+        _contents = contents;
+        _noRoom.Clear();
         _view?.Show(contents);
     }
 

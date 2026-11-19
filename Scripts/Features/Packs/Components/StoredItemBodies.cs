@@ -81,8 +81,14 @@ internal static class StoredItemBodies
     private static CardContainer? BuildContainer(StoredContainer stored, Node3D parent, Transform3D at,
         CardContainer box)
     {
-        if (ResourceLoader.Load<PackedScene>(stored.ScenePath)?.Instantiate() is not CardContainer container)
+        var node = ResourceLoader.Load<PackedScene>(stored.ScenePath)?.Instantiate();
+        if (node is not CardContainer container)
+        {
+            // A scene whose root is no container is freed here, since nothing else holds it.
+            node?.Free();
+            ILog.Error($"{stored.ScenePath} is no card container, so its stored item could not be built");
             return null;
+        }
 
         // Set before AddChild, so the container never draws a seed of its own.
         container.ContentSeed = stored.Seed;

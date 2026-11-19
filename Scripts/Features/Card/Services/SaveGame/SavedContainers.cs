@@ -150,8 +150,10 @@ internal static class SavedContainers
         foreach (var record in saved)
         {
             var packed = ResourceLoader.Load<PackedScene>(record.ScenePath);
-            if (packed?.Instantiate() is not CardContainer container)
+            var node = packed?.Instantiate();
+            if (node is not CardContainer container)
             {
+                node?.Free();
                 ILog.Error($"Could not restore container from {record.ScenePath}");
                 continue;
             }
