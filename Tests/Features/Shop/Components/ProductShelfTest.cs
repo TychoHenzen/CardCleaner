@@ -26,16 +26,19 @@ public class ProductShelfTest
     public async Task Setup()
     {
         _shelf = GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>();
+        // Away from the origin, where the containers are made, so none lands in a bottom-board slot's trigger on its own.
+        _shelf.Position = new Vector3(0, 0, -5);
         AddNode(_shelf);
         await Frames(SettleFrames);
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ProductShelfHasEightSlotsAndJoinsTheSalesGroupOnly()
+    public void ProductShelfHasSixteenSlotsAndJoinsTheSalesGroupOnly()
     {
+        // Four slots on each of its four boards.
         AssertThat(_shelf.Kind).IsEqual(ShelfKind.ProductShelf);
-        AssertThat(_shelf.SlotCount).IsEqual(8);
+        AssertThat(_shelf.SlotCount).IsEqual(16);
         AssertBool(_shelf.IsInGroup(CardShelf.SalesGroupName)).IsTrue();
         AssertBool(_shelf.IsInGroup(CardShelf.StorageGroupName)).IsFalse();
     }
@@ -143,10 +146,10 @@ public class ProductShelfTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void AFullProductShelfHoldsEightPacksOrThirtyTwoBoosters()
+    public void AFullProductShelfHoldsSixteenPacksOrSixtyFourBoosters()
     {
-        AssertThat(_shelf.Slots.Sum(slot => slot.SeatsFor(StockKind.Pack))).IsEqual(8);
-        AssertThat(_shelf.Slots.Sum(slot => slot.SeatsFor(StockKind.Booster))).IsEqual(32);
+        AssertThat(_shelf.Slots.Sum(slot => slot.SeatsFor(StockKind.Pack))).IsEqual(16);
+        AssertThat(_shelf.Slots.Sum(slot => slot.SeatsFor(StockKind.Booster))).IsEqual(64);
     }
 
     private static CardContainer MakeContainer(string scenePath)

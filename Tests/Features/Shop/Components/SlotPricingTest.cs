@@ -14,9 +14,8 @@ using Godot;
 namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
-///     A shelf price tag prints the asking price of its stock and opens the pricing screen for it. A card carries its
-///     own price; a booster or pack asks the price book's price for its kind, so a new booster price repaints every
-///     tag over a booster.
+///     A shelf price tag prints the asking price of its stock and opens the pricing screen for it. Every item carries
+///     its own price, cards and containers alike, so a price set on one slot's boosters changes no other booster.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -33,16 +32,16 @@ public class SlotPricingTest
     private DeckSlot _slot = null!;
     private Label3D _label = null!;
     private SlotPricing _pricing = null!;
-    private ShopPriceBook _book = null!;
+    private WholesaleCosts _costs = null!;
     private RecordingPricingScreen _screen = null!;
 
     [BeforeTest]
     public async Task Setup()
     {
         TestServices.Reset();
-        _book = AddNode(new ShopPriceBook { Wholesale = GD.Load<OrderCatalog>(WholesaleCatalog) });
+        _costs = AddNode(new WholesaleCosts { Wholesale = GD.Load<OrderCatalog>(WholesaleCatalog) });
         _screen = new RecordingPricingScreen();
-        TestServices.Container.RegisterSingleton<IPriceBook>(_book);
+        TestServices.Container.RegisterSingleton<IWholesaleCosts>(_costs);
         TestServices.Container.RegisterSingleton<IPricingScreen>(_screen);
 
         AddNode(new Node3D());
@@ -153,34 +152,56 @@ public class SlotPricingTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ABoosterAsksTheBookPriceAndANewBookPriceRepaintsTheTag()
+    public void ABoosterAsksItsMarketPriceUntilAPriceIsSetOnIt()
     {
         StockBooster();
         AssertThat(_label.Text).IsEqual($"{ProductMarketPrices.BoosterPrice}");
 
-        _book.Set(CardContainerKind.Booster, 6);
+        var priced = AddNode(NewBooster());
+        priced.ShopPrice = 6;
+        AssertBool(_slot.TryLock(priced)).IsTrue();
 
+        // The tag prints the price of the booster a customer takes next, the top of the stack.
         AssertThat(_label.Text).IsEqual("6");
         AssertThat(_pricing.AskingValue).IsEqual(6);
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void InteractOnABoosterPricesEveryBooster()
+    public void InteractOnABoosterStackPricesEveryBoosterInTheSlotOnly()
     {
-        StockBooster();
+        var first = StockBooster();
+        var second = StockBooster();
+        var elsewhere = AddNode(NewBooster());
 
         _pricing.Interact();
 
         var stock = _screen.Opened!;
         AssertThat(stock.ItemName).IsEqual("Booster pack");
+        AssertThat(stock.Scope).Contains("2 booster packs");
         AssertThat(stock.MarketValue).IsEqual(ProductMarketPrices.BoosterPrice);
         AssertBool(stock.UnitCost == BoosterWholesale).IsTrue();
 
         stock.SetPrice(5);
 
-        AssertThat(_book.PriceFor(CardContainerKind.Booster)).IsEqual(5);
+        AssertBool(first.ShopPrice == 5).IsTrue();
+        AssertBool(second.ShopPrice == 5).IsTrue();
+        AssertBool(elsewhere.ShopPrice.HasValue).IsFalse();
         AssertThat(_label.Text).IsEqual("5");
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ThePriceStaysWithTheBoosterNotTheSlot()
+    {
+        var priced = StockBooster();
+        _pricing.PricedStock()!.SetPrice(7);
+
+        _slot.ReleaseCard(priced);
+        StockBooster();
+
+        AssertThat(_label.Text).IsEqual($"{ProductMarketPrices.BoosterPrice}");
+        AssertBool(priced.ShopPrice == 7).IsTrue();
     }
 
     [TestCase]
@@ -199,12 +220,15 @@ public class SlotPricingTest
         AssertObject(_screen.Opened).IsNull();
     }
 
-    private void StockBooster()
+    private CardContainer StockBooster()
     {
         _slot.Kind = ShelfKind.ProductShelf;
-        var booster = AddNode(GD.Load<PackedScene>(BoosterScene).Instantiate<CardContainer>());
+        var booster = AddNode(NewBooster());
         AssertBool(_slot.TryLock(booster)).IsTrue();
+        return booster;
     }
+
+    private static CardContainer NewBooster() => GD.Load<PackedScene>(BoosterScene).Instantiate<CardContainer>();
 
     private sealed class RecordingPricingScreen : IPricingScreen
     {

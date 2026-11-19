@@ -44,7 +44,8 @@ public class ShelfUnpackTest
         AssertBool(box.OpenOnto(FreeSlots(shelf))).IsTrue();
         AssertThat(box.PlacedCount).IsEqual(8);
         AssertThat(box.PendingCount).IsEqual(0);
-        foreach (var slot in shelf.Slots)
+        // The first eight slots, the two middle boards, take one pack each.
+        foreach (var slot in shelf.Slots.Take(8))
         {
             AssertThat(slot.Cards.Count).IsEqual(1);
             AssertThat(((CardContainer)slot.Cards[0]).Kind).IsEqual(CardContainerKind.Pack);
@@ -91,7 +92,7 @@ public class ShelfUnpackTest
         await UntilOpened(pack);
 
         var counts = shelf.Slots.Select(slot => slot.Cards.Count).ToArray();
-        AssertThat(string.Join(",", counts)).IsEqual("4,4,0,0,0,0,0,0");
+        AssertThat(string.Join(",", counts)).IsEqual(Counts(shelf, 4, 4));
         foreach (var body in shelf.StockedCards)
             AssertThat(((CardContainer)body).Kind).IsEqual(CardContainerKind.Booster);
     }
@@ -109,7 +110,7 @@ public class ShelfUnpackTest
         await UntilOpened(pack);
 
         var counts = shelf.Slots.Select(slot => slot.Cards.Count).ToArray();
-        AssertThat(string.Join(",", counts)).IsEqual("1,4,4,0,0,0,0,0");
+        AssertThat(string.Join(",", counts)).IsEqual(Counts(shelf, 1, 4, 4));
         AssertThat(((CardContainer)first.Cards[0]).Kind).IsEqual(CardContainerKind.Pack);
     }
 
@@ -146,7 +147,9 @@ public class ShelfUnpackTest
     public async Task TryUnpackWithAllSlotsStockedSpillsEveryItem()
     {
         var shelf = AddShelf();
+        // Two boxes of 8 packs fill the shelf's 16 slots.
         AssertBool(MakeContainer(BoxScene, Seed).OpenOnto(FreeSlots(shelf))).IsTrue();
+        AssertBool(MakeContainer(BoxScene, Seed + 2).OpenOnto(FreeSlots(shelf))).IsTrue();
         var box = MakeContainer(BoxScene, Seed + 1);
 
         AssertBool(shelf.TryUnpack(box)).IsTrue();
@@ -155,7 +158,7 @@ public class ShelfUnpackTest
 
         await UntilOpened(box);
 
-        AssertThat(shelf.StockedCount).IsEqual(8);
+        AssertThat(shelf.StockedCount).IsEqual(shelf.SlotCount);
     }
 
     [TestCase]
@@ -226,8 +229,17 @@ public class ShelfUnpackTest
         AssertThat(box.PendingCount).IsEqual(5);
     }
 
-    private static CardShelf AddShelf(string scenePath = ProductShelfScene) =>
-        AddNode(GD.Load<PackedScene>(scenePath).Instantiate<CardShelf>());
+    // Away from the origin, where the containers are made, so no item lands in a bottom slot's trigger on its own.
+    private static CardShelf AddShelf(string scenePath = ProductShelfScene)
+    {
+        var shelf = GD.Load<PackedScene>(scenePath).Instantiate<CardShelf>();
+        shelf.Position = new Vector3(0, 0, -5);
+        return AddNode(shelf);
+    }
+
+    // The per-slot item counts, in slot order: the given ones first, every other slot empty.
+    private static string Counts(CardShelf shelf, params int[] first) =>
+        string.Join(",", first.Concat(Enumerable.Repeat(0, shelf.SlotCount - first.Length)));
 
     private static DeckSlot[] FreeSlots(CardShelf shelf) => shelf.Slots.Where(slot => !slot.HasCards).ToArray();
 

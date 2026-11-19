@@ -11,7 +11,7 @@
 [ext_resource type="Script" uid="uid://bl5m0rq04llvd" path="res://Scripts/Features/Shop/Ui/StockApp.cs" id="StockApp"]
 [ext_resource type="Script" uid="uid://bu7afoqtgnxbg" path="res://Scripts/Features/Shop/Ui/BillsApp.cs" id="BillsApp"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/MoneyService.cs" id="MoneyService"]
-[ext_resource type="Script" uid="uid://bp3t0ptkdbsgo" path="res://Scripts/Features/Shop/Services/ShopPriceBook.cs" id="ShopPriceBook"]
+[ext_resource type="Script" uid="uid://bp3t0ptkdbsgo" path="res://Scripts/Features/Shop/Services/WholesaleCosts.cs" id="WholesaleCosts"]
 [ext_resource type="Script" uid="uid://cnhbpfnxfixnn" path="res://Scripts/Features/Shop/Ui/PricingScreen.cs" id="PricingScreen"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/ShopProgression.cs" id="ShopProgression"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/OrderingService.cs" id="OrderingService"]
@@ -1861,8 +1861,8 @@ script = ExtResource("GameSettings")
 [node name="MoneyService" type="Node" parent="Services"]
 script = ExtResource("MoneyService")
 
-[node name="PriceBook" type="Node" parent="Services"]
-script = ExtResource("ShopPriceBook")
+[node name="WholesaleCosts" type="Node" parent="Services"]
+script = ExtResource("WholesaleCosts")
 Wholesale = ExtResource("BackofficeCatalog")
 
 [node name="PricingScreen" type="CanvasLayer" parent="Services"]

@@ -138,7 +138,8 @@ public partial class Restocker : CharacterBody3D, IDependent
     {
         _seen = _scan!.Gather(GlobalPosition, _hands!.Carried);
         var step = RestockPlanner.Plan(
-            _seen.Sources, _seen.Slots, _job.BlockedPairs, _seen.Distance, BoxUnpackThreshold);
+            _seen.Sources, _seen.Slots, _job.BlockedPairs, _seen.Distance, BoxUnpackThreshold,
+            _job.UnreachableShelves);
         if (step.Kind == RestockStepKind.Idle || _seen.SourcePosition(step) is not { } source)
         {
             // Nothing can use what is in the hands (a box below the threshold, no free slot): put it back.

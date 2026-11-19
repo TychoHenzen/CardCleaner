@@ -72,6 +72,12 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     /// </summary>
     public ulong? ContentSeed { get; internal set; }
 
+    /// <summary>
+    ///     The price the player set for this container in the shop, or null while it asks its market price. It travels
+    ///     with the container from slot to slot and is saved with it, as a card's price is.
+    /// </summary>
+    public int? ShopPrice { get; set; }
+
     /// <summary>Spawns the cards. Resolved at startup; assignable directly in tests.</summary>
     public ICardSpawningService? Spawning { get; set; }
 

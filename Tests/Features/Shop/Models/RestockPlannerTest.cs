@@ -19,7 +19,7 @@ public class RestockPlannerTest
 
         var step = Plan(sources, ProductSlots(1, 8));
 
-        AssertThat(step).IsEqual(new RestockStep(RestockStepKind.Move, 2, 0));
+        AssertThat(step).IsEqual(new RestockStep(RestockStepKind.Move, 2, 0, 1));
     }
 
     [TestCase]
@@ -64,7 +64,33 @@ public class RestockPlannerTest
 
         var step = RestockPlanner.Plan(sources, ProductSlots(1, 2), blocked, (_, _) => 0f);
 
-        AssertThat(step).IsEqual(new RestockStep(RestockStepKind.Move, 2, 0));
+        AssertThat(step).IsEqual(new RestockStep(RestockStepKind.Move, 2, 0, 1));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void A_source_skips_every_slot_of_a_shelf_it_cannot_reach()
+    {
+        var sources = new[] { Src(1, StockKind.Pack, 1f) };
+        var unreachable = new HashSet<(int Source, int Shelf)> { (1, 2) };
+
+        var onlyThatShelf = RestockPlanner.Plan(sources, ProductSlots(2, 16), NoBlocks, (_, _) => 0f, 8, unreachable);
+        var withAnother = RestockPlanner.Plan(sources, TwoShelves(), NoBlocks, (_, _) => 0f, 8, unreachable);
+
+        AssertThat(onlyThatShelf).IsEqual(RestockStep.Idle);
+        AssertThat(withAnother.ShelfId).IsEqual(1);
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void A_box_is_not_unpacked_onto_a_shelf_it_cannot_reach()
+    {
+        var unreachable = new HashSet<(int Source, int Shelf)> { (7, 2) };
+
+        var step = RestockPlanner.Plan(
+            new[] { Src(7, StockKind.Box, 1f) }, TwoShelves(), NoBlocks, (_, _) => 0f, 8, unreachable);
+
+        AssertThat(step).IsEqual(new RestockStep(RestockStepKind.UnpackBox, 7, 1, 1));
     }
 
     [TestCase]
@@ -89,7 +115,7 @@ public class RestockPlannerTest
     {
         var step = Plan(new[] { Src(7, StockKind.Box, 1f) }, TwoShelves());
 
-        AssertThat(step).IsEqual(new RestockStep(RestockStepKind.UnpackBox, 7, 2));
+        AssertThat(step).IsEqual(new RestockStep(RestockStepKind.UnpackBox, 7, 2, 2));
     }
 
     [TestCase]
@@ -100,7 +126,7 @@ public class RestockPlannerTest
 
         var step = RestockPlanner.Plan(new[] { Src(7, StockKind.Box, 1f) }, TwoShelves(), blocked, (_, _) => 0f);
 
-        AssertThat(step).IsEqual(new RestockStep(RestockStepKind.UnpackBox, 7, 1));
+        AssertThat(step).IsEqual(new RestockStep(RestockStepKind.UnpackBox, 7, 1, 1));
     }
 
     [TestCase]

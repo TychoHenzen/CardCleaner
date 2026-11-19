@@ -16,7 +16,7 @@ namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 ///     Writes the sealed containers lying in the scene into a slot and rebuilds them from one. Only sealed
 ///     containers placed from a scene file can be rebuilt; an opened one has spilled its contents. A carried
 ///     container is saved with a held flag and handed back to the player's hand on restore. A box or pack keeps its
-///     open lid and the items already taken out of it.
+///     open lid and the items already taken out of it, and every container keeps the price the player set on it.
 /// </summary>
 internal static class SavedContainers
 {
@@ -29,7 +29,8 @@ internal static class SavedContainers
         Vector3 Rotation,
         bool Held = false,
         bool LidOpen = false,
-        int Taken = 0);
+        int Taken = 0,
+        int? Price = null);
 
     // One sealed container as it is written to a slot. Position and Rotation are typed object, as the card records
     // are: a Vector3 cannot be read back into a typed property, so they are read through SavedCardReader like cards.
@@ -43,6 +44,7 @@ internal static class SavedContainers
         public bool Held { get; set; }
         public bool LidOpen { get; set; }
         public int Taken { get; set; }
+        public object? Price { get; set; }
     }
 
     /// <summary>
@@ -69,7 +71,8 @@ internal static class SavedContainers
                 Rotation = container.GlobalRotation,
                 Held = container.IsHeld,
                 LidOpen = container.IsLidOpen,
-                Taken = container.TakenCount
+                Taken = container.TakenCount,
+                Price = container.ShopPrice
             })
             .ToList();
     }
@@ -150,6 +153,8 @@ internal static class SavedContainers
             container.Kind = record.Kind;
             container.ContentSeed = record.Seed;
             container.TakenCount = record.Taken;
+            // Before the slot lock below, so the slot's price tag shows this price when it repaints.
+            container.ShopPrice = record.Price;
             world.AddChild(container);
             // The transform needs the node in the tree, so it is set after AddChild, and so does the lid, whose parts
             // take their shut pose in their own _Ready.
@@ -205,7 +210,22 @@ internal static class SavedContainers
         var rotation = SavedCardReader.GetVector3FromData(record.Rotation
             ?? throw new FormatException($"Container from {record.ScenePath} has no rotation"));
         return new Saved(record.ScenePath, kind, seed, position, rotation, record.Held, record.LidOpen,
-            ParseTaken(record, kind));
+            ParseTaken(record, kind), ParsePrice(record));
+    }
+
+    // A price is a positive whole number. Anything else (absent, null, corrupt) leaves the container at its market
+    // price, as a card's corrupt price does, so one bad price never stops the container from coming back.
+    private static int? ParsePrice(ContainerRecord record)
+    {
+        if (record.Price is null)
+            return null;
+
+        if (record.Price is long or int && Convert.ToInt64(record.Price) is var price and > 0 and <= int.MaxValue)
+            return (int)price;
+
+        ILog.Warning(
+            $"Saved container price '{record.Price}' is not a positive whole number; the market price is used");
+        return null;
     }
 
     // An emptied box is freed, never saved, so a saved one has at least one item left. A booster has no lid, so

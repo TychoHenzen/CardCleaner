@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Components;
@@ -24,9 +25,9 @@ using Saveable.Extensions;
 namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
-/// Prices survive a save and reload of the shop: the booster and pack prices in the shop's price book, and each card's
-/// own price, which comes back with the card into its shelf slot. A tag markup from an older save is ignored, and one
-/// corrupt price does not stop the rest of the load. The slot files live in an in-memory file system.
+/// Prices survive a save and reload of the shop: every booster, pack and card keeps its own price, which comes back with
+/// it into its shelf slot. A tag markup from an older save is ignored, and a corrupt container price falls back to the
+/// market price without stopping the load. The slot files live in an in-memory file system.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -42,7 +43,6 @@ public class ShelfPriceSaveTest
     private GameSaveService _saves = null!;
     private CardShelf _product = null!;
     private CardShelf _cards = null!;
-    private ShopPriceBook _book = null!;
     private MoneyService _money = null!;
     private InMemorySlotFileSystem _files = null!;
     private SaveSlotName _slot;
@@ -71,7 +71,6 @@ public class ShelfPriceSaveTest
 
         _product = _shop.GetNode<CardShelf>("World/Furniture/ProductShelf/Content");
         _cards = _shop.GetNode<CardShelf>("World/Furniture/CardShelf/Content");
-        _book = _shop.GetNode<ShopPriceBook>("Services/PriceBook");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
 
         AddNode(_shop, autoFree: false);
@@ -92,16 +91,18 @@ public class ShelfPriceSaveTest
     public async Task TheBoosterPriceSurvivesSaveAndReload()
     {
         var slot1 = _product.GetNode<DeckSlot>("Slot1");
-        AssertBool(slot1.TryLock(NewBooster())).IsTrue();
+        var booster = NewBooster();
+        AssertBool(slot1.TryLock(booster)).IsTrue();
         var pricing = _product.PricingFor(slot1)!;
-        _book.Set(CardContainerKind.Booster, 6);
+        pricing.PricedStock()!.SetPrice(6);
 
         AssertBool(_saves.ManualSave()).IsTrue();
-        _book.Set(CardContainerKind.Booster, ProductMarketPrices.BoosterPrice);
+        booster.ShopPrice = null;
         _saves.LoadGame();
         await SettleAsync();
 
-        AssertThat(_book.PriceFor(CardContainerKind.Booster)).IsEqual(6);
+        var restored = slot1.Cards.OfType<CardContainer>().Single();
+        AssertBool(restored.ShopPrice == 6).IsTrue();
         AssertThat(pricing.AskingValue).IsEqual(6);
         AssertThat(pricing.TagLabel!.Text).IsEqual("6");
     }
@@ -150,24 +151,25 @@ public class ShelfPriceSaveTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ACorruptPriceDoesNotStopTheRestOfTheLoad()
+    public static void ACorruptContainerPriceReadsAsTheMarketPrice()
     {
-        _book.Set(CardContainerKind.Booster, 9);
-        var prices = new NodeSave();
-        prices.SetOrAddProperty("booster", "abc");
-        prices.SetOrAddProperty("pack", 33);
-        var money = new NodeSave();
-        money.SetOrAddProperty("balance", 321);
-        var tree = new TreeSave();
-        tree.SetOrAddCollection(_book.UniqueID.ToString(), prices);
-        tree.SetOrAddCollection(_money.UniqueID.ToString(), money);
+        var raw = new List<object> { BoosterRecord("abc"), BoosterRecord(-3L), BoosterRecord(6L) };
 
-        SaveSystem.LoadTreeFromJson(SaveExtension.SerializeObject(tree), _shop);
+        var records = SavedContainers.Parse(raw);
 
-        AssertThat(_book.PriceFor(CardContainerKind.Booster)).IsEqual(ProductMarketPrices.BoosterPrice);
-        AssertThat(_book.PriceFor(CardContainerKind.Pack)).IsEqual(33);
-        AssertThat(_money.Balance).IsEqual(321);
+        AssertBool(records[0].Price.HasValue).IsFalse();
+        AssertBool(records[1].Price.HasValue).IsFalse();
+        AssertBool(records[2].Price == 6).IsTrue();
     }
+
+    private static Dictionary<string, object> BoosterRecord(object price) => new()
+    {
+        ["ScenePath"] = BoosterScene,
+        ["Kind"] = nameof(CardContainerKind.Booster),
+        ["Position"] = Vector3.Zero,
+        ["Rotation"] = Vector3.Zero,
+        ["Price"] = price,
+    };
 
     private CardContainer NewBooster()
     {

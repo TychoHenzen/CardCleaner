@@ -62,8 +62,8 @@ public static class ShopOrderingRig
             Service<OrderingService>(shop, "OrderingService"));
         container.RegisterSingleton<IStaffService>(
             Service<StaffService>(shop, "Staff"));
-        container.RegisterSingleton<IPriceBook>(
-            Service<ShopPriceBook>(shop, "PriceBook"));
+        container.RegisterSingleton<IWholesaleCosts>(
+            Service<WholesaleCosts>(shop, "WholesaleCosts"));
         container.RegisterSingleton<IPricingScreen>(
             Service<PricingScreen>(shop, "PricingScreen"));
         // No autoload injects the shop (it is not the current scene);

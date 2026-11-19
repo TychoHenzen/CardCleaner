@@ -12,10 +12,11 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     Price tag beside one shelf slot. It prints the asking price of the stock in its slot, and a click opens the
-///     pricing screen for that stock. A card asks its own price (<see cref="CardController.ShopPrice" />); a booster
-///     or pack asks the shop's price for its kind (<see cref="IPriceBook" />). Either way the price lives with the
-///     stock, not the tag, so the tag saves nothing. The tag sits on the interaction layer and collides with nothing,
-///     so a ray hits it separately from the card in front of it.
+///     pricing screen for that stock. Every item asks its own price: a card its <see cref="CardController.ShopPrice" />,
+///     a booster or pack its <see cref="CardContainer.ShopPrice" />. The price lives with the stock, not the tag, so the
+///     tag saves nothing and a price follows its item to any shelf. The tag prints the price of the item a customer
+///     takes next (the top of a booster stack). The tag sits on the interaction layer and collides with nothing, so a
+///     ray hits it separately from the card in front of it.
 /// </summary>
 public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
 {
@@ -24,7 +25,7 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
 
     private DeckSlot? _slot;
     private IServiceResolver? _services;
-    private IPriceBook? _book;
+    private IWholesaleCosts? _wholesale;
     private IPricingScreen? _screen;
 
     /// <summary>The printed asking price.</summary>
@@ -61,7 +62,7 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
     public int AskingValue => MarketValue <= 0 ? 0 : Stock switch
     {
         CardController card => card.ShopPrice ?? MarketValue,
-        CardContainer container when _book != null => _book.PriceFor(container.Kind),
+        CardContainer container => container.ShopPrice ?? MarketValue,
         _ => MarketValue
     };
 
@@ -71,7 +72,8 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
 
     public string Prompt => $"Set price (now {AskingValue})";
 
-    private RigidBody3D? Stock => Slot is { Cards.Count: > 0 } slot ? slot.Cards[0] : null;
+    // The item a customer takes next: the top of the slot's stack (CarriedStock takes Cards[^1]).
+    private RigidBody3D? Stock => Slot is { Cards.Count: > 0 } slot ? slot.Cards[^1] : null;
 
     public void Inject(IServiceResolver services) => _services = services;
 
@@ -80,7 +82,7 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
         CollisionLayer |= InteractableLayerBit;
         CollisionMask = 0;
         ClearHighlight();
-        _services?.Get<IPriceBook>(UseBook);
+        _services?.Get<IWholesaleCosts>(costs => _wholesale = costs);
         _services?.Get<IPricingScreen>(screen => _screen = screen);
         Refresh();
     }
@@ -90,19 +92,9 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
         // A tag that leaves and re-enters the tree must listen again.
         UnsubscribeSlot();
         SubscribeSlot();
-        if (_book != null)
-        {
-            _book.Changed -= Refresh;
-            _book.Changed += Refresh;
-        }
     }
 
-    public override void _ExitTree()
-    {
-        UnsubscribeSlot();
-        if (_book != null)
-            _book.Changed -= Refresh;
-    }
+    public override void _ExitTree() => UnsubscribeSlot();
 
     /// <summary>Opens the pricing screen for the current stock; nothing happens while there is none.</summary>
     public void Interact()
@@ -124,9 +116,26 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
                 card.ShopPrice = price;
                 Refresh();
             }),
-            CardContainer container when _book != null => new ProductStockPrice(container.Kind, _book),
+            CardContainer container => ContainerPrice(container),
             _ => null
         };
+    }
+
+    // Every container in a slot is of one kind (ShelfPlacementRule.StackLimit), so one price covers the slot.
+    private ContainerStockPrice ContainerPrice(CardContainer top)
+    {
+        var stack = Slot!.Cards;
+        return new ContainerStockPrice(top.Kind, stack.Count, MarketValue, _wholesale?.WholesaleFor(top.Kind),
+            () => top.ShopPrice, price =>
+            {
+                foreach (var body in stack)
+                {
+                    if (body is CardContainer container)
+                        container.ShopPrice = price;
+                }
+
+                Refresh();
+            });
     }
 
     // "Rare card", or "Rare special card" for a card that shows its signature.
@@ -153,13 +162,6 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
     {
         if (TagLabel != null)
             TagLabel.Text = MarketValue > 0 ? $"{AskingValue}" : string.Empty;
-    }
-
-    private void UseBook(IPriceBook book)
-    {
-        _book = book;
-        book.Changed += Refresh;
-        Refresh();
     }
 
     private void SubscribeSlot()

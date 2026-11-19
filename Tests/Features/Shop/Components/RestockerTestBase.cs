@@ -30,7 +30,7 @@ public abstract class RestockerTestBase
     private protected const int LongIdleFrames = 600;
     private protected const int LevelThreePayment = 1500;
     private protected const int PacksInABox = 8;
-    private protected const int ProductSlots = 8;
+    private protected const int ProductSlots = 16;
     private protected const string ProductShelfScene = "res://Scenes/Shop/Items/ProductShelf.tscn";
     private protected const float ShelfSpacing = 3f;
     private protected const double LongWalkSeconds = 90;
