@@ -409,12 +409,20 @@ individual fix. Tighten the policy with the flags on the gate step (`--block-on=
 `--rule-block-on=<rule>:<severity>`, `--fix-medium-high`, `--fix-low`). After moving the dod-guard pin, check that
 `.github/quality-guard-godot.patch` still applies; the job's own patch step fails when it does not.
 
+The patch changes two scanner files. `rules-reachability.mjs` counts a class marked `[GlobalClass]` or `[Service]`
+(with or without the `Godot.` prefix or the `Attribute` suffix) as reached, so it is no dead export.
+`rules-duplicate.mjs` treats a C# `using` directive (plain, `static`, `global` or an alias, never a `using var`
+statement) as an import, so files that open with the same namespace list are not reported as a duplicate block.
+`.github/quality-guard-godot.test.mjs` pins both on fixtures and runs in the `quality-guard` job. A patch that changes
+another file needs that file added to the list in the job's patch step and in `.github/quality-gate-cache.mjs`, which
+both check that the patch changed exactly those files.
+
 Run the same gate locally with `node .github/quality-gate-local.mjs [--base=<sha>]` on the committed head before pushing a
 change under `Scripts/`. It reads the dod-guard pin, root and block-on setting from the `quality-guard` job in
 `.github/workflows/ci.yml`, keeps a clone of that pin in the system temp directory, applies
 `.github/quality-guard-godot.patch`, and writes `reports/quality-gate-report.md`. The gate diffs a base against HEAD, so
 the command refuses a dirty working tree: commit or revert first. `.github/quality-gate-parse.mjs` reads `ci.yml`,
-`.github/quality-gate-cache.mjs` keeps the clone (it resets and reapplies the patched file on every run, so a stale or
+`.github/quality-gate-cache.mjs` keeps the clone (it resets and reapplies the patched files on every run, so a stale or
 hand-edited cache is repaired), and `.github/quality-gate-local.test.mjs` pins the reading of `ci.yml` and runs in the
 `quality-guard` job.
 

@@ -220,7 +220,7 @@ jobs:
           git -C .dod-guard apply --whitespace=error "$patch_file"
           test "$(git -C .dod-guard diff --name-only | sort)" = "$expected"
 
-      - name: Test Godot quality-guard reachability compatibility
+      - name: Test Godot quality-guard reachability and duplicate compatibility
         run: node .github/quality-guard-godot.test.mjs --scanner-root=.dod-guard/packages/quality-guard/skills/quality-refactor/scripts
 
       - name: Test the local quality gate script
