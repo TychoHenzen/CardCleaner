@@ -1,7 +1,6 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" uid="uid://t6rldk1b7o4e" path="res://Scripts/Features/Packs/Components/CardContainer.cs" id="CardContainer"]
-[ext_resource type="Script" uid="uid://6o6juperspfh" path="res://Scripts/Features/Packs/Components/OpeningPart.cs" id="OpeningPart"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Booster.tscn" id="Booster"]
 [ext_resource type="Material" path="res://Data/Ui/AimHighlightMaterial.tres" id="AimHighlight"]
 [ext_resource type="ArrayMesh" path="res://Data/Packs/Meshes/PackBody.tres" id="BodyMesh"]
@@ -33,8 +32,6 @@ mesh = ExtResource("BodyMesh")
 
 [node name="Lid" type="Node3D" parent="Visual"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.194, -0.275)
-script = ExtResource("OpeningPart")
-OpenRotationDegrees = Vector3(-115, 0, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="Visual/Lid"]
 material_override = ExtResource("Print")

@@ -15,7 +15,7 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 /// </summary>
 // ASSUMPTION (Medium): the hand's fan poses are in the same frame as the booster's, because the player's
 // CardHighlighter gives the card holder and the container holder the same camera as their hand anchor.
-internal sealed class BoosterReveal : IContainerRun
+internal sealed class BoosterReveal
 {
     private const float SmallestScale = 0.01f;
 
@@ -60,12 +60,12 @@ internal sealed class BoosterReveal : IContainerRun
         _parts = _visual != null ? OpeningPart.Under(_visual) : new List<OpeningPart>();
     }
 
-    public int Released { get; private set; }
-
-    public int Pending => _signatures.Count - Released;
+    // Cards that have left the booster so far.
+    private int Released { get; set; }
 
     public bool IsOver => _given;
 
+    /// <summary>Advances the reveal by <paramref name="delta" /> seconds. True once the cards are in the hand.</summary>
     public bool Advance(float delta)
     {
         if (_given)
@@ -123,14 +123,14 @@ internal sealed class BoosterReveal : IContainerRun
         if (!GodotObject.IsInstanceValid(_wrapper))
             return;
 
-        _wrapper.Transform = _from.InterpolateWith(Presented, ContainerOpeningPlan.Ease(_plan.PresentProgress(_time)));
+        _wrapper.Transform = _from.InterpolateWith(Presented, OpeningTime.Ease(_plan.PresentProgress(_time)));
         var tear = _plan.TearProgress(_time);
         foreach (var part in _parts)
             part.Pose(tear);
 
         if (_visual != null)
             _visual.Scale = Vector3.One *
-                            Mathf.Max(SmallestScale, 1f - ContainerOpeningPlan.Ease(_plan.VanishProgress(_time)));
+                            Mathf.Max(SmallestScale, 1f - OpeningTime.Ease(_plan.VanishProgress(_time)));
     }
 
     // Spawns the next card inside the booster, frozen, with its collision off and on no layer, so it never meets the
@@ -158,7 +158,7 @@ internal sealed class BoosterReveal : IContainerRun
             if (!StillOurs(_cards[i]))
                 continue;
 
-            var rise = ContainerOpeningPlan.Ease(_plan.RiseProgress(i, _time));
+            var rise = OpeningTime.Ease(_plan.RiseProgress(i, _time));
             _cards[i].Transform = CardStart.InterpolateWith(RevealFan.Pose(i, _signatures.Count), rise);
         }
     }
@@ -180,7 +180,7 @@ internal sealed class BoosterReveal : IContainerRun
         var progress = BoosterRevealPlan.IntoHandProgress(_time - _intoHandAt);
         foreach (var slide in _slides)
             if (StillOurs(slide.Card))
-                slide.Card.Transform = slide.From.InterpolateWith(slide.To, ContainerOpeningPlan.Ease(progress));
+                slide.Card.Transform = slide.From.InterpolateWith(slide.To, OpeningTime.Ease(progress));
 
         if (progress >= 1f)
             GiveToHand();

@@ -6,15 +6,16 @@ using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using Godot;
+using NSubstitute;
 using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
 namespace CardCleaner.Tests.Features.Packs.Components;
 
 /// <summary>
 ///     A cardboard box opened in the hand: its flaps swing open and shut without spilling anything, and each
-///     <see cref="CardContainer.TakeOneInto" /> moves the next item into a shelf slot with the seed opening the box
-///     whole would have given it. A cardboard box is storage: emptied, it stays, and it never opens whole. A booster box
-///     and a booster pack have no lid: one empties into the hand, the other opens into the hand of cards.
+///     <see cref="CardContainer.TakeOneInto" /> moves the next item into a shelf slot with the child seed of its place
+///     in the box. A cardboard box is storage: emptied, it stays, and it never opens whole. A booster box and a booster
+///     pack have no lid: one empties into the hand, the other opens into the hand of cards.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -175,14 +176,17 @@ public class ContainerLidTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ACardboardBoxNeverOpensWhole()
+    public void AHeldCardboardBoxNeitherEmptiesIntoTheHandNorOpensIntoIt()
     {
         var box = MakeContainer(BoxScene);
+        var hand = InHandOpening.AddHand(_world);
+        InHandOpening.Hold(box, hand);
 
-        AssertBool(box.Open()).IsFalse();
+        AssertThat(box.EmptyIntoHand().Count).IsEqual(0);
+        AssertBool(box.OpenInHand(Substitute.For<ICardHolder>())).IsFalse();
 
         AssertBool(box.IsOpened).IsFalse();
-        AssertThat(_world.GetChildren().OfType<CardContainer>().Count()).IsEqual(1);
+        AssertThat(hand.GetChildren().OfType<CardContainer>().Count()).IsEqual(1);
         AssertThat(box.Remaining).IsEqual(CardContainerLayout.ItemsPerContainer);
     }
 
@@ -227,8 +231,7 @@ public class ContainerLidTest
     private static ulong[] ExpectedSeeds(int from, int to) =>
         Enumerable.Range(from, to - from).Select(i => ContainerSeeds.ChildSeed(Seed, i)).Order().ToArray();
 
-    // Beside the containers, which stand at the origin: packs let out by opening a box loose must not fall into the
-    // shelf's free slots and be locked there.
+    // Beside the containers, which stand at the origin, so no slot's trigger reaches one and locks it.
     private static CardShelf AddShelf()
     {
         var shelf = AddNode(GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>());

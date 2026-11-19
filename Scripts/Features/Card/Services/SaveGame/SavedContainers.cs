@@ -53,8 +53,8 @@ internal static class SavedContainers
     }
 
     /// <summary>
-    ///     Ends every opening in progress in <paramref name="tree" /> (<see cref="CardContainer.FinishOpening" />), so
-    ///     a save finds every item at its spot instead of losing the ones still inside an opening wrapper.
+    ///     Ends every booster opening in a hand in <paramref name="tree" /> (<see cref="CardContainer.FinishOpening" />),
+    ///     so a save finds every card in the hand instead of losing the ones still inside the opening booster.
     /// </summary>
     internal static void FinishOpenings(SceneTree tree)
     {

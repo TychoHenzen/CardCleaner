@@ -233,8 +233,9 @@ public partial class CartonStorage : Node3D, IDependent
     private static bool IsCatching(CardContainer box) =>
         box.IsLidOpen && !box.IsOpened && !box.IsHeld && box.CollisionLayer != 0;
 
-    // The first time anything goes in or out, the box's own booster boxes become real items, each with the seed
-    // opening the box would have given it. The last one in comes out first, so the first taken gets child seed 0.
+    // The first time anything goes in or out, the box's own booster boxes become real items, the n-th seeded with
+    // ContainerSeeds.ChildSeed of the box's seed and n. The last one in comes out first, so the first taken gets child
+    // seed 0.
     private BoxContents Contents()
     {
         if (_contents != null)

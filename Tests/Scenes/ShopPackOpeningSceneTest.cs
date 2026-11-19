@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Packs.Components;
@@ -23,8 +24,8 @@ namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// End to end in the shop scene: an ordered cardboard box can be found by the player's interaction ray, and an
-/// ordered booster box opens down to booster packs and finally real cards carrying the signatures the generator
-/// rolled. A cardboard box is storage and never opens whole.
+/// ordered booster box empties into the player's hand as booster packs, the top one of which opens into real cards
+/// carrying the signatures the generator rolled. A cardboard box is storage and never opens whole.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -32,14 +33,8 @@ public class ShopPackOpeningSceneTest
 {
     private const ulong Seed = 4242;
     private const float StandingDistance = 2.0f;
-    private const int SettleFrames = 180;
-    private const float FallLimitY = -0.5f;
-
-    // The right storage arm of the shop scene, where the delivery point is, inside its walls.
-    private static readonly Rect2 StorageRoom = new(16f, -8f, 8f, 20f);
 
     private Node3D _shop = null!;
-    private Node3D _world = null!;
     private PlayerController _player = null!;
     private MoneyService _money = null!;
     private OrderingService _ordering = null!;
@@ -48,7 +43,6 @@ public class ShopPackOpeningSceneTest
     public async Task Setup()
     {
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
-        _world = _shop.GetNode<Node3D>("World");
         _player = _shop.GetNode<PlayerController>("Player");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
@@ -89,46 +83,27 @@ public class ShopPackOpeningSceneTest
         AssertBool(box.CanInteract).IsTrue();
     }
 
+    // The player's hand empties an ordered booster box into its eight booster packs, and the top one opens into eight
+    // real cards. The booster box was ordered unseeded, so its cards come from the shared random source.
     [TestCase]
     [TestCategory("Unit")]
-    public async Task OpeningAnOrderedBoosterBoxLeadsThroughBoostersToRealCardsWithGeneratedSignatures()
+    public async Task AnOrderedBoosterBoxOpensInTheHandToRealCardsWithGeneratedSignatures()
     {
+        var holder = _player.GetNode<ContainerHolder>("CardInteraction/ContainerHolder");
+        var hand = _player.GetNode<CardHolder>("CardInteraction/CardHolder");
         var pack = Order("pack");
-        pack.Open();
-        await UntilOpened(pack);
 
-        var boosters = Containers(CardContainerKind.Booster);
-        AssertThat(boosters.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
+        AssertBool(holder.TryPickUp(pack)).IsTrue();
+        AssertBool(holder.UseHeld()).IsTrue();
+        AssertThat(holder.HeldCount).IsEqual(CardContainerLayout.ItemsPerContainer);
+        AssertBool(holder.UseHeld()).IsTrue();
+        await Until(() => !holder.IsOpening, "the booster opening in the hand");
 
-        boosters[0].Open();
-        await UntilOpened(boosters[0]);
-        var cards = _world.GetChildren().OfType<CardController>().ToArray();
-
+        var cards = hand.HeldCards.OfType<CardController>().ToArray();
         var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBooster();
         AssertThat(cards.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
         for (var i = 0; i < cards.Length; i++)
             AssertThat(cards[i].Signature.Elements).IsEqual(expected[i].Elements);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task AnOpenedBoosterBoxLeavesEveryBoosterSettledInsideTheStorageRoom()
-    {
-        var pack = Order("pack");
-        await PhysicsFrames(SettleFrames);
-        pack.Open();
-        await UntilOpened(pack);
-        await PhysicsFrames(SettleFrames);
-
-        var boosters = Containers(CardContainerKind.Booster);
-        AssertThat(boosters.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
-        foreach (var booster in boosters)
-        {
-            var at = booster.GlobalPosition;
-            AssertBool(StorageRoom.HasPoint(new Vector2(at.X, at.Z)) && at.Y > FallLimitY)
-                .OverrideFailureMessage($"booster settled at {at}, outside the storage room")
-                .IsTrue();
-        }
     }
 
     private CardContainer Order(string id)
@@ -142,13 +117,4 @@ public class ShopPackOpeningSceneTest
 
     private OrderCatalog Catalog() =>
         _shop.GetNode<StockApp>("PcDesktopViewport/StockApp").Catalog!;
-
-    private CardContainer[] Containers(CardContainerKind kind) =>
-        _world.GetChildren().OfType<CardContainer>().Where(c => c.Kind == kind && !c.IsOpened).ToArray();
-
-    private static async Task PhysicsFrames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
 }

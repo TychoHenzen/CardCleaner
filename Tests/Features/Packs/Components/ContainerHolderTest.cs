@@ -202,8 +202,8 @@ public partial class ContainerHolderTest
         AssertThat(_holder.Held).IsSame(box);
     }
 
-    // A booster box opened in the hand empties into it: the hand holds its eight booster packs, in the order and with
-    // the seeds opening it whole gives them, and the empty box is gone from the hand.
+    // A booster box opened in the hand empties into it: the hand holds its eight booster packs in order, the n-th with
+    // child seed n of the box's seed, and the empty box is gone from the hand.
     [TestCase]
     [TestCategory("Unit")]
     public void UseHeld_BoosterBox_EmptiesIntoTheHandAsItsEightBoosterPacks()
@@ -390,35 +390,6 @@ public partial class ContainerHolderTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void HeldContainerOpened_ClearsHeld()
-    {
-        var log = new RecordingLog();
-        var previous = ILog.Sink;
-        ILog.Sink = log;
-        try
-        {
-            // A camera anchor refuses Open() while the container is held, so this case holds it on a plain Node3D.
-            var anchor = new Node3D();
-            _world.AddChild(anchor);
-            _holder.SetReferences(anchor);
-            // A cardboard box never opens whole, so the case holds a booster box.
-            var pack = Make(PackScene);
-            _holder.TryPickUp(pack);
-
-            AssertBool(pack.Open()).IsTrue();
-
-            AssertThat(_holder.Held).IsNull();
-            AssertBool(_holder.IsHolding).IsFalse();
-            AssertThat(log.Errors).IsEmpty();
-        }
-        finally
-        {
-            ILog.Sink = previous;
-        }
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_FreedContainer_ReturnsFalse()
     {
         var log = new RecordingLog();
@@ -430,29 +401,6 @@ public partial class ContainerHolderTest
             box.Free();
 
             AssertBool(_holder.TryPickUp(box)).IsFalse();
-
-            AssertThat(_holder.Held).IsNull();
-            AssertThat(log.Errors).IsEmpty();
-        }
-        finally
-        {
-            ILog.Sink = previous;
-        }
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void PickUp_OpenedContainer_ReturnsFalse()
-    {
-        var log = new RecordingLog();
-        var previous = ILog.Sink;
-        ILog.Sink = log;
-        try
-        {
-            var pack = Make(PackScene);
-            AssertBool(pack.Open()).IsTrue();
-
-            AssertBool(_holder.TryPickUp(pack)).IsFalse();
 
             AssertThat(_holder.Held).IsNull();
             AssertThat(log.Errors).IsEmpty();

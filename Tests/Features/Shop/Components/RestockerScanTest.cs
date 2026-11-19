@@ -64,10 +64,8 @@ public class RestockerScanTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void OpenedHeldAndCarriedContainersAreSkipped()
+    public void HeldAndCarriedContainersAreSkipped()
     {
-        var opened = Container(PackScene, new Vector3(1f, 1f, 0f));
-        AssertBool(opened.Open()).IsTrue();
         var camera = AddNode(new Camera3D());
         var held = Container(PackScene, new Vector3(1f, 1f, 1f));
         held.Reparent(camera);
@@ -77,8 +75,6 @@ public class RestockerScanTest
 
         var result = _scan.Gather(Vector3.Zero);
 
-        // The opened pack spawns its boosters over the next frames, so none exist yet when the scan runs.
-        AssertBool(opened.IsOpened).IsTrue();
         AssertInt(result.Sources.Count).IsEqual(0);
     }
 

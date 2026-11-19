@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
+using NSubstitute;
 using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
 namespace CardCleaner.Tests.Features.Packs.Components;
@@ -17,19 +20,17 @@ public class CardContainerTest
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
-    private const string CardScene = "res://Scenes/Components/CardShader.tscn";
     private const ulong Seed = 777;
 
-    // The shop's ceiling height (Scenes/Shop/ShopRoof.tscn).
-    private const float ShopCeiling = 3.5f;
-
     private Node3D _world = null!;
+    private Camera3D _hand = null!;
     private RecordingCardSpawner _spawner = null!;
 
     [BeforeTest]
     public void Setup()
     {
         _world = AddNode(new Node3D());
+        _hand = InHandOpening.AddHand(_world);
         _spawner = new RecordingCardSpawner();
     }
 
@@ -60,28 +61,23 @@ public class CardContainerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task PackOpensIntoEightBoostersOneAfterAnother()
+    public void ABoosterBoxOnTheFloorDoesNotEmpty()
     {
         var pack = Make(PackScene);
 
-        AssertBool(pack.Open()).IsTrue();
-        AssertThat(pack.PendingCount).IsEqual(8);
-        await Frames(1);
-        AssertThat(Containers(CardContainerKind.Booster).Length).IsLessEqual(1);
-        await UntilOpened(pack);
+        AssertThat(pack.EmptyIntoHand().Count).IsEqual(0);
 
-        AssertThat(Containers(CardContainerKind.Booster).Length).IsEqual(8);
-        AssertBool(GodotObject.IsInstanceValid(pack)).IsFalse();
+        AssertBool(pack.IsOpened).IsFalse();
+        AssertBool(pack.GetParent() == _world).IsTrue();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task BoosterOpensIntoEightCardsWithGeneratedSignatures()
+    public void ABoosterOpensInTheHandIntoEightCardsWithGeneratedSignatures()
     {
         var booster = Make(BoosterScene);
 
-        booster.Open();
-        await UntilOpened(booster);
+        InHandOpening.Open(booster, _hand);
 
         AssertThat(_spawner.Spawned.Count).IsEqual(8);
         var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBooster();
@@ -89,17 +85,32 @@ public class CardContainerTest
             AssertThat(_spawner.Spawned[i].Signature.Elements).IsEqual(expected[i].Elements);
     }
 
+    // The boosters share the booster box's generator, so opening them one after another in the hand gives the
+    // generator's cards in the order it rolls them.
     [TestCase]
     [TestCategory("Unit")]
-    public void ContainerCanOnlyBeOpenedOnce()
+    public void AWholeBoosterBoxOpensInTheHandToTheGeneratorsFirstSixtyFourCards()
+    {
+        foreach (var booster in InHandOpening.Empty(Make(PackScene), _hand))
+            InHandOpening.Open(booster, _hand);
+
+        const int perPack = CardContainerLayout.ItemsPerContainer * CardContainerLayout.ItemsPerContainer;
+        var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBox().Take(perPack);
+        AssertThat(Keys(_spawner.Spawned.Select(spawned => spawned.Signature))).IsEqual(Keys(expected));
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ABoosterOpensOnlyOnce()
     {
         var booster = Make(BoosterScene);
 
-        AssertBool(booster.Open()).IsTrue();
+        InHandOpening.Begin(booster, _hand);
 
-        AssertBool(booster.CanInteract).IsFalse();
-        AssertBool(booster.Open()).IsFalse();
-        AssertThat(booster.PendingCount).IsEqual(8);
+        AssertBool(booster.IsOpened).IsTrue();
+        AssertBool(booster.OpenInHand(Substitute.For<ICardHolder>())).IsFalse();
+        booster.FinishOpening();
+        AssertThat(_spawner.Spawned.Count).IsEqual(CardContainerLayout.ItemsPerContainer);
     }
 
     [TestCase]
@@ -110,21 +121,9 @@ public class CardContainerTest
         booster.Spawning = null;
 
         AssertBool(booster.CanInteract).IsFalse();
-        AssertBool(booster.Open()).IsFalse();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void AnOpeningContainerStaysInViewButCannotBeHitOrAimedAtAgain()
-    {
-        var pack = Make(PackScene);
-
-        pack.Open();
-
-        AssertThat(pack.CollisionLayer).IsEqual(0u);
-        AssertThat(pack.CollisionMask).IsEqual(0u);
-        AssertBool(pack.Freeze).IsTrue();
-        AssertBool(pack.Visible).IsTrue();
+        InHandOpening.Hold(booster, _hand);
+        AssertBool(booster.OpenInHand(Substitute.For<ICardHolder>())).IsFalse();
+        AssertBool(booster.IsOpened).IsFalse();
     }
 
     [TestCase]
@@ -178,7 +177,7 @@ public class CardContainerTest
     public async Task OpeningABoosterSpawnsAtMostOneCardPerFrame()
     {
         var booster = Make(BoosterScene);
-        booster.Open();
+        InHandOpening.Begin(booster, _hand);
 
         var previous = 0;
         var stepsAtOnce = 0;
@@ -195,10 +194,10 @@ public class CardContainerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task FreeingTheParentWhileOpeningStopsSpawningWithoutErrors()
+    public async Task FreeingTheHandWhileABoosterOpensStopsSpawningWithoutErrors()
     {
         var booster = Make(BoosterScene);
-        booster.Open();
+        InHandOpening.Begin(booster, _hand);
         await Until(() => _spawner.Spawned.Count > 0, "the first card leaving the booster");
         var spawnedSoFar = _spawner.Spawned.Count;
 
@@ -206,92 +205,6 @@ public class CardContainerTest
         await For(1.5);
 
         AssertThat(_spawner.Spawned.Count).IsEqual(spawnedSoFar);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task AContainerOpenedInTheAirFallsToTheFloorFirst()
-    {
-        AddFloor();
-        var pack = Make(PackScene);
-        pack.Position = new Vector3(0f, 1.6f, 0f);
-        await PhysicsFrames(2);
-
-        pack.Open();
-        await Until(() => pack.SpawnedCount > 0, "the first booster leaving the pack");
-
-        AssertThat(pack.GlobalPosition.Y).IsEqualApprox(0f, 0.001f);
-        var booster = Containers(CardContainerKind.Booster).Single();
-        // The booster rises out of the pack toward its spot above where the pack landed, not above where it was opened.
-        await UntilOpened(pack);
-        AssertThat(booster.GlobalPosition.Y).IsLess(1f);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task ThePackLidSwingsOpenBeforeTheBoostersRiseAndTheEmptyPackShrinksAway()
-    {
-        var pack = Make(PackScene);
-        var lid = pack.GetNode<OpeningPart>("Visual/Lid");
-        var visual = pack.GetNode<Node3D>("Visual");
-        var closed = lid.Basis;
-
-        pack.Open();
-        await Until(() => pack.SpawnedCount > 0, "the first booster leaving the pack");
-        var swung = Mathf.RadToDeg(closed.GetRotationQuaternion().AngleTo(lid.Basis.GetRotationQuaternion()));
-        AssertThat(swung).IsEqualApprox(115f, 1f);
-
-        var smallest = 1f;
-        await Until(() =>
-        {
-            if (!GodotObject.IsInstanceValid(pack) || pack.IsQueuedForDeletion())
-                return true;
-
-            smallest = Mathf.Min(smallest, visual.Scale.X);
-            return false;
-        }, "opening the pack");
-        AssertThat(smallest).IsLess(0.5f);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task ItemsHangFrozenAtTheirSpotsUntilTheWrapperIsGoneThenDrop()
-    {
-        var pack = Make(PackScene);
-
-        pack.Open();
-        await Until(() => pack.SpawnedCount == CardContainerLayout.ItemsPerContainer,
-            "every booster leaving the pack");
-        var boosters = Containers(CardContainerKind.Booster);
-        AssertBool(boosters.All(b => b.Freeze)).IsTrue();
-
-        await UntilOpened(pack);
-        AssertBool(boosters.All(b => !b.Freeze)).IsTrue();
-        var spots = Enumerable.Range(0, boosters.Length)
-            .Select(i => CardContainer.SpawnOffset(i, CardContainerKind.Pack)).ToHashSet();
-        foreach (var booster in boosters)
-            AssertBool(spots.Any(spot => spot.DistanceTo(booster.GlobalPosition) < 0.05f)).IsTrue();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void FinishOpeningPutsEveryItemAtItsSpotAtOnce()
-    {
-        var pack = Make(PackScene);
-        pack.Open();
-
-        pack.FinishOpening();
-
-        AssertThat(pack.PendingCount).IsEqual(0);
-        AssertBool(pack.IsQueuedForDeletion()).IsTrue();
-        var boosters = Containers(CardContainerKind.Booster);
-        AssertThat(boosters.Length).IsEqual(8);
-        AssertBool(boosters.All(b => !b.Freeze)).IsTrue();
-        for (var i = 0; i < boosters.Length; i++)
-        {
-            var spot = CardContainer.SpawnOffset(i, CardContainerKind.Pack);
-            AssertBool(boosters.Any(b => b.GlobalPosition.DistanceTo(spot) < 0.001f)).IsTrue();
-        }
     }
 
     [TestCase]
@@ -304,84 +217,11 @@ public class CardContainerTest
 
         AssertBool(pack.IsOpened).IsFalse();
         AssertBool(pack.IsQueuedForDeletion()).IsFalse();
-        AssertThat(Containers(CardContainerKind.Booster).Length).IsEqual(0);
+        AssertThat(_world.GetChildren().OfType<CardContainer>().Count()).IsEqual(1);
     }
 
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void PacksAndBoostersOpenIntoOneColumnStraightAboveTheContainer()
-    {
-        foreach (var kind in new[] { CardContainerKind.Pack, CardContainerKind.Booster })
-        {
-            var offsets = Offsets(kind);
-
-            AssertThat(offsets[0].Y).IsEqual(CardContainer.LiftHeight(kind));
-            foreach (var offset in offsets)
-                AssertBool(offset.X == 0f && offset.Z == 0f).IsTrue();
-            for (var i = 1; i < offsets.Length; i++)
-                AssertThat(offsets[i].Y - offsets[i - 1].Y).IsEqualApprox(CardContainer.StackStep(kind), 0.0001f);
-        }
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void NoItemSpawnsInsideTheContainerOrAnotherItem()
-    {
-        foreach (var (kind, scene, childScene) in Chain())
-        {
-            var own = ColliderOf(scene);
-            var child = ColliderOf(childScene);
-            var offsets = Offsets(kind);
-
-            AssertBool(CardContainer.LiftHeight(kind) > own.Top).IsTrue();
-            AssertBool(CardContainer.StackStep(kind) > child.Height).IsTrue();
-            var xs = offsets.Select(o => o.X).Distinct().OrderBy(x => x).ToArray();
-            for (var i = 1; i < xs.Length; i++)
-                AssertBool(xs[i] - xs[i - 1] > child.Width).IsTrue();
-        }
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public static void TheHighestItemOfAContainerOnTheFloorStaysBelowTheShopCeiling()
-    {
-        foreach (var (kind, _, childScene) in Chain())
-        {
-            var top = Offsets(kind).Max(o => o.Y) + ColliderOf(childScene).Height;
-
-            AssertThat(top).IsLess(ShopCeiling);
-        }
-    }
-
-    private static Vector3[] Offsets(CardContainerKind kind) =>
-        Enumerable.Range(0, CardContainerLayout.ItemsPerContainer)
-            .Select(i => CardContainer.SpawnOffset(i, kind)).ToArray();
-
-    private static (CardContainerKind Kind, string Scene, string ChildScene)[] Chain() =>
-    [
-        (CardContainerKind.Pack, PackScene, BoosterScene),
-        (CardContainerKind.Booster, BoosterScene, CardScene)
-    ];
-
-    // The size of the first box collider of a scene, and the height of its top above the scene's origin.
-    private static (float Width, float Height, float Top) ColliderOf(string scene)
-    {
-        var node = GD.Load<PackedScene>(scene).Instantiate<Node3D>();
-        var collider = node.FindChildren("*", nameof(CollisionShape3D), true, false).OfType<CollisionShape3D>()
-            .First();
-        var size = ((BoxShape3D)collider.Shape).Size;
-        var top = collider.Position.Y + size.Y / 2f;
-        node.Free();
-        return (size.X, size.Y, top);
-    }
-
-    private void AddFloor()
-    {
-        var floor = new StaticBody3D();
-        floor.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = new Vector3(10f, 0.2f, 10f) } });
-        _world.AddChild(floor);
-        floor.Position = new Vector3(0f, -0.1f, 0f);
-    }
+    private static string Keys(IEnumerable<CardSignature> signatures) =>
+        string.Join(";", signatures.Select(signature => string.Join(",", signature.Elements)));
 
     private CardContainer Make(string scenePath)
     {
@@ -390,14 +230,5 @@ public class CardContainerTest
         container.Spawning = _spawner;
         _world.AddChild(container);
         return container;
-    }
-
-    private CardContainer[] Containers(CardContainerKind kind) =>
-        _world.GetChildren().OfType<CardContainer>().Where(c => c.Kind == kind && !c.IsOpened).ToArray();
-
-    private static async Task PhysicsFrames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await Engine.GetMainLoop().ToSignal(Engine.GetMainLoop(), SceneTree.SignalName.PhysicsFrame);
     }
 }

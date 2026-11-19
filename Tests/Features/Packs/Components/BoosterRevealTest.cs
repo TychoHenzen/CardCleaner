@@ -5,6 +5,8 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Services.SaveGame;
 using CardCleaner.Scripts.Features.Packs.Components;
+using CardCleaner.Scripts.Features.Packs.Services;
+using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
@@ -15,9 +17,9 @@ namespace CardCleaner.Tests.Features.Packs.Components;
 
 /// <summary>
 ///     A booster opened in the player's hand (<see cref="CardContainer.OpenInHand" />, through
-///     <see cref="ContainerHolder.UseHeld" />): its cards are the ones opening it on the floor gives, they never meet
-///     the world, the hand stays busy until they are in it, and they end up in the hand of cards after the cards it
-///     already held, in the order they left the booster.
+///     <see cref="ContainerHolder.UseHeld" />): its cards are the ones its seed gives, they never meet the world, the
+///     hand stays busy until they are in it, and they end up in the hand of cards after the cards it already held, in
+///     the order they left the booster.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -71,25 +73,17 @@ public class BoosterRevealTest
         AssertBool(_holder.IsHolding).IsFalse();
     }
 
-    // The same seed gives the same cards in the same order whether the booster is opened in the hand or on the floor.
+    // The booster's seed decides its cards and their order.
     [TestCase]
     [TestCategory("Unit")]
-    public void TheCardsAreTheOnesOpeningTheBoosterOnTheFloorGives()
+    public void TheCardsAreTheOnesTheBoostersSeedGives()
     {
-        var floorSpawner = new RecordingCardSpawner();
-        var loose = GD.Load<PackedScene>(BoosterScene).Instantiate<CardContainer>();
-        loose.ContentSeed = Seed;
-        loose.Spawning = floorSpawner;
-        _world.AddChild(loose);
-        AssertBool(loose.Open()).IsTrue();
-        loose.FinishOpening();
-
         HeldBooster();
         _holder.UseHeld();
         FinishTheOpeningBooster();
 
-        AssertThat(_spawner.Spawned.Select(s => s.Signature).ToArray())
-            .ContainsExactly(floorSpawner.Spawned.Select(s => s.Signature).ToArray());
+        var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBooster();
+        AssertThat(_spawner.Spawned.Select(s => s.Signature).ToArray()).ContainsExactly(expected);
     }
 
     [TestCase]

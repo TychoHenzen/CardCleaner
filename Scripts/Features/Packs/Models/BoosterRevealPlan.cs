@@ -40,17 +40,17 @@ public sealed class BoosterRevealPlan
 
     public float Duration => Math.Max(IntoHandStart + IntoHand, VanishStart + Vanish);
 
-    public float PresentProgress(float time) => ContainerOpeningPlan.Fraction(time, 0f, Present);
+    public float PresentProgress(float time) => OpeningTime.Fraction(time, 0f, Present);
 
-    public float TearProgress(float time) => ContainerOpeningPlan.Fraction(time, Present, Tear);
+    public float TearProgress(float time) => OpeningTime.Fraction(time, Present, Tear);
 
-    public float RiseProgress(int index, float time) => ContainerOpeningPlan.Fraction(time, ReleaseAt(index), Rise);
+    public float RiseProgress(int index, float time) => OpeningTime.Fraction(time, ReleaseAt(index), Rise);
 
-    public float VanishProgress(float time) => ContainerOpeningPlan.Fraction(time, VanishStart, Vanish);
+    public float VanishProgress(float time) => OpeningTime.Fraction(time, VanishStart, Vanish);
 
     /// <summary>
     ///     How far the fan has slid into the hand, <paramref name="sinceStart" /> seconds after it started to. The
     ///     slide is timed from when it really began, which a slow frame may put after <see cref="IntoHandStart" />.
     /// </summary>
-    public static float IntoHandProgress(float sinceStart) => ContainerOpeningPlan.Fraction(sinceStart, 0f, IntoHand);
+    public static float IntoHandProgress(float sinceStart) => OpeningTime.Fraction(sinceStart, 0f, IntoHand);
 }

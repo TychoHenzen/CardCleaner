@@ -39,9 +39,10 @@ public class CardContainerSeedTest
         var seed = FirstSeedWithSpecialBooster();
         var first = new RecordingCardSpawner();
         var second = new RecordingCardSpawner();
+        var hand = InHandOpening.AddHand(_world);
 
-        OpenAtOnce(SeededBooster(_world, seed, first));
-        OpenAtOnce(SeededBooster(_world, seed, second));
+        InHandOpening.Open(SeededBooster(_world, seed, first), hand);
+        InHandOpening.Open(SeededBooster(_world, seed, second), hand);
         await Frames(1);
 
         AssertThat(first.Spawned.Count).IsEqual(CardContainerLayout.ItemsPerContainer);
@@ -130,42 +131,28 @@ public class CardContainerSeedTest
 
     private sealed record OpenedPack(RecordingCardSpawner Cards, List<ulong> BoosterSeeds);
 
-    // Opens a seeded booster box, then its boosters in tree order, and returns every card it spawned and the seed of
-    // every booster it opened. A cardboard box is storage and never opens whole, so the chain starts at a booster box.
+    // Empties a seeded booster box into the hand, then opens its boosters in the order they came out, and returns
+    // every card they spawned and the seed of every booster. A cardboard box is storage and never opens whole, so the
+    // chain starts at a booster box.
     private static async Task<OpenedPack> OpenWholePack(ulong seed)
     {
         var world = AddNode(new Node3D());
+        var hand = InHandOpening.AddHand(world);
         var opened = new OpenedPack(new RecordingCardSpawner(), new List<ulong>());
         var pack = GD.Load<PackedScene>(PackScene).Instantiate<CardContainer>();
         pack.ContentSeed = seed;
         pack.Spawning = opened.Cards;
         world.AddChild(pack);
 
-        OpenAtOnce(pack);
-        await Frames(1);
-
-        var boosters = Containers(world, CardContainerKind.Booster);
-        AssertThat(boosters.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
-        foreach (var booster in boosters)
+        foreach (var booster in InHandOpening.Empty(pack, hand))
         {
             opened.BoosterSeeds.Add(booster.ContentSeed!.Value);
-            OpenAtOnce(booster);
+            InHandOpening.Open(booster, hand);
         }
 
         await Frames(1);
         return opened;
     }
-
-    // The opening animation plays for seconds and has its own tests; these tests only need what it opens into, in
-    // the same order, so they end it at once.
-    private static void OpenAtOnce(CardContainer container)
-    {
-        AssertBool(container.Open()).IsTrue();
-        container.FinishOpening();
-    }
-
-    private static CardContainer[] Containers(Node3D parent, CardContainerKind kind) =>
-        parent.GetChildren().OfType<CardContainer>().Where(c => c.Kind == kind && !c.IsOpened).ToArray();
 
     private static string Keys(RecordingCardSpawner spawner) =>
         string.Join(";", spawner.Spawned.Select(s => string.Join(",", s.Signature.Elements)));

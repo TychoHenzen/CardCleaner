@@ -13,7 +13,7 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
 ///     Unpacking onto a shelf: a cardboard box moves the booster boxes it holds straight into the free slots that take
-///     them, the last in first, and keeps whatever no slot takes; a booster box opens and stacks its boosters.
+///     them, the last in first, and keeps whatever no slot takes. Nothing else unpacks.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -82,52 +82,20 @@ public class ShelfUnpackTest
         AssertBool(looseTaken.Single().ContentSeed == firstSeed).IsTrue();
     }
 
-    [TestCase]
+    // Only a cardboard box unpacks: a booster box and a booster pack are opened in the hand, never at a shelf.
+    [TestCase(PackScene)]
+    [TestCase(BoosterScene)]
     [TestCategory("Unit")]
-    public async Task APackUnpackedOntoAProductShelfStacksItsBoostersFourToASlot()
+    public void TryUnpackRefusesABoosterBoxOrBoosterPackAndLeavesItSealed(string scene)
     {
         var shelf = AddShelf();
-        var pack = MakeContainer(PackScene, Seed);
+        var container = MakeContainer(scene, Seed);
 
-        AssertBool(shelf.TryUnpack(pack)).IsTrue();
-        AssertThat(pack.PlacedCount).IsEqual(8);
-        AssertThat(pack.PendingCount).IsEqual(0);
+        AssertBool(shelf.TryUnpack(container)).IsFalse();
 
-        await UntilOpened(pack);
-
-        var counts = shelf.Slots.Select(slot => slot.Cards.Count).ToArray();
-        AssertThat(string.Join(",", counts)).IsEqual(Counts(shelf, 4, 4));
-        foreach (var body in shelf.StockedCards)
-            AssertThat(((CardContainer)body).Kind).IsEqual(CardContainerKind.Booster);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task TryUnpackSkipsASlotThatHoldsAPack()
-    {
-        var shelf = AddShelf();
-        var first = shelf.Slots.First();
-        AssertBool(first.TryLock(MakeContainer(PackScene, Seed + 1))).IsTrue();
-        var pack = MakeContainer(PackScene, Seed);
-
-        AssertBool(shelf.TryUnpack(pack)).IsTrue();
-        await UntilOpened(pack);
-
-        var counts = shelf.Slots.Select(slot => slot.Cards.Count).ToArray();
-        AssertThat(string.Join(",", counts)).IsEqual(Counts(shelf, 1, 4, 4));
-        AssertThat(((CardContainer)first.Cards[0]).Kind).IsEqual(CardContainerKind.Pack);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public void OpenOntoRefusesABoosterAndLeavesItClosed()
-    {
-        var shelf = AddShelf();
-        var booster = MakeContainer(BoosterScene, Seed);
-
-        AssertBool(booster.OpenOnto(FreeSlots(shelf))).IsFalse();
-        AssertBool(booster.IsOpened).IsFalse();
+        AssertBool(container.IsOpened).IsFalse();
         AssertThat(shelf.StockedCount).IsEqual(0);
+        AssertThat(_world.GetChildren().OfType<CardContainer>().Count()).IsEqual(1);
     }
 
     [TestCase]
@@ -219,10 +187,6 @@ public class ShelfUnpackTest
         shelf.Position = new Vector3(0, 0, -5);
         return AddNode(shelf);
     }
-
-    // The per-slot item counts, in slot order: the given ones first, every other slot empty.
-    private static string Counts(CardShelf shelf, params int[] first) =>
-        string.Join(",", first.Concat(Enumerable.Repeat(0, shelf.SlotCount - first.Length)));
 
     private static DeckSlot[] FreeSlots(CardShelf shelf) => shelf.Slots.Where(slot => !slot.HasCards).ToArray();
 

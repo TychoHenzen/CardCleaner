@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
-using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
@@ -13,7 +12,7 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     stock (one card, one pack, or a stack of boosters; see <see cref="ShelfPlacementRule" />): a body dropped on a
 ///     slot locks and shows there, and picking it up releases it again. The
 ///     <see cref="Kind" /> decides which stock the slots take and which group the shelf joins. The restocker unpacks a
-///     cardboard box or a pack into its free slots (<see cref="TryUnpack" />).
+///     cardboard box into its free slots (<see cref="TryUnpack" />).
 /// </summary>
 public partial class CardShelf : RigidBody3D
 {
@@ -112,33 +111,10 @@ public partial class CardShelf : RigidBody3D
     public IEnumerable<ShelfSlotTarget> SlotTargets => GetChildren().OfType<ShelfSlotTarget>();
 
     /// <summary>
-    ///     Unpacks a cardboard box or pack into this shelf's free slots, when the shelf takes the items it holds. A
-    ///     cardboard box moves every item a free slot takes, the last in first, and stays a box with the rest inside;
-    ///     a pack opens and spills the boosters no slot takes. False, with nothing moved, when the shelf takes none.
+    ///     Unpacks a cardboard box into this shelf's free slots: every item a free slot takes moves in, the last in
+    ///     first, and the box stays a box with the rest inside. False, with nothing moved, when no slot takes any of
+    ///     its items or the container is not a cardboard box (a booster box or booster pack is opened in the hand).
     /// </summary>
-    public bool TryUnpack(CardContainer container)
-    {
-        if (container.Storage is { } storage)
-            return storage.MoveInto(Slots.ToList()) > 0;
-
-        if (ContentsOf(container) is not { } contents)
-            return false;
-
-        return container.OpenOnto(FreeSeats(contents));
-    }
-
-    /// <summary>
-    ///     One entry per free seat for <paramref name="stock" />, slot by slot in scene order: a slot that stacks three
-    ///     more boosters is listed three times, so unpacking fills each stack before it starts the next.
-    /// </summary>
-    private List<DeckSlot> FreeSeats(StockKind stock) =>
-        Slots.SelectMany(slot => Enumerable.Repeat(slot, slot.FreeSeatsFor(stock))).ToList();
-
-    // The stock a container opens into, when this shelf takes it; null for a booster (it holds cards) or contents
-    // this shelf does not take.
-    private StockKind? ContentsOf(CardContainer container) =>
-        CardContainerLayout.ChildKind(container.Kind) is { } kind
-        && ShelfPlacementRule.Accepts(Kind, ShelfPlacementRule.From(kind))
-            ? ShelfPlacementRule.From(kind)
-            : null;
+    public bool TryUnpack(CardContainer container) =>
+        container.Storage is { } storage && storage.MoveInto(Slots.ToList()) > 0;
 }

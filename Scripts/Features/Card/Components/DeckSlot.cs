@@ -162,9 +162,6 @@ public partial class DeckSlot : Node3D
     /// </summary>
     public int SeatsFor(StockKind stock) => Math.Min(Capacity, ShelfPlacementRule.StackLimit(Kind, stock) ?? Capacity);
 
-    /// <summary>How many more bodies of <paramref name="stock" /> this slot takes now; 0 when it takes none.</summary>
-    public int FreeSeatsFor(StockKind stock) => CanTake(stock) ? SeatsFor(stock) - _cards.Count : 0;
-
     // A slot holds one kind of stock at a time, up to that stock's seats.
     private bool HasRoomFor(StockKind stock) =>
         (_cards.Count == 0 || StockOf(_cards[0]) == stock) && _cards.Count < SeatsFor(stock);
