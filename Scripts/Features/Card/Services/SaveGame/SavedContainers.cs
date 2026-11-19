@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
-using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
@@ -35,10 +34,6 @@ internal static class SavedContainers
         int? Price = null,
         IReadOnlyList<StoredItem>? Contents = null);
 
-    private const string CardItem = "card";
-    private const string ContainerItem = "container";
-    private const int SignatureLength = 8;
-
     // One sealed container as it is written to a slot. Position and Rotation are typed object, as the card records
     // are: a Vector3 cannot be read back into a typed property, so they are read through SavedCardReader like cards.
     private sealed class ContainerRecord
@@ -54,20 +49,7 @@ internal static class SavedContainers
 
         // What a cardboard box holds, in the order it went in; null for a fresh box, which still holds what it came
         // with (drawn from its seed), and for every other container.
-        public List<ItemRecord>? Contents { get; set; }
-    }
-
-    // One item inside a cardboard box: a card (signature, look seed) or a booster or booster box (scene, kind, seed),
-    // each with the price the player set on it.
-    private sealed class ItemRecord
-    {
-        public string Type { get; set; } = "";
-        public float[]? Signature { get; set; }
-        public int? LookSeed { get; set; }
-        public string? ScenePath { get; set; }
-        public string? Kind { get; set; }
-        public string? Seed { get; set; }
-        public object? Price { get; set; }
+        public List<SavedStoredItems.Record>? Contents { get; set; }
     }
 
     /// <summary>
@@ -95,30 +77,10 @@ internal static class SavedContainers
                 Held = container.IsHeld,
                 LidOpen = container.IsLidOpen,
                 Price = container.ShopPrice,
-                Contents = container.Storage?.SavedItems?.Select(RecordOf).ToList()
+                Contents = container.Storage?.SavedItems?.Select(SavedStoredItems.RecordOf).ToList()
             })
             .ToList();
     }
-
-    private static ItemRecord RecordOf(StoredItem item) => item switch
-    {
-        StoredCard card => new ItemRecord
-        {
-            Type = CardItem,
-            Signature = card.Signature?.Elements,
-            LookSeed = card.LookSeed,
-            Price = card.Price
-        },
-        StoredContainer inner => new ItemRecord
-        {
-            Type = ContainerItem,
-            ScenePath = inner.ScenePath,
-            Kind = inner.Kind.ToString(),
-            Seed = inner.Seed?.ToString(CultureInfo.InvariantCulture),
-            Price = inner.Price
-        },
-        _ => throw new ArgumentOutOfRangeException(nameof(item), item, "Unknown stored item")
-    };
 
     /// <summary>
     ///     Checks every container record of a slot and returns them. Throws <see cref="FormatException" /> on the
@@ -254,7 +216,7 @@ internal static class SavedContainers
         var rotation = SavedCardReader.GetVector3FromData(record.Rotation
             ?? throw new FormatException($"Container from {record.ScenePath} has no rotation"));
         return new Saved(record.ScenePath, kind, seed, position, rotation, record.Held, record.LidOpen,
-            ParsePrice(record.Price, "container"), ParseContents(record, kind));
+            SavedStoredItems.ParsePrice(record.Price, "container"), ParseContents(record, kind));
     }
 
     // Only a cardboard box holds stored items; every item must be readable, or the record is malformed.
@@ -266,60 +228,8 @@ internal static class SavedContainers
         if (kind != CardContainerKind.Box)
             throw new FormatException($"Container from {record.ScenePath} is a {kind} and cannot hold stored items");
 
-        return record.Contents.Select(item => ParseItem(item, record.ScenePath)).ToList();
-    }
-
-    private static StoredItem ParseItem(ItemRecord item, string box) => item.Type switch
-    {
-        CardItem => new StoredCard(ParseSignature(item, box), item.LookSeed, ParsePrice(item.Price, "card")),
-        ContainerItem => ParseInner(item, box),
-        _ => throw new FormatException($"Cardboard box from {box} holds an item of unknown type '{item.Type}'")
-    };
-
-    private static CardSignature? ParseSignature(ItemRecord item, string box)
-    {
-        if (item.Signature == null)
-            return null;
-
-        if (item.Signature.Length != SignatureLength || item.Signature.Any(value => !float.IsFinite(value)))
-            throw new FormatException($"Cardboard box from {box} holds a card with an unreadable signature");
-
-        return new CardSignature(item.Signature);
-    }
-
-    // A box holds booster boxes and boosters, never another cardboard box.
-    private static StoredContainer ParseInner(ItemRecord item, string box)
-    {
-        if (string.IsNullOrEmpty(item.ScenePath))
-            throw new FormatException($"Cardboard box from {box} holds a container with no scene");
-
-        if (!Enum.TryParse<CardContainerKind>(item.Kind, out var kind)
-            || kind is not (CardContainerKind.Pack or CardContainerKind.Booster))
-            throw new FormatException($"Cardboard box from {box} holds a container of kind '{item.Kind}'");
-
-        ulong? seed = null;
-        if (item.Seed != null)
-        {
-            if (!ulong.TryParse(item.Seed, NumberStyles.None, CultureInfo.InvariantCulture, out var parsed))
-                throw new FormatException($"Cardboard box from {box} holds a container with seed '{item.Seed}'");
-            seed = parsed;
-        }
-
-        return new StoredContainer(item.ScenePath, kind, seed, ParsePrice(item.Price, "container"));
-    }
-
-    // A price is a positive whole number. Anything else (absent, null, corrupt) leaves the item at its market price,
-    // as a card's corrupt price does, so one bad price never stops the item from coming back.
-    private static int? ParsePrice(object? saved, string what)
-    {
-        if (saved is null)
-            return null;
-
-        if (saved is long or int && Convert.ToInt64(saved) is var price and > 0 and <= int.MaxValue)
-            return (int)price;
-
-        ILog.Warning($"Saved {what} price '{saved}' is not a positive whole number; the market price is used");
-        return null;
+        return record.Contents.Select(item => SavedStoredItems.Parse(item, $"Cardboard box from {record.ScenePath}"))
+            .ToList();
     }
 
     private static CardContainerKind ParseKind(ContainerRecord record)

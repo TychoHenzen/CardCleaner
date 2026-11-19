@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://csmn6tk75a4ye" path="res://Scripts/Features/Shop/Components/ScreenTerminal.cs" id="ScreenTerminal"]
 [ext_resource type="Script" uid="uid://bl5m0rq04llvd" path="res://Scripts/Features/Shop/Ui/StockApp.cs" id="StockApp"]
 [ext_resource type="Script" uid="uid://bu7afoqtgnxbg" path="res://Scripts/Features/Shop/Ui/BillsApp.cs" id="BillsApp"]
+[ext_resource type="Script" path="res://Scripts/Features/CardStacks/Components/CardPileGatherer.cs" id="CardPileGatherer"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/MoneyService.cs" id="MoneyService"]
 [ext_resource type="Script" uid="uid://bp3t0ptkdbsgo" path="res://Scripts/Features/Shop/Services/WholesaleCosts.cs" id="WholesaleCosts"]
 [ext_resource type="Script" uid="uid://cnhbpfnxfixnn" path="res://Scripts/Features/Shop/Ui/PricingScreen.cs" id="PricingScreen"]
@@ -1787,6 +1788,9 @@ ScreenOverlay = NodePath("../PcScreenOverlay")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 9)
 
 [node name="Neighbourhood" parent="." instance=ExtResource("Neighbourhood")]
+
+[node name="CardPiles" type="Node" parent="."]
+script = ExtResource("CardPileGatherer")
 
 [node name="Environment" type="WorldEnvironment" parent="."]
 environment = SubResource("ShopEnvironment")

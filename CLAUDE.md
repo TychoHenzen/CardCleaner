@@ -610,6 +610,12 @@ Uses the Saveable addon (`addons/saveable/`) with Newtonsoft.Json. Implement `IS
 
 Save slots (`Scripts/Features/SaveSlots`) live under `user://saves/<slot>/save.json` (`SaveSlotLayout`). Each file is a `SaveEnvelope` at version 1. `SlotStore` writes `save.json.tmp` first and renames it into place, so a crash leaves the previous save intact. `SlotStore` also implements `ISaveSlotCatalog`, and a slot without a readable `save.json` is listed as unreadable. Slot names (`SaveSlotName`) are 1 to 32 characters of letters, digits, spaces, `-` and `_`, and cannot be `con`, `prn`, `aux` or `nul` (compared without case). `ActiveSaveSlot` starts on the `default` slot until one is selected. `LegacySaveImporter` copies the old single-file `user://game_save.json` into a slot named `imported`, and runs only when no slot exists yet and that file holds a JSON object. A first save that fails removes the slot it started. A container still opening when the game saves is finished first, so its items are saved instead of it. A `CardContainer` draws a content seed only when a save asks for one (`SeedForSave`); the seed is saved with the slot, so the same seed opens the same cards after a reload, and an unseeded box opens from the shared random source as before. Each later stateful slice adds its own saved state to the envelope and a round-trip test that saves, reloads and compares it. Prices live with the stock, never with a price tag: a card's own price (`CardController.ShopPrice`) is saved with the card (`price` in its record) and a booster's or pack's (`CardContainer.ShopPrice`) with the container (`Price` in its `SavedContainers` record), and each comes back with its item into its slot. A save that still holds an old tag markup (an id starting `slot_price:`) loads with that entry ignored, so its stock asks the market price, and a corrupt price logs a warning and falls back to the market price.
 
+Decks and piles save under `bundles` in `GameSaveService`'s record (`SavedBundles`): each with its kind, pose and every
+card in order, a card written the same way a cardboard box writes one (`SavedStoredItems`, which both share). A load
+parses every record before it frees anything, then replaces the scene's decks and piles with the saved ones under the
+current scene's root (`CardBundleSaveTest`). A record with an unknown kind, no cards or anything but cards fails the
+load, which logs the error.
+
 Furniture saves under UniqueID `furniture` (`FurnitureSaveService`) as one JSON string of `FurnitureRecord` entries: every
 placed piece with its pose and node name, the scene's starting pieces included, and unopened furniture boxes with their
 position. Every save sets `whole_layout`. A load of such a save makes the furniture match the records: a standing piece
@@ -648,7 +654,19 @@ Code is organized by feature under `Scripts/Features/`:
 - **Card/**: Card models, controllers, components, and services (spawning, generation). The cards in hand fan out
   (`CardHolder.FanSpreadDegrees`, 50, over `FanFillCount`, 10, cards; the Godot-free `HandFan`, posed by `CardFan`): the
   first ten widen the fan to its full spread, and every card after that closes the gaps instead of widening it. The rest
-  of the hand keeps its layout when the top card is dropped (the fan, or the drop layout while a drop is aimed).
+  of the hand keeps its layout when the top card is dropped (the fan, or the drop layout while a drop is aimed). The hand
+  holds at most `CardHolder.MostCards` (100) cards: `AddCard` refuses one more, `Room` says how many still fit, and a
+  card on the floor offers no pick-up while the hand is full (`CardController.PickUpAllowed`).
+- **CardStacks/**: Decks and piles, both a `CardBundle` (one `RigidBody3D` in group `card_bundles` that keeps every
+  card as a `StoredCard`, in the order they went in, and shows them without one node per card, `CardBundleLook`).
+  `CardBundler` (in `player.tscn`) straps the hand into a deck on V (`card_strap`, at least
+  `CardBundleRules.FewestToStrap`, 2, cards, with no container held and no drop aimed) and sets it down in front of the
+  player; a click on a deck unstraps it into the hand only when every card fits. `CardPileGatherer` (`CardPiles`, under
+  the shop's scene root) runs every 0.5 s: more than `CardBundleRules.MostLooseCards` (100) loose cards (frozen, on a
+  collision layer, in no hand, slot or reveal) linked within 0.5 m (`CardClusters`) become one pile where they lay, a
+  loose card at rest on or beside a pile joins it, and two piles that run into each other pour into the older one. A
+  pile is a dome that grows with its count (`CardBundleRules.PileRadius`, `PileHeight`) and stays a pile until empty; a
+  click takes as many cards as fit in the hand, last in first.
 - **Deckbuilder/**: Game session management, map generation, combat, exploration
 - **Worldgen/**: Procedural generation support (auto-tiling, biomes, gradients, blob generation)
 - **Player/**: Player controller and interaction system

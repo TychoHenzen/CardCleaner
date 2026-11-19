@@ -135,6 +135,10 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         var containers = SavedContainers.Capture(GetTree());
         save.SetOrAddProperty("containers", containers);
         ILog.Print($"Saved {containers.Count} containers to persistence data");
+
+        var bundles = SavedBundles.Capture(GetTree());
+        save.SetOrAddProperty("bundles", bundles);
+        ILog.Print($"Saved {bundles.Count} decks and piles to persistence data");
     }
 
     private List<Dictionary<string, object?>> CaptureCards()
@@ -159,6 +163,9 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
 
         if (save.TryGetProperty<List<object>>("containers", out var containerDataRaw))
             RestoreContainers(containerDataRaw ?? new List<object>(), GetTree().CurrentScene as Node3D);
+
+        if (save.TryGetProperty<List<object>>("bundles", out var bundleDataRaw))
+            RestoreBundles(bundleDataRaw ?? new List<object>(), GetTree().CurrentScene as Node3D);
 
         if (!save.TryGetProperty<List<object>>("cards", out var cardDataRaw))
         {
@@ -201,6 +208,19 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         }
 
         SavedContainers.Restore(GetTree(), saved, world);
+    }
+
+    // Every deck and pile record is checked before the first node is freed, as the containers are.
+    private void RestoreBundles(List<object> bundleDataRaw, Node3D? world)
+    {
+        var saved = SavedBundles.Parse(bundleDataRaw);
+        if (world == null)
+        {
+            ILog.Error("CurrentScene is not a Node3D, cannot restore decks and piles");
+            return;
+        }
+
+        SavedBundles.Restore(GetTree(), saved, world);
     }
 
     private void RecreateCards()
