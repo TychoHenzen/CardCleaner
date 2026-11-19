@@ -104,7 +104,17 @@ function readPin() {
   return JSON.parse(readFileSync(pinPath, "utf8"));
 }
 
-/** Refuses while the addon differs from the pin it was synced to: that difference is an edit that belongs in the fork. */
+/** The addon's files that git tracks here, as paths below the addon folder. */
+function trackedAddonFiles() {
+  return gitText(repoRoot, ["ls-files", "-z", "--", ADDON]).split("\0").filter(Boolean)
+    .map((path) => path.slice(ADDON.length + 1));
+}
+
+/**
+ * Refuses while the addon differs from the pin it was synced to: that difference is an edit that belongs in the fork.
+ * A committed file the pin lacks counts too, because the removal pass below deletes every tracked file the new commit
+ * lacks.
+ */
 function refuseLocalEdits(oldPin) {
   const status = gitText(repoRoot, ["status", "--porcelain", "--", ADDON]);
   if (status) fail(`${ADDON} has uncommitted changes. Make them in the fork, then sync:\n${status}`);
@@ -112,10 +122,12 @@ function refuseLocalEdits(oldPin) {
   const drifted = Object.entries(oldPin.files).filter(([path, hash]) => {
     const file = join(repoRoot, ADDON, path);
     return !existsSync(file) || contentHash(readFileSync(file)) !== hash;
-  });
-  if (drifted.length > 0) {
-    fail(`these files differ from the pinned commit ${oldPin.commit}. Move the edits to the fork first:\n`
-      + drifted.map(([path]) => `  ${ADDON}/${path}`).join("\n"));
+  }).map(([path]) => path);
+  const unpinned = trackedAddonFiles().filter((path) => !(path in oldPin.files));
+  const local = [...drifted, ...unpinned].sort();
+  if (local.length > 0) {
+    fail(`these files differ from the pinned commit ${oldPin.commit} or are not in it. Move them to the fork first:\n`
+      + local.map((path) => `  ${ADDON}/${path}`).join("\n"));
   }
 }
 
@@ -153,8 +165,7 @@ function main() {
     files[entry.path] = contentHash(contents[i]);
   });
 
-  const tracked = gitText(repoRoot, ["ls-files", "-z", "--", ADDON]).split("\0").filter(Boolean)
-    .map((path) => path.slice(ADDON.length + 1));
+  const tracked = trackedAddonFiles();
   const removed = [...new Set([...tracked, ...Object.keys(oldPin?.files ?? {})])].filter((path) => !(path in files));
   for (const path of removed) {
     const file = join(repoRoot, ADDON, path);

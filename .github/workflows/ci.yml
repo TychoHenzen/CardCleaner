@@ -169,6 +169,9 @@ jobs:
         shell: pwsh
         run: ./Scripts/ci/Test-InstallGodot.ps1
 
+      - name: Run the Asset Manager sync fixture
+        run: node tools/asset-manager/sync.test.mjs
+
   dependency-audit:
     name: NuGet vulnerability check
     runs-on: windows-latest

@@ -104,9 +104,10 @@ off each import. An upstream release is merged into the fork, where git keeps ou
 addon's update button only opens the store page. `node tools/asset-manager/sync.mjs` then copies the fork's
 `origin/main` (or `--commit=<ref>`) from a local clone (`--source=<dir>`, by default `../asset-manager`), `.uid`
 sidecars included, stages the copy and records the commit and every file's hash in `tools/asset-manager/pin.json`. It
-refuses while the addon differs from the old pin, so an edit made here goes to the fork first.
-`AssetManagerVendorPinTest` fails when the addon differs from the pin, and `AssetManagerLazyOpenTest` fails when a fork
-update drops one of our edits.
+refuses while the addon differs from the old pin, a committed file the pin lacks included, so an edit made here goes to
+the fork first. `node tools/asset-manager/sync.test.mjs` runs it against a throwaway fork and project (the
+`runner-fixture` CI job runs it too). `AssetManagerVendorPinTest` fails when the addon differs from the pin, and
+`AssetManagerLazyOpenTest` fails when a fork update drops one of our edits.
 
 **Without PowerShell.** Start Godot from Bash through node, so no console window opens:
 
