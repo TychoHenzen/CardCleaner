@@ -26,6 +26,7 @@ public class CardHighlighterContainerTest
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
     private const string CardScene = "res://Scenes/Components/CardShader.tscn";
     private const string ProductShelfScene = "res://Scenes/Shop/Items/ProductShelf.tscn";
+    private const string StorageRackScene = "res://Scenes/Shop/Items/StorageRack.tscn";
     private const ulong Seed = 777;
 
     private Node3D _world = null!;
@@ -144,7 +145,7 @@ public class CardHighlighterContainerTest
 
         AssertThat(_cardHolder.HeldCount).IsEqual(1);
         AssertBool(_dropper.IsPreparingDrop).IsFalse();
-        AssertObject(highlighter.Offered).IsNull();
+        AssertObject(highlighter.OfferFor(shelf.Slots.First())).IsNull();
         AssertBool(highlighter.TryStock(shelf.Slots.First())).IsFalse();
 
         _rightPress.Invoke(false);
@@ -158,10 +159,11 @@ public class CardHighlighterContainerTest
     {
         var card = MakeCard();
         var highlighter = Build();
+        var shelf = AddProductShelf();
         _cardHolder.AddCard(card);
         MakeBooster().Interact();
 
-        AssertThat(highlighter.Offered).IsEqual(new StockOffer(StockKind.Booster));
+        AssertThat(highlighter.OfferFor(shelf.Slots.First())).IsEqual(new StockOffer(StockKind.Booster));
     }
 
     [TestCase]
@@ -207,19 +209,24 @@ public class CardHighlighterContainerTest
         AssertThat(_containerHolder.Held).IsSame(box);
     }
 
+    // A shut box goes whole onto a rack, never onto a product shelf; an open one gives a product shelf one booster box
+    // at a time.
     [TestCase]
     [TestCategory("Unit")]
     public void TheHandOffersAShutBoxWholeAndAnOpenBoxOnePackAtATime()
     {
         var highlighter = Build();
+        var shelf = AddProductShelf();
+        var rack = AddShelf(StorageRackScene, new Vector3(-5f, 0f, 0f));
         var box = MakeBox();
         box.Interact();
 
-        AssertThat(highlighter.Offered).IsEqual(new StockOffer(StockKind.Box));
+        AssertThat(highlighter.OfferFor(rack.Slots.First())).IsEqual(new StockOffer(StockKind.Box));
+        AssertObject(highlighter.OfferFor(shelf.Slots.First())).IsNull();
 
         _containerHolder.UseHeld();
 
-        AssertThat(highlighter.Offered).IsEqual(new StockOffer(StockKind.Pack, 8));
+        AssertThat(highlighter.OfferFor(shelf.Slots.First())).IsEqual(new StockOffer(StockKind.Pack, 8));
     }
 
     [TestCase]
@@ -238,7 +245,7 @@ public class CardHighlighterContainerTest
         AssertThat(slot.Cards.Count).IsEqual(1);
         AssertThat(((CardContainer)slot.Cards[0]).Kind).IsEqual(CardContainerKind.Pack);
         AssertThat(_containerHolder.Held).IsSame(box);
-        AssertThat(highlighter.Offered).IsEqual(new StockOffer(StockKind.Pack, 7));
+        AssertThat(highlighter.OfferFor(shelf.Slots.Skip(1).First())).IsEqual(new StockOffer(StockKind.Pack, 7));
     }
 
     [TestCase]
@@ -256,10 +263,10 @@ public class CardHighlighterContainerTest
         AssertThat(_containerHolder.Held).IsSame(box);
     }
 
-    // An emptied box is freed only at the end of the frame, so within that frame its count must stop a ninth take.
+    // An emptied cardboard box stays in the hand, to be thrown away, and offers nothing more.
     [TestCase]
     [TestCategory("Unit")]
-    public void TheLastPackTakenEmptiesTheHandInTheSameFrame()
+    public void TakingTheLastPackLeavesTheEmptyBoxInHand()
     {
         var highlighter = Build();
         var shelf = AddProductShelf();
@@ -267,13 +274,15 @@ public class CardHighlighterContainerTest
         box.Interact();
         _containerHolder.UseHeld();
 
-        foreach (var slot in shelf.Slots)
+        foreach (var slot in shelf.Slots.Take(CardContainerLayout.ItemsPerContainer))
             AssertBool(highlighter.TryStock(slot)).IsTrue();
 
-        AssertThat(shelf.StockedCount).IsEqual(8);
-        AssertBool(box.IsOpened).IsTrue();
-        AssertObject(highlighter.Offered).IsNull();
-        AssertBool(_containerHolder.IsHolding).IsFalse();
+        AssertThat(shelf.StockedCount).IsEqual(CardContainerLayout.ItemsPerContainer);
+        AssertBool(box.IsOpened).IsFalse();
+        AssertThat(box.Remaining).IsEqual(0);
+        AssertObject(highlighter.OfferFor(shelf.Slots.Last())).IsNull();
+        AssertBool(highlighter.TryStock(shelf.Slots.Last())).IsFalse();
+        AssertThat(_containerHolder.Held).IsSame(box);
     }
 
     [TestCase]
@@ -306,11 +315,13 @@ public class CardHighlighterContainerTest
         return highlighter;
     }
 
-    private CardShelf AddProductShelf()
+    private CardShelf AddProductShelf() => AddShelf(ProductShelfScene, new Vector3(5f, 0f, 0f));
+
+    private CardShelf AddShelf(string scene, Vector3 position)
     {
-        var shelf = GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>();
+        var shelf = GD.Load<PackedScene>(scene).Instantiate<CardShelf>();
         _world.AddChild(shelf);
-        shelf.Position = new Vector3(5f, 0f, 0f);
+        shelf.Position = position;
         return shelf;
     }
 

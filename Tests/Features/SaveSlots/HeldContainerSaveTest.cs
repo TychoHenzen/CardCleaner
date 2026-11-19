@@ -148,8 +148,7 @@ public class HeldContainerSaveTest
         await scene.TwoFrames();
     }
 
-    // A box opened in the hand and partly taken apart onto a shelf comes back open in the hand, with the taken packs
-    // still out of it, so opening it whole later lets out only the rest.
+    // A box opened on the floor, partly emptied and picked up comes back open in the hand, holding the same items.
     [TestCase]
     [TestCategory("Unit")]
     public static async Task AnOpenPartlyTakenBoxInHandComesBackOpenWithTheSameItemsLeft()
@@ -159,9 +158,11 @@ public class HeldContainerSaveTest
         scene.Enter();
         var (holder, _) = BuildHolder(scene);
         var box = PlacedBox(scene, Vector3.Zero);
-        AssertBool(holder.TryPickUp(box)).IsTrue();
         box.SetLidOpen(true, instantly: true);
-        box.TakenCount = 3;
+        for (var i = 0; i < 3; i++)
+            AssertBool(box.Storage!.TakeOnto(new Transform3D(Basis.Identity, new Vector3(3f + i, 0f, 0f)))).IsTrue();
+        var left = StoredItemKeys.Of(box.Storage!.Items);
+        AssertBool(holder.TryPickUp(box)).IsTrue();
 
         SavedContainers.Restore(scene.Tree, CaptureAndParse(scene), scene.World);
         await scene.TwoFrames();
@@ -169,8 +170,8 @@ public class HeldContainerSaveTest
         var restored = OnlyRestoredBox(scene);
         AssertBool(holder.Held == restored).IsTrue();
         AssertBool(restored.IsLidOpen).IsTrue();
-        AssertThat(restored.TakenCount).IsEqual(3);
         AssertThat(restored.Remaining).IsEqual(CardContainerLayout.ItemsPerContainer - 3);
+        AssertThat(StoredItemKeys.Of(restored.Storage!.Items)).IsEqual(left);
     }
 
     [TestCase]
@@ -188,9 +189,11 @@ public class HeldContainerSaveTest
         AssertThat(record.Taken).IsEqual(0);
     }
 
-    // An emptied box is freed, never saved, and a booster pack has nothing to take out one at a time.
-    [TestCase("Box", 8)]
+    // An emptied booster box is freed, never saved; a cardboard box keeps its items as stored items instead of a
+    // count; and a booster pack has nothing to take out one at a time.
+    [TestCase("Box", 1)]
     [TestCase("Box", -1)]
+    [TestCase("Pack", 8)]
     [TestCase("Booster", 1)]
     [TestCategory("Unit")]
     public static void ARecordWithAnImpossibleTakenCountIsMalformed(string kind, int taken)
@@ -204,6 +207,31 @@ public class HeldContainerSaveTest
                 ["Position"] = new Vector3(1f, 0f, 2f),
                 ["Rotation"] = Vector3.Zero,
                 ["Taken"] = taken,
+            },
+        };
+
+        Assertions.AssertThrown(() => SavedContainers.Parse(raw)).IsInstanceOf<FormatException>();
+    }
+
+    // Only a cardboard box holds stored items, and each one must be readable: a card with an eight-value signature,
+    // or a booster or booster box with a scene.
+    [TestCase("Pack", "card")]
+    [TestCase("Box", "coin")]
+    [TestCase("Box", "nested box")]
+    [TestCase("Box", "short signature")]
+    [TestCase("Box", "container without a scene")]
+    [TestCategory("Unit")]
+    public static void ARecordWithUnreadableContentsIsMalformed(string kind, string item)
+    {
+        var raw = new List<object>
+        {
+            new Dictionary<string, object>
+            {
+                ["ScenePath"] = BoxScene,
+                ["Kind"] = kind,
+                ["Position"] = new Vector3(1f, 0f, 2f),
+                ["Rotation"] = Vector3.Zero,
+                ["Contents"] = new List<object> { StoredItemRecord(item) },
             },
         };
 
@@ -232,6 +260,18 @@ public class HeldContainerSaveTest
         AssertThat(records[0].ScenePath).IsEqual(BoxScene);
         AssertBool(records[0].Held).IsFalse();
     }
+
+    private static Dictionary<string, object> StoredItemRecord(string item) => item switch
+    {
+        "card" => new Dictionary<string, object> { ["Type"] = "card", ["LookSeed"] = 1 },
+        "coin" => new Dictionary<string, object> { ["Type"] = "coin" },
+        "nested box" => new Dictionary<string, object>
+            { ["Type"] = "container", ["ScenePath"] = BoxScene, ["Kind"] = "Box" },
+        "short signature" => new Dictionary<string, object>
+            { ["Type"] = "card", ["Signature"] = new[] { 0.5f, 0.5f } },
+        "container without a scene" => new Dictionary<string, object> { ["Type"] = "container", ["Kind"] = "Booster" },
+        _ => throw new ArgumentOutOfRangeException(nameof(item), item, "Unknown test item")
+    };
 
     // A holder in the world with a hand anchor the way the player's camera provides one, built with the test services.
     private static HolderRig BuildHolder(SaveWorld scene)

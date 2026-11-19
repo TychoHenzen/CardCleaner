@@ -1,4 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
@@ -23,6 +24,13 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
     public const string GroupName = "container_holders";
 
     private const float DefaultDropDistance = 1.5f;
+
+    // How far away, and how level, the spot an item out of an open box is set down on may be: arm's reach, and a
+    // surface no steeper than about 45 degrees. The item is set down a little above the spot and falls onto it.
+    private const float PutDownReach = 4.5f;
+    private const float LevelEnough = 0.7f;
+    private const float PutDownLift = 0.05f;
+    private const uint WorldLayer = 1;
     private static readonly Vector3 DefaultHoldOffset = new(0.5f, -0.4f, -1.2f);
     private static readonly Vector3 DefaultBoosterHoldOffset = new(-0.45f, -0.4f, -1.2f);
 
@@ -89,7 +97,7 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         if (held == null)
             _hints.Clear(this);
         else
-            _hints.Publish(this, ContainerHints.For(held.Kind, held.IsLidOpen));
+            _hints.Publish(this, ContainerHints.For(held.Kind, held.IsLidOpen, held.Remaining));
     }
 
     public override void _Ready()
@@ -170,6 +178,40 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
         container.Freeze = false;
         _held = null;
         EmitSignal(SignalName.ContainerDropped, container);
+        return true;
+    }
+
+    public bool PutOneDown()
+    {
+        if (HeldContainer() is not { IsLidOpen: true, Storage: { Count: > 0 } storage } || _handAnchor is not Camera3D eye)
+            return false;
+
+        var from = eye.GlobalPosition;
+        var hit = GetWorld3D().DirectSpaceState.IntersectRay(new PhysicsRayQueryParameters3D
+        {
+            From = from,
+            To = from - eye.GlobalBasis.Z * PutDownReach,
+            CollisionMask = WorldLayer,
+            Exclude = CameraRay.OwnBodies(eye),
+        });
+        if (hit.Count == 0 || hit["normal"].AsVector3().Y < LevelEnough)
+            return false;
+
+        // Turned to the player's heading, so it lies square to the view.
+        var heading = new Basis(Vector3.Up, eye.GlobalRotation.Y);
+        return storage.TakeOnto(new Transform3D(heading, hit["position"].AsVector3() + Vector3.Up * PutDownLift));
+    }
+
+    public bool Discard()
+    {
+        var container = HeldContainer();
+        if (container == null)
+            return false;
+
+        container.TreeExiting -= OnHeldTreeExiting;
+        container.GetParent()?.RemoveChild(container);
+        container.QueueFree();
+        _held = null;
         return true;
     }
 

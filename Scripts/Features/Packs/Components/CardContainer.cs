@@ -11,20 +11,18 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Packs.Components;
 
 /// <summary>
-///     A box, pack or booster. A box or pack has a lid (<see cref="SetLidOpen" />) that the player opens in the hand
-///     to take its items out one at a time onto a shelf (<see cref="TakeOneInto" />); a held booster opens straight
-///     into the hand of cards (<see cref="OpenInHand" />). Opening it whole plays out over
-///     a second or two (<see cref="ContainerOpening" />): the container falls to the surface below it, its lid, flaps
-///     or tear strip open, and its packs, boosters or cards (signatures from <see cref="CardPackGenerator" />) rise
-///     out one by one to spots in a column above it that takes no more floor than the container, so opening never
-///     throws items through walls or into each other. They hang there while the empty wrapper shrinks away, and drop
-///     once it is freed.
+///     A cardboard box, booster box (a pack) or booster pack. A cardboard box is storage: it holds whatever its
+///     <see cref="CartonStorage" /> keeps, is never opened whole, and stays a box when it is empty. A box or pack has
+///     a lid (<see cref="SetLidOpen" />) that the player opens in the hand to take its items out one at a time onto a
+///     shelf (<see cref="TakeOneInto" />); a held booster opens straight into the hand of cards
+///     (<see cref="OpenInHand" />). Opening a pack or booster whole plays out over a second or two
+///     (<see cref="ContainerOpening" />): the container falls to the surface below it, its lid or tear strip opens,
+///     and its boosters or cards (signatures from <see cref="CardPackGenerator" />) rise out one by one to spots in a
+///     column above it that takes no more floor than the container, so opening never throws items through walls or
+///     into each other. They hang there while the empty wrapper shrinks away, and drop once it is freed.
 /// </summary>
 public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 {
-    // Half the gap between the two columns a box's packs rise to: a pack is 0.38 m wide.
-    private const float BoxColumnOffset = 0.2f;
-
     // Seconds a box's flaps or a pack's lid take to swing open or shut in the hand.
     private const float LidSeconds = 0.4f;
 
@@ -42,6 +40,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     private IServiceResolver? _services;
     private IRandom? _random;
     private List<OpeningPart>? _lidParts;
+    private CartonStorage? _storage;
 
     // How far the lid is open, from 0 (shut) to 1 (open); it moves toward the target IsLidOpen sets.
     private float _lidProgress;
@@ -105,14 +104,23 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     public bool IsLidOpen { get; private set; }
 
     /// <summary>
-    ///     Items taken out one at a time (<see cref="TakeOneInto" />). A save stores it, so a reload keeps them out.
+    ///     Boosters taken out of a pack one at a time (<see cref="TakeOneInto" />). A save stores it, so a reload keeps
+    ///     them out. A cardboard box counts what it holds in its <see cref="Storage" /> instead.
     /// </summary>
     public int TakenCount { get; internal set; }
 
-    /// <summary>Items still inside: the 8 it was packed with, less <see cref="TakenCount" />.</summary>
-    public int Remaining => CardContainerLayout.ItemsPerContainer - TakenCount;
+    /// <summary>What a cardboard box holds; null for a pack or booster.</summary>
+    public CartonStorage? Storage =>
+        Kind == CardContainerKind.Box ? _storage ??= GetNodeOrNull<CartonStorage>("Storage") : null;
 
-    public bool CanInteract => !IsOpened && !IsHeld && HasContents;
+    /// <summary>
+    ///     Items still inside: what a cardboard box holds, or the 8 a pack was packed with less
+    ///     <see cref="TakenCount" />.
+    /// </summary>
+    public int Remaining => Storage?.Count ?? CardContainerLayout.ItemsPerContainer - TakenCount;
+
+    // A cardboard box can always be carried, even empty, so the player can take it to the trash can.
+    public bool CanInteract => !IsOpened && !IsHeld && (Kind == CardContainerKind.Box || HasContents);
 
     public Node3D InteractionBody => this;
 
@@ -200,6 +208,9 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
             PoseLid();
         }
 
+        if (open)
+            Storage?.ShowContents();
+
         SetProcess(LidMoving);
         return true;
     }
@@ -223,14 +234,20 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     }
 
     /// <summary>
-    ///     Takes the next item out of this open box or pack and locks it into <paramref name="slot" />. The item gets
-    ///     the seed <see cref="Open" /> would have given it, so taking a box apart by hand gives the same stock. When
-    ///     the last item leaves, the container is used up: it counts as opened and is freed. False, with nothing
-    ///     taken, when the lid is shut, nothing is left or the slot refuses the item.
+    ///     Takes the next item out of this open box or pack and locks it into <paramref name="slot" />. A cardboard box
+    ///     gives the last item it holds that the slot takes, and stays a box when it is empty. A pack's booster gets the
+    ///     seed <see cref="Open" /> would have given it; when its last booster leaves, the pack is used up: it counts as
+    ///     opened and is freed. False, with nothing taken, when the lid is shut, nothing fits or the slot refuses it.
     /// </summary>
     public bool TakeOneInto(DeckSlot slot)
     {
-        if (!IsLidOpen || IsOpened || Remaining <= 0)
+        if (!IsLidOpen || IsOpened)
+            return false;
+
+        if (Storage is { } storage)
+            return storage.TakeInto(slot);
+
+        if (Remaining <= 0)
             return false;
 
         if (SpawnContainer(slot, slot.SeatPosition(slot.Cards.Count), TakenCount) is not CardContainer item)
@@ -295,56 +312,48 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     }
 
     /// <summary>
-    ///     Offset of the n-th item opened out of a container of <paramref name="kind" />: above the container, one
-    ///     <see cref="StackStep" /> higher per item. A box's packs fill two columns side by side, so its column stays
-    ///     under the shop's 3.5 m ceiling when the box stands on the floor.
+    ///     Offset of the n-th item opened out of a pack or booster of <paramref name="kind" />: above the container,
+    ///     one <see cref="StackStep" /> higher per item.
     /// </summary>
-    public static Vector3 SpawnOffset(int index, CardContainerKind kind)
-    {
-        if (kind != CardContainerKind.Box)
-            return new Vector3(0f, LiftHeight(kind) + index * StackStep(kind), 0f);
-
-        var side = index % 2 == 0 ? -BoxColumnOffset : BoxColumnOffset;
-        return new Vector3(side, LiftHeight(kind) + index / 2 * StackStep(kind), 0f);
-    }
+    public static Vector3 SpawnOffset(int index, CardContainerKind kind) =>
+        new(0f, LiftHeight(kind) + index * StackStep(kind), 0f);
 
     /// <summary>
     ///     Height above the container's origin of the first item it opens into: a little more than the container's
-    ///     own height (a box is 0.60 m tall, a pack 0.20 m, a booster 0.045 m).
+    ///     own height (a pack is 0.20 m tall, a booster 0.045 m). A cardboard box never opens whole.
     /// </summary>
     public static float LiftHeight(CardContainerKind kind)
     {
         return kind switch
         {
-            CardContainerKind.Box => 0.65f,
             CardContainerKind.Pack => 0.25f,
             CardContainerKind.Booster => 0.1f,
-            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown container kind")
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Only a pack or booster opens whole")
         };
     }
 
     /// <summary>
     ///     Vertical gap between the items opened out of <paramref name="kind" />: a little more than the height of
-    ///     one item (a pack is 0.20 m tall, a booster 0.045 m, a card 0.005 m), so none spawns inside the one below.
+    ///     one item (a booster is 0.045 m thick, a card 0.005 m), so none spawns inside the one below.
     /// </summary>
     public static float StackStep(CardContainerKind kind)
     {
         return kind switch
         {
-            CardContainerKind.Box => 0.25f,
             CardContainerKind.Pack => 0.1f,
             CardContainerKind.Booster => 0.05f,
-            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown container kind")
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Only a pack or booster opens whole")
         };
     }
 
     /// <summary>
-    ///     Opens the container: it falls to the surface below it, opens, and its contents rise out one by one.
-    ///     Returns false when it was already opened or lacks what it needs to open.
+    ///     Opens a pack or booster: it falls to the surface below it, opens, and its contents rise out one by one.
+    ///     Returns false when it was already opened, lacks what it needs to open, or is a cardboard box, which is
+    ///     emptied one item at a time and never opened whole.
     /// </summary>
     public bool Open()
     {
-        if (!CanInteract || GetParent() is not Node3D parent)
+        if (Kind == CardContainerKind.Box || !CanInteract || GetParent() is not Node3D parent)
             return false;
 
         var settled = BeginOpening();
@@ -376,14 +385,14 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     }
 
     /// <summary>
-    ///     Unpacks a box or pack onto a shelf: the items still inside are spawned and locked into
-    ///     <paramref name="freeSlots" /> in order, and the rest spill onto the floor above the container, as
-    ///     <see cref="Open" /> does. An item whose slot refuses it stays loose. Returns false when this container
-    ///     cannot be unpacked (a booster, or one that is not openable).
+    ///     Unpacks a pack onto a shelf: the boosters still inside are spawned and locked into
+    ///     <paramref name="freeSlots" /> in order, and the rest spill onto the floor above the pack, as
+    ///     <see cref="Open" /> does. A booster whose slot refuses it stays loose. Returns false when this container
+    ///     cannot be unpacked (a booster, a cardboard box, or one that is not openable).
     /// </summary>
     public bool OpenOnto(IReadOnlyList<DeckSlot> freeSlots)
     {
-        if (Kind == CardContainerKind.Booster || !CanInteract || GetParent() is not Node3D parent)
+        if (Kind != CardContainerKind.Pack || !CanInteract || GetParent() is not Node3D parent)
             return false;
 
         var settled = BeginOpening();

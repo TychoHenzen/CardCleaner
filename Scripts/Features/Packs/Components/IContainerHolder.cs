@@ -28,6 +28,15 @@ public interface IContainerHolder
     /// </summary>
     bool UseHeld();
 
+    /// <summary>
+    ///     Takes the last item out of the held open cardboard box and sets it down on the floor or table the player
+    ///     aims at, within reach. False when no open box with anything in it is held or nothing level is aimed at.
+    /// </summary>
+    bool PutOneDown();
+
+    /// <summary>Throws the held container away: it is freed. False when nothing is held.</summary>
+    bool Discard();
+
     /// <param name="handAnchor">The node a held container hangs under: the player's camera.</param>
     /// <param name="cards">
     ///     The hand a booster opened in the hand gives its cards to; none means a booster stays shut.

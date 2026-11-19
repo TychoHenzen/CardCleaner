@@ -13,7 +13,7 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     stock (one card, one pack, or a stack of boosters; see <see cref="ShelfPlacementRule" />): a body dropped on a
 ///     slot locks and shows there, and picking it up releases it again. The
 ///     <see cref="Kind" /> decides which stock the slots take and which group the shelf joins. The restocker unpacks a
-///     whole box or pack into its free slots (<see cref="TryUnpack" />).
+///     cardboard box or a pack into its free slots (<see cref="TryUnpack" />).
 /// </summary>
 public partial class CardShelf : RigidBody3D
 {
@@ -112,12 +112,15 @@ public partial class CardShelf : RigidBody3D
     public IEnumerable<ShelfSlotTarget> SlotTargets => GetChildren().OfType<ShelfSlotTarget>();
 
     /// <summary>
-    ///     Unpacks a box or pack into this shelf's free slots, when the shelf takes the items it holds (a box or pack
-    ///     onto a product shelf or storage rack; a card shelf takes none), and spills the rest. False, with the
-    ///     container left shut, when the shelf does not take them.
+    ///     Unpacks a cardboard box or pack into this shelf's free slots, when the shelf takes the items it holds. A
+    ///     cardboard box moves every item a free slot takes, the last in first, and stays a box with the rest inside;
+    ///     a pack opens and spills the boosters no slot takes. False, with nothing moved, when the shelf takes none.
     /// </summary>
     public bool TryUnpack(CardContainer container)
     {
+        if (container.Storage is { } storage)
+            return storage.MoveInto(Slots.ToList()) > 0;
+
         if (ContentsOf(container) is not { } contents)
             return false;
 

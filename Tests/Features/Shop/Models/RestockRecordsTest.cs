@@ -10,9 +10,10 @@ public class RestockRecordsTest
     [TestCategory("Unit")]
     public static void Records_compare_by_value()
     {
-        AssertThat(new StockSource(1, StockKind.Pack, true, 2f)).IsEqual(new StockSource(1, StockKind.Pack, true, 2f));
-        AssertThat(new StockSource(1, StockKind.Pack, true, 2f))
-            .IsNotEqual(new StockSource(2, StockKind.Pack, true, 2f));
+        AssertThat(new StockSource(1, StockKind.Pack, true, 2f, 1))
+            .IsEqual(new StockSource(1, StockKind.Pack, true, 2f, 1));
+        AssertThat(new StockSource(1, StockKind.Pack, true, 2f, 1))
+            .IsNotEqual(new StockSource(2, StockKind.Pack, true, 2f, 1));
         AssertThat(new FreeSlot(3, 4, ShelfKind.ProductShelf)).IsEqual(new FreeSlot(3, 4, ShelfKind.ProductShelf));
         AssertThat(new FreeSlot(3, 4, ShelfKind.ProductShelf)).IsNotEqual(new FreeSlot(3, 5, ShelfKind.ProductShelf));
         AssertThat(new RestockStep(RestockStepKind.Move, 1, 2)).IsEqual(new RestockStep(RestockStepKind.Move, 1, 2));

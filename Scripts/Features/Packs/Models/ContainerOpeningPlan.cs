@@ -41,10 +41,6 @@ public sealed class ContainerOpeningPlan
         var settle = FallSeconds(fallHeight);
         return kind switch
         {
-            CardContainerKind.Box => new ContainerOpeningPlan
-            {
-                Settle = settle, Unseal = 0.6f, ReleaseStep = 0.1f, Rise = 0.45f, Vanish = 0.3f, Items = items
-            },
             CardContainerKind.Pack => new ContainerOpeningPlan
             {
                 Settle = settle, Unseal = 0.4f, ReleaseStep = 0.08f, Rise = 0.35f, Vanish = 0.25f, Items = items
@@ -53,7 +49,7 @@ public sealed class ContainerOpeningPlan
             {
                 Settle = settle, Unseal = 0.3f, ReleaseStep = 0.06f, Rise = 0.3f, Vanish = 0.2f, Items = items
             },
-            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown container kind")
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Only a pack or booster opens whole")
         };
     }
 

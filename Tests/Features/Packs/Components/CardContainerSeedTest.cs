@@ -15,7 +15,7 @@ namespace CardCleaner.Tests.Features.Packs.Components;
 [RequireGodotRuntime]
 public class CardContainerSeedTest
 {
-    private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
+    private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
     private const ulong SeedA = 777;
     private const ulong SeedB = 778;
@@ -51,11 +51,12 @@ public class CardContainerSeedTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static async Task BoxesWithDifferentSeedsGiveTheirBoostersDifferentSeeds()
+    public static async Task BoosterBoxesWithDifferentSeedsGiveTheirBoostersDifferentSeeds()
     {
-        // The cards themselves are mostly all zero, so two boxes are compared by the seeds their boosters received.
-        var first = await OpenWholeBox(SeedA);
-        var second = await OpenWholeBox(SeedB);
+        // The cards themselves are mostly all zero, so two booster boxes are compared by the seeds their boosters
+        // received.
+        var first = await OpenWholePack(SeedA);
+        var second = await OpenWholePack(SeedB);
 
         AssertThat(first.BoosterSeeds.Distinct().Count()).IsEqual(first.BoosterSeeds.Count);
         AssertBool(second.BoosterSeeds.Intersect(first.BoosterSeeds).Any()).IsFalse();
@@ -63,14 +64,13 @@ public class CardContainerSeedTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static async Task BoxWithTheSameSeedOpensToTheSameCardsOnEveryRun()
+    public static async Task ABoosterBoxWithTheSameSeedOpensToTheSameCardsOnEveryRun()
     {
-        var firstRun = await OpenWholeBox(SeedA);
-        var secondRun = await OpenWholeBox(SeedA);
+        var firstRun = await OpenWholePack(SeedA);
+        var secondRun = await OpenWholePack(SeedA);
 
-        const int perBox = CardContainerLayout.ItemsPerContainer * CardContainerLayout.ItemsPerContainer
-            * CardContainerLayout.ItemsPerContainer;
-        AssertThat(firstRun.Cards.Spawned.Count).IsEqual(perBox);
+        const int perPack = CardContainerLayout.ItemsPerContainer * CardContainerLayout.ItemsPerContainer;
+        AssertThat(firstRun.Cards.Spawned.Count).IsEqual(perPack);
         AssertThat(secondRun.BoosterSeeds).IsEqual(firstRun.BoosterSeeds);
         AssertThat(Keys(secondRun.Cards)).IsEqual(Keys(firstRun.Cards));
     }
@@ -128,38 +128,31 @@ public class CardContainerSeedTest
         return booster;
     }
 
-    private sealed record OpenedBox(RecordingCardSpawner Cards, List<ulong> BoosterSeeds);
+    private sealed record OpenedPack(RecordingCardSpawner Cards, List<ulong> BoosterSeeds);
 
-    // Opens a seeded box, then each pack and its boosters in tree order, and returns every card it spawned and the
-    // seed of every booster it opened.
-    private static async Task<OpenedBox> OpenWholeBox(ulong seed)
+    // Opens a seeded booster box, then its boosters in tree order, and returns every card it spawned and the seed of
+    // every booster it opened. A cardboard box is storage and never opens whole, so the chain starts at a booster box.
+    private static async Task<OpenedPack> OpenWholePack(ulong seed)
     {
         var world = AddNode(new Node3D());
-        var opened = new OpenedBox(new RecordingCardSpawner(), new List<ulong>());
-        var box = GD.Load<PackedScene>(BoxScene).Instantiate<CardContainer>();
-        box.ContentSeed = seed;
-        box.Spawning = opened.Cards;
-        world.AddChild(box);
+        var opened = new OpenedPack(new RecordingCardSpawner(), new List<ulong>());
+        var pack = GD.Load<PackedScene>(PackScene).Instantiate<CardContainer>();
+        pack.ContentSeed = seed;
+        pack.Spawning = opened.Cards;
+        world.AddChild(pack);
 
-        OpenAtOnce(box);
+        OpenAtOnce(pack);
         await Frames(1);
 
-        var packs = Containers(world, CardContainerKind.Pack);
-        AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
-        foreach (var pack in packs)
+        var boosters = Containers(world, CardContainerKind.Booster);
+        AssertThat(boosters.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
+        foreach (var booster in boosters)
         {
-            OpenAtOnce(pack);
-            await Frames(1);
-
-            foreach (var booster in Containers(world, CardContainerKind.Booster))
-            {
-                opened.BoosterSeeds.Add(booster.ContentSeed!.Value);
-                OpenAtOnce(booster);
-            }
-
-            await Frames(1);
+            opened.BoosterSeeds.Add(booster.ContentSeed!.Value);
+            OpenAtOnce(booster);
         }
 
+        await Frames(1);
         return opened;
     }
 

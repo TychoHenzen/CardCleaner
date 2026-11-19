@@ -7,7 +7,8 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 /// <summary>
 ///     Picks the restocker's next step from the stock and the free slots. A pack or booster that fits a free
 ///     product-shelf slot goes first; otherwise a box is unpacked onto the emptiest product shelf once enough slots
-///     are free; otherwise the restocker idles. Pure, so it is tested without a scene.
+///     are free (<see cref="FreeSlotsToUnpack" />); otherwise the restocker idles. Pure, so it is tested without a
+///     scene.
 /// </summary>
 public static class RestockPlanner
 {
@@ -29,6 +30,15 @@ public static class RestockPlanner
 
         return PlanUnpack(sources, productSlots, blocked, unreachable, boxUnpackThreshold) ?? RestockStep.Idle;
     }
+
+    // ASSUMPTION: a partly emptied box is unpacked as soon as its rest fits (Risk Low); the threshold only keeps a
+    // full box from being opened for a slot or two.
+    /// <summary>
+    ///     How many product-shelf slots must be free before a box holding <paramref name="products" /> items a product
+    ///     shelf takes is unpacked: the threshold, or fewer when the box holds fewer, so a box one shelf took part of
+    ///     is finished at the next shelf.
+    /// </summary>
+    public static int FreeSlotsToUnpack(int threshold, int products) => Math.Max(1, Math.Min(threshold, products));
 
     private static RestockStep? PlanMove(
         IReadOnlyList<StockSource> sources,
@@ -58,11 +68,6 @@ public static class RestockPlanner
         IReadOnlySet<(int Source, int Shelf)> unreachable,
         int threshold)
     {
-        if (productSlots.Count < threshold)
-        {
-            return null;
-        }
-
         var shelves = productSlots.GroupBy(s => s.ShelfId)
             .OrderByDescending(g => g.Count())
             .ThenBy(g => g.Key)
@@ -70,6 +75,7 @@ public static class RestockPlanner
             .ToList();
         var best = (from box in sources
                 where box.Kind == StockKind.Box
+                      && productSlots.Count >= FreeSlotsToUnpack(threshold, box.Products)
                 from shelfId in shelves
                 where !blocked.Contains((box.Id, shelfId)) && !unreachable.Contains((box.Id, shelfId))
                 orderby box.DistanceFromRestocker, box.Id, shelves.IndexOf(shelfId)

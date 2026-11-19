@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
+using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
@@ -30,7 +31,8 @@ internal sealed class RestockerScan
 
     /// <summary>
     ///     Scans the shop. While the restocker carries a container, that container is the only source: it must be
-    ///     shelved or put back before anything else is taken.
+    ///     shelved or put back before anything else is taken. A carried cardboard box with no booster box or booster
+    ///     left in it is no source at all, so the plan is idle and the box goes back to a rack.
     /// </summary>
     public RestockerScanResult Gather(Vector3 from, CardContainer? carried = null)
     {
@@ -38,7 +40,10 @@ internal sealed class RestockerScan
         var sales = Shelves(CardShelf.SalesGroupName);
         var storage = Shelves(CardShelf.StorageGroupName);
         if (carried != null)
-            result.AddSource(carried, false, 0f);
+        {
+            if (ProductsIn(carried) > 0)
+                result.AddSource(carried, false, 0f);
+        }
         else
             AddSources(result, from, sales.Concat(storage).ToList());
         AddSlots(result, sales);
@@ -62,7 +67,7 @@ internal sealed class RestockerScan
     private bool? Classify(CardContainer container, IReadOnlyList<CardShelf> shelves)
     {
         var parent = container.GetParent();
-        if (container.IsOpened || container.IsHeld || parent?.Name.ToString() == HandName)
+        if (container.IsOpened || container.IsHeld || parent?.Name.ToString() == HandName || ProductsIn(container) == 0)
             return null;
         if (parent is DeckSlot slot)
             return slot.GetParent() is CardShelf { IsStorage: true } ? true : null;
@@ -72,6 +77,16 @@ internal sealed class RestockerScan
             ? false
             : null;
     }
+
+    /// <summary>
+    ///     How many items in <paramref name="container" /> a product shelf takes: 1 for a booster box or booster, and for
+    ///     a cardboard box the booster boxes and boosters it holds. Cards stay in a box, and an empty box waits for the
+    ///     player to throw it away, so a box is worth a trip only while this is above 0.
+    /// </summary>
+    public static int ProductsIn(CardContainer container) =>
+        container.Storage is not { } storage
+            ? 1
+            : storage.CountOf(item => ShelfPlacementRule.From(item) is StockKind.Pack or StockKind.Booster);
 
     private static void AddSlots(RestockerScanResult result, IReadOnlyList<CardShelf> sales)
     {

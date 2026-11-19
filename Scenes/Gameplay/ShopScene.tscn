@@ -60,6 +60,7 @@
 [ext_resource type="Resource" path="res://Data/Shop/Furniture/ProductShelfFurniture.tres" id="ProductShelfFurniture"]
 [ext_resource type="Resource" path="res://Data/Shop/Furniture/StorageRackFurniture.tres" id="StorageRackFurniture"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Restocker.tscn" id="RestockerScene"]
+[ext_resource type="PackedScene" path="res://Scenes/Shop/Items/TrashCan.tscn" id="TrashCanScene"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/PcScreenOverlay.cs" id="PcScreenOverlay"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Components/PcDesktopLink.cs" id="PcDesktopLink"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/PcDesktop.tscn" id="PcDesktop"]
@@ -1501,6 +1502,9 @@ mesh = SubResource("WallBoxMesh")
 
 [node name="Restocker" parent="World/RightStorage" instance=ExtResource("RestockerScene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, -3)
+
+[node name="TrashCan" parent="World/RightStorage" instance=ExtResource("TrashCanScene")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23.5, 0, 2.2)
 
 [node name="LotBack" type="StaticBody3D" parent="World/Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -8)

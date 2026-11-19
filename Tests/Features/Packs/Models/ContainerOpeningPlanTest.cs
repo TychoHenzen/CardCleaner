@@ -30,7 +30,7 @@ public class ContainerOpeningPlanTest
     [TestCategory("Unit")]
     public static void TheSealOpensAfterTheFallAndTheItemsLeaveAfterTheSeal()
     {
-        var plan = ContainerOpeningPlan.For(CardContainerKind.Box, 1.2f, Items);
+        var plan = ContainerOpeningPlan.For(CardContainerKind.Pack, 1.2f, Items);
 
         AssertThat(plan.UnsealProgress(plan.Settle)).IsEqual(0f);
         AssertThat(plan.UnsealProgress(plan.Settle + plan.Unseal)).IsEqual(1f);
@@ -66,7 +66,7 @@ public class ContainerOpeningPlanTest
     [TestCategory("Unit")]
     public static void AnEmptyContainerShrinksAsSoonAsItsSealIsOpen()
     {
-        var plan = ContainerOpeningPlan.For(CardContainerKind.Box, 0f, 0);
+        var plan = ContainerOpeningPlan.For(CardContainerKind.Pack, 0f, 0);
 
         AssertThat(plan.VanishStart).IsEqual(plan.Settle + plan.Unseal);
     }
@@ -75,7 +75,7 @@ public class ContainerOpeningPlanTest
     [TestCategory("Unit")]
     public static void EveryOpeningEndsWithinThreeSeconds()
     {
-        foreach (var kind in new[] { CardContainerKind.Box, CardContainerKind.Pack, CardContainerKind.Booster })
+        foreach (var kind in new[] { CardContainerKind.Pack, CardContainerKind.Booster })
             AssertThat(ContainerOpeningPlan.For(kind, 30f, Items).Duration).IsLess(3f);
     }
 

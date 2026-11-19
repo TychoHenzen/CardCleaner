@@ -13,7 +13,7 @@ namespace CardCleaner.Tests.Features.Packs.Components;
 /// <summary>
 ///     A box or pack opened in the hand: its flaps or lid swing open and shut without spilling anything, and each
 ///     <see cref="CardContainer.TakeOneInto" /> moves the next item into a shelf slot with the seed opening the
-///     container whole would have given it. The last item taken uses the container up.
+///     container whole would have given it. A cardboard box is storage: emptied, it stays, and it never opens whole.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -135,9 +135,10 @@ public class ContainerLidTest
         AssertThat(box.Remaining).IsEqual(CardContainerLayout.ItemsPerContainer - 2);
     }
 
+    // The emptied box is kept, to be thrown in a trash can, and can still be shut.
     [TestCase]
     [TestCategory("Unit")]
-    public void TakingTheLastPackUsesTheBoxUp()
+    public void TakingTheLastPackLeavesTheEmptyBox()
     {
         var shelf = AddShelf();
         var box = MakeContainer(BoxScene);
@@ -148,10 +149,10 @@ public class ContainerLidTest
 
         AssertThat(shelf.StockedCount).IsEqual(CardContainerLayout.ItemsPerContainer);
         AssertThat(box.Remaining).IsEqual(0);
-        AssertBool(box.IsOpened).IsTrue();
-        AssertBool(box.IsQueuedForDeletion()).IsTrue();
-        AssertBool(box.SetLidOpen(false)).IsFalse();
-        AssertBool(box.TakeOneInto(shelf.Slots.First())).IsFalse();
+        AssertBool(box.IsOpened).IsFalse();
+        AssertBool(box.IsQueuedForDeletion()).IsFalse();
+        AssertBool(box.TakeOneInto(shelf.Slots.Last())).IsFalse();
+        AssertBool(box.SetLidOpen(false)).IsTrue();
     }
 
     // The item is spawned into the slot before the slot is asked to lock it, so a refusal must free it again.
@@ -168,30 +169,27 @@ public class ContainerLidTest
         AssertBool(box.TakeOneInto(slot)).IsFalse();
 
         AssertThat(slot.GetChildren().OfType<CardContainer>().Count()).IsEqual(1);
-        AssertThat(box.TakenCount).IsEqual(0);
+        AssertThat(box.Remaining).IsEqual(CardContainerLayout.ItemsPerContainer);
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task ABoxOpenedLooseAfterThreeTakesLetsOutTheOtherFive()
+    public void ACardboardBoxNeverOpensWhole()
     {
-        var shelf = AddShelf();
         var box = MakeContainer(BoxScene);
-        box.SetLidOpen(true, instantly: true);
-        foreach (var slot in shelf.Slots.Take(3))
-            AssertBool(box.TakeOneInto(slot)).IsTrue();
 
-        AssertBool(box.Open()).IsTrue();
-        await UntilOpened(box);
+        AssertBool(box.Open()).IsFalse();
 
-        var loose = _world.GetChildren().OfType<CardContainer>().Where(c => c.Kind == CardContainerKind.Pack);
-        AssertThat(Seeds(loose)).IsEqual(ExpectedSeeds(3, 8));
-        AssertThat(Seeds(shelf.StockedCards.OfType<CardContainer>())).IsEqual(ExpectedSeeds(0, 3));
+        AssertBool(box.IsOpened).IsFalse();
+        AssertThat(_world.GetChildren().OfType<CardContainer>().Count()).IsEqual(1);
+        AssertThat(box.Remaining).IsEqual(CardContainerLayout.ItemsPerContainer);
     }
 
+    // Unpacking moves what is left straight into the slots, with the seeds the takes would have given, and keeps the
+    // emptied box.
     [TestCase]
     [TestCategory("Unit")]
-    public async Task ABoxUnpackedAfterThreeTakesPlacesTheOtherFive()
+    public void ABoxUnpackedAfterThreeTakesPlacesTheOtherFive()
     {
         var shelf = AddShelf();
         var box = MakeContainer(BoxScene);
@@ -200,12 +198,11 @@ public class ContainerLidTest
             AssertBool(box.TakeOneInto(slot)).IsTrue();
 
         AssertBool(shelf.TryUnpack(box)).IsTrue();
-        AssertThat(box.PlacedCount).IsEqual(5);
-        AssertThat(box.PendingCount).IsEqual(0);
-        await UntilOpened(box);
 
         AssertThat(shelf.StockedCount).IsEqual(CardContainerLayout.ItemsPerContainer);
         AssertThat(Seeds(shelf.StockedCards.OfType<CardContainer>())).IsEqual(ExpectedSeeds(0, 8));
+        AssertThat(box.Remaining).IsEqual(0);
+        AssertBool(box.IsQueuedForDeletion()).IsFalse();
     }
 
     private static void AssertPosesMatch(CardContainer actual, CardContainer expected)

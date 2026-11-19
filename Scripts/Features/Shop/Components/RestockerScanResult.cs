@@ -46,7 +46,8 @@ internal sealed class RestockerScanResult
     public void AddSource(CardContainer container, bool onRack, float distance)
     {
         var id = _sourceIds.For(container);
-        _sources.Add(new StockSource(id, ShelfPlacementRule.From(container.Kind), onRack, distance));
+        _sources.Add(new StockSource(id, ShelfPlacementRule.From(container.Kind), onRack, distance,
+            RestockerScan.ProductsIn(container)));
         _sourceNodes[id] = container;
     }
 

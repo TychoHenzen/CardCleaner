@@ -7,7 +7,7 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 ///     Which stock each shelf kind takes, and how much of it one slot stacks. A card shelf takes cards, a product
 ///     shelf boosters and packs, and a storage rack boxes, packs and boosters. A slot holds one kind of stock at a
 ///     time. On a product shelf a pack fills its slot alone and boosters lie in a stack of
-///     <see cref="BoostersPerProductSlot" />, so its 8 slots hold 8 packs or 32 boosters. Pure rules, so the table is
+///     <see cref="BoostersPerProductSlot" />, so its 16 slots hold 16 packs or 64 boosters. Pure rules, so the table is
 ///     tested without a scene.
 /// </summary>
 public static class ShelfPlacementRule
@@ -38,6 +38,17 @@ public static class ShelfPlacementRule
             ShelfKind.ProductShelf => stock is StockKind.Booster or StockKind.Pack,
             ShelfKind.StorageRack => stock is StockKind.Box or StockKind.Pack or StockKind.Booster,
             _ => throw new ArgumentOutOfRangeException(nameof(shelf), shelf, "Unknown shelf kind.")
+        };
+    }
+
+    /// <summary>The stock an item kept in a cardboard box is, for placement.</summary>
+    public static StockKind From(StoredItem item)
+    {
+        return item switch
+        {
+            StoredCard => StockKind.Card,
+            StoredContainer container => From(container.Kind),
+            _ => throw new ArgumentOutOfRangeException(nameof(item), item, "Unknown stored item.")
         };
     }
 

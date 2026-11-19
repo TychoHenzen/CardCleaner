@@ -245,16 +245,17 @@ public partial class Restocker : CharacterBody3D, IDependent
     private bool Shelve(RestockStep step) =>
         _seen.SlotNode(step.TargetId) is DeckSlot slot && _hands!.Shelve(slot);
 
-    // The box must stand in the world for OpenOnto, which spawns the packs beside it. Slots may have been stocked
-    // on the walk, so the threshold is checked again; a box that fails is put back by the next scan.
+    // The box stays in the hands: its booster boxes and boosters move straight into the shelf's free slots, and the
+    // next scan puts the box back on a rack (or unpacks it at another shelf while it still holds products). Slots may
+    // have been stocked on the walk, so the threshold is checked again.
     private bool Unpack(RestockStep step)
     {
-        var free = _scan!.Gather(GlobalPosition, _hands!.Carried).Slots.Count(s => s.Shelf == ShelfKind.ProductShelf);
-        if (free < BoxUnpackThreshold || _seen.ShelfNode(step.TargetId) is not CardShelf shelf
-            || _hands.SetDown() is not { } box)
+        if (_hands!.Carried is not { } box || _seen.ShelfNode(step.TargetId) is not CardShelf shelf)
             return false;
 
-        return shelf.TryUnpack(box);
+        var free = _scan!.Gather(GlobalPosition, box).Slots.Count(s => s.Shelf == ShelfKind.ProductShelf);
+        return free >= RestockPlanner.FreeSlotsToUnpack(BoxUnpackThreshold, RestockerScan.ProductsIn(box))
+               && shelf.TryUnpack(box);
     }
 
     private static float FlatDistance(Vector3 a, Vector3 b) => new Vector2(a.X - b.X, a.Z - b.Z).Length();

@@ -8,8 +8,8 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
 ///     The restocker in the real shop scene: a hired restocker with the shop open carries a rack pack to the product
-///     shelf, unpacks a box there once enough slots are free, and does nothing when it is not hired, the shop is
-///     closed, the tree is paused or there is nothing to move.
+///     shelf, unpacks a box there once enough slots are free (finishing a partly emptied box at the next shelf), and
+///     does nothing when it is not hired, the shop is closed, the tree is paused or there is nothing to move.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -39,12 +39,14 @@ public class RestockerTest : RestockerTestBase
         var box = Stock(BoxScene, _rack.Slots.First());
         var slotCount = shelves.Sum(shelf => shelf.SlotCount);
 
-        // One shelf takes its free slots at the unpack; the rest spill and are carried to the other shelf.
+        // One shelf takes its free slots at the first unpack; the restocker carries the box on and empties it into
+        // the other shelf, then puts the empty box back on a rack for the player to throw away.
         var shelved = await Poll(
-            () => !GodotObject.IsInstanceValid(box) && shelves.Sum(shelf => shelf.StockedCount) == slotCount,
+            () => shelves.Sum(shelf => shelf.StockedCount) == slotCount && _rack.Slots.Any(s => s.Cards.Contains(box)),
             LongWalkSeconds);
 
         AssertBool(shelved).IsTrue();
+        AssertInt(box.Remaining).IsEqual(0);
         AssertInt(PackCount()).IsEqual(PacksInABox + stocked);
         AssertThat(_restocker.Phase).IsEqual(RestockerPhase.Idle);
     }

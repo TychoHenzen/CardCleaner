@@ -4,8 +4,8 @@ namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>
 ///     What one stock click would put on a shelf: one <see cref="Stock" />. When it comes out of an open box or pack,
-///     <see cref="Left" /> is how many are still inside that container, this one included; it is null for a card or a
-///     whole container.
+///     <see cref="Left" /> is how many of that stock are still inside that container, this one included; it is null for
+///     a card from the hand or a whole container.
 /// </summary>
 public readonly record struct StockOffer(StockKind Stock, int? Left = null)
 {
@@ -15,6 +15,7 @@ public readonly record struct StockOffer(StockKind Stock, int? Left = null)
     /// </summary>
     public string Prompt => Stock switch
     {
+        StockKind.Card when Left is { } cards => $"Put a card here ({cards} in the box)",
         StockKind.Card => "Put the card here",
         _ when Left is { } left => $"Put a {NameOf(Stock)} here ({left} in the box)",
         _ => $"Put the {NameOf(Stock)} here",

@@ -11,6 +11,10 @@ using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
 
+/// <summary>
+///     Unpacking onto a shelf: a cardboard box moves the booster boxes it holds straight into the free slots that take
+///     them, the last in first, and keeps whatever no slot takes; a booster box opens and stacks its boosters.
+/// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class ShelfUnpackTest
@@ -36,46 +40,46 @@ public class ShelfUnpackTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task OpenOntoLocksAllEightBoxPacksIntoTheShelf()
+    public void TryUnpackABoxMovesItsEightBoosterBoxesIntoTheShelfAndKeepsTheEmptyBox()
     {
         var shelf = AddShelf();
         var box = MakeContainer(BoxScene, Seed);
 
-        AssertBool(box.OpenOnto(FreeSlots(shelf))).IsTrue();
-        AssertThat(box.PlacedCount).IsEqual(8);
-        AssertThat(box.PendingCount).IsEqual(0);
-        // The first eight slots, the two middle boards, take one pack each.
+        AssertBool(shelf.TryUnpack(box)).IsTrue();
+
+        // The first eight slots, the two middle boards, take one booster box each, at once.
         foreach (var slot in shelf.Slots.Take(8))
         {
             AssertThat(slot.Cards.Count).IsEqual(1);
             AssertThat(((CardContainer)slot.Cards[0]).Kind).IsEqual(CardContainerKind.Pack);
         }
 
-        await UntilOpened(box);
-
         AssertThat(shelf.StockedCount).IsEqual(8);
         AssertThat(Containers(_world, CardContainerKind.Pack).Length).IsEqual(0);
+        AssertBool(GodotObject.IsInstanceValid(box) && !box.IsOpened && !box.IsQueuedForDeletion()).IsTrue();
+        AssertThat(box.Remaining).IsEqual(0);
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task ALoosePackFromTheSameSeedMatchesTheFirstLockedPack()
+    public void TheShelfsFirstSlotGetsTheBoosterBoxASameSeedBoxGivesOutFirst()
     {
         var shelf = AddShelf();
         var unpacked = MakeContainer(BoxScene, Seed);
         var looseWorld = AddNode(new Node3D());
         var loose = MakeContainer(BoxScene, Seed, looseWorld);
 
-        AssertBool(unpacked.OpenOnto(FreeSlots(shelf))).IsTrue();
-        AssertBool(loose.Open()).IsTrue();
-        await UntilOpened(unpacked);
-        await UntilOpened(loose);
+        AssertBool(shelf.TryUnpack(unpacked)).IsTrue();
+        AssertBool(loose.Storage!.TakeOnto(new Transform3D(Basis.Identity, new Vector3(3f, 0f, 0f)))).IsTrue();
 
-        // Both took the seed of the box's first pack: the shelf's first slot, and one of the loose packs.
         var firstSeed = ContainerSeeds.ChildSeed(Seed, 0);
         var lockedFirst = (CardContainer)shelf.Slots.First().Cards[0];
         AssertBool(lockedFirst.ContentSeed == firstSeed).IsTrue();
-        AssertBool(Containers(looseWorld, CardContainerKind.Pack).Any(c => c.ContentSeed == firstSeed)).IsTrue();
+        // The taken booster box goes where loose items go (the card spawner's node when one is registered), so it is
+        // looked up in the whole tree.
+        var looseTaken = ((SceneTree)Engine.GetMainLoop()).GetNodesInGroup("card_containers").OfType<CardContainer>()
+            .Where(c => c.Kind == CardContainerKind.Pack && c.GetParent() is not DeckSlot);
+        AssertBool(looseTaken.Single().ContentSeed == firstSeed).IsTrue();
     }
 
     [TestCase]
@@ -128,37 +132,18 @@ public class ShelfUnpackTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task TryUnpackABoxOntoAProductShelfFillsItsEightSlots()
+    public void TryUnpackOntoAFullShelfMovesNothingAndKeepsEveryItemInTheBox()
     {
         var shelf = AddShelf();
-        var box = MakeContainer(BoxScene, Seed);
-
-        AssertBool(shelf.TryUnpack(box)).IsTrue();
-        AssertThat(box.PlacedCount).IsEqual(8);
-        AssertThat(box.PendingCount).IsEqual(0);
-
-        await UntilOpened(box);
-
-        AssertThat(shelf.StockedCount).IsEqual(8);
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task TryUnpackWithAllSlotsStockedSpillsEveryItem()
-    {
-        var shelf = AddShelf();
-        // Two boxes of 8 packs fill the shelf's 16 slots.
-        AssertBool(MakeContainer(BoxScene, Seed).OpenOnto(FreeSlots(shelf))).IsTrue();
-        AssertBool(MakeContainer(BoxScene, Seed + 2).OpenOnto(FreeSlots(shelf))).IsTrue();
+        // Two boxes of 8 booster boxes fill the shelf's 16 slots.
+        AssertBool(shelf.TryUnpack(MakeContainer(BoxScene, Seed))).IsTrue();
+        AssertBool(shelf.TryUnpack(MakeContainer(BoxScene, Seed + 2))).IsTrue();
         var box = MakeContainer(BoxScene, Seed + 1);
 
-        AssertBool(shelf.TryUnpack(box)).IsTrue();
-        AssertThat(box.PlacedCount).IsEqual(0);
-        AssertThat(box.PendingCount).IsEqual(8);
-
-        await UntilOpened(box);
+        AssertBool(shelf.TryUnpack(box)).IsFalse();
 
         AssertThat(shelf.StockedCount).IsEqual(shelf.SlotCount);
+        AssertThat(box.Remaining).IsEqual(8);
     }
 
     [TestCase]
@@ -175,18 +160,16 @@ public class ShelfUnpackTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task TryUnpackBoxOntoAStorageRackFillsItsFourSlots()
+    public void TryUnpackBoxOntoAStorageRackFillsItsFourSlotsAndKeepsTheOtherFour()
     {
         var rack = AddShelf(StorageRackScene);
         var box = MakeContainer(BoxScene, Seed);
 
         AssertBool(rack.TryUnpack(box)).IsTrue();
-        AssertThat(box.PlacedCount).IsEqual(4);
-        AssertThat(box.PendingCount).IsEqual(4);
-
-        await UntilOpened(box);
 
         AssertThat(rack.StockedCount).IsEqual(4);
+        AssertThat(box.Remaining).IsEqual(4);
+        AssertThat(Containers(_world, CardContainerKind.Pack).Length).IsEqual(0);
     }
 
     [TestCase]
@@ -208,25 +191,25 @@ public class ShelfUnpackTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void OpenOntoAShelfWithZeroFreeSlotsPlacesNothingAndSpillsEight()
+    public void MovingIntoNoSlotsMovesNothing()
     {
         var box = MakeContainer(BoxScene, Seed);
 
-        AssertBool(box.OpenOnto(Array.Empty<DeckSlot>())).IsTrue();
-        AssertThat(box.PlacedCount).IsEqual(0);
-        AssertThat(box.PendingCount).IsEqual(8);
+        AssertThat(box.Storage!.MoveInto(Array.Empty<DeckSlot>())).IsEqual(0);
+        AssertThat(box.Remaining).IsEqual(8);
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void OpenOntoAShelfWithThreeFreeSlotsPlacesThreeAndSpillsFive()
+    public void MovingIntoThreeFreeSlotsMovesThreeAndKeepsFive()
     {
         var shelf = AddShelf();
         var box = MakeContainer(BoxScene, Seed);
 
-        AssertBool(box.OpenOnto(FreeSlots(shelf).Take(3).ToArray())).IsTrue();
-        AssertThat(box.PlacedCount).IsEqual(3);
-        AssertThat(box.PendingCount).IsEqual(5);
+        AssertThat(box.Storage!.MoveInto(FreeSlots(shelf).Take(3).ToArray())).IsEqual(3);
+
+        AssertThat(shelf.StockedCount).IsEqual(3);
+        AssertThat(box.Remaining).IsEqual(5);
     }
 
     // Away from the origin, where the containers are made, so no item lands in a bottom slot's trigger on its own.

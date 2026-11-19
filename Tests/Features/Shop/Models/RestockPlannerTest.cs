@@ -118,6 +118,18 @@ public class RestockPlannerTest
         AssertThat(step).IsEqual(new RestockStep(RestockStepKind.UnpackBox, 7, 2, 2));
     }
 
+    // A box one shelf took five booster boxes from holds three more: three free slots are enough to finish it.
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void A_box_holding_fewer_products_than_the_threshold_unpacks_once_they_all_fit()
+    {
+        var partly = new StockSource(7, StockKind.Box, false, 0f, 3);
+
+        AssertThat(Plan(new[] { partly }, ProductSlots(1, 2))).IsEqual(RestockStep.Idle);
+        AssertThat(Plan(new[] { partly }, ProductSlots(1, 3)))
+            .IsEqual(new RestockStep(RestockStepKind.UnpackBox, 7, 1, 1));
+    }
+
     [TestCase]
     [TestCategory("Unit")]
     public static void Blocked_box_and_shelf_pair_is_skipped()
@@ -139,7 +151,9 @@ public class RestockPlannerTest
     private static RestockStep Plan(IReadOnlyList<StockSource> sources, IReadOnlyList<FreeSlot> slots) =>
         RestockPlanner.Plan(sources, slots, NoBlocks, (_, _) => 0f);
 
-    private static StockSource Src(int id, StockKind kind, float distance) => new(id, kind, true, distance);
+    // A box is full (eight booster boxes); a booster box or booster is one product.
+    private static StockSource Src(int id, StockKind kind, float distance) =>
+        new(id, kind, true, distance, kind == StockKind.Box ? 8 : 1);
 
     private static List<FreeSlot> ProductSlots(int shelfId, int count, int firstId = 0) =>
         Enumerable.Range(firstId, count).Select(i => new FreeSlot(i, shelfId, ShelfKind.ProductShelf)).ToList();

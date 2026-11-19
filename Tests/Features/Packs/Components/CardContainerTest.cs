@@ -60,30 +60,18 @@ public class CardContainerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task BoxOpensIntoEightPacksOneAfterAnother()
-    {
-        var box = Make(BoxScene);
-
-        AssertBool(box.Open()).IsTrue();
-        AssertThat(box.PendingCount).IsEqual(8);
-        await Frames(1);
-        AssertThat(Containers(CardContainerKind.Pack).Length).IsLessEqual(1);
-        await UntilOpened(box);
-
-        AssertThat(Containers(CardContainerKind.Pack).Length).IsEqual(8);
-        AssertBool(GodotObject.IsInstanceValid(box)).IsFalse();
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
-    public async Task PackOpensIntoEightBoosters()
+    public async Task PackOpensIntoEightBoostersOneAfterAnother()
     {
         var pack = Make(PackScene);
 
-        pack.Open();
+        AssertBool(pack.Open()).IsTrue();
+        AssertThat(pack.PendingCount).IsEqual(8);
+        await Frames(1);
+        AssertThat(Containers(CardContainerKind.Booster).Length).IsLessEqual(1);
         await UntilOpened(pack);
 
         AssertThat(Containers(CardContainerKind.Booster).Length).IsEqual(8);
+        AssertBool(GodotObject.IsInstanceValid(pack)).IsFalse();
     }
 
     [TestCase]
@@ -129,14 +117,14 @@ public class CardContainerTest
     [TestCategory("Unit")]
     public void AnOpeningContainerStaysInViewButCannotBeHitOrAimedAtAgain()
     {
-        var box = Make(BoxScene);
+        var pack = Make(PackScene);
 
-        box.Open();
+        pack.Open();
 
-        AssertThat(box.CollisionLayer).IsEqual(0u);
-        AssertThat(box.CollisionMask).IsEqual(0u);
-        AssertBool(box.Freeze).IsTrue();
-        AssertBool(box.Visible).IsTrue();
+        AssertThat(pack.CollisionLayer).IsEqual(0u);
+        AssertThat(pack.CollisionMask).IsEqual(0u);
+        AssertBool(pack.Freeze).IsTrue();
+        AssertBool(pack.Visible).IsTrue();
     }
 
     [TestCase]
@@ -337,27 +325,6 @@ public class CardContainerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void ABoxOpensIntoTwoColumnsSideBySide()
-    {
-        var offsets = Offsets(CardContainerKind.Box);
-        var columns = offsets.GroupBy(o => o.X).OrderBy(g => g.Key).Select(g => g.ToArray()).ToArray();
-
-        AssertThat(columns.Length).IsEqual(2);
-        AssertThat(columns[0][0].X).IsEqualApprox(-columns[1][0].X, 0.0001f);
-        foreach (var column in columns)
-        {
-            AssertThat(column.Length).IsEqual(CardContainerLayout.ItemsPerContainer / 2);
-            AssertThat(column[0].Y).IsEqual(CardContainer.LiftHeight(CardContainerKind.Box));
-            foreach (var offset in column)
-                AssertThat(offset.Z).IsEqual(0f);
-            for (var i = 1; i < column.Length; i++)
-                AssertThat(column[i].Y - column[i - 1].Y)
-                    .IsEqualApprox(CardContainer.StackStep(CardContainerKind.Box), 0.0001f);
-        }
-    }
-
-    [TestCase]
-    [TestCategory("Unit")]
     public static void NoItemSpawnsInsideTheContainerOrAnotherItem()
     {
         foreach (var (kind, scene, childScene) in Chain())
@@ -392,7 +359,6 @@ public class CardContainerTest
 
     private static (CardContainerKind Kind, string Scene, string ChildScene)[] Chain() =>
     [
-        (CardContainerKind.Box, BoxScene, PackScene),
         (CardContainerKind.Pack, PackScene, BoosterScene),
         (CardContainerKind.Booster, BoosterScene, CardScene)
     ];

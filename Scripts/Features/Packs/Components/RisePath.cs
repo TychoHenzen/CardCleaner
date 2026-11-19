@@ -9,10 +9,8 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 /// </summary>
 internal readonly struct RisePath
 {
-    // Where an item starts inside the wrapper and where it leaves it, in the wrapper's own frame. A box and a pack
-    // open at the top; a booster's cards slide out of its torn end at -Z.
-    private static readonly Vector3 BoxInside = new(0f, 0.01f, 0f);
-    private static readonly Vector3 BoxMouth = new(0f, 0.7f, 0f);
+    // Where an item starts inside the wrapper and where it leaves it, in the wrapper's own frame. A pack opens at the
+    // top; a booster's cards slide out of its torn end at -Z.
     private static readonly Vector3 PackMouth = new(0f, 0.29f, 0f);
     private const float PackFloor = 0.007f;
 
@@ -53,7 +51,6 @@ internal readonly struct RisePath
     // A pack's boosters lie stacked flat inside it and leave from the top of the stack down.
     private static Vector3 InsideOf(CardContainerKind kind, int index) => kind switch
     {
-        CardContainerKind.Box => BoxInside,
         CardContainerKind.Pack => new Vector3(0f, PackFloor + StackLevel(index) * PackStackStep, 0f),
         _ => BoosterInside
     };
@@ -63,7 +60,6 @@ internal readonly struct RisePath
 
     private static Vector3 MouthOf(CardContainerKind kind) => kind switch
     {
-        CardContainerKind.Box => BoxMouth,
         CardContainerKind.Pack => PackMouth,
         _ => BoosterMouth
     };

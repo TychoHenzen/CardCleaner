@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace CardCleaner.Scripts.Features.Packs.Models;
@@ -7,17 +8,19 @@ namespace CardCleaner.Scripts.Features.Packs.Models;
 /// <summary>
 ///     What a cardboard box holds, in the order it went in, and where each item lies (<see cref="BoxPacker" />). The
 ///     last item in is the first out. Where each item lies follows from the order alone, so a box rebuilt from its
-///     saved list looks the same as before.
+///     saved list looks the same as before. An immutable value: every change returns new contents.
 /// </summary>
-public sealed class BoxContents
+public sealed record BoxContents
 {
     private readonly BoxPacker _packer;
-    private readonly List<StoredItem> _items = new();
-    private readonly List<PackedItem> _placed = new();
+    private readonly ImmutableList<StoredItem> _items;
+    private readonly ImmutableList<PackedItem> _placed;
 
-    public BoxContents(BoxPacker packer)
+    private BoxContents(BoxPacker packer, ImmutableList<StoredItem> items, ImmutableList<PackedItem> placed)
     {
         _packer = packer;
+        _items = items;
+        _placed = placed;
     }
 
     /// <summary>The items in the order they went in.</summary>
@@ -28,19 +31,24 @@ public sealed class BoxContents
 
     public int Count => _items.Count;
 
+    /// <summary>An empty box packed by <paramref name="packer" />.</summary>
+    public static BoxContents Empty(BoxPacker packer) => new(packer, [], []);
+
+    /// <summary>
+    ///     An empty box packed by <paramref name="packer" /> with <paramref name="items" /> put in, in order, and the
+    ///     items that did not fit.
+    /// </summary>
+    public static (BoxContents Contents, IReadOnlyList<StoredItem> Left) Packed(BoxPacker packer,
+        IEnumerable<StoredItem> items) => Empty(packer).Adding(items);
+
     /// <summary>True when an item of <paramref name="shape" /> would fit now.</summary>
     public bool HasRoomFor(ItemShape shape) => _packer.Place(_placed, shape) != null;
 
-    /// <summary>Puts <paramref name="item" /> in where it fits; false, with nothing changed, when there is no room.</summary>
-    public bool TryAdd(StoredItem item)
-    {
-        if (_packer.Place(_placed, item.Shape) is not { } spot)
-            return false;
-
-        _items.Add(item);
-        _placed.Add(spot);
-        return true;
-    }
+    /// <summary>These contents with <paramref name="item" /> put in where it fits, or null when there is no room.</summary>
+    public BoxContents? With(StoredItem item) =>
+        _packer.Place(_placed, item.Shape) is { } spot
+            ? new BoxContents(_packer, _items.Add(item), _placed.Add(spot))
+            : null;
 
     /// <summary>The index of the last item that <paramref name="accepts" /> takes, or -1 when there is none.</summary>
     public int LastIndexOf(Func<StoredItem, bool> accepts)
@@ -55,26 +63,24 @@ public sealed class BoxContents
     }
 
     /// <summary>
-    ///     Takes out the item at <paramref name="index" />. Taking out any but the last packs the items after it again,
-    ///     in their order; one that no longer fits comes out as well and is added to <paramref name="spilled" />.
+    ///     These contents without the item at <paramref name="index" />. Taking out any but the last packs the items
+    ///     after it again, in their order; one that no longer fits comes out as well and is listed in Spilled.
     /// </summary>
-    public StoredItem TakeAt(int index, ICollection<StoredItem> spilled)
-    {
-        var item = _items[index];
-        var after = _items.Skip(index + 1).ToList();
-        _items.RemoveRange(index, _items.Count - index);
-        _placed.RemoveRange(index, _placed.Count - index);
-        foreach (var next in after.Where(next => !TryAdd(next)))
-            spilled.Add(next);
+    public (BoxContents Remaining, IReadOnlyList<StoredItem> Spilled) Without(int index) =>
+        new BoxContents(_packer, _items.GetRange(0, index), _placed.GetRange(0, index)).Adding(_items.Skip(index + 1));
 
-        return item;
-    }
-
-    /// <summary>Empties the box and puts <paramref name="items" /> in, in order; returns the ones that did not fit.</summary>
-    public List<StoredItem> Refill(IEnumerable<StoredItem> items)
+    private (BoxContents Contents, IReadOnlyList<StoredItem> Left) Adding(IEnumerable<StoredItem> items)
     {
-        _items.Clear();
-        _placed.Clear();
-        return items.Where(item => !TryAdd(item)).ToList();
+        var contents = this;
+        var left = new List<StoredItem>();
+        foreach (var item in items)
+        {
+            if (contents.With(item) is { } next)
+                contents = next;
+            else
+                left.Add(item);
+        }
+
+        return (contents, left);
     }
 }

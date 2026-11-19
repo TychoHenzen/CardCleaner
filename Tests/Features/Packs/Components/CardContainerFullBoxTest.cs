@@ -11,12 +11,16 @@ using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
 namespace CardCleaner.Tests.Features.Packs.Components;
 
-/// <summary>Opens a whole cardboard box through its packs and boosters down to the 512 cards.</summary>
+/// <summary>
+///     Opens a whole booster box through its boosters down to the 64 cards. A cardboard box is storage and never opens
+///     whole, so the chain starts one level down.
+/// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class CardContainerFullBoxTest
 {
-    private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
+    private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
+    private const int CardsPerPack = CardContainerLayout.ItemsPerContainer * CardContainerLayout.ItemsPerContainer;
     private const float StorageWallHeight = 3.75f;
     private const ulong Seed = 777;
     private const int SettleFrames = 180;
@@ -25,12 +29,11 @@ public class CardContainerFullBoxTest
     // Two items of one generation (packs, boosters or cards) spawning closer than this share a spot.
     private const float SamePositionTolerance = 0.001f;
 
-    // A synthetic 8 x 8 m storage room and a box delivery marker inside it, modelled on the shop's storage block;
-    // it is not read from ShopScene.
+    // A synthetic 8 x 8 m storage room and a delivery marker inside it, modelled on the shop's storage block; it is not
+    // read from ShopScene.
     private static readonly Rect2 StorageRoom = new(0f, -8f, 8f, 8f);
     private static readonly Vector3 StorageDelivery = new(4f, 0f, -5.5f);
 
-    private readonly List<Vector3> _packSpawns = [];
     private readonly List<Vector3> _boosterSpawns = [];
     private Node3D _world = null!;
     private RecordingCardSpawner _spawner = null!;
@@ -40,28 +43,27 @@ public class CardContainerFullBoxTest
     {
         _world = AddNode(new Node3D());
         _spawner = new RecordingCardSpawner();
-        _packSpawns.Clear();
         _boosterSpawns.Clear();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task WholeBoxOpensToFiveHundredAndTwelveCards()
+    public async Task AWholeBoosterBoxOpensToSixtyFourCards()
     {
-        await OpenEverything(Make(BoxScene));
+        await OpenEverything(Make(PackScene));
 
-        AssertThat(_spawner.Spawned.Count).IsEqual(CardContainerLayout.CardsPerBox);
+        AssertThat(_spawner.Spawned.Count).IsEqual(CardsPerPack);
     }
 
     [TestCase]
     [TestCategory("Unit")]
     public async Task SameSeedPutsSpecialCardsInTheSamePositionsAndCommonCardsAreAllZero()
     {
-        await OpenEverything(Make(BoxScene));
+        await OpenEverything(Make(PackScene));
         var first = _spawner.Spawned.Select(s => s.Signature).ToArray();
 
         _spawner = new RecordingCardSpawner();
-        await OpenEverything(Make(BoxScene));
+        await OpenEverything(Make(PackScene));
         var second = _spawner.Spawned.Select(s => s.Signature).ToArray();
 
         AssertThat(second.Length).IsEqual(first.Length);
@@ -75,46 +77,42 @@ public class CardContainerFullBoxTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task SpawnedCardSignaturesMatchTheGeneratorOutputAndIncludeSpecialCards()
+    public async Task SpawnedCardSignaturesMatchTheGeneratorOutput()
     {
-        await OpenEverything(Make(BoxScene));
-        var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBox();
+        await OpenEverything(Make(PackScene));
+        var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBox().Take(CardsPerPack);
         var spawned = _spawner.Spawned.Select(s => s.Signature).ToArray();
 
-        // Spawn order is not generation order, so compare the multiset of all 512 signatures.
+        // Spawn order is not generation order, so compare the multiset of all 64 signatures.
         AssertThat(spawned.Select(SignatureKey).OrderBy(k => k).ToArray())
             .IsEqual(expected.Select(SignatureKey).OrderBy(k => k).ToArray());
-        AssertThat(spawned.Any(s => s.HasMagicalPotential())).IsTrue();
     }
 
     private static string SignatureKey(CardSignature signature) => string.Join(" ", signature.Elements);
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task AFullBoxOpenedAtTheStorageDeliveryPointSpawnsEveryItemInsideTheStorageRoomOnItsOwnSpot()
+    public async Task AFullBoosterBoxOpenedAtTheStorageDeliveryPointSpawnsEveryItemInsideTheRoomOnItsOwnSpot()
     {
         AddStorageRoom();
-        var box = Make(BoxScene);
-        box.GlobalPosition = StorageDelivery;
+        var pack = Make(PackScene);
+        pack.GlobalPosition = StorageDelivery;
 
-        // Opens the real box, every pack and every booster. Each level lands on the floor before the next is
-        // opened, as in the shop where the player opens an item only after it has come to rest. The test checks
-        // where each opened container puts its items: inside the room, and no two of one generation on one spot.
-        await OpenEverything(box, SettleFrames);
+        // Opens the real booster box and every booster. Each level lands on the floor before the next is opened, as
+        // in the shop where the player opens an item only after it has come to rest. The test checks where each
+        // opened container puts its items: inside the room, and no two of one generation on one spot.
+        await OpenEverything(pack, SettleFrames);
 
         var cards = _spawner.Spawned.Select(spawned => spawned.Transform.Origin).ToList();
-        var itemsPerContainer = CardContainerLayout.ItemsPerContainer;
-        AssertThat(_packSpawns.Count).IsEqual(itemsPerContainer);
-        AssertThat(_boosterSpawns.Count).IsEqual(itemsPerContainer * itemsPerContainer);
-        AssertThat(cards.Count).IsEqual(CardContainerLayout.CardsPerBox);
+        AssertThat(_boosterSpawns.Count).IsEqual(CardContainerLayout.ItemsPerContainer);
+        AssertThat(cards.Count).IsEqual(CardsPerPack);
 
-        var outside = _packSpawns.Concat(_boosterSpawns).Concat(cards)
+        var outside = _boosterSpawns.Concat(cards)
             .Where(p => !StorageRoom.HasPoint(new Vector2(p.X, p.Z)) || p.Y >= StorageWallHeight)
             .ToList();
         AssertThat(string.Join(", ", outside)).IsEmpty();
 
-        // Packs, boosters and cards never exist at the same time, so only items of one generation can overlap.
-        AssertThat(string.Join(", ", SharedSpots(_packSpawns))).IsEmpty();
+        // Boosters and cards never exist at the same time, so only items of one generation can overlap.
         AssertThat(string.Join(", ", SharedSpots(_boosterSpawns))).IsEmpty();
         AssertThat(string.Join(", ", SharedSpots(cards))).IsEmpty();
     }
@@ -188,20 +186,20 @@ public class CardContainerFullBoxTest
     }
 
     /// <summary>
-    ///     Opens the box, then every pack, then every booster, each level all at once, optionally letting each level
-    ///     settle before the next is opened.
+    ///     Opens the booster box, then every booster, each level all at once, optionally letting each level settle
+    ///     before the next is opened.
     /// </summary>
-    private async Task OpenEverything(CardContainer box, int settleFrames = 0)
+    private async Task OpenEverything(CardContainer pack, int settleFrames = 0)
     {
         var expected = 1;
-        foreach (var kind in new[] { CardContainerKind.Box, CardContainerKind.Pack, CardContainerKind.Booster })
+        foreach (var kind in new[] { CardContainerKind.Pack, CardContainerKind.Booster })
         {
-            CardContainer[] level = kind == CardContainerKind.Box ? [box] : Containers(kind);
+            CardContainer[] level = kind == CardContainerKind.Pack ? [pack] : Containers(kind);
             AssertThat(level.Length).IsEqual(expected);
             foreach (var container in level)
             {
-                if (kind != CardContainerKind.Booster)
-                    RecordSpawns(container, kind == CardContainerKind.Box ? _packSpawns : _boosterSpawns);
+                if (kind == CardContainerKind.Pack)
+                    RecordSpawns(container, _boosterSpawns);
                 container.Open();
             }
 

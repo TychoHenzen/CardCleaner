@@ -1,5 +1,6 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
@@ -26,13 +27,16 @@ public partial class ShelfSlotTarget : StaticBody3D, IInteractable, IDependent
     /// <summary>The slot this target stocks.</summary>
     public DeckSlot? Slot => _slot;
 
-    public bool CanInteract => _slot != null && _hand?.Offered is { } offer && _slot.CanTake(offer.Stock);
+    public bool CanInteract => Offer != null;
 
     public Node3D InteractionBody => this;
 
     public float InteractionRange => StockReach;
 
-    public string Prompt => _hand?.Offered?.Prompt ?? "Put the card here";
+    public string Prompt => Offer?.Prompt ?? "Put the card here";
+
+    // What a click here would stock now; null when the hand offers nothing this slot takes.
+    private StockOffer? Offer => _slot != null && IsInstanceValid(_slot) ? _hand?.OfferFor(_slot) : null;
 
     /// <summary>
     ///     Builds the target for <paramref name="slot" /> as a child of <paramref name="shelf" />. It covers the
@@ -135,7 +139,7 @@ public partial class ShelfSlotTarget : StaticBody3D, IInteractable, IDependent
     private void RefreshLayer()
     {
         var open = _slot != null && IsInstanceValid(_slot) && _slot.HasRoom && IsVisibleInTree()
-                   && (!_slot.HasCards || (_hand?.Offered is { } offer && _slot.CanTake(offer.Stock)));
+                   && (!_slot.HasCards || Offer != null);
         CollisionLayer = open ? InteractableLayerBit : 0;
         if (!open)
             ClearHighlight();

@@ -22,8 +22,9 @@ using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// End to end in the shop scene: an ordered cardboard box can be found by the player's interaction ray and
-/// opened down to packs, boosters and finally real cards carrying the signatures the generator rolled.
+/// End to end in the shop scene: an ordered cardboard box can be found by the player's interaction ray, and an
+/// ordered booster box opens down to booster packs and finally real cards carrying the signatures the generator
+/// rolled. A cardboard box is storage and never opens whole.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -70,7 +71,7 @@ public class ShopPackOpeningSceneTest
     [TestCategory("Unit")]
     public async Task OrderedBoxIsACardContainerTheInteractionRayCanReach()
     {
-        var box = OrderBox();
+        var box = Order("cardboard_box");
         await ISceneRunner.SyncPhysicsFrame;
         await ISceneRunner.SyncPhysicsFrame;
         var interaction = _player.GetNode<InteractionSystem>("Head/Camera3D/InteractionSystem");
@@ -90,17 +91,12 @@ public class ShopPackOpeningSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task OpeningAnOrderedBoxLeadsThroughPacksAndBoostersToRealCardsWithGeneratedSignatures()
+    public async Task OpeningAnOrderedBoosterBoxLeadsThroughBoostersToRealCardsWithGeneratedSignatures()
     {
-        var box = OrderBox();
-        box.Open();
-        await UntilOpened(box);
+        var pack = Order("pack");
+        pack.Open();
+        await UntilOpened(pack);
 
-        var packs = Containers(CardContainerKind.Pack);
-        AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
-
-        packs[0].Open();
-        await UntilOpened(packs[0]);
         var boosters = Containers(CardContainerKind.Booster);
         AssertThat(boosters.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
 
@@ -116,28 +112,28 @@ public class ShopPackOpeningSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task OpenedBoxLeavesEveryPackSettledInsideTheStorageRoom()
+    public async Task AnOpenedBoosterBoxLeavesEveryBoosterSettledInsideTheStorageRoom()
     {
-        var box = OrderBox();
+        var pack = Order("pack");
         await PhysicsFrames(SettleFrames);
-        box.Open();
-        await UntilOpened(box);
+        pack.Open();
+        await UntilOpened(pack);
         await PhysicsFrames(SettleFrames);
 
-        var packs = Containers(CardContainerKind.Pack);
-        AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
-        foreach (var pack in packs)
+        var boosters = Containers(CardContainerKind.Booster);
+        AssertThat(boosters.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
+        foreach (var booster in boosters)
         {
-            var at = pack.GlobalPosition;
+            var at = booster.GlobalPosition;
             AssertBool(StorageRoom.HasPoint(new Vector2(at.X, at.Z)) && at.Y > FallLimitY)
-                .OverrideFailureMessage($"pack settled at {at}, outside the storage room")
+                .OverrideFailureMessage($"booster settled at {at}, outside the storage room")
                 .IsTrue();
         }
     }
 
-    private CardContainer OrderBox()
+    private CardContainer Order(string id)
     {
-        var item = Catalog().Items.Single(i => i.Id == "cardboard_box");
+        var item = Catalog().Items.Single(i => i.Id == id);
         _money.Add(item.Price);
         var result = _ordering.Order(item);
         AssertBool(result.Succeeded).IsTrue();

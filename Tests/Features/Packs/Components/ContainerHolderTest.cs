@@ -281,10 +281,11 @@ public partial class ContainerHolderTest
             var anchor = new Node3D();
             _world.AddChild(anchor);
             _holder.SetReferences(anchor);
-            var box = Make(BoxScene);
-            _holder.TryPickUp(box);
+            // A cardboard box never opens whole, so the case holds a booster box.
+            var pack = Make(PackScene);
+            _holder.TryPickUp(pack);
 
-            AssertBool(box.Open()).IsTrue();
+            AssertBool(pack.Open()).IsTrue();
 
             AssertThat(_holder.Held).IsNull();
             AssertBool(_holder.IsHolding).IsFalse();
@@ -328,10 +329,10 @@ public partial class ContainerHolderTest
         ILog.Sink = log;
         try
         {
-            var box = Make(BoxScene);
-            AssertBool(box.Open()).IsTrue();
+            var pack = Make(PackScene);
+            AssertBool(pack.Open()).IsTrue();
 
-            AssertBool(_holder.TryPickUp(box)).IsFalse();
+            AssertBool(_holder.TryPickUp(pack)).IsFalse();
 
             AssertThat(_holder.Held).IsNull();
             AssertThat(log.Errors).IsEmpty();

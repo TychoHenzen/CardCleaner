@@ -19,13 +19,14 @@ public class BoxContentsTest
     {
         var contents = Contents(BoosterBox, Card(1), Booster);
         var before = contents.Placed.Take(2).ToList();
-        var spilled = new List<StoredItem>();
 
-        var taken = contents.TakeAt(contents.Count - 1, spilled);
+        var (rest, spilled) = contents.Without(contents.Count - 1);
 
-        AssertThat(taken).IsEqual(Booster);
+        AssertThat(rest.Items.ToArray()).ContainsExactly(BoosterBox, Card(1));
         AssertThat(spilled.Count).IsEqual(0);
-        AssertThat(contents.Placed.SequenceEqual(before)).IsTrue();
+        AssertThat(rest.Placed.SequenceEqual(before)).IsTrue();
+        // The contents taken from are unchanged.
+        AssertThat(contents.Count).IsEqual(3);
     }
 
     [TestCase]
@@ -33,12 +34,11 @@ public class BoxContentsTest
     public static void TakingAnEarlierItemPacksTheLaterOnesAgainInTheirOrder()
     {
         var contents = Contents(BoosterBox, Card(1), Card(2));
-        var spilled = new List<StoredItem>();
 
-        contents.TakeAt(0, spilled);
+        var (rest, spilled) = contents.Without(0);
 
-        AssertThat(contents.Items.ToArray()).ContainsExactly(Card(1), Card(2));
-        AssertThat(contents.Placed[0].Min.Y).IsEqual(0f);
+        AssertThat(rest.Items.ToArray()).ContainsExactly(Card(1), Card(2));
+        AssertThat(rest.Placed[0].Min.Y).IsEqual(0f);
         AssertThat(spilled.Count).IsEqual(0);
     }
 
@@ -49,20 +49,18 @@ public class BoxContentsTest
         var contents = Contents(Enumerable.Repeat<StoredItem>(BoosterBox, 8).ToArray());
 
         AssertThat(contents.HasRoomFor(ItemShape.Pack)).IsFalse();
-        AssertThat(contents.TryAdd(BoosterBox)).IsFalse();
+        AssertThat(contents.With(BoosterBox)).IsNull();
         AssertThat(contents.Count).IsEqual(8);
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void RefillingReturnsWhatDoesNotFit()
+    public static void PackingReturnsWhatDoesNotFit()
     {
-        var contents = new BoxContents(CartonSpace.Packer());
-
-        var spilled = contents.Refill(Enumerable.Repeat<StoredItem>(BoosterBox, 9));
+        var (contents, left) = BoxContents.Packed(CartonSpace.Packer(), Enumerable.Repeat<StoredItem>(BoosterBox, 9));
 
         AssertThat(contents.Count).IsEqual(8);
-        AssertThat(spilled.Count).IsEqual(1);
+        AssertThat(left.Count).IsEqual(1);
     }
 
     [TestCase]
@@ -81,9 +79,14 @@ public class BoxContentsTest
 
     private static BoxContents Contents(params StoredItem[] items)
     {
-        var contents = new BoxContents(CartonSpace.Packer());
+        var contents = BoxContents.Empty(CartonSpace.Packer());
         foreach (var item in items)
-            AssertThat(contents.TryAdd(item)).IsTrue();
+        {
+            var next = contents.With(item);
+            AssertThat(next).IsNotNull();
+            contents = next!;
+        }
+
         return contents;
     }
 }

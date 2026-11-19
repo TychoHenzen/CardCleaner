@@ -70,6 +70,9 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
 
         _services.Get<IControlHints>(hints => _hints = hints);
 
+        // A left click on nothing usable sets one item from a held open box down where the player aims.
+        InteractionSystem.ClickedNothing += OnClickedNothing;
+
         // Listen for card interaction requests from the generic system
         ConnectToCardInteractions(_services);
         ConnectToContainers();
@@ -133,6 +136,8 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
     {
         _inputService?.UnregisterAllActions(this);
         _hints?.Clear(this);
+        if (IsInstanceValid(InteractionSystem))
+            InteractionSystem.ClickedNothing -= OnClickedNothing;
 
         // Disconnect from card signals
         var cards = GetTree().GetNodesInGroup("Cards");
@@ -176,35 +181,45 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
         _containerHolder.TryPickUp(container);
     }
 
-    public StockOffer? Offered
+    public StockOffer? OfferFor(DeckSlot slot)
     {
-        get
-        {
-            // Before _Ready (or when an export is missing) the holders are not wired, so the hand offers nothing.
-            if (_containerHolder == null || CardDropper.IsPreparingDrop) return null;
+        // Before _Ready (or when an export is missing) the holders are not wired, so the hand offers nothing.
+        if (_containerHolder == null || CardDropper.IsPreparingDrop) return null;
 
-            // A held container is what the hand offers, even with cards in it; a booster opening offers nothing.
-            if (_containerHolder.IsHolding)
-                return _containerHolder.Held is { } held ? OfferOf(held) : null;
+        // A held container is what the hand offers, even with cards in it; a booster opening offers nothing.
+        if (_containerHolder.IsHolding)
+            return _containerHolder.Held is { } held ? OfferOf(held, slot) : null;
 
-            return CardHolder.TopCard != null ? new StockOffer(StockKind.Card) : null;
-        }
+        return CardHolder.TopCard != null && slot.CanTake(StockKind.Card) ? new StockOffer(StockKind.Card) : null;
     }
 
-    // A shut container offers itself. An open box or pack offers the next item inside while any is left: an emptied
-    // one is freed only at the end of the frame, so the count, not its absence, stops a second take.
-    private static StockOffer? OfferOf(CardContainer held)
+    // A shut container offers itself. An open cardboard box offers the last item in it the slot takes, with how many
+    // of that stock it holds. An open booster box offers its next booster while any is left: an emptied one is freed
+    // only at the end of the frame, so the count, not its absence, stops a second take.
+    private static StockOffer? OfferOf(CardContainer held, DeckSlot slot)
     {
-        if (!held.IsLidOpen) return new StockOffer(ShelfPlacementRule.From(held.Kind));
+        if (!held.IsLidOpen)
+        {
+            var stock = ShelfPlacementRule.From(held.Kind);
+            return slot.CanTake(stock) ? new StockOffer(stock) : null;
+        }
+
+        if (held.Storage is { } storage)
+        {
+            return storage.NextFor(slot) is { } next
+                ? new StockOffer(next, storage.CountOf(item => ShelfPlacementRule.From(item) == next))
+                : null;
+        }
 
         return held.Remaining > 0 && CardContainerLayout.ChildKind(held.Kind) is { } inside
+                                  && slot.CanTake(ShelfPlacementRule.From(inside))
             ? new StockOffer(ShelfPlacementRule.From(inside), held.Remaining)
             : null;
     }
 
     public bool TryStock(DeckSlot slot)
     {
-        if (Offered is not { } offer || !slot.CanTake(offer.Stock)) return false;
+        if (OfferFor(slot) is null) return false;
 
         // Offered is null while a booster opens in the hand, so a held container here is always Held.
         if (_containerHolder.Held is { } held)
@@ -212,6 +227,12 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
 
         var card = CardHolder.TopCard;
         return card != null && CardHolder.HandOver(card) && slot.TryLock(card);
+    }
+
+    private void OnClickedNothing()
+    {
+        if (!CardDropper.IsPreparingDrop)
+            _containerHolder.PutOneDown();
     }
 
     private void OnRightPress(bool pressed)

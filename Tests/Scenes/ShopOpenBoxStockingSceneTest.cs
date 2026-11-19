@@ -113,11 +113,11 @@ public class ShopOpenBoxStockingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task EightClicksEmptyTheBoxOntoTheProductShelf()
+    public async Task EightClicksEmptyTheBoxOntoTheProductShelfAndKeepTheEmptyBoxInHand()
     {
         var box = await CarryOpened("cardboard_box");
 
-        foreach (var target in _productShelf.SlotTargets.ToList())
+        foreach (var target in _productShelf.SlotTargets.Take(CardContainerLayout.ItemsPerContainer).ToList())
         {
             await AimAt(target);
             AssertBool(ReferenceEquals(_interaction.Target, target))
@@ -128,9 +128,10 @@ public class ShopOpenBoxStockingSceneTest
 
         AssertThat(_productShelf.StockedCount).IsEqual(CardContainerLayout.ItemsPerContainer);
         AssertBool(_productShelf.StockedCards.All(c => c is CardContainer { Kind: CardContainerKind.Pack })).IsTrue();
-        AssertBool(_holder.IsHolding).IsFalse();
+        // The emptied box stays in the hand until the player throws it in a trash can.
         await PhysicsFrames(1);
-        AssertBool(GodotObject.IsInstanceValid(box)).IsFalse();
+        AssertThat(_holder.Held).IsSame(box);
+        AssertThat(box.Remaining).IsEqual(0);
     }
 
     [TestCase]
