@@ -153,6 +153,31 @@ public class ShopShelfStockSceneTest
         AssertThat(target.CollisionLayer).IsEqual(4u);
     }
 
+    // The pick-up reparents the card to the camera while it still lies on the seat, which reports it entering the
+    // slot's trigger again at once. The slot must not take it back once the frames after the click have run: before
+    // the hand took cards out of play, the card ended up both in the hand and locked in the slot.
+    [TestCase("Slot2")]
+    [TestCase("Slot6")]
+    public async Task ACardPickedUpOffAOneCardSlotStaysInTheHand(string slotName)
+    {
+        var card = _card;
+        _cardHolder.AddCard(card);
+        var target = TargetOf(_cardShelf, slotName);
+        await AimAt(target);
+        _leftClick!.Invoke(true);
+        AssertBool(target.Slot!.Cards.Contains(card)).IsTrue();
+
+        await AimAt(card);
+        _leftClick!.Invoke(true);
+        await PhysicsFrames(AimFrames);
+
+        AssertBool(_cardHolder.HeldCards.Contains(card)).IsTrue();
+        AssertBool(card.GetParent() == _interaction.Camera).IsTrue();
+        AssertBool(target.Slot.HasCards).IsFalse();
+        AssertBool(card.Freeze).IsTrue();
+        AssertThat(card.CollisionLayer).IsEqual(0u);
+    }
+
     [TestCase]
     public async Task AClickOnAFreeProductSlotStocksTheHeldBooster()
     {
@@ -165,7 +190,7 @@ public class ShopShelfStockSceneTest
         AssertBool(ReferenceEquals(_interaction.Target, target))
             .OverrideFailureMessage($"aimed at {Describe(_interaction.Target)}, expected {target.Name}")
             .IsTrue();
-        AssertThat(_interaction.Target!.Prompt).IsEqual("Put the booster here");
+        AssertThat(_interaction.Target!.Prompt).IsEqual("Put the booster pack here");
         _leftClick!.Invoke(true);
 
         AssertBool(_holder.IsHolding).IsFalse();

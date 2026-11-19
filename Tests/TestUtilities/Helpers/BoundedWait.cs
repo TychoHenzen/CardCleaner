@@ -52,6 +52,10 @@ public static class BoundedWait
             await tree.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
     }
 
+    // Lets the current frame end, which frees every node queued with QueueFree. A test whose action took a body out
+    // of the tree and queued it awaits this last, because gdUnit counts orphan nodes the moment the test returns.
+    public static Task ForQueuedFrees() => ProcessFrames(1);
+
     // Returns null once count physics frames have passed, otherwise the timeout message from Until.
     public static async Task<string?> PhysicsFrames(int count, double maxSeconds = DefaultMaxSeconds)
     {

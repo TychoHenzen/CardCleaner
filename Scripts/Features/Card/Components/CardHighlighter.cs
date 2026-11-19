@@ -5,7 +5,9 @@ using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Packs.Components;
+using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
+using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
@@ -55,8 +57,9 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
         }
 
         CardHolder.SetReferences(camera);
-        _containerHolder.SetReferences(camera);
-        CardDropper.Initialize(CardHolder, Preview, camera);
+        _containerHolder.SetReferences(camera, CardHolder);
+        // A held container occupies the hand, so X drops no card while one is held or a booster opens into the hand.
+        CardDropper.Initialize(CardHolder, Preview, camera, () => _containerHolder.IsHolding);
 
         // Register card-specific input (right-click for drop preparation)
         _services.Get<IInputService>(input =>
@@ -66,6 +69,9 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
         });
 
         _services.Get<IControlHints>(hints => _hints = hints);
+
+        // A left click on nothing usable sets one item from a held open box down where the player aims.
+        InteractionSystem.ClickedNothing += OnClickedNothing;
 
         // Listen for card interaction requests from the generic system
         ConnectToCardInteractions(_services);
@@ -94,6 +100,7 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
 
     private void ConnectToCard(CardController card)
     {
+        card.PickUpAllowed = CanTakeCard;
         if (!card.IsConnected(CardController.SignalName.CardInteractionRequested,
                 Callable.From<CardController>(OnCardInteractionRequested)))
             card.CardInteractionRequested += OnCardInteractionRequested;
@@ -130,12 +137,17 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
     {
         _inputService?.UnregisterAllActions(this);
         _hints?.Clear(this);
+        if (IsInstanceValid(InteractionSystem))
+            InteractionSystem.ClickedNothing -= OnClickedNothing;
 
         // Disconnect from card signals
         var cards = GetTree().GetNodesInGroup("Cards");
         foreach (var node in cards)
             if (node is CardController card)
+            {
                 card.CardInteractionRequested -= OnCardInteractionRequested;
+                card.PickUpAllowed = null;
+            }
 
         GetTree().NodeAdded -= OnNodeAdded;
         foreach (var node in GetTree().GetNodesInGroup("Containers"))
@@ -148,57 +160,85 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
         // Update drop preview while preparing drop
         if (CardDropper.IsPreparingDrop) CardDropper.UpdateDropPreview();
 
-        // The board drops repeated identical hints, so publishing every frame costs one comparison.
-        _hints?.Publish(this, CardHandHints.For(CardHolder.HeldCount, CardDropper.IsPreparingDrop));
+        // The board drops repeated identical hints, so publishing every frame costs one comparison. While a container
+        // occupies the hand its own hints apply, and the cards' keys do nothing, so they are not shown.
+        var usableCards = _containerHolder is { IsHolding: true } ? 0 : CardHolder.HeldCount;
+        _hints?.Publish(this, CardHandHints.For(usableCards, CardDropper.IsPreparingDrop));
     }
 
     private void OnCardInteractionRequested(CardController card)
     {
-        // A held container occupies the hand, so a card click does nothing until it is dropped or opened.
-        if (_containerHolder.IsHolding) return;
-
-        // Handle card pickup through the generic interaction system
-        if (!CardDropper.IsPreparingDrop) CardHolder.AddCard(card);
+        if (CanTakeCard()) CardHolder.AddCard(card);
     }
+
+    // A held container occupies the hand, a drop in progress keeps it, and a full hand takes no more cards.
+    private bool CanTakeCard() =>
+        _containerHolder is { IsHolding: false } && !CardDropper.IsPreparingDrop && CardHolder.Room > 0;
 
     private void OnContainerPickUpRequested(CardContainer container)
     {
-        // Cards in hand or a drop in progress keep the hand; the container click is ignored then.
-        if (CardHolder.HasCards || CardDropper.IsPreparingDrop) return;
+        // A drop in progress keeps the hand. Cards in hand leave room only for a booster, which opens into them; a box
+        // or pack click is ignored then.
+        if (CardDropper.IsPreparingDrop || (CardHolder.HasCards && container.Kind != CardContainerKind.Booster))
+            return;
 
         _containerHolder.TryPickUp(container);
     }
 
-    public RigidBody3D? Offered
+    public StockOffer? OfferFor(DeckSlot slot)
     {
-        get
+        // Before _Ready (or when an export is missing) the holders are not wired, so the hand offers nothing.
+        if (_containerHolder == null || CardDropper.IsPreparingDrop) return null;
+
+        // A held container is what the hand offers, even with cards in it; a booster opening offers nothing.
+        if (_containerHolder.IsHolding)
+            return _containerHolder.Held is { } held ? OfferOf(held, slot) : null;
+
+        return CardHolder.TopCard != null && slot.CanTake(StockKind.Card) ? new StockOffer(StockKind.Card) : null;
+    }
+
+    // An open cardboard box offers the last item in it the slot takes, with how many of that stock it holds. Any other
+    // held container offers itself (of a stack of booster packs, the top one).
+    private static StockOffer? OfferOf(CardContainer held, DeckSlot slot)
+    {
+        if (held is { IsLidOpen: true, Storage: { } storage })
         {
-            // Before _Ready (or when an export is missing) the holders are not wired, so the hand offers nothing.
-            if (_containerHolder == null || CardDropper.IsPreparingDrop) return null;
-            return _containerHolder.Held ?? CardHolder.TopCard;
+            return storage.NextFor(slot) is { } next
+                ? new StockOffer(next, storage.CountOf(item => ShelfPlacementRule.From(item) == next))
+                : null;
         }
+
+        var stock = ShelfPlacementRule.From(held.Kind);
+        return slot.CanTake(stock) ? new StockOffer(stock) : null;
     }
 
     public bool TryStock(DeckSlot slot)
     {
-        var body = Offered;
-        if (body == null || !slot.CanTake(body)) return false;
+        if (OfferFor(slot) is null) return false;
 
-        var released = body is CardContainer ? _containerHolder.Drop() : CardHolder.HandOver(body);
-        if (!released)
-            return false;
+        // Offered is null while a booster opens in the hand, so a held container here is always Held.
+        if (_containerHolder.Held is { } held)
+            return held.IsLidOpen ? held.TakeOneInto(slot) : _containerHolder.Drop() && slot.TryLock(held);
 
-        return slot.TryLock(body);
+        var card = CardHolder.TopCard;
+        return card != null && CardHolder.HandOver(card) && slot.TryLock(card);
+    }
+
+    private void OnClickedNothing()
+    {
+        if (!CardDropper.IsPreparingDrop)
+            _containerHolder.PutOneDown();
     }
 
     private void OnRightPress(bool pressed)
     {
         if (pressed)
         {
-            // Right press while holding a container drops it; cards are untouched in that case.
+            // Right press while holding a container uses it (opens or closes a box, opens a booster into the hand);
+            // cards are untouched in that case, and while a booster opens the press does nothing.
             if (_containerHolder.IsHolding)
             {
-                _containerHolder.Drop();
+                _containerHolder.UseHeld();
                 return;
             }
 

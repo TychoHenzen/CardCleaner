@@ -8,8 +8,9 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
 ///     The restocker in the real shop scene: a hired restocker with the shop open carries a rack pack to the product
-///     shelf, unpacks a box there once enough slots are free, and does nothing when it is not hired, the shop is
-///     closed, the tree is paused or there is nothing to move.
+///     shelf, tops up a part-filled booster stack, unpacks a box there once enough slots are free (finishing a partly
+///     emptied box at the next shelf), and
+///     does nothing when it is not hired, the shop is closed, the tree is paused or there is nothing to move.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -28,6 +29,25 @@ public class RestockerTest : RestockerTestBase
         AssertBool(_restocker.Visible).IsTrue();
     }
 
+    // Customers take boosters off a stack one at a time; the restocker tops a part-filled stack up from the rack even
+    // when no product slot is empty.
+    [TestCase]
+    public async Task HiredRestockerTopsUpAPartFilledBoosterStack()
+    {
+        HireAndOpen();
+        var stack = _product.Slots.First();
+        foreach (var slot in _product.Slots.Skip(1))
+            Stock(PackScene, slot);
+        var shelved = Stock(BoosterScene, stack);
+        var booster = Stock(BoosterScene, _rack.Slots.First());
+
+        var toppedUp = await Poll(() => stack.Cards.Contains(booster));
+
+        AssertBool(toppedUp).IsTrue();
+        AssertInt(stack.Cards.Count).IsEqual(2);
+        AssertBool(stack.Cards.Contains(shelved)).IsTrue();
+    }
+
     [TestCase]
     public async Task BoxIsUnpackedAtTheRealThresholdAndEveryPackEndsOnAProductShelf()
     {
@@ -37,12 +57,14 @@ public class RestockerTest : RestockerTestBase
         var box = Stock(BoxScene, _rack.Slots.First());
         var slotCount = shelves.Sum(shelf => shelf.SlotCount);
 
-        // One shelf takes its free slots at the unpack; the rest spill and are carried to the other shelf.
+        // One shelf takes its free slots at the first unpack; the restocker carries the box on and empties it into
+        // the other shelf, then puts the empty box back on a rack for the player to throw away.
         var shelved = await Poll(
-            () => !GodotObject.IsInstanceValid(box) && shelves.Sum(shelf => shelf.StockedCount) == slotCount,
+            () => shelves.Sum(shelf => shelf.StockedCount) == slotCount && _rack.Slots.Any(s => s.Cards.Contains(box)),
             LongWalkSeconds);
 
         AssertBool(shelved).IsTrue();
+        AssertInt(box.Remaining).IsEqual(0);
         AssertInt(PackCount()).IsEqual(PacksInABox + stocked);
         AssertThat(_restocker.Phase).IsEqual(RestockerPhase.Idle);
     }
@@ -74,15 +96,15 @@ public class RestockerTest : RestockerTestBase
     }
 
     [TestCase]
-    public async Task DefaultThresholdLeavesABoxOnTheRackWithOneSixSlotShelf()
+    public async Task DefaultThresholdUnpacksABoxOntoTheEmptyProductShelf()
     {
         HireAndOpen();
-        var box = Stock(BoxScene, _rack.Slots.First());
+        Stock(BoxScene, _rack.Slots.First());
 
-        await Frames(LongIdleFrames);
+        var filled = await Poll(() => _product.StockedCount == PacksInABox, LongWalkSeconds);
 
-        AssertBool(_rack.Slots.First().Cards.Contains(box)).IsTrue();
-        AssertThat(_restocker.Phase).IsEqual(RestockerPhase.Idle);
+        AssertBool(filled).IsTrue();
+        AssertInt(PackCount()).IsEqual(PacksInABox);
     }
 
     [TestCase]

@@ -157,13 +157,12 @@ public partial class DayReportPanel : Control, IDependent
             ComplaintsBox!.AddChild(new Label { Text = line });
     }
 
+    // The rows are plain labels that nothing else holds or listens to, so they go at once, not at the end of the
+    // frame: no old row waits outside the tree after a second report.
     private static void Clear(Node parent)
     {
         foreach (var child in parent.GetChildren())
-        {
-            parent.RemoveChild(child);
-            child.QueueFree();
-        }
+            child.Free();
     }
 
     private void OnContinuePressed()

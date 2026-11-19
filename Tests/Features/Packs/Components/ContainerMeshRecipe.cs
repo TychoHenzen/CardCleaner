@@ -23,9 +23,10 @@ public static class ContainerMeshRecipe
     public const float BoosterThickness = 0.045f;
     public const float BoosterCrimp = 0.04f;
 
-    // A pack is a printed box of 8 boosters lying on their side in a row, with a lid hinged at its back (-Z) edge.
+    // A pack is a printed box of 8 boosters with a lid hinged at its back (-Z) edge. It is shallower than 8 boosters
+    // would need, so 8 packs fit a carton standing on end (CartonSpace).
     public const float PackWidth = 0.38f;
-    public const float PackHeight = 0.37f;
+    public const float PackHeight = 0.20f;
     public const float PackDepth = 0.55f;
     public const float PackWall = 0.006f;
 

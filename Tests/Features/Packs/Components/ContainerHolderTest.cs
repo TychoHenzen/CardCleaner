@@ -1,11 +1,15 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
 using NSubstitute;
 
@@ -18,7 +22,6 @@ public partial class ContainerHolderTest
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
-    private const string CardShelfScene = "res://Scenes/Shop/Items/Shelf.tscn";
     private const ulong Seed = 777;
 
     private Node3D _world = null!;
@@ -51,7 +54,7 @@ public partial class ContainerHolderTest
 
         var input = Substitute.For<IInputService>();
         TestServices.Container.RegisterSingleton(input);
-        input.When(x => x.RegisterAction(Arg.Any<object>(), "container_open", Key.Q, Arg.Any<Action>()))
+        input.When(x => x.RegisterAction(Arg.Any<object>(), "container_put_down", Key.Q, Arg.Any<Action>()))
             .Do(ci => _qPress = ci.Arg<Action>());
         _holder = TestServices.Inject(new ContainerHolder());
         _world.AddChild(_holder);
@@ -104,6 +107,24 @@ public partial class ContainerHolderTest
         AssertBool(booster.GetParent() == _hand).IsTrue();
     }
 
+    // A booster can be held with cards in hand, which fan out on the right, so it is held on the left, upright and
+    // facing the player; a box is carried level.
+    [TestCase]
+    public void PickUp_Booster_HeldUprightAtTheBoosterOffsetAndABoxLevelAtTheUsualOne()
+    {
+        var booster = Make(BoosterScene);
+        _holder.TryPickUp(booster);
+        AssertThat(booster.Position).IsEqual(_holder.BoosterHoldOffset);
+        AssertBool(booster.Basis.IsEqualApprox(CardFan.FacingCamera)).IsTrue();
+        _holder.Drop();
+
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+        AssertThat(box.Position).IsEqual(_holder.HoldOffset);
+        AssertBool(box.Basis.IsEqualApprox(Basis.Identity)).IsTrue();
+        AssertBool(_holder.BoosterHoldOffset.X < 0f).IsTrue();
+    }
+
     [TestCase]
     public void PickUp_WhileHolding_ReturnsFalse_HeldUnchanged()
     {
@@ -147,28 +168,184 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    public void OpenHeld_DropsThenOpens()
+    public void UseHeld_Box_OpensItsLidInTheHandAndSpillsNothing()
     {
         var box = Make(BoxScene);
         _holder.TryPickUp(box);
 
-        AssertBool(_holder.OpenHeld()).IsTrue();
+        AssertBool(_holder.UseHeld()).IsTrue();
 
-        AssertBool(_holder.IsHolding).IsFalse();
-        AssertBool(box.IsOpened).IsTrue();
-        AssertBool(box.GetParent() == _cardSpawner).IsTrue();
+        AssertBool(box.IsLidOpen).IsTrue();
+        AssertBool(box.IsOpened).IsFalse();
+        AssertThat(_holder.Held).IsSame(box);
+        AssertThat(box.Remaining).IsEqual(8);
     }
 
     [TestCase]
-    public void QKey_OpensHeldContainer()
+    public void UseHeld_OpenBox_ClosesItsFlaps()
+    {
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+        _holder.UseHeld();
+
+        AssertBool(_holder.UseHeld()).IsTrue();
+
+        AssertBool(box.IsLidOpen).IsFalse();
+        AssertThat(_holder.Held).IsSame(box);
+    }
+
+    // A booster box opened in the hand empties into it: the hand holds its eight booster packs in order, the n-th with
+    // child seed n of the box's seed, and the empty box is gone from the hand.
+    [TestCase]
+    public async Task UseHeld_BoosterBox_EmptiesIntoTheHandAsItsEightBoosterPacks()
+    {
+        var pack = Make(PackScene);
+        pack.ContentSeed = Seed;
+        _holder.TryPickUp(pack);
+
+        AssertBool(_holder.UseHeld()).IsTrue();
+
+        var held = HeldContainers();
+        AssertThat(held.Select(booster => booster.ContentSeed!.Value).ToArray()).IsEqual(
+            Enumerable.Range(0, ContainerHolder.MostBoosters).Select(i => ContainerSeeds.ChildSeed(Seed, i)).ToArray());
+        AssertThat(_holder.HeldCount).IsEqual(ContainerHolder.MostBoosters);
+        AssertThat(_holder.Held).IsSame(held[^1]);
+        AssertBool(held.All(booster => booster is { Kind: CardContainerKind.Booster, Freeze: true, CollisionLayer: 0 }))
+            .IsTrue();
+        AssertBool(pack.IsOpened).IsTrue();
+        AssertBool(pack.IsInsideTree()).IsFalse();
+        await BoundedWait.ForQueuedFrees();
+    }
+
+    [TestCase]
+    public void TheHandStacksUpToEightBoosterPacksAndRefusesANinth()
+    {
+        var boosters = Enumerable.Range(0, ContainerHolder.MostBoosters + 1).Select(_ => Make(BoosterScene)).ToList();
+        for (var i = 0; i < ContainerHolder.MostBoosters; i++)
+            AssertBool(_holder.TryPickUp(boosters[i])).IsTrue();
+
+        AssertBool(_holder.TryPickUp(boosters[^1])).IsFalse();
+
+        AssertThat(_holder.HeldCount).IsEqual(ContainerHolder.MostBoosters);
+        AssertThat(_holder.Held).IsSame(boosters[ContainerHolder.MostBoosters - 1]);
+        AssertBool(boosters[^1].GetParent() == _world).IsTrue();
+        // Each booster pack after the first is held nearer the player, so none sits inside another.
+        for (var i = 1; i < ContainerHolder.MostBoosters; i++)
+            AssertBool(boosters[i].Position.Z - boosters[i - 1].Position.Z > 0.045f).IsTrue();
+    }
+
+    [TestCase]
+    public void AHandOfBoosterPacksTakesNoBoxAndABoxInHandTakesNoBoosterPack()
+    {
+        var booster = Make(BoosterScene);
+        var box = Make(BoxScene);
+        _holder.TryPickUp(booster);
+
+        AssertBool(_holder.TryPickUp(box)).IsFalse();
+        AssertBool(_holder.TryPickUp(Make(PackScene))).IsFalse();
+        _holder.Drop();
+        _holder.TryPickUp(box);
+        AssertBool(_holder.TryPickUp(booster)).IsFalse();
+
+        AssertThat(_holder.HeldCount).IsEqual(1);
+        AssertThat(_holder.Held).IsSame(box);
+    }
+
+    // Q sets down only the top booster pack, with its own collision back; the one under it stays in the hand.
+    [TestCase]
+    public void QPutsDownOnlyTheTopBoosterPack()
+    {
+        var first = Make(BoosterScene);
+        var second = Make(BoosterScene);
+        first.CollisionLayer = 4;
+        second.CollisionLayer = 6;
+        _holder.TryPickUp(first);
+        _holder.TryPickUp(second);
+
+        _qPress!.Invoke();
+
+        AssertBool(second.GetParent() == _cardSpawner).IsTrue();
+        AssertThat(second.CollisionLayer).IsEqual(6u);
+        AssertThat(_holder.Held).IsSame(first);
+        AssertBool(first.GetParent() == _hand).IsTrue();
+
+        _qPress!.Invoke();
+
+        AssertThat(first.CollisionLayer).IsEqual(4u);
+        AssertBool(_holder.IsHolding).IsFalse();
+    }
+
+    [TestCase]
+    public void ABoosterPackFreedFromTheMiddleOfTheStackClosesItUp()
+    {
+        var boosters = Enumerable.Range(0, 3).Select(_ => Make(BoosterScene)).ToList();
+        foreach (var booster in boosters)
+            _holder.TryPickUp(booster);
+        var middle = boosters[1].Position;
+
+        boosters[1].Free();
+
+        AssertThat(_holder.HeldCount).IsEqual(2);
+        AssertThat(boosters[2].Position).IsEqual(middle);
+        AssertThat(_holder.Held).IsSame(boosters[2]);
+    }
+
+    // A booster opens into the hand of cards (BoosterRevealTest); a holder given no hand keeps it held and shut.
+    [TestCase]
+    public void UseHeld_Booster_WithNoHandOfCards_StaysHeldAndShut()
+    {
+        var booster = Make(BoosterScene);
+        _holder.TryPickUp(booster);
+
+        AssertBool(_holder.UseHeld()).IsFalse();
+
+        AssertThat(_holder.Held).IsSame(booster);
+        AssertBool(booster.IsOpened).IsFalse();
+        AssertThat(_spawner.Spawned.Count).IsEqual(0);
+    }
+
+    // The hand holds at most CardHolder.MostCards cards, so a booster waits until all eight of its cards fit.
+    [TestCase]
+    public void UseHeld_Booster_WithAHandTooFullForItsCards_StaysHeldAndShut()
+    {
+        var cards = Substitute.For<ICardHolder>();
+        cards.Room.Returns(CardContainerLayout.ItemsPerContainer - 1);
+        _holder.SetReferences(_hand, cards);
+        var booster = Make(BoosterScene);
+        _holder.TryPickUp(booster);
+
+        AssertBool(_holder.UseHeld()).IsFalse();
+
+        AssertThat(_holder.Held).IsSame(booster);
+        AssertBool(_holder.IsOpening).IsFalse();
+        AssertThat(_spawner.Spawned.Count).IsEqual(0);
+    }
+
+    [TestCase]
+    public void QKey_PutsTheHeldContainerDownShut()
     {
         var box = Make(BoxScene);
         _holder.TryPickUp(box);
 
         _qPress!.Invoke();
 
-        AssertBool(box.IsOpened).IsTrue();
         AssertBool(_holder.IsHolding).IsFalse();
+        AssertBool(box.IsOpened).IsFalse();
+        AssertBool(box.GetParent() == _cardSpawner).IsTrue();
+    }
+
+    [TestCase]
+    public void QKey_PutsAnOpenBoxDownWithItsLidStillOpen()
+    {
+        var box = Make(BoxScene);
+        _holder.TryPickUp(box);
+        _holder.UseHeld();
+
+        _qPress!.Invoke();
+
+        AssertBool(_holder.IsHolding).IsFalse();
+        AssertBool(box.IsLidOpen).IsTrue();
+        AssertBool(box.IsOpened).IsFalse();
     }
 
     [TestCase]
@@ -195,33 +372,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    public void HeldContainerOpened_ClearsHeld()
-    {
-        var log = new RecordingLog();
-        var previous = ILog.Sink;
-        ILog.Sink = log;
-        try
-        {
-            // A camera anchor refuses Open() while the container is held, so this case holds it on a plain Node3D.
-            var anchor = new Node3D();
-            _world.AddChild(anchor);
-            _holder.SetReferences(anchor);
-            var box = Make(BoxScene);
-            _holder.TryPickUp(box);
-
-            AssertBool(box.Open()).IsTrue();
-
-            AssertThat(_holder.Held).IsNull();
-            AssertBool(_holder.IsHolding).IsFalse();
-            AssertThat(log.Errors).IsEmpty();
-        }
-        finally
-        {
-            ILog.Sink = previous;
-        }
-    }
-
-    [TestCase]
     public void PickUp_FreedContainer_ReturnsFalse()
     {
         var log = new RecordingLog();
@@ -231,28 +381,6 @@ public partial class ContainerHolderTest
         {
             var box = Make(BoxScene);
             box.Free();
-
-            AssertBool(_holder.TryPickUp(box)).IsFalse();
-
-            AssertThat(_holder.Held).IsNull();
-            AssertThat(log.Errors).IsEmpty();
-        }
-        finally
-        {
-            ILog.Sink = previous;
-        }
-    }
-
-    [TestCase]
-    public void PickUp_OpenedContainer_ReturnsFalse()
-    {
-        var log = new RecordingLog();
-        var previous = ILog.Sink;
-        ILog.Sink = log;
-        try
-        {
-            var box = Make(BoxScene);
-            AssertBool(box.Open()).IsTrue();
 
             AssertBool(_holder.TryPickUp(box)).IsFalse();
 
@@ -289,7 +417,7 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    public void OpenHeld_NothingHeld_False()
+    public void UseHeld_NothingHeld_False()
     {
         var log = new RecordingLog();
         var previous = ILog.Sink;
@@ -298,9 +426,10 @@ public partial class ContainerHolderTest
         {
             var box = Make(BoxScene);
 
-            AssertBool(_holder.OpenHeld()).IsFalse();
+            AssertBool(_holder.UseHeld()).IsFalse();
 
             AssertBool(box.IsOpened).IsFalse();
+            AssertBool(box.IsLidOpen).IsFalse();
             AssertThat(log.Errors).IsEmpty();
         }
         finally
@@ -327,113 +456,6 @@ public partial class ContainerHolderTest
         AssertThat(tree.GetNodesInGroup(ContainerHolder.GroupName).Count).IsEqual(1);
     }
 
-    [TestCase]
-    public async Task OpenHeld_WithUnpackTarget_CallsTryUnpackOnceAndDoesNotOpenLoose()
-    {
-        var target = MakeTarget(accepts: true);
-        var box = Make(BoxScene);
-        _holder.TryPickUp(box);
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-
-        AssertBool(_holder.OpenHeld()).IsTrue();
-
-        AssertThat(target.Calls).IsEqual(1);
-        AssertBool(box.IsOpened).IsFalse();
-        AssertBool(_holder.IsHolding).IsFalse();
-    }
-
-    [TestCase]
-    public async Task OpenHeld_TargetRefuses_OpensLooseAfterOneTryUnpack()
-    {
-        var target = MakeTarget(accepts: false);
-        var box = Make(BoxScene);
-        _holder.TryPickUp(box);
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-
-        AssertBool(_holder.OpenHeld()).IsTrue();
-
-        AssertThat(target.Calls).IsEqual(1);
-        AssertBool(box.IsOpened).IsTrue();
-        AssertBool(_holder.IsHolding).IsFalse();
-    }
-
-    [TestCase]
-    public async Task OpenHeld_TargetBeyondUnpackReach_OpensLooseWithoutTryUnpack()
-    {
-        var target = MakeTarget(accepts: true, distance: 4f);
-        var box = Make(BoxScene);
-        _holder.TryPickUp(box);
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-
-        AssertBool(_holder.OpenHeld()).IsTrue();
-
-        AssertThat(target.Calls).IsEqual(0);
-        AssertBool(box.IsOpened).IsTrue();
-    }
-
-    [TestCase]
-    public async Task OpenHeld_TargetJustInsideUnpackReach_Unpacks()
-    {
-        var target = MakeTarget(accepts: true, distance: 2.4f);
-        var box = Make(BoxScene);
-        _holder.TryPickUp(box);
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-
-        AssertBool(_holder.OpenHeld()).IsTrue();
-
-        AssertThat(target.Calls).IsEqual(1);
-        AssertBool(box.IsOpened).IsFalse();
-    }
-
-    [TestCase]
-    public async Task OpenHeld_RealCardShelfAhead_OpensLoose()
-    {
-        var shelf = GD.Load<PackedScene>(CardShelfScene).Instantiate<Node3D>();
-        _world.AddChild(shelf);
-        shelf.Position = new Vector3(0f, 0f, -1.5f);
-        // The shelf is on the unpack layer, so the holder's ray can find it and the card shelf itself refuses.
-        AssertThat(((CollisionObject3D)shelf).CollisionLayer & ContainerHolder.UnpackLayerBit)
-            .IsEqual(ContainerHolder.UnpackLayerBit);
-        var box = Make(BoxScene);
-        _holder.TryPickUp(box);
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-
-        AssertBool(_holder.OpenHeld()).IsTrue();
-
-        AssertBool(box.IsOpened).IsTrue();
-    }
-
-    // A physics body on the unpack layer, distance metres in front of the hand, so the holder's ray hits it when the
-    // distance is within UnpackReach.
-    private StubUnpackTarget MakeTarget(bool accepts, float distance = 1.5f)
-    {
-        var target = new StubUnpackTarget { Accepts = accepts, CollisionLayer = ContainerHolder.UnpackLayerBit };
-        target.AddChild(new CollisionShape3D { Shape = new BoxShape3D { Size = Vector3.One } });
-        _world.AddChild(target);
-        target.Position = new Vector3(0f, 0f, -distance);
-        return target;
-    }
-
-    private sealed partial class StubUnpackTarget : StaticBody3D, IUnpackTarget
-    {
-        public bool Accepts { get; set; }
-
-        public int Calls { get; private set; }
-
-        public bool TryUnpack(CardContainer container)
-        {
-            Calls++;
-            return Accepts;
-        }
-
-        public bool CanUnpack(CardContainer container) => Accepts;
-    }
-
     private sealed class RecordingLog : ILog
     {
         public List<string> Errors { get; } = new();
@@ -450,6 +472,8 @@ public partial class ContainerHolderTest
 
         public void LogError(string message, Exception exception) => Errors.Add(message);
     }
+
+    private List<CardContainer> HeldContainers() => _hand.GetChildren().OfType<CardContainer>().ToList();
 
     private CardContainer Make(string scenePath)
     {

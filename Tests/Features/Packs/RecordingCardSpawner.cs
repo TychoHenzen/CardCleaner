@@ -6,17 +6,32 @@ using Godot;
 
 namespace CardCleaner.Tests.Features.Packs;
 
-/// <summary>Records every card a container asks for instead of building real card nodes.</summary>
-public sealed class RecordingCardSpawner : ICardSpawningService
+/// <summary>
+///     Records every card a container asks for. By default it builds no card nodes; with
+///     <paramref name="buildBodies" /> it builds a bare body for each card (a <see cref="RigidBody3D" /> with the
+///     "CardCollision" shape a hand expects), so a test can follow the cards into the hand.
+/// </summary>
+public sealed class RecordingCardSpawner(bool buildBodies = false) : ICardSpawningService
 {
     public List<(CardSignature Signature, Transform3D Transform)> Spawned { get; } = [];
+
+    /// <summary>The bodies built so far, in spawn order (empty unless bodies are built).</summary>
+    public List<RigidBody3D> Bodies { get; } = [];
 
     public int SpecialCount => Spawned.Count(s => s.Signature.HasMagicalPotential());
 
     public Node3D? SpawnCard(CardSignature signature, Transform3D spawnTransform, Node3D parent)
     {
         Spawned.Add((signature, spawnTransform));
-        return null;
+        if (!buildBodies)
+            return null;
+
+        var card = new RigidBody3D { Name = $"Card{Bodies.Count}" };
+        card.AddChild(new CollisionShape3D { Name = "CardCollision", Shape = new BoxShape3D() });
+        parent.AddChild(card);
+        card.GlobalTransform = spawnTransform;
+        Bodies.Add(card);
+        return card;
     }
 
     public Node3D? SpawnCard(

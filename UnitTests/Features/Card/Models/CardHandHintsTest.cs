@@ -13,12 +13,21 @@ public class CardHandHintsTest
     }
 
     [TestCase]
-    public static void AHandOfCardsShowsTheDropKeysAndTheCount()
+    public static void AHandOfCardsShowsTheDropAndStrapKeysAndTheCount()
     {
         var hints = CardHandHints.For(3, aimingDrop: false);
 
-        AssertThat(hints.Select(hint => hint.Key).ToArray()).IsEqual(new[] { "RMB", "X" });
+        AssertThat(hints.Select(hint => hint.Key).ToArray()).IsEqual(new[] { "RMB", "X", "V" });
         AssertThat(hints[0].Action).Contains("3 cards in hand");
+        AssertThat(hints[2].Action).IsEqual("Strap the cards into a deck");
+    }
+
+    [TestCase]
+    public static void OneCardIsNotStrapped()
+    {
+        var hints = CardHandHints.For(1, aimingDrop: false);
+
+        AssertThat(hints.Select(hint => hint.Key).ToArray()).IsEqual(new[] { "RMB", "X" });
     }
 
     [TestCase]

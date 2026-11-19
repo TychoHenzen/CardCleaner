@@ -135,6 +135,10 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         var containers = SavedContainers.Capture(GetTree());
         save.SetOrAddProperty("containers", containers);
         ILog.Print($"Saved {containers.Count} containers to persistence data");
+
+        var bundles = SavedBundles.Capture(GetTree());
+        save.SetOrAddProperty("bundles", bundles);
+        ILog.Print($"Saved {bundles.Count} decks and piles to persistence data");
     }
 
     private List<Dictionary<string, object?>> CaptureCards()
@@ -157,8 +161,28 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
     {
         ILog.Print("GameSaveService Load() called");
 
-        if (save.TryGetProperty<List<object>>("containers", out var containerDataRaw))
-            RestoreContainers(containerDataRaw ?? new List<object>(), GetTree().CurrentScene as Node3D);
+        // Every container, deck and pile record is checked before the first node is freed, so a malformed record of
+        // either list leaves the scene as it was.
+        var containers = save.TryGetProperty<List<object>>("containers", out var containerDataRaw)
+            ? SavedContainers.Parse(containerDataRaw ?? new List<object>())
+            : null;
+        var bundles = save.TryGetProperty<List<object>>("bundles", out var bundleDataRaw)
+            ? SavedBundles.Parse(bundleDataRaw ?? new List<object>())
+            : null;
+        if (containers != null || bundles != null)
+        {
+            if (GetTree().CurrentScene is not Node3D world)
+            {
+                ILog.Error("CurrentScene is not a Node3D, cannot restore containers, decks and piles");
+            }
+            else
+            {
+                if (containers != null)
+                    SavedContainers.Restore(GetTree(), containers, world);
+                if (bundles != null)
+                    SavedBundles.Restore(GetTree(), bundles, world);
+            }
+        }
 
         if (!save.TryGetProperty<List<object>>("cards", out var cardDataRaw))
         {
@@ -190,19 +214,6 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         CallDeferred(MethodName.RecreateCards);
     }
     
-    // Every container record is checked before the first node is freed, so a malformed slot leaves the scene as it was.
-    private void RestoreContainers(List<object> containerDataRaw, Node3D? world)
-    {
-        var saved = SavedContainers.Parse(containerDataRaw);
-        if (world == null)
-        {
-            ILog.Error("CurrentScene is not a Node3D, cannot restore containers");
-            return;
-        }
-
-        SavedContainers.Restore(GetTree(), saved, world);
-    }
-
     private void RecreateCards()
     {
         ILog.Print("RecreateCards() called");
@@ -228,11 +239,7 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
             return;
         }
 
-        var respawner = new SavedCardRespawner(
-            GetTree(),
-            _cardSpawningService,
-            worldNode,
-            (card, camera) => Callable.From(() => ReparentToCamera(card, camera)).CallDeferred());
+        var respawner = new SavedCardRespawner(GetTree(), _cardSpawningService, worldNode);
 
         var recreatedCount = 0;
         foreach (var cardDataObj in _pendingCardData)
@@ -261,18 +268,6 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         {
             ILog.Error($"Failed to recreate card: {ex.Message}");
             return false;
-        }
-    }
-
-    private static void ReparentToCamera(CardController card, Camera3D camera)
-    {
-        // Deferred, so the card or the camera may have been freed in between (a scene change).
-        if (!IsInstanceValid(card) || !IsInstanceValid(camera))
-            return;
-        if (card.GetParent() != camera)
-        {
-            card.GetParent()?.RemoveChild(card);
-            camera.AddChild(card);
         }
     }
 

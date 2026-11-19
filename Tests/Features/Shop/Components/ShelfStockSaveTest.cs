@@ -13,6 +13,7 @@ using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.Scenes;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using GdUnit4;
 using Godot;
 
@@ -108,7 +109,7 @@ public class ShelfStockSaveTest
     // A seat of the product shelf lies inside the shelf's own solid collider, which pushes a free container off the
     // seat, and out of the slot's trigger, on the first physics step. So the load itself must lock the stock.
     [TestCase]
-    public void StockIsBackInItsSlotsBeforeAnyPhysicsStep()
+    public async Task StockIsBackInItsSlotsBeforeAnyPhysicsStep()
     {
         AssertBool(_product.Slots.First().TryLock(NewContainer(BoosterScene, BoosterSeed))).IsTrue();
         AssertBool(_rack.Slots.First().TryLock(NewContainer(BoxScene, BoxSeed))).IsTrue();
@@ -118,6 +119,7 @@ public class ShelfStockSaveTest
 
         AssertThat(_product.Slots.First().Cards.OfType<CardContainer>().Single().ContentSeed).IsEqual(BoosterSeed);
         AssertThat(_rack.Slots.First().Cards.OfType<CardContainer>().Single().ContentSeed).IsEqual(BoxSeed);
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]

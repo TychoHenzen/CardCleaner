@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.CardStacks.Models;
 
 namespace CardCleaner.Scripts.Features.Card.Models;
 
@@ -7,7 +8,8 @@ namespace CardCleaner.Scripts.Features.Card.Models;
 public static class CardHandHints
 {
     /// <summary>
-    ///     No hints for an empty hand; otherwise the drop keys, or the release while a drop is being aimed.
+    ///     No hints for an empty hand; otherwise the drop keys (and the strap key once two cards are held), or the
+    ///     release while a drop is being aimed.
     /// </summary>
     public static IReadOnlyList<ControlHint> For(int heldCount, bool aimingDrop)
     {
@@ -17,10 +19,10 @@ public static class CardHandHints
             return [new ControlHint("Release RMB", heldCount == 1 ? "Set the card down" : "Set the cards down")];
 
         var cards = heldCount == 1 ? "1 card" : $"{heldCount} cards";
-        return
-        [
-            new ControlHint("RMB", $"Hold to aim, release to set down ({cards} in hand)"),
-            new ControlHint("X", "Drop the top card"),
-        ];
+        var drop = new ControlHint("RMB", $"Hold to aim, release to set down ({cards} in hand)");
+        var dropOne = new ControlHint("X", "Drop the top card");
+        return heldCount < CardBundleRules.FewestToStrap
+            ? [drop, dropOne]
+            : [drop, dropOne, new ControlHint("V", "Strap the cards into a deck")];
     }
 }

@@ -11,9 +11,10 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     The hired restocker. While it is hired, the shop is open and the tree is not paused, it walks the baked
-///     navigation mesh: it takes a pack or booster from a storage rack (or off the floor) to a free product-shelf
-///     slot, or sets a box down at a product shelf and unpacks it there. <see cref="RestockPlanner" /> decides each
-///     move and <see cref="RestockerJob" /> tracks the walk. Idle, it returns to where the scene placed it.
+///     navigation mesh: it takes a pack or booster from a storage rack (or off the floor) to a product-shelf slot
+///     with room (a booster may top up a booster stack), or sets a box down at a product shelf and unpacks it there.
+///     <see cref="RestockPlanner" /> decides each move and <see cref="RestockerJob" /> tracks the walk. Idle, it
+///     returns to where the scene placed it.
 /// </summary>
 public partial class Restocker : CharacterBody3D, IDependent
 {
@@ -138,7 +139,8 @@ public partial class Restocker : CharacterBody3D, IDependent
     {
         _seen = _scan!.Gather(GlobalPosition, _hands!.Carried);
         var step = RestockPlanner.Plan(
-            _seen.Sources, _seen.Slots, _job.BlockedPairs, _seen.Distance, BoxUnpackThreshold);
+            _seen.Sources, _seen.Slots, _job.BlockedPairs, _seen.Distance, BoxUnpackThreshold,
+            _job.UnreachableShelves);
         if (step.Kind == RestockStepKind.Idle || _seen.SourcePosition(step) is not { } source)
         {
             // Nothing can use what is in the hands (a box below the threshold, no free slot): put it back.
@@ -244,16 +246,18 @@ public partial class Restocker : CharacterBody3D, IDependent
     private bool Shelve(RestockStep step) =>
         _seen.SlotNode(step.TargetId) is DeckSlot slot && _hands!.Shelve(slot);
 
-    // The box must stand in the world for OpenOnto, which spawns the packs beside it. Slots may have been stocked
-    // on the walk, so the threshold is checked again; a box that fails is put back by the next scan.
+    // The box stays in the hands: its booster boxes and boosters move straight into the shelf's free slots, and the
+    // next scan puts the box back on a rack (or unpacks it at another shelf while it still holds products). Slots may
+    // have been stocked on the walk, so the threshold is checked again, on empty slots as the planner counts them.
     private bool Unpack(RestockStep step)
     {
-        var free = _scan!.Gather(GlobalPosition, _hands!.Carried).Slots.Count(s => s.Shelf == ShelfKind.ProductShelf);
-        if (free < BoxUnpackThreshold || _seen.ShelfNode(step.TargetId) is not CardShelf shelf
-            || _hands.SetDown() is not { } box)
+        if (_hands!.Carried is not { } box || _seen.ShelfNode(step.TargetId) is not CardShelf shelf)
             return false;
 
-        return shelf.TryUnpack(box);
+        var empty = _scan!.Gather(GlobalPosition, box).Slots
+            .Count(s => s is { Shelf: ShelfKind.ProductShelf, IsEmpty: true });
+        return empty >= RestockPlanner.FreeSlotsToUnpack(BoxUnpackThreshold, RestockerScan.ProductsIn(box))
+               && shelf.TryUnpack(box);
     }
 
     private static float FlatDistance(Vector3 a, Vector3 b) => new Vector2(a.X - b.X, a.Z - b.Z).Length();

@@ -24,21 +24,16 @@ emission_energy_multiplier = 0.8
 material = SubResource("SeamDoorMaterial")
 size = Vector3(1.6, 2.4, 0.06)
 
-[node name="PortalDoorway" type="Node3D" node_paths=PackedStringArray("Glow", "Door", "Hum")]
+[node name="PortalDoorway" type="Node3D" node_paths=PackedStringArray("Glow", "Door")]
 script = ExtResource("WallSeam")
 Glow = NodePath("Glow")
 Door = NodePath("Door")
-Hum = NodePath("Hum")
 GlowTexturePath = "res://Assets/Synty/ParticleFx/Generic_Circle_Soft_01.png"
 
 [node name="Glow" type="MeshInstance3D" parent="."]
 visible = false
 material_override = SubResource("SeamGlowMaterial")
 mesh = SubResource("SeamGlowMesh")
-
-[node name="Hum" type="AudioStreamPlayer3D" parent="."]
-volume_db = -12.0
-unit_size = 4.0
 
 [node name="Door" type="Node3D" parent="."]
 visible = false

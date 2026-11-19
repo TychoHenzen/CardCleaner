@@ -23,6 +23,7 @@ namespace CardCleaner.Tests.Features.SaveSlots;
 public class HeldContainerSaveTest
 {
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
+    private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const ulong BoxSeed = 0x4E1DUL;
 
     [TestCase]
@@ -143,6 +144,97 @@ public class HeldContainerSaveTest
         await scene.TwoFrames();
     }
 
+    // A box opened on the floor, partly emptied and picked up comes back open in the hand, holding the same items.
+    [TestCase]
+    public static async Task AnOpenPartlyTakenBoxInHandComesBackOpenWithTheSameItemsLeft()
+    {
+        using var scene = new SaveWorld("OpenBoxSaveWorld", addCardsToTree: false);
+        Assertions.AddNode(scene.World, autoFree: false);
+        scene.Enter();
+        var (holder, _) = BuildHolder(scene);
+        var box = PlacedBox(scene, Vector3.Zero);
+        box.SetLidOpen(true, instantly: true);
+        for (var i = 0; i < 3; i++)
+            AssertBool(box.Storage!.TakeOnto(new Transform3D(Basis.Identity, new Vector3(3f + i, 0f, 0f)))).IsTrue();
+        var left = StoredItemKeys.Of(box.Storage!.Items);
+        AssertBool(holder.TryPickUp(box)).IsTrue();
+
+        SavedContainers.Restore(scene.Tree, CaptureAndParse(scene), scene.World);
+        await scene.TwoFrames();
+
+        var restored = OnlyRestoredBox(scene);
+        AssertBool(holder.Held == restored).IsTrue();
+        AssertBool(restored.IsLidOpen).IsTrue();
+        AssertThat(restored.Remaining).IsEqual(CardContainerLayout.ItemsPerContainer - 3);
+        AssertThat(StoredItemKeys.Of(restored.Storage!.Items)).IsEqual(left);
+    }
+
+    [TestCase]
+    public static void AShutBoxSavedOnTheFloorReadsShut()
+    {
+        using var scene = new SaveWorld("ShutBoxSaveWorld", addCardsToTree: false);
+        Assertions.AddNode(scene.World, autoFree: false);
+        scene.Enter();
+        PlacedBox(scene, Vector3.Zero);
+
+        var record = CaptureAndParse(scene).Single();
+
+        AssertBool(record.LidOpen).IsFalse();
+        AssertBool(record.Held).IsFalse();
+    }
+
+    // A booster box emptied into the hand leaves its eight booster packs there; a save brings all eight back into the
+    // hand, in the same order, each with the seed it had.
+    [TestCase]
+    public static async Task EightBoosterPacksInHandComeBackInTheirOrderWithTheirSeeds()
+    {
+        using var scene = new SaveWorld("BoosterStackSaveWorld", addCardsToTree: false);
+        Assertions.AddNode(scene.World, autoFree: false);
+        scene.Enter();
+        var (holder, hand) = BuildHolder(scene);
+        var pack = GD.Load<PackedScene>(PackScene).Instantiate<CardContainer>();
+        pack.ContentSeed = BoxSeed;
+        pack.Spawning = scene.Spawner;
+        scene.World.AddChild(pack);
+        AssertBool(holder.TryPickUp(pack)).IsTrue();
+        AssertBool(holder.UseHeld()).IsTrue();
+        var before = HeldSeeds(hand);
+        AssertThat(before).IsEqual(Enumerable.Range(0, ContainerHolder.MostBoosters)
+            .Select(index => ContainerSeeds.ChildSeed(BoxSeed, index)).ToArray());
+
+        SavedContainers.Restore(scene.Tree, CaptureAndParse(scene), scene.World);
+        await scene.TwoFrames();
+
+        AssertThat(holder.HeldCount).IsEqual(ContainerHolder.MostBoosters);
+        AssertThat(HeldSeeds(hand)).IsEqual(before);
+        AssertBool(holder.Held == hand.GetChildren().OfType<CardContainer>().Last()).IsTrue();
+        AssertBool(hand.GetChildren().OfType<CardContainer>().All(booster => booster.CollisionLayer == 0)).IsTrue();
+    }
+
+    // Only a cardboard box holds stored items, and each one must be readable: a card with an eight-value signature,
+    // or a booster or booster box with a scene.
+    [TestCase("Pack", "card")]
+    [TestCase("Box", "coin")]
+    [TestCase("Box", "nested box")]
+    [TestCase("Box", "short signature")]
+    [TestCase("Box", "container without a scene")]
+    public static void ARecordWithUnreadableContentsIsMalformed(string kind, string item)
+    {
+        var raw = new List<object>
+        {
+            new Dictionary<string, object>
+            {
+                ["ScenePath"] = BoxScene,
+                ["Kind"] = kind,
+                ["Position"] = new Vector3(1f, 0f, 2f),
+                ["Rotation"] = Vector3.Zero,
+                ["Contents"] = new List<object> { StoredItemRecord(item) },
+            },
+        };
+
+        Assertions.AssertThrown(() => SavedContainers.Parse(raw)).IsInstanceOf<FormatException>();
+    }
+
     [TestCase]
     public static void OldSlotWithoutHeldKey_ReadsAsFloor()
     {
@@ -164,6 +256,18 @@ public class HeldContainerSaveTest
         AssertThat(records[0].ScenePath).IsEqual(BoxScene);
         AssertBool(records[0].Held).IsFalse();
     }
+
+    private static Dictionary<string, object> StoredItemRecord(string item) => item switch
+    {
+        "card" => new Dictionary<string, object> { ["Type"] = "card", ["LookSeed"] = 1 },
+        "coin" => new Dictionary<string, object> { ["Type"] = "coin" },
+        "nested box" => new Dictionary<string, object>
+            { ["Type"] = "container", ["ScenePath"] = BoxScene, ["Kind"] = "Box" },
+        "short signature" => new Dictionary<string, object>
+            { ["Type"] = "card", ["Signature"] = new[] { 0.5f, 0.5f } },
+        "container without a scene" => new Dictionary<string, object> { ["Type"] = "container", ["Kind"] = "Booster" },
+        _ => throw new ArgumentOutOfRangeException(nameof(item), item, "Unknown test item")
+    };
 
     // A holder in the world with a hand anchor the way the player's camera provides one, built with the test services.
     private static HolderRig BuildHolder(SaveWorld scene)
@@ -187,6 +291,11 @@ public class HeldContainerSaveTest
         box.GlobalPosition = position;
         return box;
     }
+
+    // The seeds of the containers the hand holds, bottom of the stack first.
+    private static ulong[] HeldSeeds(Camera3D hand) =>
+        hand.GetChildren().OfType<CardContainer>().Where(container => !container.IsQueuedForDeletion())
+            .Select(container => container.ContentSeed!.Value).ToArray();
 
     private static List<SavedContainers.Saved> CaptureAndParse(SaveWorld scene) =>
         SavedContainers.Parse(SavedContainers.Capture(scene.Tree));
