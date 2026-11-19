@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using NSubstitute;
 using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
@@ -89,7 +90,7 @@ public class CardContainerTest
     // generator's cards in the order it rolls them.
     [TestCase]
     [TestCategory("Unit")]
-    public void AWholeBoosterBoxOpensInTheHandToTheGeneratorsFirstSixtyFourCards()
+    public async Task AWholeBoosterBoxOpensInTheHandToTheGeneratorsFirstSixtyFourCards()
     {
         foreach (var booster in InHandOpening.Empty(Make(PackScene), _hand))
             InHandOpening.Open(booster, _hand);
@@ -97,6 +98,7 @@ public class CardContainerTest
         const int perPack = CardContainerLayout.ItemsPerContainer * CardContainerLayout.ItemsPerContainer;
         var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBox().Take(perPack);
         AssertThat(Keys(_spawner.Spawned.Select(spawned => spawned.Signature))).IsEqual(Keys(expected));
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]

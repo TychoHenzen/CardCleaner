@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.CardStacks.Components;
@@ -7,6 +8,7 @@ using CardCleaner.Scripts.Features.CardStacks.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using GdUnit4;
 using Godot;
 
@@ -45,7 +47,7 @@ public class CardPileGathererTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void MoreThanAHundredLooseCardsLyingTogetherBecomeOnePileThatKeepsEveryCard()
+    public async Task MoreThanAHundredLooseCardsLyingTogetherBecomeOnePileThatKeepsEveryCard()
     {
         var cards = LayCards(CardBundleRules.MostLooseCards + 1, Vector3.Zero);
         var centre = cards.Aggregate(Vector3.Zero, (sum, card) => sum + card.GlobalPosition) / cards.Count;
@@ -63,6 +65,7 @@ public class CardPileGathererTest
         AssertThat(pile.GlobalPosition.Z).IsEqualApprox(centre.Z, 0.001f);
         AssertThat(pile.GlobalPosition.Y).IsBetween(0f, 0.01f);
         AssertBool(cards.All(card => !card.IsInsideTree() && card.IsQueuedForDeletion())).IsTrue();
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]
@@ -95,7 +98,7 @@ public class CardPileGathererTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ACardAtRestOnAPileJoinsItAndOneFarAwayStaysLoose()
+    public async Task ACardAtRestOnAPileJoinsItAndOneFarAwayStaysLoose()
     {
         var pile = AddPile(CardBundleRules.MostLooseCards + 1, Vector3.Zero, firstSeed: 0);
         var onTop = LayCards(1, new Vector3(0.2f, 0.1f, 0f), firstSeed: 500).Single();
@@ -107,11 +110,12 @@ public class CardPileGathererTest
         AssertThat(pile.Cards[^1].LookSeed).IsEqual(500);
         AssertBool(onTop.IsInsideTree()).IsFalse();
         AssertBool(farAway.IsInsideTree()).IsTrue();
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TwoPilesThatRunIntoEachOtherBecomeTheFirstPile()
+    public async Task TwoPilesThatRunIntoEachOtherBecomeTheFirstPile()
     {
         var first = AddPile(120, Vector3.Zero, firstSeed: 0);
         var second = AddPile(110, new Vector3(0.3f, 0f, 0f), firstSeed: 1000);
@@ -124,6 +128,7 @@ public class CardPileGathererTest
         AssertBool(second.IsInsideTree()).IsFalse();
         AssertThat(apart.Count).IsEqual(105);
         AssertThat(Piles().Count).IsEqual(2);
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]

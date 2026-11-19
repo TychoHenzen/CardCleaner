@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -206,7 +207,7 @@ public partial class ContainerHolderTest
     // child seed n of the box's seed, and the empty box is gone from the hand.
     [TestCase]
     [TestCategory("Unit")]
-    public void UseHeld_BoosterBox_EmptiesIntoTheHandAsItsEightBoosterPacks()
+    public async Task UseHeld_BoosterBox_EmptiesIntoTheHandAsItsEightBoosterPacks()
     {
         var pack = Make(PackScene);
         pack.ContentSeed = Seed;
@@ -223,6 +224,7 @@ public partial class ContainerHolderTest
             .IsTrue();
         AssertBool(pack.IsOpened).IsTrue();
         AssertBool(pack.IsInsideTree()).IsFalse();
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]

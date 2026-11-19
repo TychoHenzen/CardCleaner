@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
@@ -11,6 +12,7 @@ using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using GdUnit4;
 using Godot;
 using NSubstitute;
@@ -59,6 +61,8 @@ public class CardBundlerTest
         _hand = TestServices.Inject(new CardHolder { Name = "Hand" });
         var dropper = TestServices.Inject(new CardDropper());
         _containers = TestServices.Inject(new ContainerHolder());
+        // In the world, so it is freed with it; a node left outside the tree outlives the test.
+        _world.AddChild(interaction);
         _world.AddChild(_hand);
         _world.AddChild(dropper);
         _world.AddChild(_containers);
@@ -80,7 +84,7 @@ public class CardBundlerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void TheStrapKeyStrapsEveryCardInHandIntoOneDeckInFrontOfThePlayer()
+    public async Task TheStrapKeyStrapsEveryCardInHandIntoOneDeckInFrontOfThePlayer()
     {
         var cards = HoldCards(3);
 
@@ -96,11 +100,12 @@ public class CardBundlerTest
         AssertThat(deck.Cards.Select(card => card.Signature!.Value.Solidum).ToArray())
             .IsEqual(new[] { 0.1f, 0.2f, 0.3f });
         AssertBool(cards.All(card => !IsInstanceValid(card) || card.IsQueuedForDeletion())).IsTrue();
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ACardWithoutASignatureStaysWithoutOneThroughADeck()
+    public async Task ACardWithoutASignatureStaysWithoutOneThroughADeck()
     {
         var card = ShopTestCards.Create(null);
         _world.AddChild(card);
@@ -111,6 +116,7 @@ public class CardBundlerTest
 
         AssertBool(_hand.HeldCards.OfType<CardController>().First().HasSignature).IsFalse();
         AssertBool(_hand.HeldCards.OfType<CardController>().Last().HasSignature).IsTrue();
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]
@@ -139,7 +145,7 @@ public class CardBundlerTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ClickingADeckUnstrapsItIntoTheHandInTheOrderItWasStrapped()
+    public async Task ClickingADeckUnstrapsItIntoTheHandInTheOrderItWasStrapped()
     {
         HoldCards(3);
         var deck = _bundler.Strap()!;
@@ -153,11 +159,12 @@ public class CardBundlerTest
             .IsEqual(new int?[] { 100, 101, 102 });
         AssertBool(deck.IsInsideTree()).IsFalse();
         AssertThat(Bundles().Count()).IsEqual(0);
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ADeckThatDoesNotFitInTheHandStaysStrapped()
+    public async Task ADeckThatDoesNotFitInTheHandStaysStrapped()
     {
         HoldCards(3);
         var deck = _bundler.Strap()!;
@@ -168,6 +175,7 @@ public class CardBundlerTest
 
         AssertThat(deck.Count).IsEqual(3);
         AssertThat(_hand.HeldCount).IsEqual(CardHolder.MostCards - 2);
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]

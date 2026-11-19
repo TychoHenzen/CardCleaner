@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services.SaveGame;
 using CardCleaner.Scripts.Features.CardStacks.Components;
@@ -8,6 +9,7 @@ using CardCleaner.Scripts.Features.CardStacks.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using GdUnit4;
 using Godot;
 
@@ -28,7 +30,7 @@ public class CardBundleSaveTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void ADeckAndAPileReloadAtTheirPosesWithEveryCardInOrder()
+    public static async Task ADeckAndAPileReloadAtTheirPosesWithEveryCardInOrder()
     {
         using var scene = new SaveWorld("CardBundleWorld", addCardsToTree: false);
         var deckCards = new List<StoredCard>
@@ -62,6 +64,7 @@ public class CardBundleSaveTest
         AssertThat(deckBack.GlobalPosition).IsEqualApprox(DeckPosition, new Vector3(0.001f, 0.001f, 0.001f));
         AssertThat(deckBack.GlobalRotation).IsEqualApprox(DeckRotation, new Vector3(0.001f, 0.001f, 0.001f));
         AssertThat(pileBack.GlobalPosition).IsEqualApprox(PilePosition, new Vector3(0.001f, 0.001f, 0.001f));
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase("Heap", "card")]

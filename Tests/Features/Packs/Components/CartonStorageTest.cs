@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using NSubstitute;
 
@@ -98,7 +99,7 @@ public class CartonStorageTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ACardPutInKeepsItsSignatureLookAndPrice()
+    public async Task ACardPutInKeepsItsSignatureLookAndPrice()
     {
         var box = StandingBox([]);
         var signature = new CardSignature([0.5f, 0f, 0f, -0.5f, 0f, 0f, 0.25f, 0f]);
@@ -112,6 +113,7 @@ public class CartonStorageTest
         AssertBool(card.IsQueuedForDeletion()).IsTrue();
         AssertThat(StoredItemKeys.Of(box.Storage.Items))
             .IsEqual(StoredItemKeys.Of([new StoredCard(signature, 31, 9)]));
+        await BoundedWait.ForQueuedFrees();
     }
 
     // The card went in first and the booster last, so each slot takes the last item it can take, not the last item.
@@ -182,7 +184,7 @@ public class CartonStorageTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public void ATrashCanTakesOnlyAnEmptyBoxFromTheHand()
+    public async Task ATrashCanTakesOnlyAnEmptyBoxFromTheHand()
     {
         var (holder, _) = Holder(Vector3.Zero);
         var bin = GD.Load<PackedScene>(TrashCanScene).Instantiate<TrashCan>();
@@ -202,6 +204,7 @@ public class CartonStorageTest
         AssertBool(holder.IsHolding).IsFalse();
         AssertBool(!GodotObject.IsInstanceValid(empty) || empty.IsQueuedForDeletion()).IsTrue();
         AssertBool(GodotObject.IsInstanceValid(full) && !full.IsQueuedForDeletion()).IsTrue();
+        await BoundedWait.ForQueuedFrees();
     }
 
     // The booster went in last, so taking one out takes its look away and leaves the card stack.

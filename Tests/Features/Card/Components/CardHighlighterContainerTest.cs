@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Components;
@@ -13,6 +14,7 @@ using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using GdUnit4;
 using Godot;
 using NSubstitute;
@@ -70,6 +72,13 @@ public class CardHighlighterContainerTest
         _dropper = TestServices.Inject(new CardDropper());
         _preview = new DropPreview { Name = "Preview" };
         _containerHolder = TestServices.Inject(new ContainerHolder());
+
+        // Into the world now, not in Build: a node the setup leaves outside the tree counts as an orphan of the setup.
+        _world.AddChild(_cardHolder);
+        _world.AddChild(_preview);
+        _world.AddChild(_dropper);
+        _world.AddChild(_containerHolder);
+        _world.AddChild(_interaction);
     }
 
     [AfterTest]
@@ -312,7 +321,7 @@ public class CardHighlighterContainerTest
     // up to four on one product slot, and the rest stay in the hand.
     [TestCase]
     [TestCategory("Unit")]
-    public void ABoosterBoxEmptiedIntoTheHandStocksOneBoosterPackPerClick()
+    public async Task ABoosterBoxEmptiedIntoTheHandStocksOneBoosterPackPerClick()
     {
         var highlighter = Build();
         var shelf = AddProductShelf();
@@ -330,6 +339,7 @@ public class CardHighlighterContainerTest
             .IsEqual(ContainerHolder.MostBoosters - ShelfPlacementRule.BoostersPerProductSlot);
         AssertObject(highlighter.OfferFor(slot)).IsNull();
         AssertThat(highlighter.OfferFor(shelf.Slots.Skip(1).First())).IsEqual(new StockOffer(StockKind.Booster));
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]
@@ -347,17 +357,12 @@ public class CardHighlighterContainerTest
 
     private CardHighlighter Build()
     {
-        _world.AddChild(_cardHolder);
-        _world.AddChild(_preview);
         var highlighter = TestServices.Inject(new CardHighlighter());
         highlighter.InteractionSystem = _interaction;
         highlighter.CardDropper = _dropper;
         highlighter.CardHolder = _cardHolder;
         highlighter.Preview = _preview;
         highlighter.ContainerHolderNode = _containerHolder;
-        _world.AddChild(_dropper);
-        _world.AddChild(_containerHolder);
-        _world.AddChild(_interaction);
         _world.AddChild(highlighter);
         return highlighter;
     }
