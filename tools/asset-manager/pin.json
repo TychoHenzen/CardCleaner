@@ -1,6 +1,6 @@
 {
   "repository": "https://github.com/TychoHenzen/Asset-Manager",
-  "commit": "c7272c30c2ad8238f7025f990ce8e4d17d6780b2",
+  "commit": "54f10560d51bdfd5450963fe4063346aa40c57a5",
   "path": "addons/asset_manager",
   "files": {
     "LICENSE": "7679896a3f270685720de2a10333bf32bce8893d3d827a71cbb35dfa636356df",
@@ -183,7 +183,7 @@
     "core/shared/archive_manifest.gd.uid": "083097f8de94ecda2a8a4f2a62ccbfa9aa0638367dcd96ffb364bfaf7e5544f1",
     "core/shared/binary_resource.gd": "d9ac6b3d4ae32a195f1b5e9f95afc3e51d4cc8fa0634c8c6656f9f475afaf357",
     "core/shared/binary_resource.gd.uid": "2400de5a43f36e60b30e1f2b18cf05f14cc233db8ac2beeefc295ad2195d4ee4",
-    "core/shared/dependency_walker.gd": "78c4db91f90550c372178a62c7ccf7faeafd491205743e22a924245b497e3dff",
+    "core/shared/dependency_walker.gd": "415ea5aaa3128c7f704c8f990f2257dc68a4fc396daed64576fd55b66dcb2923",
     "core/shared/dependency_walker.gd.uid": "7522006bc93ca09d7e6640c9ef54a61e06a75fa322400b4471e1e1920c985ec9",
     "core/shared/pack_paths.gd": "49175ed7c42785cad0d9263aa4fabe918744d9de5ec66c45e0ccf838fce38551",
     "core/shared/pack_paths.gd.uid": "038e03a0e1c1e4a3f3f8a0a962707a8ccaf11556ba40b312b0b6205768c29135",
