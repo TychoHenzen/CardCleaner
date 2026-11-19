@@ -481,7 +481,7 @@ half-open container. Tests wait for an opening with `ContainerOpeningWait` (boun
 `BoundedWait`, because headless frames are not throttled), or end it with `FinishOpening` when only the contents
 matter.
 
-Sizes: booster 0.35 x 0.045 x 0.53 m, pack 0.38 x 0.37 x 0.55 m, box 0.80 x 0.60 x 0.86 m. The product shelf's seats
+Sizes: booster 0.35 x 0.045 x 0.53 m, pack 0.38 x 0.20 x 0.55 m, box 0.80 x 0.60 x 0.86 m. The product shelf's seats
 sit at z 0.055, so a pack fits on its 0.671 m deep boards.
 
 **Names.** The player reads a `Box` as a cardboard box, a `Pack` as a booster box and a `Booster` as a booster pack

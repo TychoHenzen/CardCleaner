@@ -143,7 +143,7 @@ public class ContainerLidTest
         var box = MakeContainer(BoxScene);
         box.SetLidOpen(true, instantly: true);
 
-        foreach (var slot in shelf.Slots)
+        foreach (var slot in shelf.Slots.Take(CardContainerLayout.ItemsPerContainer))
             AssertBool(box.TakeOneInto(slot)).IsTrue();
 
         AssertThat(shelf.StockedCount).IsEqual(CardContainerLayout.ItemsPerContainer);

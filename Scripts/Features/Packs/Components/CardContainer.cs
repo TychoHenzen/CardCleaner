@@ -310,14 +310,14 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     /// <summary>
     ///     Height above the container's origin of the first item it opens into: a little more than the container's
-    ///     own height (a box is 0.60 m tall, a pack 0.37 m, a booster 0.045 m).
+    ///     own height (a box is 0.60 m tall, a pack 0.20 m, a booster 0.045 m).
     /// </summary>
     public static float LiftHeight(CardContainerKind kind)
     {
         return kind switch
         {
             CardContainerKind.Box => 0.65f,
-            CardContainerKind.Pack => 0.42f,
+            CardContainerKind.Pack => 0.25f,
             CardContainerKind.Booster => 0.1f,
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown container kind")
         };
@@ -325,13 +325,13 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 
     /// <summary>
     ///     Vertical gap between the items opened out of <paramref name="kind" />: a little more than the height of
-    ///     one item (a pack is 0.37 m tall, a booster 0.045 m, a card 0.005 m), so none spawns inside the one below.
+    ///     one item (a pack is 0.20 m tall, a booster 0.045 m, a card 0.005 m), so none spawns inside the one below.
     /// </summary>
     public static float StackStep(CardContainerKind kind)
     {
         return kind switch
         {
-            CardContainerKind.Box => 0.42f,
+            CardContainerKind.Box => 0.25f,
             CardContainerKind.Pack => 0.1f,
             CardContainerKind.Booster => 0.05f,
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown container kind")

@@ -13,9 +13,12 @@ internal readonly struct RisePath
     // open at the top; a booster's cards slide out of its torn end at -Z.
     private static readonly Vector3 BoxInside = new(0f, 0.01f, 0f);
     private static readonly Vector3 BoxMouth = new(0f, 0.7f, 0f);
-    private static readonly Vector3 PackMouth = new(0f, 0.46f, 0f);
+    private static readonly Vector3 PackMouth = new(0f, 0.29f, 0f);
     private const float PackFloor = 0.007f;
-    private const float BoosterHeight = 0.045f;
+
+    // A pack (0.20 m tall) is shallower than its eight boosters (0.045 m each), so they start packed closer than
+    // their thickness, the top one level with the rim; the walls hide the overlap.
+    private const float PackStackStep = 0.02f;
     private static readonly Vector3 BoosterInside = new(0f, 0.02f, 0f);
     private static readonly Vector3 BoosterMouth = new(0f, 0.022f, -0.6f);
 
@@ -51,7 +54,7 @@ internal readonly struct RisePath
     private static Vector3 InsideOf(CardContainerKind kind, int index) => kind switch
     {
         CardContainerKind.Box => BoxInside,
-        CardContainerKind.Pack => new Vector3(0f, PackFloor + StackLevel(index) * BoosterHeight, 0f),
+        CardContainerKind.Pack => new Vector3(0f, PackFloor + StackLevel(index) * PackStackStep, 0f),
         _ => BoosterInside
     };
 
