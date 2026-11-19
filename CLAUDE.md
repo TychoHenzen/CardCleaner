@@ -697,7 +697,11 @@ The starting product shelf and storage rack used to stand under `World/Storefron
 at the old seats. `GameSaveService.LoadGame` passes every payload through `LegacyShelfSaveMigration.Migrate` first:
 when the payload holds a tag price id under an old path (which only a save from that layout has), a container saved
 within 0.25 m of an old seat moves to the same slot's seat on the moved shelf, which locks it on load. The old price
-ids stay in the payload, and the load ignores them. A payload with no such id loads unchanged. Moving or renaming a saved node again needs the same kind of step.
+ids stay in the payload, and the load ignores them. A payload with no such id loads unchanged.
+
+The game is not released, so no player has an old save to protect. A later change that moves or renames a saved node,
+or moves a seat by more than 5 cm, gets no migration step: a save from before it may load that stock loose, or not at
+all. New saved state still gets its round-trip test. `LegacyShelfSaveMigration` stays as it is.
 
 ### Feature Organization
 
