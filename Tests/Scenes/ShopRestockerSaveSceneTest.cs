@@ -26,7 +26,6 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
     private const int IdleFrames = 120;
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Hired_restocker_survives_save_and_reload_at_home_with_empty_hands()
     {
         HireCashier();
@@ -46,14 +45,17 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Pack_carried_at_save_time_reloads_once_as_a_loose_container()
     {
         HireRestocker();
         OpenRegisteredDay();
         var pack = StockRackPack();
-        var timeout = await BoundedWait.Until(
-            () => pack.GetParent()?.Name.ToString() == HandName, "the restocker to carry the pack");
+        string? timeout;
+        // The walk to the rack counts physics steps, each still 1/60 s of game time; the fast clock only runs them
+        // sooner. It stops before the save, so the reload runs at the game's own rate.
+        using (FastClock.Start())
+            timeout = await BoundedWait.Until(
+                () => pack.GetParent()?.Name.ToString() == HandName, "the restocker to carry the pack");
         if (timeout != null)
             AssertBool(false).OverrideFailureMessage(timeout).IsTrue();
         var before = PackCount();
@@ -69,7 +71,6 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Saved_roster_with_an_unknown_role_or_without_the_restocker_hires_no_restocker()
     {
         var log = new RecordingLog();
@@ -90,7 +91,6 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Both_wages_are_charged_once_and_a_dismissed_restocker_stops_working()
     {
         HireCashier();
@@ -99,8 +99,11 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
         AssertThat(_rig.Staff.Dismiss(StaffDefaults.RestockerId)).IsEqual(StaffResult.Dismissed);
         var pack = StockRackPack();
 
-        for (var i = 0; i < IdleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
+        using (FastClock.Start())
+        {
+            for (var i = 0; i < IdleFrames; i++)
+                await ISceneRunner.SyncPhysicsFrame;
+        }
 
         AssertBool(_rig.Restocker.Visible).IsFalse();
         AssertBool(RackSlot().Cards.Contains(pack)).IsTrue();

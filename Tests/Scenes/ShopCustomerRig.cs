@@ -9,6 +9,7 @@ using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -18,7 +19,7 @@ namespace CardCleaner.Tests.Scenes;
 /// customer visit needs (seeded random source, instant checkout, recording complaint log, fake save) and waits for
 /// the navigation bake, so each suite only states its scenario.
 /// </summary>
-public sealed class ShopCustomerRig
+public sealed class ShopCustomerRig : IDisposable
 {
     public const int FrameBudget = 900;
     public const int DayTickBudget = 570;
@@ -28,8 +29,11 @@ public sealed class ShopCustomerRig
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
     private const string ProductSlotPath = "World/Furniture/ProductShelf/Content/Slot1";
 
-    private ShopCustomerRig(Node3D shop)
+    private readonly FastClock _clock;
+
+    private ShopCustomerRig(Node3D shop, FastClock clock)
     {
+        _clock = clock;
         Shop = shop;
         Money = shop.GetNode<MoneyService>("Services/MoneyService");
         Day = shop.GetNode<ShopDayService>("Services/ShopDayService");
@@ -44,11 +48,31 @@ public sealed class ShopCustomerRig
     public ShopNavigationRegion Region { get; }
     public RecordingComplaintLog Complaints { get; } = new();
 
+    /// <summary>
+    ///     Loads the shop and starts a fast clock, so customers walk on game time in a fraction of the wall time. The
+    ///     suite disposes the rig in its teardown, which gives the clock back.
+    /// </summary>
     public static async Task<ShopCustomerRig> Create()
+    {
+        var clock = FastClock.Start();
+        try
+        {
+            return await Load(clock);
+        }
+        catch
+        {
+            clock.Dispose();
+            throw;
+        }
+    }
+
+    public void Dispose() => _clock.Dispose();
+
+    private static async Task<ShopCustomerRig> Load(FastClock clock)
     {
         var shop = ShopOrderingRig.LoadShopWithServices();
         ShopScenePlayer.Sideline(shop);
-        var rig = new ShopCustomerRig(shop);
+        var rig = new ShopCustomerRig(shop, clock);
 
         TestServices.Container.RegisterSingleton(RandomSources.Create(400UL));
         TestServices.Container.RegisterSingleton<IShopDayService>(rig.Day);

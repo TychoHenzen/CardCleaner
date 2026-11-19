@@ -14,7 +14,6 @@ namespace CardCleaner.Tests.Features.Worldgen.IrregularMesh.MeshTerrain;
 public class TerrainGeneratorFactoryTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void CreateReturnsTheContract()
     {
         IMeshTerrainGenerator generator = TerrainGeneratorFactory.Create(

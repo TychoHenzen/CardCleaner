@@ -21,7 +21,6 @@ public class ConveyorBeltTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void DefaultProperties_AreReasonable()
     {
         // Arrange
@@ -34,7 +33,6 @@ public class ConveyorBeltTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Properties_CanBeModified()
     {
         // Act
@@ -47,7 +45,6 @@ public class ConveyorBeltTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Speed_AcceptsValidRange()
     {
         // Act & Assert - Test various speed values
@@ -62,7 +59,6 @@ public class ConveyorBeltTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PhysicsProcess_WithoutSetup_DoesNotThrow()
     {
         // Act & Assert - Should not throw when called without proper setup

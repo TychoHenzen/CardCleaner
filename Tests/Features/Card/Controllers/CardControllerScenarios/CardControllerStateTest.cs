@@ -14,7 +14,6 @@ public class CardControllerStateTest : CardControllerTestBase
     #region Initial State Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CardController_InitialState_CorrectIInteractableValues()
     {
         // Assert - IInteractable implementation
@@ -25,7 +24,6 @@ public class CardControllerStateTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CardController_InitialState_HasCorrectSignature()
     {
         // Assert
@@ -35,7 +33,6 @@ public class CardControllerStateTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Ready_AddsToCardsGroup()
     {
         // Assert
@@ -43,7 +40,6 @@ public class CardControllerStateTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Ready_SetsCorrectCollisionLayer()
     {
         // Assert
@@ -55,7 +51,6 @@ public class CardControllerStateTest : CardControllerTestBase
     #region Component Discovery Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Ready_DiscoversCardComponents()
     {
         // Assert - Components should be discovered and set up
@@ -73,7 +68,6 @@ public class CardControllerStateTest : CardControllerTestBase
     #region Physics Integration Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void IntegrateForces_CallsPhysicsComponents()
     {
         // Arrange
@@ -87,7 +81,6 @@ public class CardControllerStateTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PhysicsProcess_CallsPhysicsComponents()
     {
         // Arrange
@@ -105,7 +98,6 @@ public class CardControllerStateTest : CardControllerTestBase
     #region Signature Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Signature_CanBeModified()
     {
         // Arrange
@@ -121,7 +113,6 @@ public class CardControllerStateTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SaveAndLoad_PreservesUninitializedSignature()
     {
         var source = new CardCleaner.Scripts.Features.Card.Controllers.CardController();
@@ -140,7 +131,6 @@ public class CardControllerStateTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SaveAndLoad_PreservesLookSeed()
     {
         var source = new CardCleaner.Scripts.Features.Card.Controllers.CardController
@@ -160,7 +150,6 @@ public class CardControllerStateTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SaveAndLoad_PreservesAbsentLookSeed()
     {
         var source = new CardCleaner.Scripts.Features.Card.Controllers.CardController
@@ -179,7 +168,6 @@ public class CardControllerStateTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Load_SaveWithoutLookSeedKey_HasNullLookSeed()
     {
         var save = new NodeSave();

@@ -23,14 +23,12 @@ public class MoneyServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BalanceStartsAtTheExportedStartingBalance()
     {
         AssertThat(_money.Balance).IsEqual(100);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TrySpendDeductsWhenAffordable()
     {
         AssertBool(_money.TrySpend(40)).IsTrue();
@@ -38,7 +36,6 @@ public class MoneyServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TrySpendSucceedsForTheExactBalance()
     {
         AssertBool(_money.TrySpend(100)).IsTrue();
@@ -46,7 +43,6 @@ public class MoneyServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TrySpendRefusesWhenUnaffordableAndKeepsTheBalance()
     {
         AssertBool(_money.TrySpend(101)).IsFalse();
@@ -54,7 +50,6 @@ public class MoneyServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TrySpendRefusesZeroAndNegativeAmounts()
     {
         AssertBool(_money.TrySpend(0)).IsFalse();
@@ -63,7 +58,6 @@ public class MoneyServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AddIncreasesTheBalanceAndIgnoresNonPositiveAmounts()
     {
         _money.Add(25);
@@ -74,7 +68,6 @@ public class MoneyServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BalanceChangedReportsTheNewBalanceOnlyOnRealChanges()
     {
         var seen = new List<int>();
@@ -90,7 +83,6 @@ public class MoneyServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SaveThenLoadRestoresBalance()
     {
         _money.Add(77);
@@ -111,7 +103,6 @@ public class MoneyServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LoadWithoutBalancePropertyKeepsStartingBalance()
     {
         var restored = new MoneyService { StartingBalance = 100 };

@@ -46,7 +46,6 @@ public class CardPileGathererTest
     public static void Cleanup() => TestServices.Reset();
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task MoreThanAHundredLooseCardsLyingTogetherBecomeOnePileThatKeepsEveryCard()
     {
         var cards = LayCards(CardBundleRules.MostLooseCards + 1, Vector3.Zero);
@@ -69,7 +68,6 @@ public class CardPileGathererTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AHundredCardsStayLoose()
     {
         var cards = LayCards(CardBundleRules.MostLooseCards, Vector3.Zero);
@@ -81,7 +79,6 @@ public class CardPileGathererTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ACardStillMovingOrHeldIsNotLooseSoItCountsTowardNoPile()
     {
         var cards = LayCards(CardBundleRules.MostLooseCards + 2, Vector3.Zero);
@@ -97,7 +94,6 @@ public class CardPileGathererTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardAtRestOnAPileJoinsItAndOneFarAwayStaysLoose()
     {
         var pile = AddPile(CardBundleRules.MostLooseCards + 1, Vector3.Zero, firstSeed: 0);
@@ -114,7 +110,6 @@ public class CardPileGathererTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TwoPilesThatRunIntoEachOtherBecomeTheFirstPile()
     {
         var first = AddPile(120, Vector3.Zero, firstSeed: 0);
@@ -132,7 +127,6 @@ public class CardPileGathererTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheShopGathersCardsUnderItsSceneRoot()
     {
         var state = GD.Load<PackedScene>(ShopScene).GetState();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using Godot;
 
@@ -28,7 +29,7 @@ internal sealed class PathDebugOverlay
         var (pathSourceId, pathAtlasCoords) = terrainRenderer.GetTileRenderInfo("debug_path");
         foreach (var pos in path)
         {
-            overlayLayer.SetCell(pos, pathSourceId, pathAtlasCoords);
+            AtlasCells.Set(overlayLayer, pos, pathSourceId, pathAtlasCoords);
             _renderedTiles.Add(pos);
         }
 
@@ -36,7 +37,7 @@ internal sealed class PathDebugOverlay
         if (target.HasValue)
         {
             var (targetSourceId, targetAtlasCoords) = terrainRenderer.GetTileRenderInfo("debug_target");
-            overlayLayer.SetCell(target.Value, targetSourceId, targetAtlasCoords);
+            AtlasCells.Set(overlayLayer, target.Value, targetSourceId, targetAtlasCoords);
             _renderedTiles.Add(target.Value);
         }
     }

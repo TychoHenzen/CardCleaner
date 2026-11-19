@@ -20,7 +20,6 @@ public class PcScreenFitSceneTest
     private const float FramingTolerance = 0.01f;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheDesktopQuadLiesOnTheMonitorScreen()
     {
         var shop = ShopOrderingRig.LoadShopWithServices();
@@ -62,7 +61,6 @@ public class PcScreenFitSceneTest
     ///     front face too, inside its outline, or the opaque box hides the desktop in that fallback.
     /// </summary>
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheDesktopQuadLiesOnTheFallbackMonitorBox()
     {
         var shop = ShopOrderingRig.LoadShopWithServices();
@@ -97,7 +95,6 @@ public class PcScreenFitSceneTest
     ///     swing ends on the same picture the overlay starts with.
     /// </summary>
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheScreenCameraEndsFramingTheQuad()
     {
         var shop = ShopOrderingRig.LoadShopWithServices();

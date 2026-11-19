@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Tests.Features.Packs;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
@@ -30,16 +31,24 @@ public class ShelfUnpackTest
     private Node3D _world = null!;
     private RecordingCardSpawner _spawner = null!;
 
+    private FastClock? _clock;
+
     [BeforeTest]
     public async Task Setup()
     {
+        _clock = FastClock.Start();
         _world = AddNode(new Node3D());
         _spawner = new RecordingCardSpawner();
         await Frames(1);
     }
 
+    [AfterTest]
+    public void StopClock()
+    {
+        _clock?.Dispose();
+    }
+
     [TestCase]
-    [TestCategory("Unit")]
     public void TryUnpackABoxMovesItsEightBoosterBoxesIntoTheShelfAndKeepsTheEmptyBox()
     {
         var shelf = AddShelf();
@@ -61,7 +70,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheShelfsFirstSlotGetsTheBoosterBoxASameSeedBoxGivesOutFirst()
     {
         var shelf = AddShelf();
@@ -85,7 +93,6 @@ public class ShelfUnpackTest
     // Only a cardboard box unpacks: a booster box and a booster pack are opened in the hand, never at a shelf.
     [TestCase(PackScene)]
     [TestCase(BoosterScene)]
-    [TestCategory("Unit")]
     public void TryUnpackRefusesABoosterBoxOrBoosterPackAndLeavesItSealed(string scene)
     {
         var shelf = AddShelf();
@@ -99,7 +106,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TryUnpackOntoAFullShelfMovesNothingAndKeepsEveryItemInTheBox()
     {
         var shelf = AddShelf();
@@ -115,7 +121,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TryUnpackBoxOntoACardShelfReturnsFalseAndLeavesItClosed()
     {
         var shelf = AddShelf(CardShelfScene);
@@ -127,7 +132,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TryUnpackBoxOntoAStorageRackFillsItsFourSlotsAndKeepsTheOtherFour()
     {
         var rack = AddShelf(StorageRackScene);
@@ -141,7 +145,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ABoxDroppedOnACardShelfSlotIsNotLocked()
     {
         var shelf = AddShelf(CardShelfScene);
@@ -158,7 +161,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MovingIntoNoSlotsMovesNothing()
     {
         var box = MakeContainer(BoxScene, Seed);
@@ -168,7 +170,6 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MovingIntoThreeFreeSlotsMovesThreeAndKeepsFive()
     {
         var shelf = AddShelf();

@@ -14,7 +14,6 @@ namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 public class BiomeDataLoaderTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestDefaultPathLoadsTheDataFileBiomes()
     {
         var biomes = BiomeDataLoader.LoadBiomes(new GodotAssetPaths());
@@ -23,7 +22,6 @@ public class BiomeDataLoaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestMissingFileReturnsNoBiomes()
     {
         var biomes = BiomeDataLoader.LoadBiomes(new GodotAssetPaths(), "res://Data/Tiles/missing-biomes.json");
@@ -32,7 +30,6 @@ public class BiomeDataLoaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestFakeAssetPathsLoadsSameBiomesAsDefault()
     {
         var root = TempAssetPaths.CreateTempRoot();
@@ -57,7 +54,6 @@ public class BiomeDataLoaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestFakeRootWithoutFileReturnsNoBiomes()
     {
         var root = TempAssetPaths.CreateTempRoot();
@@ -74,7 +70,6 @@ public class BiomeDataLoaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestMissingBiomesSectionReturnsNoBiomes()
     {
         var biomes = BiomeDataLoader.ParseBiomes("{ \"tiles\": [] }");
@@ -83,7 +78,6 @@ public class BiomeDataLoaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestMalformedJsonReturnsNoBiomes()
     {
         var biomes = BiomeDataLoader.ParseBiomes("{ \"biomes\": { \"plains\": ");
@@ -92,7 +86,6 @@ public class BiomeDataLoaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestCommentsTrailingCommasAndKeyCasingAreAccepted()
     {
         const string json = """
@@ -119,7 +112,6 @@ public class BiomeDataLoaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestMalformedTileSectionDoesNotHideBiomes()
     {
         const string json = """

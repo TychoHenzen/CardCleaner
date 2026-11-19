@@ -40,7 +40,6 @@ public class OrderingServiceLockTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LockedItemIsRefusedBeforeChargingOrSpawning()
     {
         var childrenBefore = _world.GetChildCount();
@@ -55,7 +54,6 @@ public class OrderingServiceLockTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ReachingLevelTwoAllowsTheSameOrder()
     {
         var item = MakeItem("bulk_packing_station", ItemPrice);
@@ -68,7 +66,6 @@ public class OrderingServiceLockTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UnknownIdIsLockedEvenAtMaxLevel()
     {
         _progression.AwardCheckout(5000);
@@ -80,7 +77,6 @@ public class OrderingServiceLockTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NoProgressionServiceFailsClosed()
     {
         _ordering.Progression = null;
@@ -93,7 +89,6 @@ public class OrderingServiceLockTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LockedIsReportedBeforeAnUnaffordablePrice()
     {
         var result = _ordering.Order(MakeItem("bulk_packing_station", 5000));

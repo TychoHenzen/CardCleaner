@@ -26,7 +26,6 @@ public class TileCatalogConsumersTest
     private static readonly Regex ConcreteCatalog = new(@"\bTileCatalogData\b", RegexOptions.Compiled);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MapGeneratorsNameNoConcreteTileCatalog()
     {
         var files = SourceScan.CsFiles(GeneratorRoot).Concat(SourceScan.CsFiles(MeshRoot)).ToList();
@@ -51,7 +50,6 @@ public class TileCatalogConsumersTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ConcreteCatalogNameIsReportedAndCommentsAndStringsIgnored()
     {
         const string source = "namespace Sample;\n"

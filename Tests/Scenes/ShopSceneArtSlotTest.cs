@@ -29,7 +29,6 @@ public class ShopSceneArtSlotTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ArtSlotsPointAtPackMeshesForWallsFloorDoorsAndCounter()
     {
         var slots = new List<ShopArtSlot>();
@@ -49,7 +48,6 @@ public class ShopSceneArtSlotTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ArtSlotKeepsPlaceholderWhenPackFileIsMissing()
     {
         var placeholder = new Node3D();
@@ -63,7 +61,6 @@ public class ShopSceneArtSlotTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SceneStillBuildsWhenPackFilesAreMissing()
     {
         var slots = new List<ShopArtSlot>();
@@ -76,7 +73,6 @@ public class ShopSceneArtSlotTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SceneDoesNotSerializeRuntimeOnlyFields()
     {
         var state = _packed.GetState();

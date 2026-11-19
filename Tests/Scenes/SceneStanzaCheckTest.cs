@@ -29,14 +29,12 @@ public class SceneStanzaCheckTest
         """;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnIdenticalSaveMissesNothing()
     {
         AssertThat(SceneStanzaCheck.Missing(Canonical, Canonical)).IsEmpty();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void IdsOrderAndPropertiesDoNotCount()
     {
         const string saved = """
@@ -59,7 +57,6 @@ public class SceneStanzaCheckTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AMissingNodeAndEditableLineAreNamed()
     {
         const string saved = """
@@ -77,7 +74,6 @@ public class SceneStanzaCheckTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ANodeWithoutAParentAfterTheRootIsReported()
     {
         const string saved = """
@@ -93,7 +89,6 @@ public class SceneStanzaCheckTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TextWithoutNodesIsReported()
     {
         AssertThat(SceneStanzaCheck.Missing("[gd_scene format=3]", "[gd_scene format=3]"))
@@ -106,7 +101,6 @@ public class SceneStanzaCheckTest
     // and the stanza check both report the loss. The fixtures run through that test's own LostValues, so they prove the
     // path every scene under res://Scenes takes.
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnOverrideOnANonEditableInstanceIsReported()
     {
         AssertThat(SceneEditorRoundTripSceneTest.LostValues($"{Fixtures}/RoundTripOverride.tscn"))
@@ -114,7 +108,6 @@ public class SceneStanzaCheckTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnOverrideOnAnEditableInstanceIsKept()
     {
         var path = $"{Fixtures}/RoundTripEditableOverride.tscn";

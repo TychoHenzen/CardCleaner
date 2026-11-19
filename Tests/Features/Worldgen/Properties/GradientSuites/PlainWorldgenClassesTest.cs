@@ -16,7 +16,6 @@ namespace CardCleaner.Tests.Features.Worldgen.Properties.GradientSuites;
 public class PlainWorldgenClassesTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoneOfTheSevenClassesIsAGodotObject()
     {
         Type[] types =
@@ -29,7 +28,6 @@ public class PlainWorldgenClassesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DefaultsMatchTheValuesTheInspectorRevertUsedToReturn()
     {
         var noise = new NoiseGradient(GodotNoiseSource.Create);
@@ -44,7 +42,6 @@ public class PlainWorldgenClassesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void BiomeDefinitionConstructorClampsTheBlockedPercentage()
     {
         var high = new BiomeDefinition("a", new CardSignature(), TilePool.Empty, TilePool.Empty, 1.7f);

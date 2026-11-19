@@ -16,7 +16,6 @@ public class PcDesktopStaffTest
     private static readonly Vector2I ScreenSize = new(1280, 720);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void StaffIconShowsStaffAppAndHidesOthers()
     {
         var (desktop, stockApp, staffApp) = BuildDesktop(assignStaff: true);
@@ -30,7 +29,6 @@ public class PcDesktopStaffTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AssignedStaffIconIsEnabled()
     {
         var (desktop, _, _) = BuildDesktop(assignStaff: true);
@@ -39,7 +37,6 @@ public class PcDesktopStaffTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UnassignedStaffIconStaysDisabledWithNotInstalledTooltip()
     {
         var (desktop, _, staffApp) = BuildDesktop(assignStaff: false);
@@ -53,7 +50,6 @@ public class PcDesktopStaffTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ResetToDesktopHidesTheStaffApp()
     {
         var (desktop, _, staffApp) = BuildDesktop(assignStaff: true);
@@ -66,7 +62,6 @@ public class PcDesktopStaffTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ForwardedHome()
     {
         var (desktop, staffApp, overlay) = await BuildForwardedDesktop();

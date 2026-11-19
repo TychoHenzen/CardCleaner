@@ -20,21 +20,14 @@ namespace CardCleaner.Scripts.Core.Services;
 /// </summary>
 internal static class AssemblyUnloadCleanup
 {
-    private static readonly List<Action> Clears = new();
-    private static readonly object ClearsLock = new();
+    private static readonly ClearList ProjectClears = new();
     private static bool _initialized;
 
     /// <summary>
     /// Registers a cache clear to run when the assembly unloads. Each cache owner registers its own
     /// from a static constructor; this works whether or not <see cref="Initialize"/> has run.
     /// </summary>
-    internal static void Register(Action clear)
-    {
-        lock (ClearsLock)
-        {
-            Clears.Add(clear);
-        }
-    }
+    internal static void Register(Action clear) => ProjectClears.Register(clear);
 
     /// <summary>
     /// Called automatically when the assembly is loaded.
@@ -61,7 +54,7 @@ internal static class AssemblyUnloadCleanup
     private static void OnUnloading(AssemblyLoadContext context)
     {
         ClearSystemTextJsonCache();
-        ClearProjectCaches();
+        ProjectClears.RunAll();
     }
 
     /// <summary>
@@ -95,25 +88,41 @@ internal static class AssemblyUnloadCleanup
     }
 
     /// <summary>
-    /// Clears project-specific static caches that could hold type references.
+    /// The registered clears of project-specific static caches that could hold type references. An instance, so
+    /// tests check its rules on a list of their own and never clear the game's caches.
     /// </summary>
-    internal static void ClearProjectCaches()
+    internal sealed class ClearList
     {
-        Action[] snapshot;
-        lock (ClearsLock)
+        private readonly List<Action> _clears = new();
+        private readonly object _lock = new();
+
+        internal void Register(Action clear)
         {
-            snapshot = Clears.ToArray();
+            lock (_lock)
+            {
+                _clears.Add(clear);
+            }
         }
 
-        foreach (var clear in snapshot)
+        /// <summary>Runs every registered clear; one that throws does not stop the others.</summary>
+        internal void RunAll()
         {
-            try
+            Action[] snapshot;
+            lock (_lock)
             {
-                clear();
+                snapshot = _clears.ToArray();
             }
-            catch (Exception)
+
+            foreach (var clear in snapshot)
             {
-                // Silently ignore - one failing cache must not stop the others
+                try
+                {
+                    clear();
+                }
+                catch (Exception)
+                {
+                    // Silently ignore - one failing cache must not stop the others
+                }
             }
         }
     }

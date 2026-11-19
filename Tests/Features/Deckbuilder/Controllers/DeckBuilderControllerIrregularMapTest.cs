@@ -112,7 +112,6 @@ public class DeckBuilderControllerIrregularMapTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task MissingIrregularScreenDoesNotConsumeTheSelectedCards()
     {
         await BuildController(withIrregularScreen: false);
@@ -128,7 +127,6 @@ public class DeckBuilderControllerIrregularMapTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ActivatingStartsTheSessionWithTheRegisteredIrregularGenerator()
     {
         await StartSession();
@@ -139,7 +137,6 @@ public class DeckBuilderControllerIrregularMapTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CompletedIrregularSessionReenablesTheButtonForReset()
     {
         await StartSession();
@@ -150,7 +147,6 @@ public class DeckBuilderControllerIrregularMapTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CompletedSessionIsHandledEvenIfMapTypeChangedSince()
     {
         await StartSession();
@@ -162,7 +158,6 @@ public class DeckBuilderControllerIrregularMapTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SessionThatFallsBackToWaitingWithoutCompletingLeavesTheCabinetIdle()
     {
         await StartSession();
@@ -174,7 +169,6 @@ public class DeckBuilderControllerIrregularMapTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task KindToggleStaysDarkFromTheActivatePressUntilTheResetPress()
     {
         await BuildController(withIrregularScreen: true);

@@ -29,7 +29,6 @@ public class CardBundleSaveTest
     private static readonly Vector3 PilePosition = new(-3f, 0.25f, 4f);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ADeckAndAPileReloadAtTheirPosesWithEveryCardInOrder()
     {
         using var scene = new SaveWorld("CardBundleWorld", addCardsToTree: false);
@@ -71,7 +70,6 @@ public class CardBundleSaveTest
     [TestCase("Pile", "none")]
     [TestCase("Deck", "container")]
     [TestCase("Deck", "short signature")]
-    [TestCategory("Unit")]
     public static void AMalformedDeckOrPileRecordFailsTheParse(string kind, string item)
     {
         var cards = item switch

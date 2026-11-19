@@ -27,16 +27,28 @@ public class CardContainerTest
     private Camera3D _hand = null!;
     private RecordingCardSpawner _spawner = null!;
 
+    // Several cases check the opening stage by stage (the lid swings before the boosters rise, items hang until the
+    // wrapper is gone), so a frame must span little game time; at the default factor of 16 they skipped stages.
+    private const int StageByStageFactor = 4;
+
+    private FastClock? _clock;
+
     [BeforeTest]
     public void Setup()
     {
+        _clock = FastClock.Start(StageByStageFactor);
         _world = AddNode(new Node3D());
         _hand = InHandOpening.AddHand(_world);
         _spawner = new RecordingCardSpawner();
     }
 
+    [AfterTest]
+    public void StopClock()
+    {
+        _clock?.Dispose();
+    }
+
     [TestCase]
-    [TestCategory("Unit")]
     public void ScenesAreTheMatchingKindsAndChainBoxToPackToBooster()
     {
         var box = Make(BoxScene);
@@ -52,7 +64,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Ready_AddsToContainersGroup()
     {
         var box = Make(BoxScene);
@@ -61,7 +72,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ABoosterBoxOnTheFloorDoesNotEmpty()
     {
         var pack = Make(PackScene);
@@ -73,7 +83,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ABoosterOpensInTheHandIntoEightCardsWithGeneratedSignatures()
     {
         var booster = Make(BoosterScene);
@@ -89,7 +98,6 @@ public class CardContainerTest
     // The boosters share the booster box's generator, so opening them one after another in the hand gives the
     // generator's cards in the order it rolls them.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AWholeBoosterBoxOpensInTheHandToTheGeneratorsFirstSixtyFourCards()
     {
         foreach (var booster in InHandOpening.Empty(Make(PackScene), _hand))
@@ -102,7 +110,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ABoosterOpensOnlyOnce()
     {
         var booster = Make(BoosterScene);
@@ -116,7 +123,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BoosterWithoutACardSpawnerCannotOpen()
     {
         var booster = Make(BoosterScene);
@@ -129,7 +135,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Interact_EmitsPickUpRequested_AndDoesNotOpen()
     {
         var box = Make(BoxScene);
@@ -144,7 +149,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CanInteract_FalseWhenParentIsCamera()
     {
         var box = Make(BoxScene);
@@ -158,7 +162,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ContainersJoinTheInteractionLayerAndHighlightOnLook()
     {
         foreach (var path in new[] { BoxScene, PackScene, BoosterScene })
@@ -175,7 +178,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpeningABoosterSpawnsAtMostOneCardPerFrame()
     {
         var booster = Make(BoosterScene);
@@ -195,7 +197,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task FreeingTheHandWhileABoosterOpensStopsSpawningWithoutErrors()
     {
         var booster = Make(BoosterScene);
@@ -210,7 +211,6 @@ public class CardContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FinishOpeningDoesNothingToAContainerThatIsNotOpening()
     {
         var pack = Make(PackScene);

@@ -60,7 +60,6 @@ public class FurnitureCameraAimTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheCameraRayMovesTheGhostToTheFloorPointItMeets()
     {
         AssertBool(_controller.Begin(NewBox())).IsTrue();
@@ -76,7 +75,6 @@ public class FurnitureCameraAimTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACameraThatLooksAtTheHorizonLeavesThePoseAlone()
     {
         AssertBool(_controller.Begin(NewBox())).IsTrue();
@@ -90,7 +88,6 @@ public class FurnitureCameraAimTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ThePickUpKeyMovesThePieceTheCameraRayHits()
     {
         AssertBool(_controller.Begin(NewBox())).IsTrue();
@@ -111,7 +108,6 @@ public class FurnitureCameraAimTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACameraOnThePlayersOwnBodyStillAimsAtThePiece()
     {
         AssertBool(_controller.Begin(NewBox())).IsTrue();
@@ -136,7 +132,6 @@ public class FurnitureCameraAimTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ThePackKeyPacksThePieceTheCameraRayHitsIntoItsBox()
     {
         _controller.Boxes = GD.Load<OrderCatalog>(BoxCatalogPath);
@@ -160,7 +155,6 @@ public class FurnitureCameraAimTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheCameraRayMissingEveryPieceLeavesNoPickUpTarget()
     {
         AssertBool(_controller.Begin(NewBox())).IsTrue();

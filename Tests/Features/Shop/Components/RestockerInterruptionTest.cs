@@ -9,16 +9,18 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 /// <summary>
 ///     What happens to a restocker's load when its work is cut short: dismissal while it carries a container, and a
 ///     shelf the walk cannot reach.
+///     A Daily suite, for the reason RestockerCarryTest gives. On pull requests, RestockerJobTest checks a blocked
+///     target, and ShopRestockerSaveSceneTest dismisses a restocker in the scene.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
+[TestCategory("Daily")]
 public class RestockerInterruptionTest : RestockerTestBase
 {
     // The locked expansion lot is walled off from the rest of the shop, so no path leads into it.
     private static readonly Vector3 LockedLotSpot = new(-4f, 0f, 6f);
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task DismissedRestockerSetsTheCarriedPackDownLooseAtItsFeet()
     {
         HireAndOpen();
@@ -38,7 +40,6 @@ public class RestockerInterruptionTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ShelfBehindTheLockedLotWallSendsTheCarriedPackBackToItsRackSlot()
     {
         _product.GlobalPosition = LockedLotSpot;

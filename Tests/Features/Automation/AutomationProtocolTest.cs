@@ -10,7 +10,6 @@ namespace CardCleaner.Tests.Features.Automation;
 public class AutomationProtocolTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void ParseReadsIdCommandAndArgs()
     {
         var request = AutomationProtocol.Parse("{\"id\": 7, \"cmd\": \"walk_to\", \"args\": {\"stop\": 1.5}}");
@@ -21,7 +20,6 @@ public class AutomationProtocolTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ParseWithoutArgsGivesAnEmptyObject() =>
         AssertThat(AutomationProtocol.Parse("{\"cmd\": \"ping\"}").Args.Count).IsEqual(0);
 
@@ -29,7 +27,6 @@ public class AutomationProtocolTest
     [TestCase("[1, 2]", "must be a JSON object")]
     [TestCase("{\"id\": 1}", "needs a \"cmd\" string")]
     [TestCase("{\"cmd\": \"ping\", \"args\": 3}", "\"args\" must be an object")]
-    [TestCategory("Unit")]
     public void ParseRejectsMalformedLines(string line, string message)
     {
         AutomationException? thrown = null;
@@ -47,7 +44,6 @@ public class AutomationProtocolTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RepliesEchoTheIdAndCarryResultOrError()
     {
         var ok = JsonNode.Parse(AutomationProtocol.Success(JsonValue.Create(3), new JsonObject { ["x"] = 1 }))!;
@@ -61,7 +57,6 @@ public class AutomationProtocolTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PortArgumentIsReadOnlyWhenValid()
     {
         AssertThat(AutomationLaunch.ParsePort(["--other", "--automation-port=4711"])).IsEqual(4711);
@@ -72,7 +67,6 @@ public class AutomationProtocolTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OutsideAutomationTheWantedMouseModeIsKept()
     {
         // The test run has no --automation-port, so capture passes through unchanged.
@@ -82,7 +76,6 @@ public class AutomationProtocolTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void YawAndPitchFollowTheCameraConvention()
     {
         AssertVector(AutomationView.YawPitch(Vector3.Forward)).IsEqualApprox(new Vector2(0, 0), new Vector2(0.01f, 0.01f));
@@ -93,7 +86,6 @@ public class AutomationProtocolTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AimLearnsTheGainFromMeasuredTurns()
     {
         var aim = new ViewAim();
@@ -107,7 +99,6 @@ public class AutomationProtocolTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void VariantJsonRoundTripsVectorsByTheTargetType()
     {
         var json = VariantJson.ToJson(new Vector3(1, 2.5f, -3));
@@ -119,7 +110,6 @@ public class AutomationProtocolTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void VariantJsonReadsNumbersSentAsTextAndRefusesOtherText()
     {
         var whole = VariantJson.FromJson(JsonValue.Create("3"), Variant.Type.Int);

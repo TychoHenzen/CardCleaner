@@ -83,7 +83,6 @@ public class CardBundlerTest
     public static void Cleanup() => TestServices.Reset();
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheStrapKeyStrapsEveryCardInHandIntoOneDeckInFrontOfThePlayer()
     {
         var cards = HoldCards(3);
@@ -104,7 +103,6 @@ public class CardBundlerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardWithoutASignatureStaysWithoutOneThroughADeck()
     {
         var card = ShopTestCards.Create(null);
@@ -120,7 +118,6 @@ public class CardBundlerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OneCardIsNotStrapped()
     {
         HoldCards(1);
@@ -131,7 +128,6 @@ public class CardBundlerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NothingIsStrappedWhileAContainerIsHeld()
     {
         HoldCards(2);
@@ -144,7 +140,6 @@ public class CardBundlerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ClickingADeckUnstrapsItIntoTheHandInTheOrderItWasStrapped()
     {
         HoldCards(3);
@@ -163,7 +158,6 @@ public class CardBundlerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ADeckThatDoesNotFitInTheHandStaysStrapped()
     {
         HoldCards(3);
@@ -179,7 +173,6 @@ public class CardBundlerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void APileGivesTheHandTheLastCardsInAsManyAsFit()
     {
         var pile = CardBundle.Create(CardBundleKind.Pile,
@@ -198,7 +191,6 @@ public class CardBundlerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AFullHandRefusesTheNextCard()
     {
         HoldCards(CardHolder.MostCards);

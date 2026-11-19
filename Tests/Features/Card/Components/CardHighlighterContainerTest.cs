@@ -88,7 +88,6 @@ public class CardHighlighterContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ContainerClick_PicksUp()
     {
         Build();
@@ -101,7 +100,6 @@ public class CardHighlighterContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ContainerClick_WhileCardsHeld_IgnoresABox()
     {
         var card = MakeCard();
@@ -118,7 +116,6 @@ public class CardHighlighterContainerTest
 
     // A booster opens into the cards in hand, so it is the one container picked up while cards are held.
     [TestCase]
-    [TestCategory("Unit")]
     public void ContainerClick_WhileCardsHeld_TakesABooster()
     {
         var card = MakeCard();
@@ -135,7 +132,6 @@ public class CardHighlighterContainerTest
     // While a held booster opens into the hand, the cards in hand are not used: a card click, the right button, X and
     // a shelf click all do nothing until its cards have joined the hand.
     [TestCase]
-    [TestCategory("Unit")]
     public void WhileABoosterOpensInTheHandTheCardsInHandAreNotUsed()
     {
         var held = MakeCard();
@@ -165,7 +161,6 @@ public class CardHighlighterContainerTest
 
     // Holding a booster with cards in hand offers the booster to a shelf, not the top card.
     [TestCase]
-    [TestCategory("Unit")]
     public void AHeldBoosterIsOfferedBeforeTheCardsInHand()
     {
         var card = MakeCard();
@@ -178,7 +173,6 @@ public class CardHighlighterContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CardClick_WhileContainerHeld_Ignored()
     {
         var card = MakeCard();
@@ -199,7 +193,6 @@ public class CardHighlighterContainerTest
 
     // A full hand offers no click on a loose card, so the aim prompt never promises a pick-up that does nothing.
     [TestCase]
-    [TestCategory("Unit")]
     public void ACardIsNotOfferedToAFullHand()
     {
         var card = MakeCard();
@@ -219,7 +212,6 @@ public class CardHighlighterContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RightPress_WhileHoldingABox_OpensThenClosesItInTheHand()
     {
         Build();
@@ -244,7 +236,6 @@ public class CardHighlighterContainerTest
     // A shut box goes whole onto a rack, never onto a product shelf; an open one gives a product shelf one booster box
     // at a time.
     [TestCase]
-    [TestCategory("Unit")]
     public void TheHandOffersAShutBoxWholeAndAnOpenBoxOnePackAtATime()
     {
         var highlighter = Build();
@@ -262,7 +253,6 @@ public class CardHighlighterContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void StockingFromAnOpenBoxPutsOnePackInTheSlotAndKeepsTheBoxInHand()
     {
         var highlighter = Build();
@@ -281,7 +271,6 @@ public class CardHighlighterContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AShutBoxIsNotStockedOnAProductShelf()
     {
         var highlighter = Build();
@@ -297,7 +286,6 @@ public class CardHighlighterContainerTest
 
     // An emptied cardboard box stays in the hand, to be thrown away, and offers nothing more.
     [TestCase]
-    [TestCategory("Unit")]
     public void TakingTheLastPackLeavesTheEmptyBoxInHand()
     {
         var highlighter = Build();
@@ -320,7 +308,6 @@ public class CardHighlighterContainerTest
     // The right button empties a held booster box into the hand; each shelf click then stocks the top booster pack,
     // up to four on one product slot, and the rest stay in the hand.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ABoosterBoxEmptiedIntoTheHandStocksOneBoosterPackPerClick()
     {
         var highlighter = Build();
@@ -343,7 +330,6 @@ public class CardHighlighterContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RightPress_WithCards_StillStartsCardDrop()
     {
         var card = MakeCard();

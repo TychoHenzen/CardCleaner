@@ -44,7 +44,6 @@ public class ShopCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CounterHasItsRegisterDisplayMarkersAndAPaymentScreenWiredToIt()
     {
         AssertThat(_rig.Counter.Display).IsNotNull();
@@ -56,7 +55,6 @@ public class ShopCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SceneServicesResolveTheCounterAsTheCheckoutHandoff()
     {
         var tree = (SceneTree)Engine.GetMainLoop();
@@ -76,7 +74,6 @@ public class ShopCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CardPaymentOfTheTotalAddsItOnceAndSendsTheCustomerAway()
     {
         var customer = new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4);
@@ -99,7 +96,6 @@ public class ShopCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CashPaymentWithTheRightChangeAddsTheTotal()
     {
         var customer = new FakeCheckoutCustomer(PaymentMethod.Cash, 3, 4);
@@ -122,7 +118,6 @@ public class ShopCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task WrongCardTotalKeepsTheScreenOpenAndClearsTheEntry()
     {
         var customer = new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4);
@@ -147,7 +142,6 @@ public class ShopCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task WrongCashChangeIsRejectedAndTakesNothing()
     {
         var customer = new FakeCheckoutCustomer(PaymentMethod.Cash, 3, 4);
@@ -165,7 +159,6 @@ public class ShopCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CancelClosesTheScreenWithoutPayingAndTheCounterReopensIt()
     {
         var customer = new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4);
@@ -195,7 +188,6 @@ public class ShopCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task FreeingTheScreenWhileOpenGivesTheCursorAndControlBack()
     {
         var player = _rig.Shop.GetNode<PlayerController>("Player");
@@ -213,7 +205,6 @@ public class ShopCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CounterUsesAnExistingPackMeshWithAPlaceholderFallback()
     {
         var art = _rig.Counter.GetNode<ShopArtSlot>("CounterArt");
@@ -225,7 +216,6 @@ public class ShopCheckoutSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PlayerInteractionRayReachesTheCounterFromInFrontOfItOnlyWhileAPaymentWaits()
     {
         var from = _rig.Counter.GlobalPosition + new Vector3(0f, EyeHeight, StandingDistanceToCounter);

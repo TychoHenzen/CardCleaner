@@ -40,7 +40,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CustomersGetQueueSlotsInArrivalOrder()
     {
         var first = new FakeCheckoutCustomer(PaymentMethod.Card, 3);
@@ -62,7 +61,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CustomersBeyondTheLastSlotShareItAndAdvanceWhenAPlaceFrees()
     {
         var customers = Enumerable.Range(0, 5).Select(_ => new FakeCheckoutCustomer(PaymentMethod.Card, 3)).ToList();
@@ -80,7 +78,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PayingForACustomerWhoAlreadyLeftTakesNothingAndDropsThem()
     {
         var gone = new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4);
@@ -99,7 +96,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FrontBasketIsLaidOnTheCounter()
     {
         var customer = new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4);
@@ -114,7 +110,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ScanMarksAnItemOnceAndRejectsRepeatAndStranger()
     {
         var raised = 0;
@@ -130,7 +125,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PaymentBeforeAllScannedIsRejected()
     {
         _counter.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4));
@@ -142,7 +136,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WrongCardTotalIsRejected()
     {
         _counter.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4));
@@ -155,7 +148,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WrongChangeIsRejected()
     {
         // Total 7, tendered 10, so the change due is 3.
@@ -169,7 +161,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CorrectCardPaymentAddsTheTotalOnceFreesPropsAndAdvances()
     {
         var first = new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4);
@@ -191,7 +182,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CorrectCashPaymentWithExactChangeIsAccepted()
     {
         _counter.Checkout(new FakeCheckoutCustomer(PaymentMethod.Cash, 3, 4));
@@ -203,7 +193,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task WaitingFalseCustomerIsDroppedWithoutPayment()
     {
         var first = new FakeCheckoutCustomer(PaymentMethod.Card, 3, 4);
@@ -224,7 +213,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BasketTheSessionRejectsIsSentAwayUnpaid()
     {
         // A zero-priced offer makes CheckoutSession throw, so the counter must send this customer away.
@@ -241,7 +229,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InteractRaisesPaymentReadyOnlyWhileAwaitingPayment()
     {
         var raised = 0;
@@ -261,7 +248,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheCounterIsAimableOnlyWhileAPaymentIsWaiting()
     {
         const uint interactionLayer = 4;
@@ -280,7 +266,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SameCustomerTwiceIsIgnored()
     {
         var repeated = new FakeCheckoutCustomer(PaymentMethod.Card, 3);
@@ -296,7 +281,6 @@ public class CheckoutCounterTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PropsShowTheCustomersCopiesOfItsItemsAndStackByTheirHeight()
     {
         var card = new Node3D();

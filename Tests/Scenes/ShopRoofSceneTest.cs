@@ -32,7 +32,6 @@ public class ShopRoofSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheCeilingCoversEveryFloorTile()
     {
         var ceiling = SceneNodes.Footprint((MeshInstance3D)SceneNodes.Require(_shop, CeilingMeshPath)).Grow(Tolerance);
@@ -46,7 +45,6 @@ public class ShopRoofSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryFloorTileIsWithinReachOfACeilingLight()
     {
         var lights = SceneNodes.Descendants(SceneNodes.Require(_shop, LightsPath)).OfType<OmniLight3D>().ToList();
@@ -59,7 +57,6 @@ public class ShopRoofSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheCeilingIsNotNavigationSource()
     {
         var ceiling = SceneNodes.Require(_shop, CeilingPath);

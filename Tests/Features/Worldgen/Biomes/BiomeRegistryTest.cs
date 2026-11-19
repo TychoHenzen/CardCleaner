@@ -157,7 +157,6 @@ public class BiomeRegistryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ToBiomeSet_IsASnapshot()
     {
         _registry.Register(CreateTestBiome("forest"));

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Tests.Architecture.DependencyGate;
-using Godot;
 
 namespace CardCleaner.Tests.Architecture;
 
@@ -11,13 +10,10 @@ namespace CardCleaner.Tests.Architecture;
 public class SignatureLayerTest
 {
     [TestCase(Timeout = 170000)]
-    [TestCategory("Unit")]
     public static void CardSignatureIsPureDataAndNamesOnlyElement()
     {
-        var root = ProjectSettings.GlobalizePath("res://");
-        var extracted = ClassGraphExtractor.Extract(
-            RepositorySources.Scripts(root), RepositorySources.Addons(root), CompilationReferences.FromHost());
-        var graph = extracted.Graph;
+        // The graph the dependency gate measures, built once per test run.
+        var graph = RepositoryClassGraph.Shared.Classes;
         var layers = LayerAnchors.Classify(graph);
         var signature = IdOf(layers.Keys, "CardSignature");
 

@@ -59,7 +59,6 @@ public class BoosterRevealTest
     public static void Cleanup() => TestServices.Reset();
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheCardsGoIntoTheHandInTheOrderTheyLeftTheBooster()
     {
         var booster = HeldBooster();
@@ -75,7 +74,6 @@ public class BoosterRevealTest
 
     // The booster's seed decides its cards and their order.
     [TestCase]
-    [TestCategory("Unit")]
     public void TheCardsAreTheOnesTheBoostersSeedGives()
     {
         HeldBooster();
@@ -87,7 +85,6 @@ public class BoosterRevealTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheCardsAlreadyHeldStayFirstAndTheWholeHandEndsFanned()
     {
         var held = new[] { LooseCard("Held0"), LooseCard("Held1") };
@@ -108,7 +105,6 @@ public class BoosterRevealTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task WhileTheBoosterOpensTheHandTakesNothingElse()
     {
         var booster = HeldBooster();
@@ -132,7 +128,6 @@ public class BoosterRevealTest
 
     // The cards hang in front of the camera, so none may collide with the world or fall while the booster opens.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ARevealedCardIsFrozenWithItsCollisionOff()
     {
         HeldBooster();
@@ -152,7 +147,6 @@ public class BoosterRevealTest
 
     // A save finishes every opening first, so a booster opening in the hand is saved as the cards it holds.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ASaveMidOpeningPutsEveryCardInTheHandAndStoresNoBooster()
     {
         HeldBooster();

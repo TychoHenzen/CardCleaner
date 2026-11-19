@@ -134,7 +134,6 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CommonCardRendersWithoutSignatureEdges()
     {
         _generator.GenerateCardRenderer(_renderer, new CardSignature(), null, _template);
@@ -144,7 +143,6 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SpecialCardRendersSignatureEdges()
     {
         var signature = new CardSignature().With(Element.Febris, 0.6f);
@@ -156,7 +154,6 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CommonCardKeepsEdgeLayerTexturesSoShaderArraysStayAligned()
     {
         _generator.GenerateCardRenderer(_renderer, new CardSignature(), null, _template);
@@ -167,7 +164,6 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TestZeroSignatureStaysCommon()
     {
         var zero = new CardSignature();
@@ -181,7 +177,6 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MundaneArtIsPickedFromAllBaseTypesBySeed()
     {
         var generator = SignatureCardTestData.CreateGeneratorWithBaseTypes(3, out var arts);
@@ -202,7 +197,6 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SameLookSeedGivesTheSameLook()
     {
         var generator = SignatureCardTestData.CreateGeneratorWithBaseTypes(3, out _);
@@ -217,7 +211,6 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NullLookSeedKeepsTheSignatureSeededLook()
     {
         // A card saved before look seeds existed has no seed: its effect seed comes from its signature, as before.
@@ -233,7 +226,6 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LookSeedIsIgnoredForASpecialCard()
     {
         var signature = new CardSignature().With(Element.Febris, 0.6f);
@@ -250,7 +242,6 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MundaneSeedDrivesTheEffectSeed()
     {
         var zero = new CardSignature();
@@ -265,7 +256,6 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MundaneCardHidesTheEnergyOrb()
     {
         var generator = SignatureCardTestData.CreateGeneratorWithBaseTypes(3, out _);
@@ -283,7 +273,6 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SpecialCardShowsTheEnergyOrb()
     {
         var signature = new CardSignature().With(Element.Febris, 0.6f);
@@ -295,7 +284,6 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MundaneCardKeepsTheAttributeLabel()
     {
         var renderer = Assertions.AddNode(CreateRealRenderer());

@@ -38,7 +38,6 @@ public class SignatureCardArtEffectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CardCarriesTheEffectIdsMappedFromItsRarityAndIntensity()
     {
         var material = await GenerateAndApplyBaked(new CardSignature(RareDormant));
@@ -48,7 +47,6 @@ public class SignatureCardArtEffectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task IntenseEpicCardGetsGlossyAndShiny()
     {
         var signature = CardEffectComparisonGrid.SignatureFor(CardRarity.Epic, IntensityTier.Intense);
@@ -60,7 +58,6 @@ public class SignatureCardArtEffectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CardSeedComesFromTheSignatureAlone()
     {
         var signature = new CardSignature(RareDormant);
@@ -77,7 +74,6 @@ public class SignatureCardArtEffectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SeedFollowsTheLookSeedWhileRarityAndConditionFollowTheGameplaySignature()
     {
         // A common card (all zeros) with a look seed: only the seed follows the look seed.
@@ -89,7 +85,6 @@ public class SignatureCardArtEffectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CardShowsNoRarityEffectUntilTheBevelMapOfItsArtIsBaked()
     {
         var template = new CardTemplate();
@@ -108,7 +103,6 @@ public class SignatureCardArtEffectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CardWhoseArtIsAlreadyBakedShowsItsRarityEffectAtOnce()
     {
         var first = new CardTemplate();
@@ -126,7 +120,6 @@ public class SignatureCardArtEffectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardFreedBeforeItsBevelMapIsBakedDoesNotStopOtherCardsGettingIt()
     {
         var template = new CardTemplate();
@@ -141,7 +134,6 @@ public class SignatureCardArtEffectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task GeneratingACardAgainBeforeItsBevelMapArrivesKeepsTheNewerEffects()
     {
         var renderer = Assertions.AddNode(CreateRenderer());
@@ -166,7 +158,6 @@ public class SignatureCardArtEffectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ABevelMapArrivingWhileTheEffectsAreOffWaitsUntilTheyAreSwitchedOn()
     {
         var renderer = Assertions.AddNode(CreateRenderer());
@@ -192,7 +183,6 @@ public class SignatureCardArtEffectsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CommonCardHasNoRarityEffectButStillLooksWorn()
     {
         // Intensity is the mean element magnitude, so the all-zero signature of an ordinary pack card is Dormant

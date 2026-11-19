@@ -67,7 +67,6 @@ public class CartonStorageTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AnOpenBoxOnTheFloorTakesInABoosterDroppedOnIt()
     {
         var box = StandingBox([]);
@@ -84,7 +83,6 @@ public class CartonStorageTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AShutBoxLeavesABoosterDroppedOnItLyingOnTop()
     {
         var box = StandingBox([]);
@@ -98,7 +96,6 @@ public class CartonStorageTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardPutInKeepsItsSignatureLookAndPrice()
     {
         var box = StandingBox([]);
@@ -118,7 +115,6 @@ public class CartonStorageTest
 
     // The card went in first and the booster last, so each slot takes the last item it can take, not the last item.
     [TestCase]
-    [TestCategory("Unit")]
     public void AMixedBoxFillsACardShelfSlotWithTheCardAndAProductSlotWithTheBooster()
     {
         var signature = new CardSignature([0f, 0.75f, 0f, 0f, 0f, 0f, 0f, 0f]);
@@ -145,7 +141,6 @@ public class CartonStorageTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PutOneDownSetsTheNextBoosterBoxOnTheFloorWhereThePlayerAims()
     {
         var (holder, eye) = Holder(new Vector3(0f, 1.6f, 0f));
@@ -167,7 +162,6 @@ public class CartonStorageTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PutOneDownWithNothingUnderTheAimTakesNothing()
     {
         var (holder, eye) = Holder(new Vector3(0f, 1.6f, 0f));
@@ -183,7 +177,6 @@ public class CartonStorageTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ATrashCanTakesOnlyAnEmptyBoxFromTheHand()
     {
         var (holder, _) = Holder(Vector3.Zero);
@@ -209,7 +202,6 @@ public class CartonStorageTest
 
     // The booster went in last, so taking one out takes its look away and leaves the card stack.
     [TestCase]
-    [TestCategory("Unit")]
     public void AnOpenBoxShowsWhatItHoldsInsideItsWalls()
     {
         var box = StandingBox([

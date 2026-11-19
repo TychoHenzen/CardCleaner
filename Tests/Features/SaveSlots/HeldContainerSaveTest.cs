@@ -27,7 +27,6 @@ public class HeldContainerSaveTest
     private const ulong BoxSeed = 0x4E1DUL;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task SaveWhileHeld_RestoresHeldAndUnopened()
     {
         using var scene = new SaveWorld("HeldSaveWorld", addCardsToTree: false);
@@ -49,7 +48,6 @@ public class HeldContainerSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task SaveOnFloor_RestoresOnFloor()
     {
         using var scene = new SaveWorld("FloorSaveWorld", addCardsToTree: false);
@@ -75,7 +73,6 @@ public class HeldContainerSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RestoreHeld_WithoutHolder_FallsBackToPosition()
     {
         using var scene = new SaveWorld("NoHolderWorld", addCardsToTree: false);
@@ -106,7 +103,6 @@ public class HeldContainerSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RestoreHeld_WhenHolderBusy_FallsBackToPosition()
     {
         using var scene = new SaveWorld("BusyHolderWorld", addCardsToTree: false);
@@ -129,7 +125,6 @@ public class HeldContainerSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task RestoreOverCarriedContainer_ReleasesHolder()
     {
         using var scene = new SaveWorld("ReleaseHolderWorld", addCardsToTree: false);
@@ -151,7 +146,6 @@ public class HeldContainerSaveTest
 
     // A box opened on the floor, partly emptied and picked up comes back open in the hand, holding the same items.
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task AnOpenPartlyTakenBoxInHandComesBackOpenWithTheSameItemsLeft()
     {
         using var scene = new SaveWorld("OpenBoxSaveWorld", addCardsToTree: false);
@@ -176,7 +170,6 @@ public class HeldContainerSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AShutBoxSavedOnTheFloorReadsShut()
     {
         using var scene = new SaveWorld("ShutBoxSaveWorld", addCardsToTree: false);
@@ -193,7 +186,6 @@ public class HeldContainerSaveTest
     // A booster box emptied into the hand leaves its eight booster packs there; a save brings all eight back into the
     // hand, in the same order, each with the seed it had.
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task EightBoosterPacksInHandComeBackInTheirOrderWithTheirSeeds()
     {
         using var scene = new SaveWorld("BoosterStackSaveWorld", addCardsToTree: false);
@@ -226,7 +218,6 @@ public class HeldContainerSaveTest
     [TestCase("Box", "nested box")]
     [TestCase("Box", "short signature")]
     [TestCase("Box", "container without a scene")]
-    [TestCategory("Unit")]
     public static void ARecordWithUnreadableContentsIsMalformed(string kind, string item)
     {
         var raw = new List<object>
@@ -245,7 +236,6 @@ public class HeldContainerSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OldSlotWithoutHeldKey_ReadsAsFloor()
     {
         // A record written before the held flag existed: no Held key and no Seed key.

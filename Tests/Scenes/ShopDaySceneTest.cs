@@ -63,7 +63,6 @@ public class ShopDaySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ShopDayWiring()
     {
         AssertThat(_shop.GetNodeOrNull("Services/ShopDayService")).IsNotNull();
@@ -81,7 +80,6 @@ public class ShopDaySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SignIsInteractableByTheRay()
     {
         var centre = _sign.GlobalPosition + new Vector3(0f, SignCentreHeight, 0f);
@@ -97,7 +95,6 @@ public class ShopDaySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SignOpensAndClosesTheShopInTheScene()
     {
         var save = new FakeSaveGame();
@@ -123,7 +120,6 @@ public class ShopDaySceneTest
     // Closing time can come while the player is at the PC. The PC's fullscreen overlay sits above the report and
     // takes every click, so the report closes the PC before it shows.
     [TestCase]
-    [TestCategory("Unit")]
     public void ClosingTimeAtThePcClosesThePcAndShowsAUsableReport()
     {
         _service.SaveCommand = new FakeSaveGame();

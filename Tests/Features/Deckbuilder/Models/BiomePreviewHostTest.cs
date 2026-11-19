@@ -24,7 +24,6 @@ public class BiomePreviewHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SetupWithoutAViewportLeavesNoOrphanNode()
     {
         var orphansBefore = OrphanNodeCount();
@@ -35,7 +34,6 @@ public class BiomePreviewHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SetupPutsThePreviewInsideTheViewport()
     {
         var viewport = AutoFree(new SubViewport());
@@ -46,7 +44,6 @@ public class BiomePreviewHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TwoHostsResolveTheRegisteredCatalog()
     {
         var catalog = new BiomeRegistry();
@@ -62,7 +59,6 @@ public class BiomePreviewHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SetupDoesNotBuildACatalog()
     {
         var host = new BiomePreviewHost();
@@ -73,7 +69,6 @@ public class BiomePreviewHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UpdateBeforeTheCatalogArrivesDoesNothing()
     {
         var host = new BiomePreviewHost();
@@ -88,7 +83,6 @@ public class BiomePreviewHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ACatalogSuppliedAfterSetupIsUsedByTheNextUpdate()
     {
         var host = new BiomePreviewHost();
@@ -103,7 +97,6 @@ public class BiomePreviewHostTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void UpdateWithoutAPreviewNeverConsultsTheCatalog()
     {
         var host = new BiomePreviewHost();

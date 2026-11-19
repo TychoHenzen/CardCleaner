@@ -21,7 +21,6 @@ public class SessionFactoryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ScanRegistersBothFactories()
     {
         AssertThat(_container.Resolve<ISessionFactory>()).IsNotNull();
@@ -29,7 +28,6 @@ public class SessionFactoryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EachWorldIsIndependent()
     {
         var factory = _container.Resolve<ISessionFactory>();
@@ -43,7 +41,6 @@ public class SessionFactoryTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnExplorationSessionWithoutAMapTakesNoStep()
     {
         var factory = _container.Resolve<ISessionFactory>();

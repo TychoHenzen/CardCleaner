@@ -34,7 +34,6 @@ public class ShopCheckoutXpSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void HudBarIsWiredToTheSceneProgressionAndStartsAtLevelOne()
     {
         var bar = _rig.Hud.LevelBar!;
@@ -45,7 +44,6 @@ public class ShopCheckoutXpSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PaidCheckoutRaisesXpByTheAwardAndMovesTheBar()
     {
         _rig.Counter.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card, 30, 40));
@@ -71,7 +69,6 @@ public class ShopCheckoutXpSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WrongTotalRaisesNoXp()
     {
         _rig.Counter.Checkout(new FakeCheckoutCustomer(PaymentMethod.Card, 30, 40));
@@ -84,7 +81,6 @@ public class ShopCheckoutXpSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TopLevelShowsMax()
     {
         _rig.Progression.AwardCheckout(MaxLevelAmount);

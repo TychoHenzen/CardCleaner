@@ -45,7 +45,6 @@ public class PauseControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Escape_Pauses_ShowsMenu_CursorVisible()
     {
         _pause._UnhandledInput(EscapeEvent());
@@ -56,7 +55,6 @@ public class PauseControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Escape_Twice_Resumes_HidesMenu_CursorCaptured()
     {
         _pause._UnhandledInput(EscapeEvent());
@@ -68,7 +66,6 @@ public class PauseControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ResumeButton_Resumes_CursorCaptured()
     {
         _pause._UnhandledInput(EscapeEvent());
@@ -81,7 +78,6 @@ public class PauseControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EscapeWithForeignClaim_DoesNotPause()
     {
         _cursor.Claim(new object());
@@ -93,7 +89,6 @@ public class PauseControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EscapeWhilePaused_ResumesEvenWithForeignClaim()
     {
         _pause._UnhandledInput(EscapeEvent());
@@ -105,7 +100,6 @@ public class PauseControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void WithoutCursorService_StillPausesAndResumes()
     {
         // Setup registered ICursorOwner, so drop it and build a controller that has no cursor to resolve.

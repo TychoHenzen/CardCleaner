@@ -25,7 +25,6 @@ public class DeckSlotContainerTest
     private const int SettleFrames = 10;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ProductShelfSlotLocksABoosterAndReportsIt()
     {
         var slot = MakeSlot(ShelfKind.ProductShelf);
@@ -39,7 +38,6 @@ public class DeckSlotContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ProductShelfSlotRefusesABox()
     {
         var slot = MakeSlot(ShelfKind.ProductShelf);
@@ -53,7 +51,6 @@ public class DeckSlotContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void FullSlotRefusesASecondBooster()
     {
         var slot = MakeSlot(ShelfKind.ProductShelf);
@@ -63,7 +60,6 @@ public class DeckSlotContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ReparentingALockedContainerAwayFreesTheSlot()
     {
         var slot = MakeSlot(ShelfKind.ProductShelf);
@@ -79,7 +75,6 @@ public class DeckSlotContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RemovingALockedContainerFreesTheSlotForTheNextOne()
     {
         var slot = MakeSlot(ShelfKind.ProductShelf);
@@ -93,7 +88,6 @@ public class DeckSlotContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CardShelfSlotRefusesABooster()
     {
         var slot = MakeSlot(ShelfKind.CardShelf);
@@ -106,7 +100,6 @@ public class DeckSlotContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CanTakeAnswersWhatTryLockWouldDo()
     {
         var slot = MakeSlot(ShelfKind.ProductShelf);
@@ -125,7 +118,6 @@ public class DeckSlotContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TurnedSlotSeatsTheBoosterOnItsOwnTray()
     {
         // The product shelf stands turned a quarter turn; its slot offset must turn with it.
@@ -144,7 +136,6 @@ public class DeckSlotContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ABoosterInsideTwoSlotTriggersIsLockedByOneSlotOnly()
     {
         // Two empty slots whose trigger boxes overlap, and a loose booster falling through both. Both see it enter on
@@ -177,7 +168,6 @@ public class DeckSlotContainerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ASlotRefusesABoosterAnotherSlotHolds()
     {
         var holder = MakeSlot(ShelfKind.ProductShelf);

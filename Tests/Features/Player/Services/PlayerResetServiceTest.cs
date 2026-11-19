@@ -36,7 +36,6 @@ public class PlayerResetServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ResetPlayerToSafety_AfterFallingOutOfBounds_RestoresSafePositionAndStartsCooldown()
     {
         // Arrange - the player's _Ready records the position it has when it enters the tree

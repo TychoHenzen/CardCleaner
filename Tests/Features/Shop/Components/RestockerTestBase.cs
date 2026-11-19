@@ -46,10 +46,13 @@ public abstract class RestockerTestBase
     private protected CardShelf _rack = null!;
     private protected CardShelf _product = null!;
     private protected ShopNavigationRegion _region = null!;
+    private FastClock? _clock;
 
     [BeforeTest]
     public async Task Setup()
     {
+        // The restocker walks the real shop on game time; a fast clock runs those walks in a fraction of the wall time.
+        _clock = FastClock.Start();
         _shop = ShopOrderingRig.LoadShopWithServices();
         _restocker = _shop.GetNode<Restocker>("World/RightStorage/Restocker");
         _staff = _shop.GetNode<StaffService>("Services/Staff");
@@ -85,6 +88,7 @@ public abstract class RestockerTestBase
         _tree.CurrentScene = _previousScene;
         _shop.Free();
         ShopPauseRig.Teardown();
+        _clock?.Dispose();
     }
 
     private protected async Task AssertStaysPut(CardContainer pack)

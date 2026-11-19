@@ -15,6 +15,7 @@ using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using NSubstitute;
 using CardCleaner.Tests.TestUtilities;
@@ -39,9 +40,12 @@ public class ShopPackOpeningSceneTest
     private MoneyService _money = null!;
     private OrderingService _ordering = null!;
 
+    private FastClock? _clock;
+
     [BeforeTest]
     public async Task Setup()
     {
+        _clock = FastClock.Start();
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _player = _shop.GetNode<PlayerController>("Player");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
@@ -56,13 +60,13 @@ public class ShopPackOpeningSceneTest
     }
 
     [AfterTest]
-    public static void Teardown()
+    public void Teardown()
     {
+        _clock?.Dispose();
         TestServices.Reset();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OrderedBoxIsACardContainerTheInteractionRayCanReach()
     {
         var box = Order("cardboard_box");
@@ -86,7 +90,6 @@ public class ShopPackOpeningSceneTest
     // The player's hand empties an ordered booster box into its eight booster packs, and the top one opens into eight
     // real cards. The booster box was ordered unseeded, so its cards come from the shared random source.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AnOrderedBoosterBoxOpensInTheHandToRealCardsWithGeneratedSignatures()
     {
         var holder = _player.GetNode<ContainerHolder>("CardInteraction/ContainerHolder");

@@ -17,6 +17,7 @@ using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Tests.Features.Packs.Components;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using NSubstitute;
 using CardCleaner.Tests.TestUtilities;
@@ -58,9 +59,12 @@ public class ShopCarryingSceneTest
     private Action<bool>? _rightPress;
     private Action? _qPress;
 
+    private FastClock? _clock;
+
     [BeforeTest]
     public async Task Setup()
     {
+        _clock = FastClock.Start();
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _world = _shop.GetNode<Node3D>("World");
         _player = _shop.GetNode<PlayerController>("Player");
@@ -100,13 +104,13 @@ public class ShopCarryingSceneTest
     }
 
     [AfterTest]
-    public static void Teardown()
+    public void Teardown()
     {
+        _clock?.Dispose();
         TestServices.Reset();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task LeftClick_PicksUpBox()
     {
         var box = OrderBox();
@@ -125,7 +129,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task Q_PutsTheBoxDown_InFrontOfCamera()
     {
         var box = OrderBox();
@@ -146,7 +149,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task RightPress_OpensTheHeldBoxInHandAndSpillsNothing()
     {
         var box = OrderBox();
@@ -166,7 +168,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CardsHeld_BlocksBoxPickup()
     {
         var box = OrderBox();
@@ -185,7 +186,6 @@ public class ShopCarryingSceneTest
     // The player's whole path for a booster pack: picked up with a card already in hand, torn open with the right
     // button, and its eight real cards join the hand after the card that was there.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ABoosterPickedUpWithACardInHandOpensIntoTheHand()
     {
         var booster = Order("booster");
@@ -211,7 +211,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ContainerHeld_BlocksCardPickup()
     {
         var box = OrderBox();
@@ -232,7 +231,6 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PickUpDropPickUp_Works()
     {
         var box = OrderBox();

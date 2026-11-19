@@ -27,7 +27,6 @@ public class SealedBoxSaveTest
     private const ulong BoxSeed = 0x5EA1EDUL;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task AFreshBoxReloadsFreshAndGivesOutTheSameFirstBoosterBox()
     {
         using var scene = new SaveWorld("FreshBoxWorld", addCardsToTree: false);
@@ -50,7 +49,6 @@ public class SealedBoxSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task AMixedBoxReloadsHoldingTheSameItemsInTheSameOrder()
     {
         using var scene = new SaveWorld("MixedBoxWorld", addCardsToTree: false);
@@ -74,7 +72,6 @@ public class SealedBoxSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task AnEmptiedBoxReloadsEmptyNotFresh()
     {
         using var scene = new SaveWorld("EmptyBoxWorld", addCardsToTree: false);

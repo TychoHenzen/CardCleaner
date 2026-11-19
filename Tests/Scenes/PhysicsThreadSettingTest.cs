@@ -14,7 +14,6 @@ namespace CardCleaner.Tests.Scenes;
 public class PhysicsThreadSettingTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void PhysicsDoesNotRunOnASeparateThread()
     {
         var separate = ProjectSettings.GetSetting("physics/3d/run_on_separate_thread").AsBool();

@@ -26,7 +26,6 @@ public class PlacedFurnitureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Create_BuildsAStaticBodyWithTheItemBox()
     {
         var placed = PlacedFurniture.Create(_shelf, new FurniturePose(8f, 6f, 0));
@@ -50,7 +49,6 @@ public class PlacedFurnitureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Place_SetsPositionAndYaw()
     {
         var placed = PlacedFurniture.Create(_shelf, new FurniturePose(0f, 0f, 0));
@@ -68,7 +66,6 @@ public class PlacedFurnitureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Create_ReturnsNullWithoutAScene()
     {
         var item = new FurnitureItem { Id = "no_scene", Width = 1f, Depth = 1f, Height = 1f, Scene = null };
@@ -79,7 +76,6 @@ public class PlacedFurnitureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CanPickUp_IsTrueForAnEmptyShelfAndFalseWhenStockIsHeld()
     {
         var placed = PlacedFurniture.Create(_shelf, Pose);
@@ -98,7 +94,6 @@ public class PlacedFurnitureTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SetCarried_HidesThePieceAndTakesItOutOfThePhysicsSpace()
     {
         var placed = PlacedFurniture.Create(_shelf, Pose);

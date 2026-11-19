@@ -40,7 +40,6 @@ public class ContainerLidTest
 
     [TestCase(PackScene)]
     [TestCase(BoosterScene)]
-    [TestCategory("Unit")]
     public void ABoosterBoxAndABoosterPackHaveNoLid(string scene)
     {
         var container = MakeContainer(scene);
@@ -51,7 +50,6 @@ public class ContainerLidTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheLidSwingsOpenToTheSamePoseAsAnInstantOpen()
     {
         var swung = MakeContainer(BoxScene);
@@ -69,7 +67,6 @@ public class ContainerLidTest
 
     // A pick-up, a drop or a slot reparents the container, which stops its processing; the swing must still finish.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ALidStillSwingingFinishesAfterAReparent()
     {
         var box = MakeContainer(BoxScene);
@@ -88,7 +85,6 @@ public class ContainerLidTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AClosedLidSwingsBackToItsShutPose()
     {
         var box = MakeContainer(BoxScene);
@@ -103,7 +99,6 @@ public class ContainerLidTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NothingIsTakenOutOfAShutBox()
     {
         var shelf = AddShelf();
@@ -117,7 +112,6 @@ public class ContainerLidTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EachTakeLocksTheNextPackWithTheSeedOpeningWouldGiveIt()
     {
         var shelf = AddShelf();
@@ -139,7 +133,6 @@ public class ContainerLidTest
 
     // The emptied box is kept, to be thrown in a trash can, and can still be shut.
     [TestCase]
-    [TestCategory("Unit")]
     public void TakingTheLastPackLeavesTheEmptyBox()
     {
         var shelf = AddShelf();
@@ -159,7 +152,6 @@ public class ContainerLidTest
 
     // The item is spawned into the slot before the slot is asked to lock it, so a refusal must free it again.
     [TestCase]
-    [TestCategory("Unit")]
     public void ATakeIntoAFullSlotTakesNothingAndLeavesNoStrayItem()
     {
         var shelf = AddShelf();
@@ -175,7 +167,6 @@ public class ContainerLidTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AHeldCardboardBoxNeitherEmptiesIntoTheHandNorOpensIntoIt()
     {
         var box = MakeContainer(BoxScene);
@@ -193,7 +184,6 @@ public class ContainerLidTest
     // Unpacking moves what is left straight into the slots, with the seeds the takes would have given, and keeps the
     // emptied box.
     [TestCase]
-    [TestCategory("Unit")]
     public void ABoxUnpackedAfterThreeTakesPlacesTheOtherFive()
     {
         var shelf = AddShelf();

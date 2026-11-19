@@ -16,7 +16,6 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 public class RestockerTest : RestockerTestBase
 {
     [TestCase]
-    [TestCategory("Unit")]
     public async Task HiredRestockerMovesARackPackToTheProductShelf()
     {
         HireAndOpen();
@@ -30,7 +29,6 @@ public class RestockerTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BoxIsUnpackedAtTheRealThresholdAndEveryPackEndsOnAProductShelf()
     {
         HireAndOpen();
@@ -52,7 +50,6 @@ public class RestockerTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void HomeReachesTheRackAndTheRackReachesTheProductShelf()
     {
         var region = _shop.GetNode<ShopNavigationRegion>("World/Navigation");
@@ -65,7 +62,6 @@ public class RestockerTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BoxStaysOnTheRackAtTheRealThresholdWithOneSlotTooFewFree()
     {
         HireAndOpen();
@@ -80,7 +76,6 @@ public class RestockerTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task DefaultThresholdUnpacksABoxOntoTheEmptyProductShelf()
     {
         HireAndOpen();
@@ -93,7 +88,6 @@ public class RestockerTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ClosedShopLeavesTheRestockerWhereItStands()
     {
         Hire();
@@ -102,7 +96,6 @@ public class RestockerTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PausedTreeLeavesTheRestockerWhereItStands()
     {
         HireAndOpen();
@@ -113,7 +106,6 @@ public class RestockerTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task UnhiredRestockerNeverMovesAndIsHidden()
     {
         _day.OpenShop();
@@ -124,7 +116,6 @@ public class RestockerTest : RestockerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task NothingToRestockStaysIdleAtHome()
     {
         HireAndOpen();

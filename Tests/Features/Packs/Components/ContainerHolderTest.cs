@@ -68,7 +68,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_Box_Held_Frozen_NoCollision_ChildOfAnchor()
     {
         var box = Make(BoxScene);
@@ -87,7 +86,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_Pack_Works()
     {
         var pack = Make(PackScene);
@@ -99,7 +97,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_Booster_Works()
     {
         var booster = Make(BoosterScene);
@@ -113,7 +110,6 @@ public partial class ContainerHolderTest
     // A booster can be held with cards in hand, which fan out on the right, so it is held on the left, upright and
     // facing the player; a box is carried level.
     [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_Booster_HeldUprightAtTheBoosterOffsetAndABoxLevelAtTheUsualOne()
     {
         var booster = Make(BoosterScene);
@@ -130,7 +126,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_WhileHolding_ReturnsFalse_HeldUnchanged()
     {
         var first = Make(BoxScene);
@@ -145,7 +140,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Drop_RestoresLayerMaskFreezeAndParent()
     {
         var box = Make(BoxScene);
@@ -163,7 +157,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Drop_PutsContainerDropDistanceInFront()
     {
         var box = Make(BoxScene);
@@ -175,7 +168,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UseHeld_Box_OpensItsLidInTheHandAndSpillsNothing()
     {
         var box = Make(BoxScene);
@@ -190,7 +182,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UseHeld_OpenBox_ClosesItsFlaps()
     {
         var box = Make(BoxScene);
@@ -206,7 +197,6 @@ public partial class ContainerHolderTest
     // A booster box opened in the hand empties into it: the hand holds its eight booster packs in order, the n-th with
     // child seed n of the box's seed, and the empty box is gone from the hand.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task UseHeld_BoosterBox_EmptiesIntoTheHandAsItsEightBoosterPacks()
     {
         var pack = Make(PackScene);
@@ -228,7 +218,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheHandStacksUpToEightBoosterPacksAndRefusesANinth()
     {
         var boosters = Enumerable.Range(0, ContainerHolder.MostBoosters + 1).Select(_ => Make(BoosterScene)).ToList();
@@ -246,7 +235,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AHandOfBoosterPacksTakesNoBoxAndABoxInHandTakesNoBoosterPack()
     {
         var booster = Make(BoosterScene);
@@ -265,7 +253,6 @@ public partial class ContainerHolderTest
 
     // Q sets down only the top booster pack, with its own collision back; the one under it stays in the hand.
     [TestCase]
-    [TestCategory("Unit")]
     public void QPutsDownOnlyTheTopBoosterPack()
     {
         var first = Make(BoosterScene);
@@ -289,7 +276,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ABoosterPackFreedFromTheMiddleOfTheStackClosesItUp()
     {
         var boosters = Enumerable.Range(0, 3).Select(_ => Make(BoosterScene)).ToList();
@@ -306,7 +292,6 @@ public partial class ContainerHolderTest
 
     // A booster opens into the hand of cards (BoosterRevealTest); a holder given no hand keeps it held and shut.
     [TestCase]
-    [TestCategory("Unit")]
     public void UseHeld_Booster_WithNoHandOfCards_StaysHeldAndShut()
     {
         var booster = Make(BoosterScene);
@@ -321,7 +306,6 @@ public partial class ContainerHolderTest
 
     // The hand holds at most CardHolder.MostCards cards, so a booster waits until all eight of its cards fit.
     [TestCase]
-    [TestCategory("Unit")]
     public void UseHeld_Booster_WithAHandTooFullForItsCards_StaysHeldAndShut()
     {
         var cards = Substitute.For<ICardHolder>();
@@ -338,7 +322,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void QKey_PutsTheHeldContainerDownShut()
     {
         var box = Make(BoxScene);
@@ -352,7 +335,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void QKey_PutsAnOpenBoxDownWithItsLidStillOpen()
     {
         var box = Make(BoxScene);
@@ -367,7 +349,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void HeldContainerFreed_ClearsHeld()
     {
         var log = new RecordingLog();
@@ -391,7 +372,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PickUp_FreedContainer_ReturnsFalse()
     {
         var log = new RecordingLog();
@@ -414,7 +394,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Drop_NothingHeld_NoOp()
     {
         var log = new RecordingLog();
@@ -438,7 +417,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UseHeld_NothingHeld_False()
     {
         var log = new RecordingLog();
@@ -461,7 +439,6 @@ public partial class ContainerHolderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task InTree_IsInContainerHoldersGroup()
     {
         var tree = _world.GetTree();

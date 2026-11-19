@@ -30,7 +30,6 @@ public class GameSaveServiceLoadTest
     private const string CardSlotScene = "res://Scenes/UI/CardSlot.tscn";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task LoadingTheSaveRespawnsEachCardAndPutsTheHeldOneBackInTheHand()
     {
         using var scene = new SaveWorld("GameSaveLoadWorld");
@@ -68,7 +67,6 @@ public class GameSaveServiceLoadTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task SavingAndLoadingAnAbsentSignaturePreservesAbsence()
     {
         using var scene = new SaveWorld("GameSaveAbsentWorld");
@@ -92,7 +90,6 @@ public class GameSaveServiceLoadTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task SavingAndLoadingALookSeedHandsItToTheSpawner()
     {
         using var scene = new SaveWorld("GameSaveLookWorld");
@@ -122,7 +119,6 @@ public class GameSaveServiceLoadTest
     // to the seat the slot has now, so a shelf whose seats moved since the save (the card display replaced the old
     // card shelf) still holds its cards. A card the full slot cannot take stays free.
     [TestCase]
-    [TestCategory("Unit")]
     public static void ACardSavedUnderASlotIsLockedIntoTheSlotsCurrentSeatAsItRespawns()
     {
         using var scene = new SaveWorld("GameSaveSeatWorld");
@@ -151,7 +147,6 @@ public class GameSaveServiceLoadTest
     // slot before the copy respawns: a card-shelf slot holds one card, so a freed card still counted in it would keep
     // the copy out.
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ReloadingPutsTheSavedCopyOfAShelvedCardIntoItsOneCardSlot()
     {
         using var scene = new SaveWorld("GameSaveShelvedWorld");
@@ -178,7 +173,6 @@ public class GameSaveServiceLoadTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MalformedContainerRecordLeavesTheSceneContainersInPlace()
     {
         using var scene = new SaveWorld("GameSaveMalformedWorld");

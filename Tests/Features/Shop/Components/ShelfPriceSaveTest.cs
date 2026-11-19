@@ -87,7 +87,6 @@ public class ShelfPriceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task TheBoosterPriceSurvivesSaveAndReload()
     {
         var slot1 = _product.GetNode<DeckSlot>("Slot1");
@@ -108,7 +107,6 @@ public class ShelfPriceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardPriceComesBackWithTheCardInItsSlot()
     {
         var slot1 = _cards.GetNode<DeckSlot>("Slot1");
@@ -127,7 +125,6 @@ public class ShelfPriceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnOldTagMarkupIsIgnoredOnLoad()
     {
         var slot1 = _product.GetNode<DeckSlot>("Slot1");
@@ -150,7 +147,6 @@ public class ShelfPriceSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ACorruptContainerPriceReadsAsTheMarketPrice()
     {
         var raw = new List<object> { BoosterRecord("abc"), BoosterRecord(-3L), BoosterRecord(6L) };

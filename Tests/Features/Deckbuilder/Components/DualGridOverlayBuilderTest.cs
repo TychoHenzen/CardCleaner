@@ -11,6 +11,7 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
+using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Components;
 
@@ -24,7 +25,6 @@ public class DualGridOverlayBuilderTest
     private static readonly Vector2I GridSize = new(16, 12);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SingleAutoTileCellProducesTheExpectedBitmask()
     {
         var registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
@@ -46,7 +46,6 @@ public class DualGridOverlayBuilderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AllBitmasksStayInCorner16Range()
     {
         var tileRegistry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
@@ -55,7 +54,7 @@ public class DualGridOverlayBuilderTest
         var rng = RandomSources.Create(4242);
         var gradient = Gradients.FromCards(MapCards(), rng);
         var biomeProvider = BiomeMaps.Create(biomeRegistry.ToBiomeSet(), gradient.GetSignatureAt, GridSize);
-        var transitionPairs = new CompiledTransitionResolver(new GodotAssetPaths()).GetAllTransitionPairs().ToList();
+        var transitionPairs = GameTransitionResolver.Shared.GetAllTransitionPairs().ToList();
         var wfcGenerator = new WfcMapGenerator(
             new WfcAdjacencyRules(transitionPairs),
             TileCatalogData.From(tileRegistry));

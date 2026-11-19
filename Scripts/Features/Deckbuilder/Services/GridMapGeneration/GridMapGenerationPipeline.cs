@@ -52,8 +52,6 @@ internal sealed class GridMapGenerationPipeline
     /// <exception cref="OperationCanceledException">Thrown when the token is cancelled during a WFC solve.</exception>
     public SimpleMapData GenerateMap(Vector2I size, CancellationToken cancellationToken = default)
     {
-        ILog.Print($"Generating WFC-based map {size.X}x{size.Y}");
-
         var variants = SelectVariants();
         var biomeMap = BuildBiomeMap(size);
         var twoPhaseResult = GenerateTwoPhaseWfc(size, biomeMap, cancellationToken);
@@ -81,7 +79,7 @@ internal sealed class GridMapGenerationPipeline
         map.EnemyPositions = placement.EnemyCells.Select(grid.CellIdToPosition).ToList();
 
         ILog.Print(
-            $"Map generated: {passableTiles.Count} passable tiles, player at {map.PlayerStart}, " +
+            $"Map generated: {size.X}x{size.Y}, {passableTiles.Count} passable tiles, player at {map.PlayerStart}, " +
             $"{map.EnemyPositions.Count} enemies");
         GridMapDiagnostics.ValidateSpatialCoherence(finalTileIds, size);
 

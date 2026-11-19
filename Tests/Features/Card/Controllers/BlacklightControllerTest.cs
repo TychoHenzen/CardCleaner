@@ -56,7 +56,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BlacklightController_DefaultValues_AreReasonable()
     {
         // Arrange
@@ -68,7 +67,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BlacklightRange_CanBeModified()
     {
         // Act
@@ -79,7 +77,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CalculateExposure_CardOutsideRange_ReturnsZero()
     {
         // Arrange
@@ -94,7 +91,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CalculateExposure_SpotlightInvisible_ReturnsZero()
     {
         // Arrange
@@ -109,7 +105,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CalculateExposure_NoPlayer_ReturnsZero()
     {
         // Arrange
@@ -124,7 +119,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CalculateExposure_CardWithinRangeAndAngle_ReturnsPositiveExposure()
     {
         // Arrange
@@ -143,7 +137,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CalculateExposure_CardOutsideSpotAngle_ReturnsZero()
     {
         // Arrange
@@ -162,7 +155,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UpdateBlacklightEffect_WithMaterial_StoresMaterial()
     {
         // Arrange
@@ -176,7 +168,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UpdateBlacklightEffect_WithNullMaterial_DoesNotCrash()
     {
         // Act & Assert
@@ -186,7 +177,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Setup_WithNullCardRoot_DoesNotCrash()
     {
         // Arrange
@@ -200,7 +190,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PhysicsProcess_WithoutMaterial_DoesNotCrash()
     {
         // Act & Assert
@@ -210,7 +199,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void IntegrateForces_DoesNotCrash()
     {
         // Arrange
@@ -223,7 +211,6 @@ public class BlacklightControllerTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CalculateExposure_VaryingDistances_ReturnsExpectedValues()
     {
         // Arrange

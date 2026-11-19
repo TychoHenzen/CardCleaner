@@ -55,7 +55,6 @@ public class SlotPricingTest
     public void Teardown() => TestServices.Reset();
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnEmptySlotShowsNoTagAndCannotBeInteracted()
     {
         _pricing.Interact();
@@ -67,7 +66,6 @@ public class SlotPricingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AStockedCardAsksItsMarketPrice()
     {
         _slot.TryLock(AddNode(ShopTestCards.Create(new CardSignature())));
@@ -78,7 +76,6 @@ public class SlotPricingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ACardAsksThePriceSetOnIt()
     {
         var card = AddNode(ShopTestCards.Create(new CardSignature()));
@@ -91,7 +88,6 @@ public class SlotPricingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InteractOpensTheScreenForTheCardAndANewPriceRepaintsTheTag()
     {
         var card = AddNode(ShopTestCards.Create(new CardSignature()));
@@ -112,7 +108,6 @@ public class SlotPricingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ThePriceStaysWithTheCardNotTheSlot()
     {
         var priced = AddNode(ShopTestCards.Create(new CardSignature()));
@@ -128,7 +123,6 @@ public class SlotPricingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheTagFollowsTheSlotWhenTheStockLeaves()
     {
         var card = AddNode(ShopTestCards.Create(new CardSignature()));
@@ -141,7 +135,6 @@ public class SlotPricingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheValueReadsTheCurrentStock()
     {
         var card = AddNode(ShopTestCards.Create(new CardSignature().With(Element.Lumines, 0.4f)));
@@ -151,7 +144,6 @@ public class SlotPricingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ABoosterAsksItsMarketPriceUntilAPriceIsSetOnIt()
     {
         StockBooster();
@@ -167,7 +159,6 @@ public class SlotPricingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void InteractOnABoosterStackPricesEveryBoosterInTheSlotOnly()
     {
         var first = StockBooster();
@@ -191,7 +182,6 @@ public class SlotPricingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ThePriceStaysWithTheBoosterNotTheSlot()
     {
         var priced = StockBooster();
@@ -205,7 +195,6 @@ public class SlotPricingTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ABoxShowsNoTagAndOpensNoScreen()
     {
         _slot.Kind = ShelfKind.StorageRack;

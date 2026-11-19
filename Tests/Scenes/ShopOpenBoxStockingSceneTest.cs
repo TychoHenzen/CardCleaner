@@ -93,7 +93,6 @@ public class ShopOpenBoxStockingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AClickWithAnOpenBoxPutsOneBoosterBoxInTheAimedSlot()
     {
         var box = await CarryOpenedBox();
@@ -113,7 +112,6 @@ public class ShopOpenBoxStockingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task EightClicksEmptyTheBoxOntoTheProductShelfAndKeepTheEmptyBoxInHand()
     {
         var box = await CarryOpenedBox();
@@ -136,7 +134,6 @@ public class ShopOpenBoxStockingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ABoosterBoxEmptiedIntoTheHandStacksFourBoosterPacksInOneSlot()
     {
         var boosterBox = Order("pack");
@@ -169,7 +166,6 @@ public class ShopOpenBoxStockingSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AShutBoxGoesOnTheStorageRackWhole()
     {
         var rack = _shop.GetNode<CardShelf>(StorageRackPath);

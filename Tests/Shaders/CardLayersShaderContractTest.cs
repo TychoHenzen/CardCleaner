@@ -72,7 +72,6 @@ public class CardLayersShaderContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryRarityEffectHasItsIdInTheShader()
     {
         foreach (var effect in Enum.GetValues<RarityEffect>())
@@ -80,7 +79,6 @@ public class CardLayersShaderContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryConditionEffectHasItsIdInTheShader()
     {
         foreach (var effect in Enum.GetValues<ConditionEffect>())
@@ -88,7 +86,6 @@ public class CardLayersShaderContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheShaderFindsTheArtLayerWhereTheTemplateKeepsIt()
     {
         var template = new CardTemplate();
@@ -99,7 +96,6 @@ public class CardLayersShaderContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheEffectUniformsDefaultToOffSoExistingCardsRenderUnchanged()
     {
         var source = Source();
@@ -111,7 +107,6 @@ public class CardLayersShaderContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EachOfTheSixEffectsIsOneFunctionInTheShader()
     {
         var source = Source();
@@ -123,7 +118,6 @@ public class CardLayersShaderContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EffectsAreOnlyAppliedToTheArtLayerOfTheFront()
     {
         var applications = Regex.Matches(Source(), @"art_with_effects\(sample\.rgb");
@@ -134,7 +128,6 @@ public class CardLayersShaderContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ScreenSpaceDerivativesAreReadOnlyInsideTheUniformArtEffectsBlock()
     {
         var code = ShaderCode();
@@ -158,7 +151,6 @@ public class CardLayersShaderContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MakeArtViewIsCalledOnceAndOnlyForFrontArtLayerFragments()
     {
         var code = ShaderCode();
@@ -181,7 +173,6 @@ public class CardLayersShaderContractTest
     ///     never makes a transparent part of the art, or the card around it, visible.
     /// </remarks>
     [TestCase]
-    [TestCategory("Unit")]
     public static void EffectsRecolourTheArtButNeverChangeWhereItIsVisible()
     {
         var source = Source();
@@ -194,7 +185,6 @@ public class CardLayersShaderContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheBevelMapDoesNotWrapAroundTheArtEdges()
     {
         // A repeating, linearly filtered sampler blends the far edge's bevel into the near edge.
@@ -204,7 +194,6 @@ public class CardLayersShaderContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheScratchLayoutReadsNothingButTheCardSeedAndThePositionInTheArt()
     {
         var source = Source();
@@ -220,7 +209,6 @@ public class CardLayersShaderContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheArtRegionTheShaderMasksWithMatchesTheTemplate()
     {
         var template = new CardTemplate();

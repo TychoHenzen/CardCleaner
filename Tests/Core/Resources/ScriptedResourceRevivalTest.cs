@@ -22,7 +22,6 @@ public class ScriptedResourceRevivalTest
     private static readonly TimeSpan Hold = TimeSpan.FromSeconds(3);
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ASceneThatTakesTheResourceFromTheCacheGetsItsData()
     {
         var wrapper = await LoadAndLetGo(HeldProbePath);
@@ -45,7 +44,6 @@ public class ScriptedResourceRevivalTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task LoadingTheResourceAgainGetsItsData()
     {
         var wrapper = await LoadAndLetGo(LoadedProbePath);
@@ -67,7 +65,6 @@ public class ScriptedResourceRevivalTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AResourceMadeInCodeIsNotKept()
     {
         var made = MakeAndLetGo();

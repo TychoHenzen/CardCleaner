@@ -13,7 +13,6 @@ public class PcScreenOverlayTest
     private const float Tolerance = 0.01f;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SameSizeWindowMapsOneToOne()
     {
         bool hit = PcScreenOverlay.TryMapToPixel(new Vector2(100f, 200f), Viewport, Viewport, out Vector2 pixel);
@@ -23,7 +22,6 @@ public class PcScreenOverlayTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void LargerWindowScalesDown()
     {
         bool hit = PcScreenOverlay.TryMapToPixel(
@@ -34,7 +32,6 @@ public class PcScreenOverlayTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TallerWindowLetterboxesAboveAndBelow()
     {
         // A 1280 x 1024 window draws the 1280 x 720 screen between 152 px bars.
@@ -49,7 +46,6 @@ public class PcScreenOverlayTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void WiderWindowPillarboxesLeftAndRight()
     {
         // A 1920 x 720 window draws the screen between 320 px bars.
@@ -64,7 +60,6 @@ public class PcScreenOverlayTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EmptyViewportMapsToNone()
     {
         bool hit = PcScreenOverlay.TryMapToPixel(CentreOfScreen, Viewport, Vector2.Zero, out _);
@@ -73,7 +68,6 @@ public class PcScreenOverlayTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ActivateShowsTheScreenAndDeactivateHidesIt()
     {
         PcScreenOverlay overlay = BuildScreen(out _);
@@ -88,7 +82,6 @@ public class PcScreenOverlayTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MotionIsForwardedAndHandled()
     {
         PcScreenOverlay overlay = BuildScreen(out _);
@@ -102,7 +95,6 @@ public class PcScreenOverlayTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void InactiveOverlayLeavesInputAlone()
     {
         PcScreenOverlay overlay = BuildScreen(out _);
@@ -114,7 +106,6 @@ public class PcScreenOverlayTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PressAndReleaseOnAButtonInsideTheSubViewportFiresPressed()
     {
         PcScreenOverlay overlay = BuildScreen(out Button button);
@@ -129,7 +120,6 @@ public class PcScreenOverlayTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void WheelPressAndReleaseAreForwarded()
     {
         PcScreenOverlay overlay = BuildScreen(out _);
@@ -144,7 +134,6 @@ public class PcScreenOverlayTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EscapeIsLeftForTheTerminal()
     {
         PcScreenOverlay overlay = BuildScreen(out _);
@@ -156,7 +145,6 @@ public class PcScreenOverlayTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OtherKeysAreKeptFromTheGame()
     {
         PcScreenOverlay overlay = BuildScreen(out _);

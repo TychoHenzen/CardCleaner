@@ -83,7 +83,6 @@ public class SimpleWorldMapScreenInitializeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AScreenThatLeftTheTreeIgnoresALateSessionService()
     {
         TestServices.Reset();
@@ -107,7 +106,6 @@ public class SimpleWorldMapScreenInitializeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AGeneratorThatGivesNoGridMapEndsTheSession()
     {
         var screen = new SimpleWorldMapScreen();
@@ -136,7 +134,7 @@ public class SimpleWorldMapScreenInitializeTest
         {
             ILog.Sink = new ErrorRecorder(errors);
 
-            new WorldMapComponents(screen).Initialize(registry);
+            new WorldMapComponents(screen).Initialize(registry, () => GameTransitionResolver.Shared);
 
             AssertBool(registry.Visuals.UsingCompiledAtlas).IsTrue();
             AssertThat(layer.TileSet).IsNotNull();
@@ -152,7 +150,6 @@ public class SimpleWorldMapScreenInitializeTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnAtlasWhoseImageDoesNotLoadLeavesTheRegistryOnTheOriginalTileset()
     {
         var mappingPath = $"user://world-map-atlas-{Guid.NewGuid():N}.json";
@@ -175,9 +172,15 @@ public class SimpleWorldMapScreenInitializeTest
             TileCatalogLoad.Reload(registry, new GodotAssetPaths(), new CompiledAtlasSource(), null, mappingPath);
 
             var components = new WorldMapComponents(screen);
-            components.Initialize(registry);
+            var resolverAsked = false;
+            components.Initialize(registry, () =>
+            {
+                resolverAsked = true;
+                return GameTransitionResolver.Shared;
+            });
 
             AssertBool(registry.Visuals.UsingCompiledAtlas).IsFalse();
+            AssertBool(resolverAsked).IsFalse();
             AssertString(registry.Visuals.TilesetPath)
                 .IsEqual(TileDataLoader.LoadTileRegistry(new GodotAssetPaths()).TilesetPath);
             AssertInt(components.TileSize).IsEqual(registry.Visuals.TilesetConfig.BaseTileSize.X);
@@ -187,7 +190,6 @@ public class SimpleWorldMapScreenInitializeTest
         {
             if (File.Exists(absolutePath))
                 File.Delete(absolutePath);
-            CompiledAtlasLoader.ClearCache();
             layer.Free();
             screen.Free();
         }

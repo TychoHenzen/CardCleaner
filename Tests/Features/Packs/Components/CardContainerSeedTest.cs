@@ -30,7 +30,6 @@ public class CardContainerSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BoostersWithTheSameSeedOpenToIdenticalCards()
     {
         // Most boosters are all ordinary (all-zero) cards, which would match for any seed, so the test uses the
@@ -51,7 +50,6 @@ public class CardContainerSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task BoosterBoxesWithDifferentSeedsGiveTheirBoostersDifferentSeeds()
     {
         // The cards themselves are mostly all zero, so two booster boxes are compared by the seeds their boosters
@@ -64,7 +62,6 @@ public class CardContainerSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task ABoosterBoxWithTheSameSeedOpensToTheSameCardsOnEveryRun()
     {
         var firstRun = await OpenWholePack(SeedA);
@@ -77,7 +74,6 @@ public class CardContainerSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UnseededContainerDrawsFromTheSharedSourceOnlyWhenItIsSaved()
     {
         TestServices.Reset();

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -43,7 +44,6 @@ public class ShopScenePlayerWalkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PlayerSettlesOnTheFloorAtSpawn()
     {
         for (int frame = 0; frame < 30; frame++)
@@ -54,9 +54,9 @@ public class ShopScenePlayerWalkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PlayerWalksStorefrontStorageBackofficeAndBack()
     {
+        using var clock = FastClock.Start();
         var route = ShopSceneProbe.StorefrontToStorage
             .Skip(1)
             .Concat(ShopSceneProbe.StorageToBackoffice.Skip(1))
@@ -74,9 +74,9 @@ public class ShopScenePlayerWalkTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PlayerWalksInThroughTheRoadDoor()
     {
+        using var clock = FastClock.Start();
         var route = new[]
         {
             new Vector2(6.05f, 11.5f), new Vector2(6.05f, 14.5f), new Vector2(18.05f, 14.5f),

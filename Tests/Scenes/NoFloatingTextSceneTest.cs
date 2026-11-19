@@ -19,7 +19,6 @@ public class NoFloatingTextSceneTest
     private const string DebugScenes = "res://Scenes/Debug/";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NoShippedSceneHoldsALabelThatFacesTheCamera()
     {
         var floating = Collect(root => Descendants(root).OfType<Label3D>()
@@ -30,7 +29,6 @@ public class NoFloatingTextSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EverySignBoardFitsItsTextOnTheBoard()
     {
         var signs = Collect(root => Descendants(root).OfType<SignBoard>().Select(sign => sign.Name.ToString()));

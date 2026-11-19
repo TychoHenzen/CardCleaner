@@ -15,40 +15,30 @@ public class DependencyGateTest
     private const string BaselinePath = "res://Tests/Architecture/dependency-baseline.json";
 
     [TestCase(Timeout = 170000)]
-    [TestCategory("Unit")]
     public static void LayeredStructureStaysWithinTheBaseline()
     {
         var clock = Stopwatch.StartNew();
-        var root = ProjectSettings.GlobalizePath("res://");
-        var first = Measure(root, clock, 1);
-        var second = Measure(root, clock, 2);
-        var firstReport = string.Join("\n", GateReport.Lines(first));
-        foreach (var line in GateReport.Lines(first)) GD.Print("dependency gate: " + line);
-        AssertThat(string.Join("\n", GateReport.Lines(second))).IsEqual(firstReport);
+        // The graph this test run shares with the other architecture suites. That a second, independent build gives the
+        // same report is checked daily by DependencyGateRepeatabilityTest.
+        var measurement = Measure(RepositoryClassGraph.Shared, clock);
+        foreach (var line in GateReport.Lines(measurement)) GD.Print("dependency gate: " + line);
 
         var update = OS.GetEnvironment(DependencyBaseline.SwitchVariable) == "1";
         var baselinePath = ProjectSettings.GlobalizePath(BaselinePath);
-        var result = DependencyBaseline.Apply(baselinePath, first.Gated, first.Lists, update);
+        var result = DependencyBaseline.Apply(baselinePath, measurement.Gated, measurement.Lists, update);
         foreach (var rise in result.AcceptedRises) GD.Print("dependency gate: " + rise);
         foreach (var note in result.ListNotes) GD.Print("dependency gate: " + note);
         GD.Print($"dependency gate: done in {clock.ElapsedMilliseconds} ms" + (update ? " (baseline update)" : ""));
         AssertThat(string.Join("\n", result.Failures)).IsEmpty();
     }
 
-    private static GateMeasurement Measure(string root, Stopwatch clock, int run)
+    private static GateMeasurement Measure(RepositoryClassGraph.Graph graph, Stopwatch clock)
     {
-        var scripts = RepositorySources.Scripts(root);
-        var addons = RepositorySources.Addons(root);
-        var references = CompilationReferences.FromHost();
-        GD.Print($"dependency gate: run {run} read {scripts.Count} scripts, {addons.Count} addon files, " +
-                 $"{references.Count} references at {clock.ElapsedMilliseconds} ms");
-        var extracted = ClassGraphExtractor.Extract(scripts, addons, references);
-        var links = SceneLinkReader.Read(RepositorySources.Scenes(root), extracted.ClassesByFile);
-        foreach (var link in links) extracted.Graph.AddEdge(link.From, link.To, EdgeKind.MemberType, link.Count);
-        GD.Print($"dependency gate: run {run} extracted ({extracted.ScriptErrors} script errors, {links.Count} scene " +
-                 $"links) at {clock.ElapsedMilliseconds} ms");
-        var measurement = GateMetrics.Measure(extracted.Graph);
-        GD.Print($"dependency gate: run {run} measured at {clock.ElapsedMilliseconds} ms");
+        GD.Print($"dependency gate: graph of {graph.Scripts} scripts, {graph.AddonFiles} addon " +
+                 $"files, {graph.References} references ({graph.ScriptErrors} script errors, {graph.SceneLinks} " +
+                 $"scene links) at {clock.ElapsedMilliseconds} ms");
+        var measurement = GateMetrics.Measure(graph.Classes);
+        GD.Print($"dependency gate: measured at {clock.ElapsedMilliseconds} ms");
         return measurement;
     }
 }

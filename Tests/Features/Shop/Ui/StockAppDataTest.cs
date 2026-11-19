@@ -31,7 +31,6 @@ public class StockAppDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EmptyCatalogShowsMessageWithoutThrowing()
     {
         var app = AddApp(new OrderCatalog { Items = [] });
@@ -41,7 +40,6 @@ public class StockAppDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NullCatalogShowsMessageWithoutThrowing()
     {
         var app = AddApp(null);
@@ -51,7 +49,6 @@ public class StockAppDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ItemWithoutSceneIsShownDisabled()
     {
         var catalog = OrderTerminalFixture.MakeCatalog(("cheap", 40), ("dear", 90));
@@ -65,7 +62,6 @@ public class StockAppDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ItemWithZeroPriceIsShownDisabled()
     {
         var catalog = OrderTerminalFixture.MakeCatalog(("cheap", 0), ("dear", 90));
@@ -78,7 +74,6 @@ public class StockAppDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CheckoutWithoutServicesIsRefused()
     {
         // Not injected and not in the tree: no service ever resolves, as before the scene has wired them.
@@ -100,7 +95,6 @@ public class StockAppDataTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CheckoutAfterPartialFailureRetriesRemainingUnits()
     {
         _f.Ordering.SucceedLimit = 1;

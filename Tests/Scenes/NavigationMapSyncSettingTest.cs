@@ -14,7 +14,6 @@ namespace CardCleaner.Tests.Scenes;
 public class NavigationMapSyncSettingTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void MapIterationsAreNotAsync()
     {
         var async = ProjectSettings.GetSetting("navigation/world/map_use_async_iterations").AsBool();

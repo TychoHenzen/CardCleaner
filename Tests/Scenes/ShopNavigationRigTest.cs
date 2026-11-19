@@ -32,7 +32,6 @@ public class ShopNavigationRigTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ARebakeInsideTheBoundReturnsNormally()
     {
         uint regionBefore = RegionId();
@@ -44,7 +43,6 @@ public class ShopNavigationRigTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ABakeThatIsNeverAppliedThrowsAMessageNamingTheWaitBothIdsAndThePhysicsFrames()
     {
         uint regionId = RegionId();

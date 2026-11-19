@@ -51,7 +51,6 @@ public class FurniturePlacementKeysTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RotateKeyTurnsTheGhost()
     {
         AssertBool(_controller.Begin(NewBox())).IsTrue();
@@ -62,7 +61,6 @@ public class FurniturePlacementKeysTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ConfirmKeyPlacesAndCancelKeyKeepsTheBox()
     {
         AssertBool(_controller.Begin(NewBox())).IsTrue();
@@ -84,7 +82,6 @@ public class FurniturePlacementKeysTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void KeysDoNothingWithoutASession()
     {
         Press(Key.T);

@@ -18,7 +18,6 @@ public class TileEditorDuplicateSourcesTest
     private const string PanelDisplaySource = "res://addons/tile_editor/UnusedSources/UnusedSourcesPanelDisplay.cs";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SourcesWithIdenticalPixelsAreGroupedByLowestId()
     {
         var tileSet = new TileSet();
@@ -37,7 +36,6 @@ public class TileEditorDuplicateSourcesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ATileSetWithoutDuplicatesHasNoGroups()
     {
         var tileSet = new TileSet();
@@ -50,7 +48,6 @@ public class TileEditorDuplicateSourcesTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void APanelRefreshNeverScansForDuplicates()
     {
         var source = FileAccess.GetFileAsString(PanelDisplaySource);

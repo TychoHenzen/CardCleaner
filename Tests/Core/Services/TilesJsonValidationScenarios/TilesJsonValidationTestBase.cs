@@ -25,8 +25,7 @@ public abstract class TilesJsonValidationTestBase
             _tilesDoc = JsonDocument.Parse(json);
         }
         // Load registry explicitly from JSON (not from default TMX) for JSON validation tests
-        _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());
-        _registry.Clear();
+        _registry = new TileRegistry();
         TileCatalogLoad.LoadInto(_registry, new GodotAssetPaths(), new CompiledAtlasSource(), TilesJsonPath);
     }
 

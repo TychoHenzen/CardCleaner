@@ -27,14 +27,12 @@ public class StockAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BuildsOneCardPerCatalogItem()
     {
         AssertThat(_f.App.CardGrid.Count).IsEqual(4);
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LockedItemShowsRequiredLevelAndCannotBeAdded()
     {
         AssertBool(_f.App.CardGrid.IsLocked(2)).IsTrue();
@@ -47,7 +45,6 @@ public class StockAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ItemWithNoUnlockRowShowsUnavailable()
     {
         AssertBool(_f.App.CardGrid.IsLocked(3)).IsTrue();
@@ -55,7 +52,6 @@ public class StockAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AddingShowsLineAndTotal()
     {
         _f.App.CardGrid.PressAdd(0);
@@ -65,7 +61,6 @@ public class StockAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemoveOneUpdatesTotal()
     {
         _f.App.CardGrid.PressAdd(0);
@@ -78,7 +73,6 @@ public class StockAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CheckoutDisabledWhileCartEmpty()
     {
         AssertBool(_f.App.CartPanel.CheckoutDisabled).IsTrue();
@@ -89,14 +83,12 @@ public class StockAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PlaceholderTileWhenThumbnailIsNull()
     {
         AssertBool(_f.App.CardGrid.HasPlaceholder(0)).IsTrue();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CardsRefreshWhenProgressionChanges()
     {
         AssertBool(_f.App.CardGrid.IsLocked(2)).IsTrue();
@@ -109,7 +101,6 @@ public class StockAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TitleDefaultsToStock()
     {
         var app = new StockApp();
@@ -126,7 +117,6 @@ public class StockAppTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TitleExportRelabelsTheApp()
     {
         var app = new StockApp { Title = "Furniture" };

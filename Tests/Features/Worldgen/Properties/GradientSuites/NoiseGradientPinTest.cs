@@ -42,7 +42,6 @@ public class NoiseGradientPinTest
     };
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OutputIsPinnedForThreeSeedsAtFivePositions()
     {
         for (var s = 0; s < Seeds.Length; s++)

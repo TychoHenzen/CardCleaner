@@ -59,7 +59,6 @@ public class ShopFurniturePackSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PackingAnEmptyShelfLeavesItsBoxWhereItStood()
     {
         var placed = await PlaceShelf(4f, 8f);
@@ -78,7 +77,6 @@ public class ShopFurniturePackSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PackingIsRefusedWhileTheShelfHoldsStock()
     {
         var placed = await PlaceShelf(4f, 8f);
@@ -96,7 +94,6 @@ public class ShopFurniturePackSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task APackedBoxPlacesTheShelfAgain()
     {
         var placed = await PlaceShelf(4f, 8f);
@@ -115,7 +112,6 @@ public class ShopFurniturePackSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task CancellingThePlacementSetsTheBoxDownAgain()
     {
         var placed = await PlaceShelf(4f, 8f);
@@ -133,7 +129,6 @@ public class ShopFurniturePackSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task APackedStartingShelfStaysPackedThroughAReload()
     {
         var product = _furnitureRoot.GetNode<PlacedFurniture>("ProductShelf");

@@ -34,7 +34,6 @@ public class CompositionRootTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestAutoloadRootRegistersServiceProvidersOnReinitialize()
     {
         // Arrange - a provider in the service_providers group, in the tree the way a scene provider is
@@ -58,7 +57,6 @@ public class CompositionRootTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task TestSecondRootLeavesContainerAndSinkUnchanged()
     {
         // Arrange - the autoload has composed; a recording sink stands in for its logger so the error can be read,
@@ -101,7 +99,6 @@ public class CompositionRootTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task StartupComposesTheAppScopeAtOnceAndTheSceneProvidersInTheDeferredFlush()
     {
         // Arrange - an empty container, as it is before the autoload's first composition
@@ -135,7 +132,6 @@ public class CompositionRootTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheAppScopeHoldsEveryServiceTheMainMenuResolvesInItsReady()
     {
         // The main menu is the main scene: its _Ready runs before any scene pass, so all it resolves is app scope
@@ -157,7 +153,6 @@ public class CompositionRootTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ASceneChangeRegistersTheNewSceneAndItsRemovalDropsItButKeepsTheAppScope()
     {
         // Arrange - the app scope is composed, and the menu picked a slot on the app-scope ActiveSaveSlot
@@ -201,7 +196,6 @@ public class CompositionRootTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestReinitializeLeavesOneLiveNodeServiceOfEachKind()
     {
         // Act - compose twice; the second composition must release the node services the first one added
@@ -222,7 +216,6 @@ public class CompositionRootTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestBiomeCatalogIsRegisteredOnceAsTheRootsRegistry()
     {
         TestServices.Reinitialize();
@@ -242,7 +235,6 @@ public class CompositionRootTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestReinitializeRegistersTheMeshMapGenerator()
     {
         // Arrange and act - the autoload composes the core services, the irregular map's generator among them
@@ -260,7 +252,6 @@ public class CompositionRootTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TestReinitializeRegistersTheWfcFactoriesAsSingletons()
     {
         // Arrange and act - the WFC factories are plain [Service] classes the lazy scan finds
@@ -281,7 +272,6 @@ public class CompositionRootTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void RootResolvesTheCatalogAndTheTrackerFromTheFactories()
     {
         // Arrange and act - the autoload composes the catalog via TileCatalogLoad and the tracker via its factory
@@ -301,7 +291,6 @@ public class CompositionRootTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ResolvesTileRegistryContract()
     {
         // Arrange and act - the root names only the loader and the contracts it returns; the scan builds the catalog

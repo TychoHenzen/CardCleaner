@@ -20,7 +20,6 @@ public class PinnedResourceTest
     private static readonly Regex ThreadedLoadCall = new(@"\.LoadThreaded\w*\s*\(", RegexOptions.CultureInvariant);
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryCSharpResourceClassIsPinned()
     {
         var resources = typeof(PinnedResource).Assembly.GetTypes()
@@ -41,7 +40,6 @@ public class PinnedResourceTest
     // PinnedResource checks a new instance's path at the end of the frame. A load on a worker thread can set the
     // path after that check, so such a resource would not be pinned.
     [TestCase]
-    [TestCategory("Unit")]
     public void NothingInScriptsLoadsOnAWorkerThread()
     {
         var scripts = ProjectSettings.GlobalizePath("res://Scripts");

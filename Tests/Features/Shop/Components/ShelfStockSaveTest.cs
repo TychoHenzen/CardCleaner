@@ -84,7 +84,6 @@ public class ShelfStockSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task LockedBoosterAndBoxReLockIntoTheirSlotsAfterReload()
     {
         var before = await LockStockAndReloadAsync();
@@ -110,7 +109,6 @@ public class ShelfStockSaveTest
     // A seat of the product shelf lies inside the shelf's own solid collider, which pushes a free container off the
     // seat, and out of the slot's trigger, on the first physics step. So the load itself must lock the stock.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task StockIsBackInItsSlotsBeforeAnyPhysicsStep()
     {
         AssertBool(_product.Slots.First().TryLock(NewContainer(BoosterScene, BoosterSeed))).IsTrue();
@@ -125,7 +123,6 @@ public class ShelfStockSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ABoxOnAProductShelfSlotIsIgnoredAndStaysUnlockedAfterReload()
     {
         var slot2 = _product.GetNode<DeckSlot>("Slot2");
@@ -143,7 +140,6 @@ public class ShelfStockSaveTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ASealedContainerOutsideEverySlotRestoresWithoutAnErrorAndStockStillRelocks()
     {
         var booster = NewContainer(BoosterScene, BoosterSeed);

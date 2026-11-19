@@ -16,7 +16,6 @@ public class CardShaderSceneTest
     private const float OutlineMargin = 0.01f;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OutlineBox_IsHiddenFlippedBoxMesh()
     {
         var card = ResourceLoader.Load<PackedScene>(CardScenePath).Instantiate<Node3D>();
@@ -40,7 +39,6 @@ public class CardShaderSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task SpawnedCard_HasNoCsgNode()
     {
         var card = ResourceLoader.Load<PackedScene>(CardScenePath).Instantiate<Node3D>();
@@ -50,7 +48,6 @@ public class CardShaderSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DesignerDimensionsMatchMeshAabb()
     {
         var card = ResourceLoader.Load<PackedScene>(CardScenePath).Instantiate<Node3D>();

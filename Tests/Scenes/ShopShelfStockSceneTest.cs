@@ -85,7 +85,6 @@ public class ShopShelfStockSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EverySlotOfEveryShelfHasOneClickTarget()
     {
         foreach (var shelf in new[] { _cardShelf, _productShelf })
@@ -97,7 +96,6 @@ public class ShopShelfStockSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AClickOnAFreeCardSlotStocksTheTopCardInHand()
     {
         var card = _card;
@@ -118,7 +116,6 @@ public class ShopShelfStockSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AimingAtTheSpotTheCardGoesFromAStepBackFindsTheSlotTarget()
     {
         _cardHolder.AddCard(_card);
@@ -136,7 +133,6 @@ public class ShopShelfStockSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AStockedCardIsPickedUpAgainByClickingIt()
     {
         var card = _card;
@@ -162,7 +158,6 @@ public class ShopShelfStockSceneTest
     // the hand took cards out of play, the card ended up both in the hand and locked in the slot.
     [TestCase("Slot2")]
     [TestCase("Slot6")]
-    [TestCategory("Unit")]
     public async Task ACardPickedUpOffAOneCardSlotStaysInTheHand(string slotName)
     {
         var card = _card;
@@ -184,7 +179,6 @@ public class ShopShelfStockSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task AClickOnAFreeProductSlotStocksTheHeldBooster()
     {
         var booster = NewBooster();
@@ -206,7 +200,6 @@ public class ShopShelfStockSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardShelfSlotRefusesAHeldBooster()
     {
         var booster = NewBooster();

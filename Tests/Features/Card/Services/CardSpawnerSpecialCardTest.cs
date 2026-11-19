@@ -48,7 +48,6 @@ public class CardSpawnerSpecialCardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SpawnSpecialCardSpawnsExactlyOneCardWithMagicalPotential()
     {
         _spawner.SpawnSpecialCard();
@@ -58,7 +57,6 @@ public class CardSpawnerSpecialCardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void KeyFourSpawnsExactlyOneSpecialCard()
     {
         var spawnSpecial = RegisteredCallback("spawn_special", Key.Key4);
@@ -74,7 +72,6 @@ public class CardSpawnerSpecialCardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void KeyOneSpawnsExactlyOneRandomCard()
     {
         RegisteredCallback("spawn_one", Key.Key1)();
@@ -83,7 +80,6 @@ public class CardSpawnerSpecialCardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void KeyTwoSpawnsExactlyTenRandomCards()
     {
         RegisteredCallback("spawn_ten", Key.Key2)();
@@ -92,7 +88,6 @@ public class CardSpawnerSpecialCardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void KeyThreeSpawnsExactlyOneHundredRandomCards()
     {
         RegisteredCallback("spawn_hundred", Key.Key3)();
@@ -119,7 +114,6 @@ public class CardSpawnerSpecialCardTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ASpawnerWithItsKeysSwitchedOffRegistersNone()
     {
         var quiet = new CardSpawner { SpawnKeys = false };

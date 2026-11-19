@@ -13,7 +13,6 @@ public class WholesaleCostsTest
     private const string WholesaleCatalog = "res://Data/Shop/BackofficeCatalog.tres";
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheWholesaleCostComesFromTheOrderCatalog()
     {
         var costs = AutoFree(new WholesaleCosts { Wholesale = GD.Load<OrderCatalog>(WholesaleCatalog) })!;
@@ -23,7 +22,6 @@ public class WholesaleCostsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WithoutACatalogNothingHasAWholesaleCost()
     {
         var costs = AutoFree(new WholesaleCosts())!;

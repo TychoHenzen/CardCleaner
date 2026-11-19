@@ -3,13 +3,16 @@ param(
     [Parameter()]
     [string]$GodotBinary = $env:GODOT_BIN,
 
+    # The pull-request tier: every suite but the Daily ones (a class tagged [TestCategory("Daily")]), which run once
+    # a day on master. Without it every suite runs.
     [Parameter()]
-    [switch]$Fast,
+    [switch]$SkipDaily,
 
     # Seconds without new GdUnit output before Godot counts as stalled. Healthy suites print a line every few
-    # seconds and the slowest single cases take about 3 s; the bounds keep a typo from disabling the watchdog.
+    # seconds and the slowest single cases take about 3 s; the upper bound keeps a typo from disabling the watchdog.
+    # The runner fixture uses a few seconds so its stall scenarios stay short; real runs keep the default.
     [Parameter()]
-    [ValidateRange(10, 3600)]
+    [ValidateRange(2, 3600)]
     [int]$StallSeconds = 180,
 
     # How many times one run may restart Godot on the unfinished suites after a stall or a crash. More than a
@@ -31,8 +34,9 @@ $ErrorActionPreference = 'Stop'
 
 # Runs on Windows PowerShell 5.1 (local) and PowerShell 7 (CI). PowerShell 5.1 has no backtick-e escape for
 # the ESC character, so ESC is written as [char]27 below, and it has no Split-Path -LeafBase.
-# Output growth is checked this often; small against the stall timeout, cheap against a 5-minute run.
-$PollSeconds = 5
+# Output growth is checked this often: a quarter of the stall timeout, at most 5 s. The wait returns as soon as the
+# process exits, so a short run pays no part of it.
+$PollMilliseconds = [Math]::Min(5000, $StallSeconds * 250)
 # After taskkill, wait this long for the killed tree to exit and release its log files.
 $KillWaitMilliseconds = 15000
 # Attempts, one second apart, to read a log the killed tree may still hold open.
@@ -52,6 +56,8 @@ $SuiteAttributePattern = '^\s*\[(?:GdUnit4\.)?TestSuite(?:Attribute)?(?:\(\s*\))
 # hole, and #if false blocks.
 $CodeNoisePattern =
     '//[^\n]*|/\*[\s\S]*?\*/|("{3,})[\s\S]*?\1|@\$?"(?:[^"]|"")*"|"(?:[^"\\\n]|\\.)*"|''(?:[^''\\\n]|\\.)+'''
+# The Daily tag, matched after comments are blanked. Shared with Tests/TestSuiteNamingTest.cs like the two above.
+$DailyCategoryPattern = '\[TestCategory\("Daily"\)\]'
 
 function Resolve-GodotConsole {
     param([string]$Binary)
@@ -72,7 +78,7 @@ function ConvertTo-ResPath {
 }
 
 # Blanks every comment and literal to spaces, keeping newlines, so only code can match a suite attribute. With
-# -KeepStrings only comments are blanked, so string literals such as the "Unit" in [TestCategory("Unit")] survive.
+# -KeepStrings only comments are blanked, so string literals such as the "Daily" in [TestCategory("Daily")] survive.
 function Remove-CodeNoise {
     param([string]$Source, [switch]$KeepStrings)
 
@@ -96,19 +102,25 @@ function Remove-CodeNoise {
 # TestSuiteNamingTest accepts. Comments and literals are blanked first, so a suite named only inside them
 # is not expected.
 function Get-ExpectedSuites {
-    param([string]$RepositoryRoot, [switch]$UnitOnly)
+    param([string]$RepositoryRoot)
 
     $suiteLine = [regex]::new($SuiteAttributePattern, [System.Text.RegularExpressions.RegexOptions]::Multiline)
     $files = Get-ChildItem -LiteralPath (Join-Path $RepositoryRoot 'Tests') -Filter '*.cs' -File -Recurse |
         Where-Object { $suiteLine.IsMatch((Remove-CodeNoise -Source ([IO.File]::ReadAllText($_.FullName)))) }
-    if ($UnitOnly) {
-        # Only comments are blanked: the "Unit" literal must survive, and a commented-out category must not count.
-        $unitCategory = [regex]'\[TestCategory\("Unit"\)\]'
-        $files = $files | Where-Object {
-            $unitCategory.IsMatch((Remove-CodeNoise -Source ([IO.File]::ReadAllText($_.FullName)) -KeepStrings))
-        }
-    }
     return @($files | ForEach-Object { ConvertTo-ResPath -RepositoryRoot $RepositoryRoot -Path $_.FullName } | Sort-Object)
+}
+
+# The suites among these res:// paths whose class is tagged [TestCategory("Daily")]. Only comments are blanked: the
+# "Daily" literal must survive, and a commented-out category must not count. TestSuiteNamingTest keeps the tag on the
+# suite class, so a file is Daily as a whole or not at all.
+function Get-DailySuites {
+    param([string]$RepositoryRoot, [string[]]$Suites)
+
+    $dailyCategory = [regex]::new($DailyCategoryPattern)
+    return @($Suites | Where-Object {
+        $file = Join-Path $RepositoryRoot ($_.Substring('res://'.Length) -replace '/', '\')
+        $dailyCategory.IsMatch((Remove-CodeNoise -Source ([IO.File]::ReadAllText($file)) -KeepStrings))
+    })
 }
 
 # Pure log reading: which suites started, which finished (printed Statistics), their error and failure totals.
@@ -262,8 +274,7 @@ function Invoke-GodotWatched {
     $null = $process.Handle # keeps ExitCode readable after exit
     $lastLength = -1
     $quietSince = Get-Date
-    while (-not $process.HasExited) {
-        Start-Sleep -Seconds $PollSeconds
+    while (-not $process.WaitForExit($PollMilliseconds)) {
         $length = (Get-Item -LiteralPath $StdoutPath).Length
         if ($length -ne $lastLength) {
             $lastLength = $length
@@ -491,8 +502,8 @@ if ([IO.Path]::IsPathRooted($ReportDirectory) -or $reportSegments -contains '..'
 }
 # powershell -File passes a comma-joined -Suite list as one string, so each value may name several suites.
 $Suite = @($Suite | ForEach-Object { $_ -split ',' })
-if ($Fast -and $Suite.Count -gt 0) {
-    throw '-Suite and -Fast cannot be combined; -Suite already names the suites to run.'
+if ($SkipDaily -and $Suite.Count -gt 0) {
+    throw '-Suite and -SkipDaily cannot be combined; -Suite already names the suites to run.'
 }
 $reportRoot = Join-Path $repositoryRoot $reportRelative
 New-Item -ItemType Directory -Path $reportRoot -Force | Out-Null
@@ -517,7 +528,12 @@ $unknown = @($requested | Where-Object { $allSuites -notcontains $_ })
 if ($unknown.Count -gt 0) {
     throw "Unknown -Suite value(s): $($unknown -join ', '); a suite is a res:// path of a [TestSuite] file, for example res://Tests/Architecture/DependencyGateTest.cs"
 }
-$expected = if ($requested.Count -gt 0) { @($requested | Sort-Object -Unique) } elseif ($Fast) { Get-ExpectedSuites -RepositoryRoot $repositoryRoot -UnitOnly } else { $allSuites }
+# Daily suites are skipped by name on every attempt, so a resume that compacts to a folder still leaves them out.
+$skipped = @(if ($SkipDaily) { Get-DailySuites -RepositoryRoot $repositoryRoot -Suites $allSuites })
+$expected = if ($requested.Count -gt 0) { @($requested | Sort-Object -Unique) } else { @($allSuites | Where-Object { $skipped -notcontains $_ }) }
+if ($SkipDaily) {
+    Write-Host "Skipping $($skipped.Count) Daily suite(s): $($skipped -join ' ')"
+}
 if ($expected.Count -eq 0) {
     throw 'GdUnit found no [TestSuite] files to run.'
 }
@@ -542,8 +558,9 @@ $errors = 0
 $failures = 0
 $runStartedAt = [DateTime]::UtcNow
 $finalExitCode = $null
-# A full run starts from the Tests folder, -Fast names its suite files, and a resume names its compact targets.
-$targets = if ($Fast -or $requested.Count -gt 0) { $expected } else { @('res://Tests') }
+# A full or -SkipDaily run starts from the Tests folder, -Suite names its suite files, and a resume names its compact
+# targets.
+$targets = if ($requested.Count -gt 0) { $expected } else { @('res://Tests') }
 $suiteResults = New-Object System.Collections.Generic.List[object]
 $attemptLogs = New-Object System.Collections.Generic.List[string]
 
@@ -552,7 +569,7 @@ for ($attempt = 0; ; $attempt++) {
     $stdoutPath = Join-Path $reportRoot "godot$suffix.stdout.log"
     $attemptLogs.Add($stdoutPath)
     $stderrPath = Join-Path $reportRoot "godot$suffix.stderr.log"
-    $suiteArguments = @($targets | ForEach-Object { '-a', $_ })
+    $suiteArguments = @($targets | ForEach-Object { '-a', $_ }) + @($skipped | ForEach-Object { '-i', $_ })
 
     $attemptStartedAt = [DateTime]::UtcNow
     $run = Invoke-GodotWatched -GodotPath $godotPath -Arguments ($baseArguments + $suiteArguments) -WorkingDirectory $repositoryRoot -StdoutPath $stdoutPath -StderrPath $stderrPath

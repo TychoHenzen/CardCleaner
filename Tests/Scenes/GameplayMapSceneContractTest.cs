@@ -52,7 +52,6 @@ public class GameplayMapSceneContractTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void CabinetScenesSetNoMapTypeAndWireTheKindToggle()
     {
         foreach (var path in CabinetScenes)

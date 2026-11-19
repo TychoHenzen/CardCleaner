@@ -23,7 +23,6 @@ public class TreeInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void InjectRunsAfterEnterTreeAndBeforeReady()
     {
         var probe = new InjectionProbe();
@@ -42,7 +41,6 @@ public class TreeInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void InjectedResolverIsTheAutoloadHostAndResolvesAfterAReset()
     {
         var probe = new InjectionProbe();
@@ -66,7 +64,6 @@ public class TreeInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ReparentInjectsAgainButWiresOnce()
     {
         var first = new Node();
@@ -93,7 +90,6 @@ public class TreeInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ChildOfAnAddedSubtreeIsInjectedBeforeItsReady()
     {
         var log = new List<string>();
@@ -116,7 +112,6 @@ public class TreeInjectionTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void StartupPassInjectsNodesAlreadyInTheTree()
     {
         var log = new List<string>();

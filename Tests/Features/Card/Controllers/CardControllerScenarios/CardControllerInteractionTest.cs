@@ -13,7 +13,6 @@ public class CardControllerInteractionTest : CardControllerTestBase
     #region Interaction Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CanInteract_WhenNotHeld_ReturnsTrue()
     {
         // Assert - Card should be interactable when not held
@@ -21,7 +20,6 @@ public class CardControllerInteractionTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CanInteract_WhenHeld_ReturnsFalse()
     {
         // Arrange - Simulate being held by reparenting to a Camera3D
@@ -34,7 +32,6 @@ public class CardControllerInteractionTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Interact_WhenCanInteract_EmitsInteractionRequestedSignal()
     {
         // Act
@@ -46,7 +43,6 @@ public class CardControllerInteractionTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Interact_WhenCannotInteract_DoesNotEmitSignal()
     {
         // Arrange - Make card non-interactable by holding it
@@ -66,7 +62,6 @@ public class CardControllerInteractionTest : CardControllerTestBase
     #region Highlighting Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Highlight_ShowsOutlineBox()
     {
         // Act
@@ -78,7 +73,6 @@ public class CardControllerInteractionTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ClearHighlight_HidesOutlineBox()
     {
         // Arrange
@@ -93,7 +87,6 @@ public class CardControllerInteractionTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void Highlight_WithoutOutlineBox_DoesNotCrash()
     {
         // Arrange
@@ -112,7 +105,6 @@ public class CardControllerInteractionTest : CardControllerTestBase
     #region Signal Emission Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EmitPickupSignal_EmitsCardPickedUpSignal()
     {
         // Act
@@ -124,7 +116,6 @@ public class CardControllerInteractionTest : CardControllerTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MultipleInteractions_EmitMultipleSignals()
     {
         // Act

@@ -47,7 +47,6 @@ public class ShopOrderingEconomySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ShopPcAndWorkshopTerminalCatalogsShareNoItem()
     {
         var pcIds = _pcUi.Catalog!.Items.Select(i => i.Id).ToArray();
@@ -62,7 +61,6 @@ public class ShopOrderingEconomySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EachUiListsOnlyItsOwnTerminalsCatalog()
     {
         AssertThat(_pcUi.CardGrid.Count).IsEqual(_pcUi.Catalog!.Items.Length);
@@ -70,7 +68,6 @@ public class ShopOrderingEconomySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void BothTerminalsUseTheOneMoneyServiceTheContainerHandsOut()
     {
         var resolved = TestServices.Container.Resolve<IMoneyService>();
@@ -80,7 +77,6 @@ public class ShopOrderingEconomySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OrderingAtTheWorkshopTerminalUpdatesTheShopPcBalanceToo()
     {
         var item = _workshop.Catalog!.Items[0];
@@ -95,7 +91,6 @@ public class ShopOrderingEconomySceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OrderingAtTheShopPcUpdatesTheWorkshopBalanceToo()
     {
         var item = _pcUi.Catalog!.Items[0];

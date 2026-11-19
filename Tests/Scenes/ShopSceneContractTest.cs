@@ -22,7 +22,6 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     private static readonly string[] StreetMarkerNames = ["CustomerSpawn", "CustomerDespawn"];
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SceneLoadsAndInstantiates()
     {
         AssertThat(_packed).IsNotNull();
@@ -30,7 +29,6 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AreasAreSeparatelyNamedNodesWithFloorCollision()
     {
         foreach (var area in AreaNames)
@@ -42,7 +40,6 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void WallsHaveCollision()
     {
         var walls = _shop.GetNode("World/Walls");
@@ -56,7 +53,6 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ExactlyOneHiddenRestockerStandsInTheRightStorageRoom()
     {
         var restockers = _shop.FindChildren("*", "CharacterBody3D", true, false)
@@ -69,7 +65,6 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MarkersExistForLaterFeatures()
     {
         foreach (var marker in ShopMarkerNames.Concat(StreetMarkerNames))
@@ -79,7 +74,6 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void MarkersSitInsideTheShopFootprint()
     {
         foreach (var marker in ShopMarkerNames)
@@ -90,7 +84,6 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PcAndSeamMarkersAreInTheBackoffice()
     {
         foreach (var marker in new[] { "PcLocation", "SeamLocation" })
@@ -100,7 +93,6 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NavigationRegionExists()
     {
         var region = _shop.GetNodeOrNull<NavigationRegion3D>("World/Navigation");
@@ -122,7 +114,6 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FurnitureRootJoinsTheNavigationGroup()
     {
         AssertBool(_shop.GetNode("World/Furniture").IsInGroup("shop_navigation")).IsTrue();
@@ -134,7 +125,6 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SpawnAndDespawnMarkersAreOnTheStreet()
     {
         foreach (var marker in StreetMarkerNames)
@@ -150,7 +140,6 @@ public class ShopSceneContractTest : ShopSceneContractTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void FurnitureAppIsWiredToTheDesktop()
     {
         var desktop = _shop.GetNode<PcDesktop>("PcDesktopViewport/PcDesktop");

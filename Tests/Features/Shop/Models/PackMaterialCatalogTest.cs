@@ -11,7 +11,6 @@ public class PackMaterialCatalogTest
     private const string SyntyRoot = "res://Assets/Synty/";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ShopInteriorsMapToTheirAtlas()
     {
         var atlas = PackMaterialCatalog.AtlasPathFor($"{SyntyRoot}SimpleShopInterior/SI_Env_Wall_01.fbx");
@@ -20,7 +19,6 @@ public class PackMaterialCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void OfficePropsMapToTheirAtlas()
     {
         var atlas = PackMaterialCatalog.AtlasPathFor($"{SyntyRoot}PolygonOffice/SM_Prop_Desk_01.fbx");
@@ -29,7 +27,6 @@ public class PackMaterialCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void DungeonPiecesMapToTheirAtlas()
     {
         var atlas = PackMaterialCatalog.AtlasPathFor($"{SyntyRoot}PolygonDungeon/SM_Env_Wall_Archway_01.fbx");
@@ -38,7 +35,6 @@ public class PackMaterialCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PolygonMiniCityMapsToItsAtlas()
     {
         var atlas = PackMaterialCatalog.AtlasPathFor($"{SyntyRoot}PolygonMiniCity/SM_Bld_Shop_01.fbx");
@@ -50,7 +46,6 @@ public class PackMaterialCatalogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void AnAssetManagerExportOfAKnownPackMapsToTheAtlasBesideIt()
     {
         const string folder = "res://Assets/Models/synty/props/SIMPLE_Shop_Interiors/SourceFiles/Fbx/";
@@ -65,14 +60,12 @@ public class PackMaterialCatalogTest
     [TestCase("res://Assets/Models/synty/props/OtherPack/SI_Prop_Shelf_09.fbx")]
     [TestCase("res://Assets/Synty/ParticleFx/Generic_Circle_Soft_01.png")]
     [TestCase("res://Assets/Synty/SimpleShopInteriorExtras/SI_Env_Wall_01.fbx")]
-    [TestCategory("Unit")]
     public static void PathsOutsideAKnownPackHaveNoAtlas(string artPath)
     {
         AssertThat(PackMaterialCatalog.AtlasPathFor(artPath)).IsNull();
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryAtlasIsAFileInTheAssetsSubmodule()
     {
         var missing = PackMaterialCatalog.AtlasPaths

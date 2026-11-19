@@ -60,7 +60,6 @@ public class FurnitureSaveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task PlacedShelvesSurviveASave()
     {
         var placed = await PlaceShelf(4f, 8f);
@@ -79,7 +78,6 @@ public class FurnitureSaveSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task LoadRebakesTheNavigationOnce()
     {
         await PlaceShelf(4f, 8f);
@@ -101,7 +99,6 @@ public class FurnitureSaveSceneTest
     // NodeSave level only: the stored records are copied into a fresh save and loaded into a shop with the shelf
     // removed. The slot file round trip is FurnitureSlotSaveSceneTest.
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ReloadingTheStoredRecordsKeepsTheShelf()
     {
         var placed = await PlaceShelf(4f, 8f);

@@ -33,7 +33,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ProductShelfHasSixteenSlotsAndJoinsTheSalesGroupOnly()
     {
         // Four slots on each of its four boards.
@@ -44,7 +43,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BoosterAndPackLockOntoTheProductSlots()
     {
         var slots = _shelf.Slots.ToArray();
@@ -62,7 +60,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ACardIsNotLockedOntoAProductSlot()
     {
         var slot = _shelf.Slots.ElementAt(2);
@@ -77,7 +74,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ReparentingABoosterAwayFreesItsSlot()
     {
         var slot = _shelf.Slots.First();
@@ -91,7 +87,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task FourBoostersStackInOneSlotAndAFifthIsEjected()
     {
         var slot = _shelf.Slots.First();
@@ -111,7 +106,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ASlotHoldingAPackTakesNothingMore()
     {
         var slot = _shelf.Slots.First();
@@ -127,7 +121,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task APackIsEjectedFromASlotHoldingBoosters()
     {
         var slot = _shelf.Slots.First();
@@ -145,7 +138,6 @@ public class ProductShelfTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AFullProductShelfHoldsSixteenPacksOrSixtyFourBoosters()
     {
         AssertThat(_shelf.Slots.Sum(slot => slot.SeatsFor(StockKind.Pack))).IsEqual(16);

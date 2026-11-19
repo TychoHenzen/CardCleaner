@@ -13,7 +13,6 @@ public class ProductIdsTest
     private const string Catalog = "res://Data/Shop/BackofficeCatalog.tres";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EachKindHasItsOwnId()
     {
         AssertThat(ProductIds.IdOf(CardContainerKind.Box)).IsEqual("cardboard_box");
@@ -22,7 +21,6 @@ public class ProductIdsTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheOrderCatalogSellsEveryKindUnderItsId()
     {
         var ids = GD.Load<OrderCatalog>(Catalog).Items.Select(item => item.Id).ToList();

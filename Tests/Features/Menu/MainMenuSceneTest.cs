@@ -19,7 +19,6 @@ namespace CardCleaner.Tests.Features.Menu;
 public class MainMenuSceneTest : MainMenuSceneTestBase
 {
     [TestCase]
-    [TestCategory("Unit")]
     public void Continue_disabled_with_no_slots()
     {
         AddMenu();
@@ -28,7 +27,6 @@ public class MainMenuSceneTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void New_game_with_valid_name_creates_slot_activates_it_and_changes_to_ShopScenePath()
     {
         AddMenu();
@@ -42,7 +40,6 @@ public class MainMenuSceneTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void New_game_refuses_empty_duplicate_and_path_name()
     {
         SaveSlot("alpha", OlderSave);
@@ -61,7 +58,6 @@ public class MainMenuSceneTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Continue_picks_newest_of_two()
     {
         SaveSlot("older", OlderSave);
@@ -76,7 +72,6 @@ public class MainMenuSceneTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Load_button_activates_that_slot()
     {
         SaveSlot("older", OlderSave);
@@ -90,7 +85,6 @@ public class MainMenuSceneTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Delete_cancel_keeps_slot_confirm_removes_only_it()
     {
         SaveSlot("alpha", OlderSave);
@@ -110,7 +104,6 @@ public class MainMenuSceneTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Unreadable_slot_listed_with_tag_and_deletable_but_Load_disabled()
     {
         SeedUnreadableSlot("broken");
@@ -124,7 +117,6 @@ public class MainMenuSceneTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Importer_runs_once_before_listing()
     {
         _importer.Import = () => _store.Save(Name("imported"), "legacy", OlderSave);
@@ -137,7 +129,6 @@ public class MainMenuSceneTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Menu_applies_stored_audio_options_without_a_GameSettings()
     {
         new OptionsStore(_path).Save(GameOptions.Defaults with { MasterVolume = 0.5f });
@@ -149,7 +140,6 @@ public class MainMenuSceneTest : MainMenuSceneTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void Menu_sends_stored_display_options_to_the_display_sink()
     {
         var options = GameOptions.Defaults with { Fullscreen = true, Vsync = false };

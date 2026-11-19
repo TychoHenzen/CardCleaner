@@ -45,7 +45,6 @@ public class ShopExpansionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task OpensTheLotAndMakesItReachable()
     {
         _rig.MeetTheLotRequirements();
@@ -77,7 +76,6 @@ public class ShopExpansionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task LockedLotStaysClosed()
     {
         // The money is there but the shop level is not.
@@ -92,7 +90,6 @@ public class ShopExpansionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SpawnerCountRises()
     {
         _rig.MeetTheLotRequirements();
@@ -105,7 +102,6 @@ public class ShopExpansionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SaveRoundTrip()
     {
         _rig.MeetTheLotRequirements();
@@ -126,7 +122,6 @@ public class ShopExpansionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void UnknownSavedLotIsIgnored()
     {
         var save = new NodeSave();
@@ -139,7 +134,6 @@ public class ShopExpansionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task BuyingTwiceIsRefused()
     {
         _rig.MeetTheLotRequirements();
@@ -153,7 +147,6 @@ public class ShopExpansionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task FurnitureCanStandOnTheLot()
     {
         _rig.MeetTheLotRequirements();
@@ -169,7 +162,6 @@ public class ShopExpansionSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task LotFurnitureSurvivesReload()
     {
         _rig.MeetTheLotRequirements();

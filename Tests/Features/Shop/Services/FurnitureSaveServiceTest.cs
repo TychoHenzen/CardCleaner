@@ -70,7 +70,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TwoShelvesRoundTripWithIdenticalPoses()
     {
         Place(8f, 6f, 0);
@@ -88,7 +87,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnUnknownIdIsSkippedAndTheRestLoad()
     {
         var sink = new RecordingLog();
@@ -114,7 +112,6 @@ public class FurnitureSaveServiceTest
     // A piece whose saved pose no longer fits (its item grew in an update, or the pose was never valid) is not lost:
     // it comes back packed in its furniture box on the delivery area, so the player can place it again.
     [TestCase]
-    [TestCategory("Unit")]
     public void APieceThatNoLongerFitsComesBackAsItsBoxAtTheDeliveryArea()
     {
         var save = SaveWith(
@@ -130,7 +127,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ARecordOnAnOwnedLotLoads()
     {
         UseExpansion(new FakeExpansion(owned: true));
@@ -143,7 +139,6 @@ public class FurnitureSaveServiceTest
     // The expansion's own save entry must load before the furniture's; with the order reversed the lot is not
     // owned yet, so the record on it does not fit: an error names it, and the piece comes back as its box.
     [TestCase]
-    [TestCategory("Unit")]
     public void ARecordOnAnUnownedLotComesBackAsItsBox()
     {
         var sink = new RecordingLog();
@@ -166,7 +161,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AMissingExpansionServiceIsLoggedAndTheBaseFloorUsed()
     {
         var sink = new RecordingLog();
@@ -188,7 +182,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void OverlappingRecordsKeepTheFirst()
     {
         var save = SaveWith(
@@ -201,7 +194,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void NonFiniteCoordinatesAreSkipped()
     {
         var sink = new RecordingLog();
@@ -225,7 +217,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnUnopenedBoxReturns()
     {
         var box = GD.Load<PackedScene>(BoxScenePath).Instantiate<FurnitureBox>();
@@ -246,7 +237,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ARestoredBoxCountsAsAnOccupantOfTheDeliveryArea()
     {
         // Slot 0 of the delivery grid is centred on this offset from the marker, which stands at the origin.
@@ -267,7 +257,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void LoadReplacesInsteadOfAdding()
     {
         Place(8f, 6f, 0);
@@ -281,7 +270,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ASaveWithoutTheKeyLoadsNothing()
     {
         _service.Load(new NodeSave());
@@ -291,7 +279,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EveryPieceKeepsItsNameThroughASaveAndLoad()
     {
         var first = Place(4f, 3f, 0);
@@ -312,7 +299,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ALoadKeepsTheStandingPieceItsRecordNamesAndMovesIt()
     {
         var starter = Place(8f, 6f, 0, "StarterShelf");
@@ -327,7 +313,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ALoadFreesAStandingPieceThatNoRecordKeeps()
     {
         Place(8f, 6f, 0, "StarterShelf");
@@ -341,7 +326,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void APieceOfAnotherKindUnderTheSavedNameIsReplaced()
     {
         var item = GD.Load<FurnitureCatalog>(CatalogPath).Find("product_shelf")!;
@@ -357,7 +341,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void ASaveFromBeforeTheWholeLayoutKeepsTheStartingFurniture()
     {
         Place(8f, 6f, 0, "StarterShelf");
@@ -370,7 +353,6 @@ public class FurnitureSaveServiceTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnOlderRecordOverlappingTheStartingFurnitureComesBackAsItsBox()
     {
         Place(8f, 6f, 0, "StarterShelf");

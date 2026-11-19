@@ -20,7 +20,6 @@ public class CardLabelDrawOrderTest
 
     [TestCase("Title")]
     [TestCase("Description")]
-    [TestCategory("Unit")]
     public static void CardLabel_IsDrawnAboveTheCardFace(string labelName)
     {
         // Arrange - not added to the tree: the check reads the scene's

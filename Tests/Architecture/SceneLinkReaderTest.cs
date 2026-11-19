@@ -29,7 +29,6 @@ public class SceneLinkReaderTest
         """;
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void NodePathBetweenTwoScriptedNodesIsOneLink()
     {
         var classes = new Dictionary<string, IReadOnlyList<string>>
@@ -46,7 +45,6 @@ public class SceneLinkReaderTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SceneLinkAndCodeReferenceOnOnePairMergeIntoOneMemberTypeCount()
     {
         var graph = new ClassGraph();

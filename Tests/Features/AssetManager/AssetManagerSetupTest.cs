@@ -19,7 +19,6 @@ public class AssetManagerSetupTest
     private const string AssetsPrefix = "res://Assets/";
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void PluginIsEnabled()
     {
         var enabled = ProjectSettings.GetSetting("editor_plugins/enabled").AsStringArray();
@@ -27,7 +26,6 @@ public class AssetManagerSetupTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void EveryExportRootIsInsideTheAssetsSubmodule()
     {
         var roots = ExportRoots();
@@ -41,7 +39,6 @@ public class AssetManagerSetupTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ExportRootsCoverEveryAssetType()
     {
         var typeIds = AssetTypeIds();

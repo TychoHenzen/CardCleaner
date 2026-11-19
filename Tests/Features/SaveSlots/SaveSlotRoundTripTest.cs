@@ -34,7 +34,6 @@ public class SaveSlotRoundTripTest
     private static readonly Vector3 PositionElsewhere = new(30f, 0f, -30f);
 
     [TestCase]
-    [TestCategory("Unit")]
     public static async Task EachSlotRestoresItsOwnMoneyCardPlayerAndContainer()
     {
         using var scene = new SaveWorld("SlotRoundTripWorld");

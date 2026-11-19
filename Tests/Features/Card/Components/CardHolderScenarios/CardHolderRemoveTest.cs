@@ -10,7 +10,6 @@ public class CardHolderRemoveTest : CardHolderTestBase
     #region Remove Card Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemoveCard_ExistingCard_CardRemovedSuccessfully()
     {
         // Arrange
@@ -29,7 +28,6 @@ public class CardHolderRemoveTest : CardHolderTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemoveCard_ExistingCard_CardReparentedToSpawner()
     {
         // Arrange
@@ -44,7 +42,6 @@ public class CardHolderRemoveTest : CardHolderTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemoveCard_NonExistentCard_NoChangeToHolder()
     {
         // Arrange
@@ -66,7 +63,6 @@ public class CardHolderRemoveTest : CardHolderTestBase
     #region Remove Top Card Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemoveTopCard_MultipleCards_RemovesLastAddedCard()
     {
         // Arrange
@@ -86,7 +82,6 @@ public class CardHolderRemoveTest : CardHolderTestBase
 
     // A single drop (X) leaves the other cards fanned in the hand, not laid out as if a drop were being aimed.
     [TestCase]
-    [TestCategory("Unit")]
     public void RemoveTopCard_FromTheFan_LeavesTheRestFanned()
     {
         var cards = CreateMultipleTestCards(3);
@@ -99,7 +94,6 @@ public class CardHolderRemoveTest : CardHolderTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemoveTopCard_WhileADropIsAimed_KeepsTheRestInTheDropLayout()
     {
         var cards = CreateMultipleTestCards(3);
@@ -115,7 +109,6 @@ public class CardHolderRemoveTest : CardHolderTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemoveTopCard_EmptyHolder_NoErrorThrown()
     {
         // Arrange - Holder is already empty from BeforeTest
@@ -132,7 +125,6 @@ public class CardHolderRemoveTest : CardHolderTestBase
     #region Remove All Cards Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemoveAllCards_MultipleCards_AllCardsRemoved()
     {
         // Arrange
@@ -150,7 +142,6 @@ public class CardHolderRemoveTest : CardHolderTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void RemoveAllCards_EmptyHolder_NoErrorThrown()
     {
         // Arrange - Holder is already empty

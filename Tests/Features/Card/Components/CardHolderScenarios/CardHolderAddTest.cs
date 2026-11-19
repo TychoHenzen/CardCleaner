@@ -12,7 +12,6 @@ public class CardHolderAddTest : CardHolderTestBase
     #region Initial State Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void CardHolder_InitialState_HasNoCards()
     {
         // Arrange - System is already set up in BeforeTest
@@ -30,7 +29,6 @@ public class CardHolderAddTest : CardHolderTestBase
     #region Add Card Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AddCard_ValidCard_CardIsAddedSuccessfully()
     {
         // Arrange
@@ -48,7 +46,6 @@ public class CardHolderAddTest : CardHolderTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AddCard_ValidCard_CardPhysicsDisabled()
     {
         // Arrange
@@ -64,7 +61,6 @@ public class CardHolderAddTest : CardHolderTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AddCard_ValidCard_CardReparentedToHandAnchor()
     {
         // Arrange
@@ -78,7 +74,6 @@ public class CardHolderAddTest : CardHolderTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AddCard_DuplicateCard_CardNotAddedTwice()
     {
         // Arrange
@@ -99,7 +94,6 @@ public class CardHolderAddTest : CardHolderTestBase
     #region Card Positioning Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PositionCards_MultipleCards_CardsSeparatedByThickness()
     {
         // Arrange
@@ -118,7 +112,6 @@ public class CardHolderAddTest : CardHolderTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PositionCards_ThreeCards_FanOutLeftToRightWithTheirTopsLeaningOut()
     {
         var cards = CreateMultipleTestCards(3);
@@ -140,7 +133,6 @@ public class CardHolderAddTest : CardHolderTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PositionCards_ManyCards_KeepTheFullSpread()
     {
         var tenth = _systemUnderTest.FanPose(9, 10).Basis * Vector3.Forward;
@@ -151,7 +143,6 @@ public class CardHolderAddTest : CardHolderTestBase
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void PositionCardsForDrop_WithHandAnchorTransform_CardsPositionedRelativeToAnchor()
     {
         // Arrange
@@ -173,7 +164,6 @@ public class CardHolderAddTest : CardHolderTestBase
     #region Card Order Tests
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AddCard_MultipleCards_MaintainsAdditionOrder()
     {
         // Arrange

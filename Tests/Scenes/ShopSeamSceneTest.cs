@@ -37,7 +37,6 @@ public class ShopSeamSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task WithoutASpecialCardTheSeamIsHidden()
     {
         await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
@@ -49,7 +48,6 @@ public class ShopSeamSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SpecialCardInTheBackofficeShowsAGlowingSeam()
     {
         await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
@@ -61,7 +59,6 @@ public class ShopSeamSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SpecialCardOutsideTheBackofficeDoesNotShowTheSeam()
     {
         await _rig.MovePlayer(new Vector3(6f, 0.95f, 9f));
@@ -71,7 +68,6 @@ public class ShopSeamSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task ApproachingTheSeamOpensItIntoADoorway()
     {
         await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
@@ -83,7 +79,6 @@ public class ShopSeamSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public async Task SteppingThroughTheDoorwayLandsAtTheWorkshopEntryWithTheSameFacing()
     {
         await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
@@ -100,7 +95,6 @@ public class ShopSeamSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void TheSeamMakesNoSound()
     {
         // The seam used to hum while it glowed; the player asked for it to be silent.
@@ -109,7 +103,6 @@ public class ShopSeamSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void SeamArtExistsWithPlaceholderAndPlainGlowFallbacks()
     {
         var art = _rig.Seam.Door!.GetNode<ShopArtSlot>("DoorArt");
@@ -123,7 +116,6 @@ public class ShopSeamSceneTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void MissingGlowTextureLeavesThePlainEmissiveMaterial()
     {
         var material = new StandardMaterial3D();

@@ -11,6 +11,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
@@ -79,6 +80,8 @@ public sealed class WorkshopSceneRig
             new GodotAssetPaths(),
             new CompiledAtlasSource()
         ));
+        // The grid screen renders with the app's shared transition resolver, as the composition root registers it.
+        TestServices.Container.RegisterSingleton<ITransitionResolver>(GameTransitionResolver.Shared);
         TestServices.Container.RegisterSingleton<IMeshMapGenerator>(MeshMapGeneratorFixture.Create(SmallMeshRings));
         TestServices.Container.RegisterSingleton<IGameSessionService>(
             rig.Workshop.GetNode<GameSessionService>("GameSessionService"));

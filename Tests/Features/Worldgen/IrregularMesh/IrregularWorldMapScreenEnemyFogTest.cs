@@ -1,12 +1,10 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
+using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
@@ -37,10 +35,7 @@ public class IrregularWorldMapScreenEnemyFogTest
     public async Task Setup()
     {
         TestServices.Reset();
-        TestServices.Container.RegisterSingleton<ITileRegistry>(TileCatalogLoad.Load(
-            new GodotAssetPaths(),
-            new CompiledAtlasSource()
-        ));
+        TestServices.Container.RegisterSingleton<ITransitionResolver>(GameTransitionResolver.Shared);
         var session = TestServices.CreateGameSession();
         TestServices.Container.RegisterSingleton<IGameSessionService>(session);
         AddNode(session);
@@ -72,7 +67,6 @@ public class IrregularWorldMapScreenEnemyFogTest
     private static HashSet<int> Cells(params int[] cellIds) => new(cellIds);
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EnemiesInHiddenCellsAreNotShownAboveTheFog()
     {
         AssertThat(EnemySprites().Length).IsGreater(0);
@@ -80,7 +74,6 @@ public class IrregularWorldMapScreenEnemyFogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnEnemyShowsWhileItsCellIsVisible()
     {
         var enemy = EnemySprites()[0];
@@ -93,7 +86,6 @@ public class IrregularWorldMapScreenEnemyFogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void EnemiesBecomeVisibleWhenTheMapIsRevealed()
     {
         _screen.RevealAll();
@@ -102,7 +94,6 @@ public class IrregularWorldMapScreenEnemyFogTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public void AnEnemyHidesAgainOnceItsCellIsOnlySeen()
     {
         var enemy = EnemySprites()[0];

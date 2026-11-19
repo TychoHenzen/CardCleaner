@@ -16,7 +16,6 @@ namespace CardCleaner.Tests.Features.Card.Models.Effects;
 public class CardEffectSeedTest
 {
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheAllZeroSignatureHasAPinnedSeed()
     {
         // Pinned so that a hash that varies between runs (string or HashCode hashing) fails here.
@@ -24,7 +23,6 @@ public class CardEffectSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void TheEffectSeedDependsOnlyOnTheSignature()
     {
         var first = CardEffectSeed.For(new CardSignature().With(Element.Solidum, 0.7f).With(Element.Febris, -0.5f));
@@ -37,7 +35,6 @@ public class CardEffectSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void SignaturesOnACoarseGridStillGetDifferentSeeds()
     {
         // Hand-made signatures (the comparison grid, tests) use steps of 0.05; their seeds must not bunch up.
@@ -65,7 +62,6 @@ public class CardEffectSeedTest
     [TestCase(new[] { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f }, 4890876989777UL, 7309f)]
     [TestCase(new[] { -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1f }, 18446741845406061393UL, 6728f)]
     [TestCase(new[] { 0.25f, -0.75f, 0.5f, -0.05f, 1f, -1f, 0.35f, 0.65f }, 2074682020927UL, 4053f)]
-    [TestCategory("Unit")]
     public static void TheSeedsOfKnownSignaturesArePinned(float[] elements, ulong expectedHash, float expectedScratch)
     {
         // Pinned so that a change to the hash or to the seed mixing, which moves every card's scratches, fails here.
@@ -75,7 +71,6 @@ public class CardEffectSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ForLookIsInRange()
     {
         foreach (var look in new[] { int.MinValue, -1, 0, 1, int.MaxValue })
@@ -87,14 +82,12 @@ public class CardEffectSeedTest
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ForLookIsDeterministic()
     {
         AssertThat(CardEffectSeed.ForLook(4242)).IsEqual(CardEffectSeed.ForLook(4242));
     }
 
     [TestCase]
-    [TestCategory("Unit")]
     public static void ForLookSpreadsConsecutiveSeeds()
     {
         var seeds = new HashSet<float>();
