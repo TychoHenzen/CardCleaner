@@ -22,9 +22,7 @@ internal static class StoredItemBodies
         {
             CardController => ItemShape.Card,
             CardContainer { Kind: CardContainerKind.Booster } booster when IsWhole(booster) => ItemShape.Booster,
-            // ASSUMPTION: a booster box something was taken out of stays out of a carton (Risk Low): a stored record
-            // keeps no taken count, and the booster box empties into the hand whole.
-            CardContainer { Kind: CardContainerKind.Pack, TakenCount: 0 } pack when IsWhole(pack) => ItemShape.Pack,
+            CardContainer { Kind: CardContainerKind.Pack } pack when IsWhole(pack) => ItemShape.Pack,
             _ => null
         };
     }

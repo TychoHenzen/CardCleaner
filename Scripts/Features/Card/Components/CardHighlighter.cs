@@ -193,28 +193,19 @@ public partial class CardHighlighter : Node3D, IDependent, IStockHand
         return CardHolder.TopCard != null && slot.CanTake(StockKind.Card) ? new StockOffer(StockKind.Card) : null;
     }
 
-    // A shut container offers itself. An open cardboard box offers the last item in it the slot takes, with how many
-    // of that stock it holds. An open booster box offers its next booster while any is left: an emptied one is freed
-    // only at the end of the frame, so the count, not its absence, stops a second take.
+    // An open cardboard box offers the last item in it the slot takes, with how many of that stock it holds. Any other
+    // held container offers itself (of a stack of booster packs, the top one).
     private static StockOffer? OfferOf(CardContainer held, DeckSlot slot)
     {
-        if (!held.IsLidOpen)
-        {
-            var stock = ShelfPlacementRule.From(held.Kind);
-            return slot.CanTake(stock) ? new StockOffer(stock) : null;
-        }
-
-        if (held.Storage is { } storage)
+        if (held is { IsLidOpen: true, Storage: { } storage })
         {
             return storage.NextFor(slot) is { } next
                 ? new StockOffer(next, storage.CountOf(item => ShelfPlacementRule.From(item) == next))
                 : null;
         }
 
-        return held.Remaining > 0 && CardContainerLayout.ChildKind(held.Kind) is { } inside
-                                  && slot.CanTake(ShelfPlacementRule.From(inside))
-            ? new StockOffer(ShelfPlacementRule.From(inside), held.Remaining)
-            : null;
+        var stock = ShelfPlacementRule.From(held.Kind);
+        return slot.CanTake(stock) ? new StockOffer(stock) : null;
     }
 
     public bool TryStock(DeckSlot slot)

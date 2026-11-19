@@ -489,15 +489,17 @@ sit at z 0.055, so a pack fits on its 0.671 m deep boards.
 its wholesale cost is read under, is `ProductIds.IdOf` (`cardboard_box`, `pack`, `booster`), so renaming what the
 player reads never touches a catalog row or a save.
 
-**Opening in hand.** The right button on a held box or pack swings its flaps or lid open (`CardContainer.SetLidOpen`,
-over `LidSeconds`, 0.4 s, through `OpeningPart.Pose`) and a second press swings them shut; nothing spills and it stays
-in hand. Q puts the held container down in front of the camera. While the lid is open, a left click on a free shelf slot
-that takes the next item inside puts one item there (`CardContainer.TakeOneInto`). From a pack the item is built with
-the seed that opening the pack whole would give it (`ContainerSeeds.ChildSeed(seed, TakenCount)`), locked into the
-slot, and `TakenCount` goes up; the last take frees the emptied pack and empties the hand. A partly taken pack opened
-whole later (`Open`, or the restocker's `CardShelf.TryUnpack`) lets out only what is left, and a shut one can go back on
-a rack. A save stores the lid and `TakenCount` with the container (`SavedContainers`: 0 to 7 for a pack, always 0 for a
-box or booster, anything else is malformed). A booster has no lid (`HasLid`).
+**Opening in hand.** Only a cardboard box has a lid (`HasLid`): the right button on a held box swings its flaps open
+(`CardContainer.SetLidOpen`, over `LidSeconds`, 0.4 s, through `OpeningPart.Pose`) and a second press swings them shut;
+nothing spills and it stays in hand. The right button on a held booster box empties it into the hand
+(`CardContainer.EmptyIntoHand`): its eight booster packs, each with the seed opening the booster box whole would give it
+(`ContainerSeeds.ChildSeed(seed, i)`), go into the hand and the emptied booster box is thrown away. The hand holds one
+cardboard box or booster box, or a stack of up to `ContainerHolder.MostBoosters` (8) booster packs, held upright on the
+left one behind the other (`BoosterStackStep`); a booster pack is picked up onto the stack only while every held item is
+a booster pack. Q puts the top item down in front of the camera, a left click on a free shelf slot stocks the top booster
+pack (or the box's next item while its flaps are open, `CardContainer.TakeOneInto`), and the right button opens the top
+booster pack (see Opening a booster in hand). A save stores each held item with `Held` and the box's lid with
+`LidOpen` (`SavedContainers`); a reload puts the held items back into the hand in the order they were picked up.
 
 **Cardboard box storage.** A cardboard box is storage: it never opens whole (`Open` refuses it) and is never freed
 when it empties. What it holds is its `Storage` child (`CartonStorage`) over the Godot-free, immutable `BoxContents`
@@ -519,8 +521,8 @@ can (`TrashCan`, `World/RightStorage/TrashCan`), which takes only an empty cardb
 under `Contents` once it changed, and a fresh box saves none and reloads fresh (`SealedBoxSaveTest`).
 
 **Opening a booster in hand.** A booster can be picked up while cards are held (a box or pack cannot), and it is held
-upright on the left, front to the player (`ContainerHolder.BoosterHoldOffset`), so the hand of cards stays in view. The right button opens it in
-front of the player (`CardContainer.OpenInHand`, run by `BoosterReveal` and timed by the Godot-free
+upright on the left, front to the player (`ContainerHolder.BoosterHoldOffset`), so the hand of cards stays in view. The right button opens the top
+booster pack of the stack in front of the player (`CardContainer.OpenInHand`, run by `BoosterReveal` and timed by the Godot-free
 `BoosterRevealPlan`, under two seconds): the booster comes to the middle of the view, its strip tears off, the eight
 cards rise out one at a time into a fan (`CardFan`, the same pose math as the hand's fan), the empty wrapper shrinks
 away, and after a short look the cards slide into the hand's fan after the cards already held, in the order they left
@@ -726,8 +728,9 @@ is only an interactable a click would use now: it is judged again on every 0.05 
 Godot-free `[Service]` in `Scripts/Core/Services`): each source publishes its own list (`Publish(source, hints)`, an
 empty list or `Clear(source)` removes it) and the board shows them in publishing order. The sources are
 `CardHighlighter` (cards in hand, `CardHandHints`, none while a container is held or a booster opens in hand),
-`ContainerHolder` (a held box, pack or booster, `ContainerHints`: the right button opens or closes it, Q puts it down,
-and on an open cardboard box the left button puts one item on the floor or, once it is empty, names the trash can)
+`ContainerHolder` (a held box, pack or boosters, `ContainerHints`: the right button opens or closes a box, empties a
+booster box into the hand or opens the top booster pack, Q puts the top item down, and on an open cardboard box the left
+button puts one item on the floor or, once it is empty, names the trash can)
 and `FurniturePlacementController`
 (`PlacementHints`). A new held-item mode publishes its keys the same way and clears them in `_ExitTree`.
 

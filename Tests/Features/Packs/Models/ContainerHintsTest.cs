@@ -24,9 +24,9 @@ public class ContainerHintsTest
     [TestCategory("Unit")]
     public static void AnOpenBoxClosesWithTheRightButton()
     {
-        var hints = ContainerHints.For(CardContainerKind.Pack, lidOpen: true);
+        var hints = ContainerHints.For(CardContainerKind.Box, lidOpen: true);
 
-        AssertThat(hints[0].Action).IsEqual("Close the booster box");
+        AssertThat(hints[0].Action).IsEqual("Close the cardboard box");
     }
 
     [TestCase]
@@ -54,11 +54,28 @@ public class ContainerHintsTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void AnOpenBoosterBoxHasNoLeftButtonHint()
+    public static void ABoosterBoxEmptiesIntoTheHandWithTheRightButton()
     {
-        var hints = ContainerHints.For(CardContainerKind.Pack, lidOpen: true, itemsInside: 5);
+        var hints = ContainerHints.For(CardContainerKind.Pack, lidOpen: false, itemsInside: 8);
 
-        AssertThat(hints.Count).IsEqual(2);
+        AssertThat(hints.Select(hint => $"{hint.Key}: {hint.Action}").ToArray()).IsEqual(new[]
+        {
+            "RMB: Empty the booster box into your hand",
+            "Q: Put it down",
+        });
+    }
+
+    [TestCase]
+    [TestCategory("Unit")]
+    public static void AHandOfBoosterPacksOpensOneAndPutsOneDown()
+    {
+        var hints = ContainerHints.For(CardContainerKind.Booster, lidOpen: false, held: 3);
+
+        AssertThat(hints.Select(hint => $"{hint.Key}: {hint.Action}").ToArray()).IsEqual(new[]
+        {
+            "RMB: Open one of the 3 booster packs",
+            "Q: Put one down",
+        });
     }
 
     [TestCase]

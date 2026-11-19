@@ -12,9 +12,10 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 
 /// <summary>
 ///     A cardboard box, booster box (a pack) or booster pack. A cardboard box is storage: it holds whatever its
-///     <see cref="CartonStorage" /> keeps, is never opened whole, and stays a box when it is empty. A box or pack has
-///     a lid (<see cref="SetLidOpen" />) that the player opens in the hand to take its items out one at a time onto a
-///     shelf (<see cref="TakeOneInto" />); a held booster opens straight into the hand of cards
+///     <see cref="CartonStorage" /> keeps, is never opened whole, and stays a box when it is empty. Its flaps
+///     (<see cref="SetLidOpen" />) open in the hand to take its items out one at a time onto a shelf
+///     (<see cref="TakeOneInto" />). A held booster box empties into the hand as its eight booster packs
+///     (<see cref="EmptyIntoHand" />), and a held booster opens straight into the hand of cards
 ///     (<see cref="OpenInHand" />). Opening a pack or booster whole plays out over a second or two
 ///     (<see cref="ContainerOpening" />): the container falls to the surface below it, its lid or tear strip opens,
 ///     and its boosters or cards (signatures from <see cref="CardPackGenerator" />) rise out one by one to spots in a
@@ -97,27 +98,21 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     /// <summary>True while this booster opens in the player's hand (<see cref="OpenInHand" />).</summary>
     public bool IsOpeningInHand => _opening is BoosterReveal { IsOver: false };
 
-    /// <summary>True for a box or pack, whose flaps or lid open in the hand; a booster has none.</summary>
-    public bool HasLid => Kind != CardContainerKind.Booster;
+    /// <summary>True for a cardboard box, whose flaps open in the hand; a booster box empties whole instead.</summary>
+    public bool HasLid => Kind == CardContainerKind.Box;
 
     /// <summary>True while the lid or flaps are open (<see cref="SetLidOpen" />).</summary>
     public bool IsLidOpen { get; private set; }
-
-    /// <summary>
-    ///     Boosters taken out of a pack one at a time (<see cref="TakeOneInto" />). A save stores it, so a reload keeps
-    ///     them out. A cardboard box counts what it holds in its <see cref="Storage" /> instead.
-    /// </summary>
-    public int TakenCount { get; internal set; }
 
     /// <summary>What a cardboard box holds; null for a pack or booster.</summary>
     public CartonStorage? Storage =>
         Kind == CardContainerKind.Box ? _storage ??= GetNodeOrNull<CartonStorage>("Storage") : null;
 
     /// <summary>
-    ///     Items still inside: what a cardboard box holds, or the 8 a pack was packed with less
-    ///     <see cref="TakenCount" />.
+    ///     Items inside: what a cardboard box holds, or the 8 a booster box or booster pack is packed with until it is
+    ///     opened.
     /// </summary>
-    public int Remaining => Storage?.Count ?? CardContainerLayout.ItemsPerContainer - TakenCount;
+    public int Remaining => Storage?.Count ?? CardContainerLayout.ItemsPerContainer;
 
     // A cardboard box can always be carried, even empty, so the player can take it to the trash can.
     public bool CanInteract => !IsOpened && !IsHeld && (Kind == CardContainerKind.Box || HasContents);
@@ -192,9 +187,9 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     }
 
     /// <summary>
-    ///     Opens or closes the flaps of a box or the lid of a pack. They swing over a fraction of a second, or move at
-    ///     once when <paramref name="instantly" /> (a load). Nothing comes out: items leave an open container one at a
-    ///     time through <see cref="TakeOneInto" />. False for a booster or a container already opened.
+    ///     Opens or closes the flaps of a cardboard box. They swing over a fraction of a second, or move at once when
+    ///     <paramref name="instantly" /> (a load). Nothing comes out: items leave an open box one at a time through
+    ///     <see cref="TakeOneInto" />. False for a booster box, a booster or a container already opened.
     /// </summary>
     public bool SetLidOpen(bool open, bool instantly = false)
     {
@@ -220,7 +215,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     private bool LidMoving => _opening == null && !Mathf.IsEqualApprox(_lidProgress, LidTarget);
 
     // The parts keep their rest pose from their own _Ready, so they are posed only once this container is ready. A
-    // booster's tear strip is left to its opening.
+    // booster box's lid and a booster's tear strip are left to their opening.
     private void PoseLid()
     {
         if (!HasLid || !IsNodeReady())
@@ -234,43 +229,11 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     }
 
     /// <summary>
-    ///     Takes the next item out of this open box or pack and locks it into <paramref name="slot" />. A cardboard box
-    ///     gives the last item it holds that the slot takes, and stays a box when it is empty. A pack's booster gets the
-    ///     seed <see cref="Open" /> would have given it; when its last booster leaves, the pack is used up: it counts as
-    ///     opened and is freed. False, with nothing taken, when the lid is shut, nothing fits or the slot refuses it.
+    ///     Takes the last item this open cardboard box holds that <paramref name="slot" /> takes and locks it there. The
+    ///     box stays a box when it is empty. False, with nothing taken, when this is no cardboard box, its flaps are
+    ///     shut, nothing in it fits or the slot refuses it.
     /// </summary>
-    public bool TakeOneInto(DeckSlot slot)
-    {
-        if (!IsLidOpen || IsOpened)
-            return false;
-
-        if (Storage is { } storage)
-            return storage.TakeInto(slot);
-
-        if (Remaining <= 0)
-            return false;
-
-        if (SpawnContainer(slot, slot.SeatPosition(slot.Cards.Count), TakenCount) is not CardContainer item)
-            return false;
-
-        if (!slot.TryLock(item))
-        {
-            // Freed at once, before any physics step can report it entering the slot's trigger.
-            slot.RemoveChild(item);
-            item.Free();
-            return false;
-        }
-
-        TakenCount++;
-        if (Remaining == 0)
-        {
-            IsOpened = true;
-            ClearHighlight();
-            QueueFree();
-        }
-
-        return true;
-    }
+    public bool TakeOneInto(DeckSlot slot) => IsLidOpen && !IsOpened && Storage is { } storage && storage.TakeInto(slot);
 
     // A wrapper taken out of the tree mid-opening (a load clears the scene's containers) lets its rising items fall.
     public override void _ExitTree()
@@ -359,9 +322,36 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         var settled = BeginOpening();
         var spawns = Kind == CardContainerKind.Booster
             ? CardSpawns(parent, settled.Origin)
-            : ContainerSpawns(parent, settled.Origin, TakenCount);
+            : ContainerSpawns(parent, settled.Origin, 0);
         StartOpening(settled, spawns);
         return true;
+    }
+
+    /// <summary>
+    ///     Empties this held booster box into the hand: its eight booster packs are built under the hand anchor, each
+    ///     with the seed opening the box whole would give it (<see cref="ContainerSeeds.ChildSeed" />), and the empty
+    ///     box is used up: it counts as opened, leaves the tree and is freed. Returns the booster packs in order, for
+    ///     the holder to take; none unless this is a held, unopened booster box with a booster scene.
+    /// </summary>
+    public IReadOnlyList<CardContainer> EmptyIntoHand()
+    {
+        if (Kind != CardContainerKind.Pack || IsOpened || !IsHeld || !HasContents || GetParent() is not Node3D anchor)
+            return [];
+
+        IsOpened = true;
+        ClearHighlight();
+        var boosters = new List<CardContainer>(CardContainerLayout.ItemsPerContainer);
+        for (var i = 0; i < CardContainerLayout.ItemsPerContainer; i++)
+        {
+            if (SpawnContainer(anchor, GlobalPosition, i) is CardContainer booster)
+                boosters.Add(booster);
+        }
+
+        // ASSUMPTION: an emptied booster box is thrown away at once (Risk Low). Unlike a cardboard box it stores
+        // nothing, so the player has no use for it, and it leaves the tree now so the hand never shows it.
+        anchor.RemoveChild(this);
+        QueueFree();
+        return boosters;
     }
 
     /// <summary>
@@ -400,12 +390,12 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         for (var i = 0; i < placeable; i++)
         {
             // The same index as Open() uses, so each placed child gets the seed it would have got when opened loose.
-            var child = SpawnContainer(parent, settled.Origin + SpawnOffset(i, Kind), TakenCount + i);
+            var child = SpawnContainer(parent, settled.Origin + SpawnOffset(i, Kind), i);
             if (child is CardContainer container && freeSlots[i].TryLock(container))
                 PlacedCount++;
         }
 
-        StartOpening(settled, ContainerSpawns(parent, settled.Origin, TakenCount + placeable));
+        StartOpening(settled, ContainerSpawns(parent, settled.Origin, placeable));
         return true;
     }
 

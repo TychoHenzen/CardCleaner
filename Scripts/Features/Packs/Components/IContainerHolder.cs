@@ -4,11 +4,13 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Packs.Components;
 
 /// <summary>
-///     Carries one sealed container (a box, pack or booster) in the player's hand. Picking up is refused for an
-///     opened container; dropping returns it to the card spawner's node in front of the player.
+///     Carries sealed containers in the player's hand: one cardboard box or booster box, or a stack of up to eight
+///     booster packs. Picking up is refused for an opened container and for anything a full or boxed hand has no room
+///     for; dropping returns the top one to the card spawner's node in front of the player.
 /// </summary>
 public interface IContainerHolder
 {
+    /// <summary>The top container in the hand, the one the other members act on; null while a booster opens.</summary>
     CardContainer? Held { get; }
 
     /// <summary>True while the hand holds a container or a booster is opening in it.</summary>
@@ -19,12 +21,13 @@ public interface IContainerHolder
 
     bool TryPickUp(CardContainer container);
 
-    /// <summary>Sets the held container down. False when nothing was released.</summary>
+    /// <summary>Sets the top held container down. False when nothing was released.</summary>
     bool Drop();
 
     /// <summary>
-    ///     Opens or closes the held box's flaps or pack's lid; a held booster opens in front of the player and its
-    ///     cards go into the hand of cards. False when nothing is held or nothing happened.
+    ///     Opens or closes the held cardboard box's flaps; a held booster box empties into the hand as its eight booster
+    ///     packs; the top held booster pack opens in front of the player and its cards go into the hand of cards. False
+    ///     when nothing is held or nothing happened.
     /// </summary>
     bool UseHeld();
 
@@ -34,7 +37,7 @@ public interface IContainerHolder
     /// </summary>
     bool PutOneDown();
 
-    /// <summary>Throws the held container away: it is freed. False when nothing is held.</summary>
+    /// <summary>Throws the top held container away: it is freed. False when nothing is held.</summary>
     bool Discard();
 
     /// <param name="handAnchor">The node a held container hangs under: the player's camera.</param>

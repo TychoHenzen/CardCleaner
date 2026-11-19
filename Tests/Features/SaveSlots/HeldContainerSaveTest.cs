@@ -23,6 +23,7 @@ namespace CardCleaner.Tests.Features.SaveSlots;
 public class HeldContainerSaveTest
 {
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
+    private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const ulong BoxSeed = 0x4E1DUL;
 
     [TestCase]
@@ -176,7 +177,7 @@ public class HeldContainerSaveTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public static void AShutBoxSavedOnTheFloorReadsShutWithNothingTaken()
+    public static void AShutBoxSavedOnTheFloorReadsShut()
     {
         using var scene = new SaveWorld("ShutBoxSaveWorld", addCardsToTree: false);
         Assertions.AddNode(scene.World, autoFree: false);
@@ -186,31 +187,36 @@ public class HeldContainerSaveTest
         var record = CaptureAndParse(scene).Single();
 
         AssertBool(record.LidOpen).IsFalse();
-        AssertThat(record.Taken).IsEqual(0);
+        AssertBool(record.Held).IsFalse();
     }
 
-    // An emptied booster box is freed, never saved; a cardboard box keeps its items as stored items instead of a
-    // count; and a booster pack has nothing to take out one at a time.
-    [TestCase("Box", 1)]
-    [TestCase("Box", -1)]
-    [TestCase("Pack", 8)]
-    [TestCase("Booster", 1)]
+    // A booster box emptied into the hand leaves its eight booster packs there; a save brings all eight back into the
+    // hand, in the same order, each with the seed it had.
+    [TestCase]
     [TestCategory("Unit")]
-    public static void ARecordWithAnImpossibleTakenCountIsMalformed(string kind, int taken)
+    public static async Task EightBoosterPacksInHandComeBackInTheirOrderWithTheirSeeds()
     {
-        var raw = new List<object>
-        {
-            new Dictionary<string, object>
-            {
-                ["ScenePath"] = BoxScene,
-                ["Kind"] = kind,
-                ["Position"] = new Vector3(1f, 0f, 2f),
-                ["Rotation"] = Vector3.Zero,
-                ["Taken"] = taken,
-            },
-        };
+        using var scene = new SaveWorld("BoosterStackSaveWorld", addCardsToTree: false);
+        Assertions.AddNode(scene.World, autoFree: false);
+        scene.Enter();
+        var (holder, hand) = BuildHolder(scene);
+        var pack = GD.Load<PackedScene>(PackScene).Instantiate<CardContainer>();
+        pack.ContentSeed = BoxSeed;
+        pack.Spawning = scene.Spawner;
+        scene.World.AddChild(pack);
+        AssertBool(holder.TryPickUp(pack)).IsTrue();
+        AssertBool(holder.UseHeld()).IsTrue();
+        var before = HeldSeeds(hand);
+        AssertThat(before).IsEqual(Enumerable.Range(0, ContainerHolder.MostBoosters)
+            .Select(index => ContainerSeeds.ChildSeed(BoxSeed, index)).ToArray());
 
-        Assertions.AssertThrown(() => SavedContainers.Parse(raw)).IsInstanceOf<FormatException>();
+        SavedContainers.Restore(scene.Tree, CaptureAndParse(scene), scene.World);
+        await scene.TwoFrames();
+
+        AssertThat(holder.HeldCount).IsEqual(ContainerHolder.MostBoosters);
+        AssertThat(HeldSeeds(hand)).IsEqual(before);
+        AssertBool(holder.Held == hand.GetChildren().OfType<CardContainer>().Last()).IsTrue();
+        AssertBool(hand.GetChildren().OfType<CardContainer>().All(booster => booster.CollisionLayer == 0)).IsTrue();
     }
 
     // Only a cardboard box holds stored items, and each one must be readable: a card with an eight-value signature,
@@ -295,6 +301,11 @@ public class HeldContainerSaveTest
         box.GlobalPosition = position;
         return box;
     }
+
+    // The seeds of the containers the hand holds, bottom of the stack first.
+    private static ulong[] HeldSeeds(Camera3D hand) =>
+        hand.GetChildren().OfType<CardContainer>().Where(container => !container.IsQueuedForDeletion())
+            .Select(container => container.ContentSeed!.Value).ToArray();
 
     private static List<SavedContainers.Saved> CaptureAndParse(SaveWorld scene) =>
         SavedContainers.Parse(SavedContainers.Capture(scene.Tree));

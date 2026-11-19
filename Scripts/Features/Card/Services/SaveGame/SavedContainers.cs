@@ -16,10 +16,10 @@ namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 /// <summary>
 ///     Writes the sealed containers lying in the scene into a slot and rebuilds them from one. Only sealed
 ///     containers placed from a scene file can be rebuilt; an opened one has spilled its contents. A carried
-///     container is saved with a held flag and handed back to the player's hand on restore. A box or pack keeps its
-///     open lid, a pack the items already taken out of it, a cardboard box what it holds (cards, boosters and booster
-///     boxes, each with its seed and price, in the order they went in), and every container the price the player set
-///     on it.
+///     container is saved with a held flag and handed back to the player's hand on restore, in the order the hand held
+///     it, so a stack of booster packs comes back in the same order. A cardboard box keeps its open flaps and what it
+///     holds (cards, boosters and booster boxes, each with its seed and price, in the order they went in), and every
+///     container the price the player set on it.
 /// </summary>
 internal static class SavedContainers
 {
@@ -32,7 +32,6 @@ internal static class SavedContainers
         Vector3 Rotation,
         bool Held = false,
         bool LidOpen = false,
-        int Taken = 0,
         int? Price = null,
         IReadOnlyList<StoredItem>? Contents = null);
 
@@ -51,7 +50,6 @@ internal static class SavedContainers
         public object? Rotation { get; set; }
         public bool Held { get; set; }
         public bool LidOpen { get; set; }
-        public int Taken { get; set; }
         public object? Price { get; set; }
 
         // What a cardboard box holds, in the order it went in; null for a fresh box, which still holds what it came
@@ -96,7 +94,6 @@ internal static class SavedContainers
                 Rotation = container.GlobalRotation,
                 Held = container.IsHeld,
                 LidOpen = container.IsLidOpen,
-                Taken = container.TakenCount,
                 Price = container.ShopPrice,
                 Contents = container.Storage?.SavedItems?.Select(RecordOf).ToList()
             })
@@ -173,7 +170,8 @@ internal static class SavedContainers
     /// </summary>
     internal static void Restore(SceneTree tree, IEnumerable<Saved> saved, Node3D world)
     {
-        // ASSUMPTION: one player holds one container (Risk Low), so only the first holder in the group is used.
+        // ASSUMPTION: one player has one hand (Risk Low), so only the first holder in the group is used. The records
+        // come in tree order, which is the order the hand picked its containers up, so a stack keeps its order.
         var holder = tree.GetNodesInGroup(ContainerHolder.GroupName).OfType<IContainerHolder>().FirstOrDefault();
 
         foreach (var existing in tree.GetNodesInGroup("card_containers").OfType<CardContainer>()
@@ -198,7 +196,6 @@ internal static class SavedContainers
             // The seed is set before AddChild, so the container never draws its own.
             container.Kind = record.Kind;
             container.ContentSeed = record.Seed;
-            container.TakenCount = record.Taken;
             container.Storage?.Restore(record.Contents);
             // Before the slot lock below, so the slot's price tag shows this price when it repaints.
             container.ShopPrice = record.Price;
@@ -257,7 +254,7 @@ internal static class SavedContainers
         var rotation = SavedCardReader.GetVector3FromData(record.Rotation
             ?? throw new FormatException($"Container from {record.ScenePath} has no rotation"));
         return new Saved(record.ScenePath, kind, seed, position, rotation, record.Held, record.LidOpen,
-            ParseTaken(record, kind), ParsePrice(record.Price, "container"), ParseContents(record, kind));
+            ParsePrice(record.Price, "container"), ParseContents(record, kind));
     }
 
     // Only a cardboard box holds stored items; every item must be readable, or the record is malformed.
@@ -323,17 +320,6 @@ internal static class SavedContainers
 
         ILog.Warning($"Saved {what} price '{saved}' is not a positive whole number; the market price is used");
         return null;
-    }
-
-    // An emptied pack is freed, never saved, so a saved one has at least one item left. A booster has no lid, so
-    // nothing is ever taken out of it one at a time, and a cardboard box keeps its items as stored items instead.
-    private static int ParseTaken(ContainerRecord record, CardContainerKind kind)
-    {
-        var most = kind == CardContainerKind.Pack ? CardContainerLayout.ItemsPerContainer - 1 : 0;
-        if (record.Taken >= 0 && record.Taken <= most)
-            return record.Taken;
-
-        throw new FormatException($"Container from {record.ScenePath} has {record.Taken} items taken out");
     }
 
     private static CardContainerKind ParseKind(ContainerRecord record)

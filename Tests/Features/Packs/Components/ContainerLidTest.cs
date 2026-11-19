@@ -11,9 +11,10 @@ using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 namespace CardCleaner.Tests.Features.Packs.Components;
 
 /// <summary>
-///     A box or pack opened in the hand: its flaps or lid swing open and shut without spilling anything, and each
-///     <see cref="CardContainer.TakeOneInto" /> moves the next item into a shelf slot with the seed opening the
-///     container whole would have given it. A cardboard box is storage: emptied, it stays, and it never opens whole.
+///     A cardboard box opened in the hand: its flaps swing open and shut without spilling anything, and each
+///     <see cref="CardContainer.TakeOneInto" /> moves the next item into a shelf slot with the seed opening the box
+///     whole would have given it. A cardboard box is storage: emptied, it stays, and it never opens whole. A booster box
+///     and a booster pack have no lid: one empties into the hand, the other opens into the hand of cards.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -36,24 +37,24 @@ public class ContainerLidTest
         await Frames(1);
     }
 
-    [TestCase]
+    [TestCase(PackScene)]
+    [TestCase(BoosterScene)]
     [TestCategory("Unit")]
-    public void ABoosterPackHasNoLid()
+    public void ABoosterBoxAndABoosterPackHaveNoLid(string scene)
     {
-        var booster = MakeContainer(BoosterScene);
+        var container = MakeContainer(scene);
 
-        AssertBool(booster.HasLid).IsFalse();
-        AssertBool(booster.SetLidOpen(true)).IsFalse();
-        AssertBool(booster.IsLidOpen).IsFalse();
+        AssertBool(container.HasLid).IsFalse();
+        AssertBool(container.SetLidOpen(true)).IsFalse();
+        AssertBool(container.IsLidOpen).IsFalse();
     }
 
-    [TestCase(BoxScene)]
-    [TestCase(PackScene)]
+    [TestCase]
     [TestCategory("Unit")]
-    public async Task TheLidSwingsOpenToTheSamePoseAsAnInstantOpen(string scene)
+    public async Task TheLidSwingsOpenToTheSamePoseAsAnInstantOpen()
     {
-        var swung = MakeContainer(scene);
-        var instant = MakeContainer(scene);
+        var swung = MakeContainer(BoxScene);
+        var instant = MakeContainer(BoxScene);
         instant.SetLidOpen(true, instantly: true);
 
         AssertBool(swung.SetLidOpen(true)).IsTrue();
@@ -111,7 +112,7 @@ public class ContainerLidTest
         AssertBool(box.TakeOneInto(slot)).IsFalse();
 
         AssertBool(slot.HasCards).IsFalse();
-        AssertThat(box.TakenCount).IsEqual(0);
+        AssertThat(box.Remaining).IsEqual(CardContainerLayout.ItemsPerContainer);
     }
 
     [TestCase]

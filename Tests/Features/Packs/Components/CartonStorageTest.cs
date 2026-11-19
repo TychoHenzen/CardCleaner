@@ -114,21 +114,6 @@ public class CartonStorageTest
             .IsEqual(StoredItemKeys.Of([new StoredCard(signature, 31, 9)]));
     }
 
-    // A booster box whose lid is open is a box being emptied, not stock to store.
-    [TestCase]
-    [TestCategory("Unit")]
-    public void AnOpenBoosterBoxIsNotTakenIn()
-    {
-        var box = StandingBox([]);
-        var pack = Dropped(PackScene, new Vector3(3f, 0.5f, 0f));
-        pack.SetLidOpen(true, instantly: true);
-
-        AssertBool(box.Storage!.TryPut(pack)).IsFalse();
-
-        AssertBool(pack.IsQueuedForDeletion()).IsFalse();
-        AssertThat(box.Remaining).IsEqual(0);
-    }
-
     // The card went in first and the booster last, so each slot takes the last item it can take, not the last item.
     [TestCase]
     [TestCategory("Unit")]

@@ -24,6 +24,7 @@ public class CardHighlighterContainerTest
 {
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
+    private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
     private const string CardScene = "res://Scenes/Components/CardShader.tscn";
     private const string ProductShelfScene = "res://Scenes/Shop/Items/ProductShelf.tscn";
     private const string StorageRackScene = "res://Scenes/Shop/Items/StorageRack.tscn";
@@ -283,6 +284,30 @@ public class CardHighlighterContainerTest
         AssertObject(highlighter.OfferFor(shelf.Slots.Last())).IsNull();
         AssertBool(highlighter.TryStock(shelf.Slots.Last())).IsFalse();
         AssertThat(_containerHolder.Held).IsSame(box);
+    }
+
+    // The right button empties a held booster box into the hand; each shelf click then stocks the top booster pack,
+    // up to four on one product slot, and the rest stay in the hand.
+    [TestCase]
+    [TestCategory("Unit")]
+    public void ABoosterBoxEmptiedIntoTheHandStocksOneBoosterPackPerClick()
+    {
+        var highlighter = Build();
+        var shelf = AddProductShelf();
+        Make(PackScene).Interact();
+        _rightPress!.Invoke(true);
+        _rightPress.Invoke(false);
+        AssertThat(_containerHolder.HeldCount).IsEqual(ContainerHolder.MostBoosters);
+        var slot = shelf.Slots.First();
+
+        for (var i = 0; i < ShelfPlacementRule.BoostersPerProductSlot; i++)
+            AssertBool(highlighter.TryStock(slot)).IsTrue();
+
+        AssertThat(slot.Cards.Count).IsEqual(ShelfPlacementRule.BoostersPerProductSlot);
+        AssertThat(_containerHolder.HeldCount)
+            .IsEqual(ContainerHolder.MostBoosters - ShelfPlacementRule.BoostersPerProductSlot);
+        AssertObject(highlighter.OfferFor(slot)).IsNull();
+        AssertThat(highlighter.OfferFor(shelf.Slots.Skip(1).First())).IsEqual(new StockOffer(StockKind.Booster));
     }
 
     [TestCase]

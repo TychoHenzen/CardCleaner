@@ -20,7 +20,8 @@ namespace CardCleaner.Tests.Scenes;
 /// <summary>
 ///     End to end in the shop scene: a carried box opened with the right button stays in hand, and each left click on a
 ///     free shelf slot puts the next item from it into that slot. A booster box from a cardboard box fills one product
-///     slot; booster packs from a booster box stack four to a slot. A shut box goes onto a storage rack whole.
+///     slot; a booster box emptied into the hand gives eight booster packs that stack four to a slot. A shut box goes
+///     onto a storage rack whole.
 ///     The input service is replaced so the scene's button callbacks are captured and invoked directly; the click
 ///     target is found by the interaction ray because the camera is aimed at the slot.
 /// </summary>
@@ -95,7 +96,7 @@ public class ShopOpenBoxStockingSceneTest
     [TestCategory("Unit")]
     public async Task AClickWithAnOpenBoxPutsOneBoosterBoxInTheAimedSlot()
     {
-        var box = await CarryOpened("cardboard_box");
+        var box = await CarryOpenedBox();
         var target = TargetOf(_productShelf, "Slot1");
 
         await AimAt(target);
@@ -115,7 +116,7 @@ public class ShopOpenBoxStockingSceneTest
     [TestCategory("Unit")]
     public async Task EightClicksEmptyTheBoxOntoTheProductShelfAndKeepTheEmptyBoxInHand()
     {
-        var box = await CarryOpened("cardboard_box");
+        var box = await CarryOpenedBox();
 
         foreach (var target in _productShelf.SlotTargets.Take(CardContainerLayout.ItemsPerContainer).ToList())
         {
@@ -136,12 +137,18 @@ public class ShopOpenBoxStockingSceneTest
 
     [TestCase]
     [TestCategory("Unit")]
-    public async Task AnOpenBoosterBoxStacksFourBoosterPacksInOneSlot()
+    public async Task ABoosterBoxEmptiedIntoTheHandStacksFourBoosterPacksInOneSlot()
     {
-        var boosterBox = await CarryOpened("pack");
+        var boosterBox = Order("pack");
+        await PhysicsFrames(1);
+        AssertBool(_holder.TryPickUp(boosterBox)).IsTrue();
+        _rightPress!.Invoke(true);
+        _rightPress.Invoke(false);
+        AssertThat(_holder.HeldCount).IsEqual(ContainerHolder.MostBoosters);
+        AssertBool(GodotObject.IsInstanceValid(boosterBox) && !boosterBox.IsQueuedForDeletion()).IsFalse();
         var target = TargetOf(_productShelf, "Slot1");
         await AimAt(target);
-        AssertThat(_interaction.Target!.Prompt).IsEqual("Put a booster pack here (8 in the box)");
+        AssertThat(_interaction.Target!.Prompt).IsEqual("Put the booster pack here");
 
         for (var i = 0; i < ShelfPlacementRule.BoostersPerProductSlot; i++)
         {
@@ -156,9 +163,9 @@ public class ShopOpenBoxStockingSceneTest
         AssertThat(target.Slot!.Cards.Count).IsEqual(ShelfPlacementRule.BoostersPerProductSlot);
         AssertBool(target.Slot.Cards.All(c => c is CardContainer { Kind: CardContainerKind.Booster })).IsTrue();
         AssertBool(target.CanInteract).IsFalse();
-        AssertThat(boosterBox.Remaining)
-            .IsEqual(CardContainerLayout.ItemsPerContainer - ShelfPlacementRule.BoostersPerProductSlot);
-        AssertThat(_holder.Held).IsSame(boosterBox);
+        AssertThat(_holder.HeldCount)
+            .IsEqual(ContainerHolder.MostBoosters - ShelfPlacementRule.BoostersPerProductSlot);
+        AssertThat(_holder.Held!.Kind).IsEqual(CardContainerKind.Booster);
     }
 
     [TestCase]
@@ -185,10 +192,10 @@ public class ShopOpenBoxStockingSceneTest
         AssertBool(box.IsLidOpen).IsFalse();
     }
 
-    // Orders the item, picks it up and opens it with the right button, so it stays in hand with its lid open.
-    private async Task<CardContainer> CarryOpened(string itemId)
+    // Orders the cardboard box, picks it up and opens it with the right button, so it stays in hand with its flaps open.
+    private async Task<CardContainer> CarryOpenedBox()
     {
-        var container = Order(itemId);
+        var container = Order("cardboard_box");
         await PhysicsFrames(1);
         AssertBool(_holder.TryPickUp(container)).IsTrue();
         _rightPress!.Invoke(true);
