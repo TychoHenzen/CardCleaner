@@ -9,6 +9,7 @@ public partial class TileEditorDock
     private Button? _insertPropsButton;
 
     internal string TiledDirectory { get; set; } = "res://Data/Tiled";
+    internal string CompiledAtlasDirectory { get; set; } = TmxAtlasCompiler.DefaultOutputDirectory;
     internal bool SuppressDialogs { get; set; }
     internal bool SkipInitialTileLoad { get; set; }
     internal Button? CompileTmxButton => _compileTmxButton;

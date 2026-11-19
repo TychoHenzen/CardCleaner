@@ -10,9 +10,8 @@ using static CardCleaner.Addons.TileEditor.TmxAtlasCompilerModels;
 
 namespace CardCleaner.Addons.TileEditor;
 
-internal sealed class TmxAtlasOutputWriter
+internal sealed class TmxAtlasOutputWriter(string outputDirectory)
 {
-    private const string CompiledAtlasDir = "res://Data/CompiledAtlas";
     private const string MappingFileName = "atlas_mapping.json";
     private const string TransitionMapFileName = "transition_map.json";
 
@@ -56,7 +55,7 @@ internal sealed class TmxAtlasOutputWriter
                 Sources = sourcesMapping
             };
             var json = JsonSerializer.Serialize(data, JsonWriteOptions);
-            var absolutePath = ProjectSettings.GlobalizePath($"{CompiledAtlasDir}/{MappingFileName}");
+            var absolutePath = ProjectSettings.GlobalizePath($"{outputDirectory}/{MappingFileName}");
             File.WriteAllText(absolutePath, json);
             GD.Print($"[TmxAtlasCompiler] Saved mapping to {MappingFileName}");
             return new AtlasSaveResult { Success = true };
@@ -76,7 +75,7 @@ internal sealed class TmxAtlasOutputWriter
         try
         {
             var json = JsonSerializer.Serialize(transitionMap, JsonWriteOptions);
-            var absolutePath = ProjectSettings.GlobalizePath($"{CompiledAtlasDir}/{TransitionMapFileName}");
+            var absolutePath = ProjectSettings.GlobalizePath($"{outputDirectory}/{TransitionMapFileName}");
             File.WriteAllText(absolutePath, json);
             GD.Print(
                 $"[TmxAtlasCompiler] Saved transition map with "

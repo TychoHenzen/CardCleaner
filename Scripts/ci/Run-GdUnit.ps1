@@ -27,7 +27,12 @@ param(
 
     # Report and log folder, relative to the repository root and inside reports/. CI uses the default.
     [Parameter()]
-    [string]$ReportDirectory = 'reports\ci'
+    [string]$ReportDirectory = 'reports\ci',
+
+    # Import even when no file the import reads changed since the last import here, for example after the imported
+    # files were damaged by hand.
+    [Parameter()]
+    [switch]$ForceImport
 )
 
 $ErrorActionPreference = 'Stop'
@@ -463,6 +468,120 @@ function Invoke-Import {
     }
 }
 
+# What an import reads: every file Godot's filesystem scan sees, with its size and write time, and the Godot executable.
+# Like the scan, the walk skips names that start with '.' and folders that hold a .gdignore (reports/ has one, so the
+# logs this runner writes never count).
+# ASSUMPTION: an import reads no C# source or Markdown. On Godot 4.7.1 (--recovery-mode) an import after a .cs body
+# edit, and one after removing a [GlobalClass] attribute, changed nothing a test run reads: not the class cache, not
+# .godot/imported, not a .uid sidecar. So those files count by path alone: a new or deleted script still imports.
+function Get-ImportInputs {
+    param([string]$RepositoryRoot, [string]$GodotPath)
+
+    $root = [IO.Path]::GetFullPath($RepositoryRoot).TrimEnd([char[]]@('\', '/'))
+    $godot = New-Object IO.FileInfo $GodotPath
+    $entries = New-Object System.Collections.Generic.List[string]
+    $entries.Add('godot|' + $godot.FullName + '|' + $godot.Length + '|' + $godot.LastWriteTimeUtc.Ticks)
+    $pending = New-Object System.Collections.Generic.Stack[IO.DirectoryInfo]
+    $pending.Push((New-Object IO.DirectoryInfo $root))
+    while ($pending.Count -gt 0) {
+        foreach ($item in $pending.Pop().GetFileSystemInfos()) {
+            if ($item.Name.StartsWith('.')) {
+                continue
+            }
+            $relative = $item.FullName.Substring($root.Length + 1)
+            if ($item -is [IO.DirectoryInfo]) {
+                if (-not [IO.File]::Exists([IO.Path]::Combine($item.FullName, '.gdignore'))) {
+                    $pending.Push($item)
+                }
+            }
+            elseif ($item.Extension -eq '.cs' -or $item.Extension -eq '.md') {
+                $entries.Add($relative)
+            }
+            else {
+                $entries.Add($relative + '|' + $item.Length + '|' + $item.LastWriteTimeUtc.Ticks)
+            }
+        }
+    }
+    $sorted = $entries.ToArray()
+    [Array]::Sort($sorted, [StringComparer]::Ordinal)
+    return , $sorted
+}
+
+function Get-ImportStamp {
+    param([string[]]$Inputs)
+
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try {
+        $bytes = $sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($Inputs -join "`n"))
+    }
+    finally {
+        $sha.Dispose()
+    }
+    return ([BitConverter]::ToString($bytes) -replace '-', '').ToLowerInvariant()
+}
+
+# True when the import only added sidecars (a .uid for a new script, a .import for a new asset), so the tree it left
+# is the tree it imported. Anything else, such as a file edited while the import ran, keeps the stamp of the tree
+# before the import, which costs at most one more import.
+function Test-OnlySidecarsAdded {
+    param([string[]]$Before, [string[]]$After)
+
+    $beforeSet = [Collections.Generic.HashSet[string]]::new($Before, [StringComparer]::Ordinal)
+    $afterSet = [Collections.Generic.HashSet[string]]::new($After, [StringComparer]::Ordinal)
+    foreach ($entry in $Before) {
+        if (-not $afterSet.Contains($entry)) {
+            return $false
+        }
+    }
+    foreach ($entry in $After) {
+        $path = $entry.Split('|')[0]
+        $sidecar = $path.EndsWith('.uid', [StringComparison]::OrdinalIgnoreCase) -or
+            $path.EndsWith('.import', [StringComparison]::OrdinalIgnoreCase)
+        if (-not $beforeSet.Contains($entry) -and -not $sidecar) {
+            return $false
+        }
+    }
+    return $true
+}
+
+# Imports only when a file the import reads changed since the last import that succeeded in this checkout. The stamp
+# lives in .godot, so a fresh checkout (every CI run) or a wiped .godot always imports.
+function Invoke-ImportWhenChanged {
+    param([string]$GodotPath, [string]$RepositoryRoot, [string]$ReportRoot, [bool]$Force)
+
+    $stampPath = Join-Path $RepositoryRoot '.godot\gdunit-import.stamp'
+    $before = Get-ImportInputs -RepositoryRoot $RepositoryRoot -GodotPath $GodotPath
+    $stamp = Get-ImportStamp -Inputs $before
+    $imported = Test-Path -LiteralPath (Join-Path $RepositoryRoot '.godot\imported') -PathType Container
+    $previous = ''
+    if (Test-Path -LiteralPath $stampPath -PathType Leaf) {
+        $previous = [IO.File]::ReadAllText($stampPath).Trim()
+    }
+    if (-not $Force -and $imported -and $previous -eq $stamp) {
+        Write-Host 'Godot import skipped: no file it reads changed since the last import (-ForceImport imports).'
+        return
+    }
+    $reason = 'files it reads changed since the last import'
+    if ($Force) {
+        $reason = '-ForceImport'
+    }
+    elseif ($previous.Length -eq 0 -or -not $imported) {
+        $reason = 'no earlier import in this checkout'
+    }
+    Write-Host "Godot import runs: $reason."
+    # A failed import must not leave a stamp that matches the tree it failed on.
+    if (Test-Path -LiteralPath $stampPath -PathType Leaf) {
+        Remove-Item -LiteralPath $stampPath -Force
+    }
+    Invoke-Import -GodotPath $GodotPath -RepositoryRoot $RepositoryRoot -ReportRoot $ReportRoot
+    $after = Get-ImportInputs -RepositoryRoot $RepositoryRoot -GodotPath $GodotPath
+    if (Test-OnlySidecarsAdded -Before $before -After $after) {
+        $stamp = Get-ImportStamp -Inputs $after
+    }
+    New-Item -ItemType Directory -Path (Split-Path -Parent $stampPath) -Force | Out-Null
+    [IO.File]::WriteAllText($stampPath, $stamp)
+}
+
 function Remove-StaleAttemptLogs {
     param([string]$ReportRoot)
 
@@ -539,7 +658,8 @@ if ($expected.Count -eq 0) {
 }
 
 Invoke-Build -RepositoryRoot $repositoryRoot -ReportRoot $reportRoot
-Invoke-Import -GodotPath $godotPath -RepositoryRoot $repositoryRoot -ReportRoot $reportRoot
+Invoke-ImportWhenChanged -GodotPath $godotPath -RepositoryRoot $repositoryRoot -ReportRoot $reportRoot `
+    -Force $ForceImport.IsPresent
 
 # -rc 100000 keeps every report folder of a run; gdUnit would otherwise keep only the newest 20. That is a choice,
 # not a workaround: gdUnit 6.2.3 cleans a relative -rd folder correctly.

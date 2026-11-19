@@ -28,6 +28,9 @@ powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godo
 # One suite through the same runner (watchdog and resume included), reports and logs into reports/<name>
 powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot exe> -Suite res://Tests/Architecture/DependencyGateTest.cs -ReportDirectory reports/single
 
+# Run the Godot import even though no file it reads changed (the runner skips it then, see the import skip below)
+powershell -NoProfile -File Scripts/ci/Run-GdUnit.ps1 -GodotBinary <path to Godot exe> -SkipDaily -ForceImport
+
 # Runner fixture: runs Run-GdUnit.ps1 against a fake Godot, so no Godot is needed (CI runs it too)
 powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/ci/Test-RunGdUnit.ps1
 
@@ -177,8 +180,25 @@ as the `gdunit-reports` artifact on failure, on the
 daily and `full=true` runs, on a pull request that runs every suite, and whenever that marker exists, so a crash inside a run that resumed to green keeps its
 logs. `Test-RunGdUnit.ps1` runs the real runner against a fake Godot and covers its build wait (a build that leaves a
 worker running), build failure, watchdog, resume, repeated-stall, crash, repeated-crash, exit-code, interruption-marker
-and report-aggregation paths, and the Daily skip (`-SkipDaily`, on the first attempt and on a resume). It also checks
-that the suite-detection and Daily patterns in `Run-GdUnit.ps1` match the ones in `TestSuiteNamingTest.cs`.
+and report-aggregation paths, the Daily skip (`-SkipDaily`, on the first attempt and on a resume), and the import skip
+(an unchanged project, `-ForceImport`, a missing `.godot/imported`, an edited `.cs`, a new script, a changed resource
+and a failed import). It also checks that the suite-detection and Daily patterns in `Run-GdUnit.ps1` match the ones in
+`TestSuiteNamingTest.cs`.
+
+**The import skip.** Before the tests, `Run-GdUnit.ps1` runs Godot's editor import (`--headless --editor
+--recovery-mode --import`), which cost 16 to 24 s of every local run even when nothing had changed. It now runs only
+when a file the import reads changed. The runner fingerprints the Godot executable and every project file Godot's own
+scan visits (it skips names starting with `.` and folders holding a `.gdignore`) by path, size and write time; a `.cs`
+or `.md` file counts by its path only, because the import reads no C# or Markdown (editing a `.cs` body or removing a
+`[GlobalClass]` changed no imported output). When the fingerprint matches `.godot/gdunit-import.stamp` and
+`.godot/imported` exists, the log says `Godot import skipped`; otherwise the import runs and the log says why. A new
+`.cs` file still triggers the import, and `-ForceImport` always runs it. A failed import leaves no stamp. CI starts with
+no `.godot` folder, so it always imports and the saving is local: one small suite through the runner went from a median
+25.7 s to 9.2 s. A test that rewrites a project file with the same bytes still changes its write time and costs the next
+run an import, so a test writes its files under `user://`, never into the project (`TileEditorWiringSmokeTest` compiles
+its atlas there and fails when the committed atlas in `Data/CompiledAtlas` is rewritten; a `-SkipDaily` run leaves
+every project file untouched). `reports/.gdignore` is committed (with `git add -f`, since
+`.gitignore` ignores `reports`), so neither Godot's scan nor the fingerprint reads the reports.
 
 The runner prints its results to the job log, so no artifact download is needed for them: one `Suite result: <suite> cases=<n> errors=<e> failures=<f>` line per finished suite (also for suites finished in an attempt that later stalled or crashed), a `FAILED <suite> > <case>: <message>` line for each failing case before it throws, every `dependency gate:` line from all attempt logs, and a `Run summary:` line. `-Suite` takes res:// paths of `[TestSuite]` files and cannot be combined with `-SkipDaily`. `-ReportDirectory` is relative and must lie below `reports/` (default `reports\ci`, which CI uses). A suite that stalls twice fails the run and is named.
 
