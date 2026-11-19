@@ -93,10 +93,17 @@ it prints `gdUnit4 discovery cache unavailable` to stderr and every script goes 
 `SuiteDiscoveryEquivalenceTest` (Daily) compares the two for every script; reapply `SuiteDiscoveryCache.cs` and the call
 in `GdUnit4CSharpApi.DiscoverTests` after updating the addon or the `gdUnit4.api` package.
 
-**Project patch in the vendored asset_manager.** The headless editor import (`Run-GdUnit.ps1`, CI) starts every enabled
-editor plugin even with `--recovery-mode`, and Godot compiles everything a plugin script preloads. So
-`addons/asset_manager/plugin.gd` returns at once in a headless editor and loads its main screen and context menu at run
-time, which took about 1.1 s off each import. `AssetManagerLazyOpenTest` fails when an addon update drops the patch.
+**asset_manager is a synced copy of our fork.** `addons/asset_manager` is one commit of the fork
+`TychoHenzen/Asset-Manager` (upstream `Kivylius/Asset-Manager`), and every change to it, ours included, is made in the
+fork. Ours: the tab offers Load library on every showing until the library is used, and in a headless editor (the
+import `Run-GdUnit.ps1` and CI run) the plugin builds no panel and no menu and preloads nothing, which took about 1.1 s
+off each import. An upstream release is merged into the fork, where git keeps our edits or shows the conflict; the
+addon's update button only opens the store page. `node tools/asset-manager/sync.mjs` then copies the fork's
+`origin/main` (or `--commit=<ref>`) from a local clone (`--source=<dir>`, by default `../asset-manager`), `.uid`
+sidecars included, stages the copy and records the commit and every file's hash in `tools/asset-manager/pin.json`. It
+refuses while the addon differs from the old pin, so an edit made here goes to the fork first.
+`AssetManagerVendorPinTest` fails when the addon differs from the pin, and `AssetManagerLazyOpenTest` fails when a fork
+update drops one of our edits.
 
 **Without PowerShell.** Start Godot from Bash through node, so no console window opens:
 
@@ -254,7 +261,8 @@ so a scene holds only its exports; it is a `[Tool]` so the editor shows it, and 
 
 Godot 4.4+ gives every script and shader a `.uid` sidecar, and scenes reference them by that UID. Sidecars under
 `Scripts/`, `Tests/` and `Shaders/` are committed (`.gitignore` negates `*.uid` for those roots), so a fresh clone keeps
-the same UIDs; `addons/` sidecars stay ignored. Move or rename a source together with its `.uid` (both in one `git mv`,
+the same UIDs; `addons/` sidecars stay ignored, except `addons/asset_manager`'s, which the fork commits and its sync
+tool force-adds with the rest of the copy. Move or rename a source together with its `.uid` (both in one `git mv`,
 or through the editor's FileSystem dock). A headless gdUnit run does not create a new script's `.uid`; run `<godot console exe> --headless --path . --import`, which writes only the sidecar, and commit it with the script. A new folder of scripts or shaders outside those roots needs its own negation
 in `.gitignore`. A `.uid` whose source is gone is removed, not ignored: this is an exception to the rule of adding an
 ignore entry for a generated file, because no workflow needs a sidecar without its source. `ExtResourceUidTest` fails
