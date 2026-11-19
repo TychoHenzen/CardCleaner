@@ -1,7 +1,8 @@
 # Fake-Godot integration fixture for Scripts/ci/Run-GdUnit.ps1.
 #
 # The runner runs against a fake Godot executable, compiled here with the in-box .NET Framework csc.exe, inside a
-# temporary fake repository. The build wait (a build that leaves a worker running), a failed build, the watchdog,
+# temporary fake repository. The build wait (a build that leaves a worker running), a failed build, the import stamp
+# (skip, -ForceImport, a new script, a failed import), the watchdog,
 # process-tree kill, resume targets, repeated-stall failure, crash handling, interruption marker and report
 # aggregation are therefore checked without a real Godot. Windows PowerShell 5.1 runs it locally; CI passes
 # -RunnerShell pwsh so the runner itself runs under PowerShell 7.
@@ -137,7 +138,7 @@ internal static class FakeGodot
         if (Array.IndexOf(args, "--import") >= 0)
         {
             RecordAttemptLogsBeforeRun(state);
-            return 0;
+            return RunImport(plan);
         }
         string counterPath = Path.Combine(state, "next.txt");
         int index = File.Exists(counterPath) ? int.Parse(File.ReadAllText(counterPath).Trim()) : 0;
@@ -180,6 +181,40 @@ internal static class FakeGodot
             }
         }
         Console.Out.Flush();
+        return 0;
+    }
+
+    // Every import leaves .godot\imported, as a real one does. import.txt in the plan folder, when a scenario writes
+    // it: "create <path>" writes that file (a sidecar the import adds), "exit <n>" fails the import with exit code n.
+    private static int RunImport(string plan)
+    {
+        string repo = Directory.GetCurrentDirectory();
+        Directory.CreateDirectory(Path.Combine(repo, Path.Combine(".godot", "imported")));
+        string planPath = Path.Combine(plan, "import.txt");
+        if (!File.Exists(planPath))
+        {
+            return 0;
+        }
+        foreach (string raw in File.ReadAllLines(planPath))
+        {
+            string line = raw.TrimEnd();
+            if (line.StartsWith("create ", StringComparison.Ordinal))
+            {
+                File.WriteAllText(Path.Combine(repo, line.Substring(7)), "uid://fake");
+            }
+            else if (line.StartsWith("exit ", StringComparison.Ordinal))
+            {
+                Console.Error.WriteLine("FAKE: import failed");
+                Console.Error.Flush();
+                return int.Parse(line.Substring(5));
+            }
+            else if (line.Length > 0)
+            {
+                Console.Out.WriteLine("FAKE: unknown import directive " + line);
+                Console.Out.Flush();
+                return 96;
+            }
+        }
         return 0;
     }
 
@@ -269,7 +304,8 @@ param(
     [Parameter(Mandatory = $true)][int]$MaxResumes,
     [switch]$SkipDaily,
     [string[]]$Suite = @(),
-    [string]$ReportDirectory = ''
+    [string]$ReportDirectory = '',
+    [switch]$ForceImport
 )
 
 $ErrorActionPreference = 'Stop'
@@ -277,6 +313,9 @@ try {
     $splat = @{ GodotBinary = $GodotBinary; StallSeconds = $StallSeconds; MaxResumes = $MaxResumes }
     if ($SkipDaily) {
         $splat['SkipDaily'] = $true
+    }
+    if ($ForceImport) {
+        $splat['ForceImport'] = $true
     }
     # The suite list travels as one comma-joined string, because the wrapper is a child process.
     # Empty entries are kept, so the runner is the one that rejects them.
@@ -494,6 +533,8 @@ function New-ScenarioContext {
     Write-FileText -Path (Join-Path $repo 'Tests\Phantom\InterpolatedVerbatim.cs') -Text $PhantomInterpolatedVerbatim
     Write-FileText -Path (Join-Path $repo 'Tests\Phantom\Raw.cs') -Text $PhantomRaw
     Write-FileText -Path $context.Wrapper -Text $WrapperSource
+    # The real repository commits this empty file, so Godot and the import stamp both leave reports/ out.
+    Write-FileText -Path (Join-Path $repo 'reports\.gdignore') -Text ''
     return $context
 }
 
@@ -508,6 +549,13 @@ function Set-FakeBuildPlan {
     param($Context, [string[]]$Lines)
 
     [IO.File]::WriteAllLines((Join-Path $Context.Plan 'build.txt'), [string[]]$Lines)
+}
+
+# The fake import's own plan: 'create <path>' adds that file, 'exit <n>' fails the import. No lines: it succeeds.
+function Set-FakeImportPlan {
+    param($Context, [string[]]$Lines = @())
+
+    [IO.File]::WriteAllLines((Join-Path $Context.Plan 'import.txt'), [string[]]$Lines)
 }
 
 function Get-SuiteStart {
@@ -574,7 +622,10 @@ function Get-FlatRunnerOutput {
 }
 
 function Invoke-Runner {
-    param($Context, [switch]$SkipDaily, [int]$MaxResumes = 3, [string[]]$Suite = @(), [string]$ReportDirectory = '')
+    param(
+        $Context, [switch]$SkipDaily, [int]$MaxResumes = 3, [string[]]$Suite = @(), [string]$ReportDirectory = '',
+        [switch]$ForceImport
+    )
 
     $runnerArguments = @(
         '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $Context.Wrapper,
@@ -583,6 +634,9 @@ function Invoke-Runner {
     )
     if ($SkipDaily) {
         $runnerArguments += '-SkipDaily'
+    }
+    if ($ForceImport) {
+        $runnerArguments += '-ForceImport'
     }
     if ($Suite.Count -gt 0) {
         $runnerArguments += '-Suite', ($Suite -join ',')
@@ -893,6 +947,101 @@ function Test-BuildFails {
     Assert-Equal 1 @($calls | Where-Object { $_ -like 'dotnet build *' }).Count 'one solution build'
     Assert-Equal 0 @($calls | Where-Object { $_ -like '* --import *' }).Count 'no project import after a failed build'
     Assert-Equal 0 @(Get-RunnerTestCalls -Context $Context).Count 'no test run after a failed build'
+}
+
+$ImportFirstLine = 'Godot import runs: no earlier import in this checkout.'
+$ImportChangedLine = 'Godot import runs: files it reads changed since the last import.'
+$ImportSkippedLine = 'Godot import skipped: no file it reads changed since the last import (-ForceImport imports).'
+
+function Get-ImportCallCount {
+    param($Context)
+
+    return @(Get-FakeCalls -Context $Context | Where-Object { $_ -like '* --import *' }).Count
+}
+
+function Get-ImportStampPath {
+    param($Context)
+
+    return Join-Path $Context.Repo '.godot\gdunit-import.stamp'
+}
+
+# One passing run of the Beta suite. Each Godot test run replays the next plan file, so the caller names its index.
+function Invoke-PassingRun {
+    param($Context, [int]$Index, [switch]$ForceImport)
+
+    Set-FakePlan -Context $Context -Index $Index -Lines @(
+        (Get-SuiteStart $SuiteBeta), (Get-SuiteStats -Cases 1), ('report r' + $Index + ' 0 0'), 'exit 0')
+    $result = Invoke-Runner -Context $Context -Suite @($SuiteBeta) -ForceImport:$ForceImport
+    Assert-ExitCode -Result $result -Expected 0 -Message "passing run $Index exits 0"
+    return $result
+}
+
+# The first run in a checkout imports and leaves a stamp, a run with nothing changed skips the import, -ForceImport
+# imports anyway, and a checkout whose imported files are gone imports again.
+function Test-ImportStamp {
+    param($Context)
+
+    $first = Invoke-PassingRun -Context $Context -Index 0
+    Assert-Line $first.Stdout $ImportFirstLine 'a checkout without a stamp imports'
+    $stamped = Test-Path -LiteralPath (Get-ImportStampPath $Context) -PathType Leaf
+    Assert-That $stamped 'a successful import leaves a stamp'
+    $second = Invoke-PassingRun -Context $Context -Index 1
+    Assert-Line $second.Stdout $ImportSkippedLine 'a run with nothing changed skips the import'
+    Assert-Equal 1 (Get-ImportCallCount $Context) 'the skipped run starts no import'
+    $forced = Invoke-PassingRun -Context $Context -Index 2 -ForceImport
+    Assert-Line $forced.Stdout 'Godot import runs: -ForceImport.' '-ForceImport says why it imports'
+    Assert-Equal 2 (Get-ImportCallCount $Context) '-ForceImport imports despite a matching stamp'
+    # The fake import leaves the folder empty, so this removes one empty folder.
+    Remove-Item -LiteralPath (Join-Path $Context.Repo '.godot\imported') -Force
+    $wiped = Invoke-PassingRun -Context $Context -Index 3
+    Assert-Line $wiped.Stdout $ImportFirstLine 'a checkout whose imported files are gone imports again'
+    Assert-Equal 3 (Get-ImportCallCount $Context) 'the run after the wipe imports'
+}
+
+# Only a change the import reads imports again: a script's code does not, a new script does, the .uid sidecar that
+# import adds is not a change after it, and a changed resource imports.
+function Test-ImportInputs {
+    param($Context)
+
+    $resource = Join-Path $Context.Repo 'Data\Item.tres'
+    Write-FileText -Path $resource -Text '[gd_resource format=3]'
+    $null = Invoke-PassingRun -Context $Context -Index 0
+    Add-Content -LiteralPath (Join-Path $Context.Repo 'Tests\Beta\BetaTest.cs') -Value '// edited'
+    $edited = Invoke-PassingRun -Context $Context -Index 1
+    Assert-Line $edited.Stdout $ImportSkippedLine 'editing the code of a script skips the import'
+    Write-FileText -Path (Join-Path $Context.Repo 'Scripts\NewThing.cs') -Text 'internal sealed class NewThing { }'
+    Set-FakeImportPlan -Context $Context -Lines @('create Scripts\NewThing.cs.uid')
+    $added = Invoke-PassingRun -Context $Context -Index 2
+    Assert-Line $added.Stdout $ImportChangedLine 'a new script imports'
+    $sidecar = Test-Path -LiteralPath (Join-Path $Context.Repo 'Scripts\NewThing.cs.uid') -PathType Leaf
+    Assert-That $sidecar 'the fake import added the sidecar'
+    Set-FakeImportPlan -Context $Context
+    $afterSidecar = Invoke-PassingRun -Context $Context -Index 3
+    Assert-Line $afterSidecar.Stdout $ImportSkippedLine 'the sidecar the import added is not a change'
+    Write-FileText -Path $resource -Text '[gd_resource format=3 uid="uid://changed"]'
+    $changed = Invoke-PassingRun -Context $Context -Index 4
+    Assert-Line $changed.Stdout $ImportChangedLine 'a changed resource imports'
+    $message = 'imports ran for the first run, the new script and the changed resource'
+    Assert-Equal 3 (Get-ImportCallCount $Context) $message
+}
+
+# A failed import fails the run before any test and leaves no stamp, even under -ForceImport with a stamp that matched,
+# so the next run imports again.
+function Test-ImportFails {
+    param($Context)
+
+    $null = Invoke-PassingRun -Context $Context -Index 0
+    Set-FakeImportPlan -Context $Context -Lines @('exit 3')
+    $result = Invoke-Runner -Context $Context -Suite @($SuiteBeta) -ForceImport
+    Assert-ExitCode -Result $result -Expected 1 -Message 'a failed import fails the run'
+    $importError = 'RUNNER-ERROR: Godot project import failed with exit code 3: FAKE: import failed'
+    Assert-Contains $result.Stderr $importError 'the import failure names its exit code and the tail of its stderr'
+    Assert-Equal 1 @(Get-RunnerTestCalls -Context $Context).Count 'no test run after a failed import'
+    $stampGone = -not (Test-Path -LiteralPath (Get-ImportStampPath $Context))
+    Assert-That $stampGone 'a failed import leaves no stamp'
+    Set-FakeImportPlan -Context $Context
+    $retry = Invoke-PassingRun -Context $Context -Index 1
+    Assert-Line $retry.Stdout $ImportFirstLine 'the run after a failed import imports again'
 }
 
 function Write-DailyFixtures {
@@ -1301,7 +1450,8 @@ function Test-PatternLockstep {
 
 # Every check in run order. -Only must name one of them (letter case does not matter) and then runs alone.
 $AllChecks = @(
-    'CleanRun', 'BuildLeavesWorkerRunning', 'BuildFails', 'SkipDaily', 'SkipDailyResumes', 'StallResumes',
+    'CleanRun', 'BuildLeavesWorkerRunning', 'BuildFails', 'ImportStamp', 'ImportInputs', 'ImportFails',
+    'SkipDaily', 'SkipDailyResumes', 'StallResumes',
     'RepeatedStallFails',
     'CrashNoReport', 'CrashAfterEarlierReportResumes', 'RepeatedCrashFails', 'StallThenCrashFails',
     'CrashResumeNoProgressFails', 'InterruptionBudget', 'GdUnitExitCodes', 'ReportAggregation', 'GateAndSummary',
