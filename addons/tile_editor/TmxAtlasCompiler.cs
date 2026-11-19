@@ -14,12 +14,22 @@ namespace CardCleaner.Addons.TileEditor;
 /// </summary>
 public class TmxAtlasCompiler
 {
-    private const string CompiledAtlasDir = "res://Data/CompiledAtlas";
+    /// <summary>The committed atlas folder the game loads; the dock compiles into it.</summary>
+    public const string DefaultOutputDirectory = "res://Data/CompiledAtlas";
+
     private const string AtlasFileName = "terrain_atlas.png";
 
+    private readonly string _outputDirectory;
     private readonly TmxTsxLoader _sourceLoader = new();
     private readonly TmxAtlasPacker _atlasPacker = new();
-    private readonly TmxAtlasOutputWriter _outputWriter = new();
+    private readonly TmxAtlasOutputWriter _outputWriter;
+
+    /// <param name="outputDirectory">Folder the atlas, its mapping and the transition map are written to.</param>
+    public TmxAtlasCompiler(string outputDirectory = DefaultOutputDirectory)
+    {
+        _outputDirectory = outputDirectory;
+        _outputWriter = new TmxAtlasOutputWriter(outputDirectory);
+    }
 
     /// <summary>
     /// Compiles all tiles from TSX files in the specified directory into a single atlas.
@@ -123,7 +133,7 @@ public class TmxAtlasCompiler
         int sourceFileCount)
     {
         var atlasImage = TrimAtlas(composition, packResult.AtlasSize.Y);
-        var atlasPath = $"{CompiledAtlasDir}/{AtlasFileName}";
+        var atlasPath = $"{_outputDirectory}/{AtlasFileName}";
         var atlasResult = _outputWriter.SaveAtlasImage(atlasImage, atlasPath);
         if (!atlasResult.Success)
             return Failure(atlasResult.Message);
@@ -177,9 +187,9 @@ public class TmxAtlasCompiler
         return Math.Min(power, 16384);
     }
 
-    private static void EnsureOutputDirectory()
+    private void EnsureOutputDirectory()
     {
-        var outputDirectory = ProjectSettings.GlobalizePath(CompiledAtlasDir);
+        var outputDirectory = ProjectSettings.GlobalizePath(_outputDirectory);
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
     }

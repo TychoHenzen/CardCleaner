@@ -229,7 +229,7 @@ public partial class TileEditorDock : Control
 
     private void DoCompileTmx(string tiledDir)
     {
-        _toolCommands!.CompileTmx(tiledDir);
+        _toolCommands!.CompileTmx(tiledDir, CompiledAtlasDirectory);
     }
 
     private void OnInsertTsxPropsPressed()

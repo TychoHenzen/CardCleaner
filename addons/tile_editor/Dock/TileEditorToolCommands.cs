@@ -21,11 +21,11 @@ internal sealed class TileEditorToolCommands
     }
 
     /// <summary>
-    /// Compiles the atlas from the TMX/TSX files in a directory and reports the outcome.
+    /// Compiles the atlas from the TMX/TSX files in a directory into an output folder and reports the outcome.
     /// </summary>
-    internal void CompileTmx(string tiledDir)
+    internal void CompileTmx(string tiledDir, string outputDir)
     {
-        var compiler = new TmxAtlasCompiler();
+        var compiler = new TmxAtlasCompiler(outputDir);
         var (success, message) = compiler.CompileFromTmx(tiledDir);
 
         if (success)

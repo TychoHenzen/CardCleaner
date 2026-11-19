@@ -14,29 +14,25 @@ namespace CardCleaner.Tests.Addons.TileEditor;
 [RequireGodotRuntime]
 public class TileEditorWiringSmokeTest
 {
-    private static readonly string[] CompiledOutputRelativePaths =
+    // The committed atlas the game loads. The smoke compile goes to the fixture folder and must leave these
+    // untouched, write time included: Run-GdUnit.ps1 skips the Godot import while no file it reads changed, and a
+    // rewritten file with the same bytes still counts as changed.
+    private static readonly string[] CommittedAtlasPaths =
     {
-        "Data/CompiledAtlas/terrain_atlas.png",
-        "Data/CompiledAtlas/atlas_mapping.json",
-        "Data/CompiledAtlas/transition_map.json"
+        "res://Data/CompiledAtlas/terrain_atlas.png",
+        "res://Data/CompiledAtlas/atlas_mapping.json",
+        "res://Data/CompiledAtlas/transition_map.json"
     };
 
-    private readonly Dictionary<string, byte[]> _compiledOutputBackups = new();
-    private readonly HashSet<string> _missingCompiledOutputs = new();
+    private readonly Dictionary<string, DateTime> _committedAtlasWriteTimes = new();
     private TileEditorDock? _dock;
     private string _fixtureDirectory = string.Empty;
 
     [BeforeTest]
     public void BeforeTest()
     {
-        foreach (var relativePath in CompiledOutputRelativePaths)
-        {
-            var absolutePath = ProjectSettings.GlobalizePath($"res://{relativePath}");
-            if (File.Exists(absolutePath))
-                _compiledOutputBackups[relativePath] = File.ReadAllBytes(absolutePath);
-            else
-                _missingCompiledOutputs.Add(relativePath);
-        }
+        foreach (var path in CommittedAtlasPaths)
+            _committedAtlasWriteTimes[path] = File.GetLastWriteTimeUtc(ProjectSettings.GlobalizePath(path));
 
         _fixtureDirectory = $"user://tile-editor-smoke-{Guid.NewGuid():N}";
         Directory.CreateDirectory(ProjectSettings.GlobalizePath(_fixtureDirectory));
@@ -46,15 +42,6 @@ public class TileEditorWiringSmokeTest
     [AfterTest]
     public void AfterTest()
     {
-        foreach (var relativePath in CompiledOutputRelativePaths)
-        {
-            var absolutePath = ProjectSettings.GlobalizePath($"res://{relativePath}");
-            if (_compiledOutputBackups.TryGetValue(relativePath, out var contents))
-                File.WriteAllBytes(absolutePath, contents);
-            else if (_missingCompiledOutputs.Contains(relativePath) && File.Exists(absolutePath))
-                File.Delete(absolutePath);
-        }
-
         var fixturePath = ProjectSettings.GlobalizePath(_fixtureDirectory);
         if (Directory.Exists(fixturePath))
             Directory.Delete(fixturePath, recursive: true);
@@ -74,6 +61,7 @@ public class TileEditorWiringSmokeTest
         _dock = new TileEditorDock
         {
             TiledDirectory = _fixtureDirectory,
+            CompiledAtlasDirectory = $"{_fixtureDirectory}/compiled",
             SuppressDialogs = true,
             SkipInitialTileLoad = true
         };
@@ -99,9 +87,14 @@ public class TileEditorWiringSmokeTest
         var completed = FindDescendants<Label>(_dock)
             .Any(label => label.Text == "TMX compilation complete!");
         Assertions.AssertThat(completed).IsTrue();
-        var atlasPath = ProjectSettings.GlobalizePath(
-            "res://Data/CompiledAtlas/terrain_atlas.png");
-        Assertions.AssertThat(File.Exists(atlasPath)).IsTrue();
+        foreach (var fileName in new[] { "terrain_atlas.png", "atlas_mapping.json", "transition_map.json" })
+            Assertions.AssertThat(File.Exists(GetFixturePath($"compiled/{fileName}"))).IsTrue();
+        foreach (var path in CommittedAtlasPaths)
+        {
+            Assertions.AssertThat(File.GetLastWriteTimeUtc(ProjectSettings.GlobalizePath(path)))
+                .OverrideFailureMessage($"{path} was rewritten by the smoke compile")
+                .IsEqual(_committedAtlasWriteTimes[path]);
+        }
 
         insertButton.EmitSignal(Button.SignalName.Pressed);
         await WaitForFrames(1);
