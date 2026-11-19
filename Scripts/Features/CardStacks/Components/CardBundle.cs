@@ -122,11 +122,9 @@ public partial class CardBundle : RigidBody3D, IInteractable
     // Shape, look, outline and mass all follow the count.
     private void Rebuild()
     {
+        // Plain meshes nothing else holds: freed at once, so no old look waits outside the tree for the frame's end.
         foreach (var child in _look.GetChildren())
-        {
-            _look.RemoveChild(child);
-            child.QueueFree();
-        }
+            child.Free();
 
         var bounds = Kind == CardBundleKind.Deck ? BuildDeck() : BuildPile();
         _highlight.Mesh = new BoxMesh

@@ -9,14 +9,13 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 /// <summary>
 ///     Shows what a cardboard box holds where the packer put each item: a still copy of each booster pack and booster
 ///     box (<see cref="StockItemLook" />), turned to its pose, and each stack of cards as one block with a card back
-///     on top. Built from scratch on every change; nothing in it collides.
+///     on top. Built from scratch on every change; nothing in it collides. No node of it lives outside the tree: the
+///     old copies are freed at once and each scene's template only lasts one build.
 /// </summary>
 public partial class CartonView : Node3D
 {
     private const float Epsilon = 1e-4f;
 
-    // One still copy per scene, copied again for each item; the copies are freed with the view.
-    private readonly Dictionary<string, StockItemLook?> _looks = new();
     private StandardMaterial3D? _edgeMaterial;
     private StandardMaterial3D? _backMaterial;
 
@@ -36,18 +35,32 @@ public partial class CartonView : Node3D
     /// <summary>Replaces what the view shows with <paramref name="contents" />.</summary>
     public void Show(BoxContents contents)
     {
+        // The copies are plain meshes and labels that nothing else holds, so they go at once, not at the end of the
+        // frame: a box that changes several times in one frame never keeps old copies around outside the tree.
         foreach (var child in GetChildren())
-        {
-            RemoveChild(child);
-            child.QueueFree();
-        }
+            child.Free();
 
+        // One still copy per scene, copied again for each item of that scene and freed when this build is done.
+        var looks = new Dictionary<string, StockItemLook?>();
+        try
+        {
+            AddItems(contents, looks);
+        }
+        finally
+        {
+            foreach (var look in looks.Values)
+                look?.Discard();
+        }
+    }
+
+    private void AddItems(BoxContents contents, Dictionary<string, StockItemLook?> looks)
+    {
         var index = 0;
         while (index < contents.Count)
         {
             if (contents.Items[index] is StoredContainer container)
             {
-                AddContainer(container.ScenePath, contents.Placed[index]);
+                AddContainer(LookOf(container.ScenePath, looks), contents.Placed[index]);
                 index++;
                 continue;
             }
@@ -56,16 +69,6 @@ public partial class CartonView : Node3D
             AddCardStack(contents.Placed[index], contents.Placed[end - 1].Max.Y - contents.Placed[index].Min.Y);
             index = end;
         }
-    }
-
-    public override void _Notification(int what)
-    {
-        if (what != NotificationPredelete)
-            return;
-
-        foreach (var look in _looks.Values)
-            look?.Discard();
-        _looks.Clear();
     }
 
     // The end of the run of cards starting at start: each card lies straight on the one before it.
@@ -84,9 +87,9 @@ public partial class CartonView : Node3D
                                  && Mathf.Abs(above.Min.Z - below.Min.Z) < Epsilon
                                  && Mathf.Abs(above.Min.Y - below.Max.Y) < Epsilon;
 
-    private void AddContainer(string scenePath, PackedItem item)
+    private void AddContainer(StockItemLook? look, PackedItem item)
     {
-        if (LookOf(scenePath) is not { } look || look.Node.Duplicate() is not Node3D copy)
+        if (look?.Node.Duplicate() is not Node3D copy)
             return;
 
         // The copy's origin is the middle of its base, so it is lowered by half its height from the item's centre.
@@ -106,15 +109,15 @@ public partial class CartonView : Node3D
             _edgeMaterial ??= CardBlockLook.EdgeMaterial(), _backMaterial ??= CardBlockLook.BackMaterial());
     }
 
-    private StockItemLook? LookOf(string scenePath)
+    private static StockItemLook? LookOf(string scenePath, Dictionary<string, StockItemLook?> looks)
     {
-        if (_looks.TryGetValue(scenePath, out var look))
+        if (looks.TryGetValue(scenePath, out var look))
             return look;
 
         var body = ResourceLoader.Load<PackedScene>(scenePath)?.Instantiate<Node3D>();
         look = body == null ? null : StockItemLook.Capture(body);
         body?.Free();
-        _looks[scenePath] = look;
+        looks[scenePath] = look;
         return look;
     }
 }
