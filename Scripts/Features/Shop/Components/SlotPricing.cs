@@ -12,11 +12,11 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     Price tag beside one shelf slot. It prints the asking price of the stock in its slot, and a click opens the
-///     pricing screen for that stock. Every item asks its own price: a card its <see cref="CardController.ShopPrice" />,
-///     a booster or pack its <see cref="CardContainer.ShopPrice" />. The price lives with the stock, not the tag, so the
-///     tag saves nothing and a price follows its item to any shelf. The tag prints the price of the item a customer
-///     takes next (the top of a booster stack). The tag sits on the interaction layer and collides with nothing, so a
-///     ray hits it separately from the card in front of it.
+///     pricing screen for that stock. Every item asks its own price: a card its
+///     <see cref="CardController.ShopPrice" />, a booster or pack its <see cref="CardContainer.ShopPrice" />. The price
+///     lives with the stock, not the tag, so the tag saves nothing and a price follows its item to any shelf. The tag
+///     prints the price of the item a customer takes next (the top of a booster stack). The tag sits on the interaction
+///     layer and collides with nothing, so a ray hits it separately from the card in front of it.
 /// </summary>
 public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
 {
@@ -157,7 +157,9 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
             HighlightMesh.Visible = false;
     }
 
-    /// <summary>Repaints the printed price from the current stock. Blank when the slot holds nothing for sale.</summary>
+    /// <summary>
+    ///     Repaints the printed price from the current stock. Blank when the slot holds nothing for sale.
+    /// </summary>
     public void Refresh()
     {
         if (TagLabel != null)

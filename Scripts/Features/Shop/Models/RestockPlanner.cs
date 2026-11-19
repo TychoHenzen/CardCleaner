@@ -33,11 +33,7 @@ public static class RestockPlanner
 
     // ASSUMPTION: a partly emptied box is unpacked as soon as its rest fits (Risk Low); the threshold only keeps a
     // full box from being opened for a slot or two.
-    /// <summary>
-    ///     How many product-shelf slots must be free before a box holding <paramref name="products" /> items a product
-    ///     shelf takes is unpacked: the threshold, or fewer when the box holds fewer, so a box one shelf took part of
-    ///     is finished at the next shelf.
-    /// </summary>
+    /// <summary>Free product-shelf slots needed to unpack a box of <paramref name="products" /> items.</summary>
     public static int FreeSlotsToUnpack(int threshold, int products) => Math.Max(1, Math.Min(threshold, products));
 
     private static RestockStep? PlanMove(

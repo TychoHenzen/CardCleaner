@@ -7,11 +7,11 @@ namespace CardCleaner.Scripts.Features.Packs.Models;
 public static class ContainerHints
 {
     /// <summary>
-    ///     The right button opens or closes a cardboard box (<paramref name="lidOpen" /> says which it is now), empties a
-    ///     booster box into the hand and opens a booster pack; Q puts the container down. An open cardboard box also
-    ///     names the left button: with <paramref name="itemsInside" /> above zero it sets one item down on the floor, and
-    ///     an empty one goes in a trash can. With more than one booster pack <paramref name="held" />, the right button
-    ///     opens one of them and Q puts one down. A booster pack whose cards do not all fit in the hand
+    ///     The right button opens or closes a cardboard box (<paramref name="lidOpen" /> says which it is now), empties
+    ///     a booster box into the hand and opens a booster pack; Q puts the container down. An open cardboard box also
+    ///     names the left button: with <paramref name="itemsInside" /> above zero it sets one item down on the floor,
+    ///     and an empty one goes in a trash can. With more than one booster pack <paramref name="held" />, the right
+    ///     button opens one of them and Q puts one down. A booster pack whose cards do not all fit in the hand
     ///     (<paramref name="cardsFit" /> false) says so instead of offering to open it.
     /// </summary>
     public static IReadOnlyList<ControlHint> For(CardContainerKind kind, bool lidOpen, int itemsInside = 0,

@@ -25,9 +25,8 @@ public interface IContainerHolder
     bool Drop();
 
     /// <summary>
-    ///     Opens or closes the held cardboard box's flaps; a held booster box empties into the hand as its eight booster
-    ///     packs; the top held booster pack opens in front of the player and its cards go into the hand of cards. False
-    ///     when nothing is held or nothing happened.
+    ///     The right button: swings a held box's flaps, empties a held booster box into the hand, or opens the top
+    ///     booster pack into the hand of cards. False when nothing happened.
     /// </summary>
     bool UseHeld();
 

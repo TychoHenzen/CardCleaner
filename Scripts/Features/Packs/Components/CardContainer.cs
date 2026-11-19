@@ -229,11 +229,11 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     }
 
     /// <summary>
-    ///     Takes the last item this open cardboard box holds that <paramref name="slot" /> takes and locks it there. The
-    ///     box stays a box when it is empty. False, with nothing taken, when this is no cardboard box, its flaps are
-    ///     shut, nothing in it fits or the slot refuses it.
+    ///     Locks the last item this open cardboard box holds that <paramref name="slot" /> takes into it; false, with
+    ///     nothing taken, when the flaps are shut or nothing fits. An emptied box stays a box.
     /// </summary>
-    public bool TakeOneInto(DeckSlot slot) => IsLidOpen && !IsOpened && Storage is { } storage && storage.TakeInto(slot);
+    public bool TakeOneInto(DeckSlot slot) =>
+        IsLidOpen && !IsOpened && Storage is { } storage && storage.TakeInto(slot);
 
     // A wrapper taken out of the tree mid-opening (a load clears the scene's containers) lets its rising items fall.
     public override void _ExitTree()

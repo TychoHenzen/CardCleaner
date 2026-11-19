@@ -57,7 +57,9 @@ public static class CardBundleRules
         _ => Math.Clamp(Math.Min(room, count), 0, count)
     };
 
-    /// <summary>The click prompt of a bundle of <paramref name="count" /> whose click takes <paramref name="take" />.</summary>
+    /// <summary>
+    ///     The prompt of a bundle of <paramref name="count" /> whose click takes <paramref name="take" />.
+    /// </summary>
     public static string Prompt(CardBundleKind kind, int count, int take) => kind switch
     {
         CardBundleKind.Deck => $"Unstrap the deck ({Cards(count)})",

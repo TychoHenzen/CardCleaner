@@ -143,15 +143,10 @@ public partial class DeckSlot : Node3D
         IsFreeStock(body) && StockOf(body) is { } stock && CanTake(stock) && !_cards.Contains(body);
 
     /// <summary>
-    ///     Whether <paramref name="body" /> is stock a slot may take: it lives, it is in play (on a collision layer),
-    ///     and no slot holds it.
+    ///     Whether <paramref name="body" /> is stock a slot may take: alive, in play (anything carrying a body clears
+    ///     its collision layer) and in no slot. A card just taken off a seat is reported to that seat's trigger at
+    ///     once, so this rule is what keeps the slot from taking it back.
     /// </summary>
-    /// <remarks>
-    ///     Whatever carries a body (the player's hand, a held container, the restocker, a booster opening in hand)
-    ///     takes it out of play by clearing its collision layer. A reparent reports the body entering every trigger it
-    ///     still overlaps, at once, so a card taken off a seat is reported to that seat's slot while it still lies
-    ///     there; this rule is what keeps the slot from taking it back. Every slot entry and every lock goes through it.
-    /// </remarks>
     public static bool IsFreeStock(RigidBody3D body) =>
         IsInstanceValid(body) && body.CollisionLayer != 0 && !IsHeld(body);
 

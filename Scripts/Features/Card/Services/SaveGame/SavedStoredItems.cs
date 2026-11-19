@@ -70,8 +70,8 @@ internal static class SavedStoredItems
     }
 
     /// <summary>
-    ///     A price is a positive whole number. Anything else (absent, null, corrupt) leaves the item at its market price,
-    ///     as a card's corrupt price does, so one bad price never stops the item from coming back.
+    ///     A price is a positive whole number. Anything else (absent, null, corrupt) leaves the item at its market
+    ///     price, as a card's corrupt price does, so one bad price never stops the item from coming back.
     /// </summary>
     internal static int? ParsePrice(object? saved, string what)
     {

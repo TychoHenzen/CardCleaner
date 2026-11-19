@@ -23,7 +23,7 @@ public static class CardClusters
             throw new ArgumentOutOfRangeException(nameof(link), link, "The link distance must be positive");
 
         var parents = Enumerable.Range(0, points.Count).ToArray();
-        var cells = new Dictionary<(int, int, int), List<int>>();
+        var cells = new Dictionary<Vector3I, List<int>>();
         for (var i = 0; i < points.Count; i++)
         {
             var cell = CellOf(points[i], link);
@@ -49,15 +49,15 @@ public static class CardClusters
             .ToList();
     }
 
-    private static (int, int, int) CellOf(Vector3 point, float size) =>
-        ((int)MathF.Floor(point.X / size), (int)MathF.Floor(point.Y / size), (int)MathF.Floor(point.Z / size));
+    private static Vector3I CellOf(Vector3 point, float size) =>
+        new((int)MathF.Floor(point.X / size), (int)MathF.Floor(point.Y / size), (int)MathF.Floor(point.Z / size));
 
-    private static IEnumerable<(int, int, int)> Neighbours((int X, int Y, int Z) cell)
+    private static IEnumerable<Vector3I> Neighbours(Vector3I cell)
     {
         for (var x = -1; x <= 1; x++)
         for (var y = -1; y <= 1; y++)
         for (var z = -1; z <= 1; z++)
-            yield return (cell.X + x, cell.Y + y, cell.Z + z);
+            yield return cell + new Vector3I(x, y, z);
     }
 
     private static int Root(int[] parents, int i)

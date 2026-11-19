@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
@@ -37,11 +38,12 @@ public class RestockerCarryTest : RestockerTestBase
     public async Task CarriedBoxBelowTheThresholdGoesBackOnTheRackAndStaysThere()
     {
         HireAndOpen();
-        _restocker.BoxUnpackThreshold = ProductSlots;
         var origin = _rack.Slots.First();
         var box = Stock(BoxScene, origin);
         await Poll(() => IsCarried(box));
-        foreach (var slot in _product.Slots.Take(2))
+        // A delivered box holds eight booster boxes, so it is unpacked only while eight product slots are free.
+        var filled = ProductSlots - CardContainerLayout.ItemsPerContainer + 1;
+        foreach (var slot in _product.Slots.Take(filled))
             Stock(PackScene, slot);
 
         var back = await Poll(() => origin.Cards.Contains(box));
@@ -49,7 +51,7 @@ public class RestockerCarryTest : RestockerTestBase
 
         AssertBool(back).IsTrue();
         AssertBool(origin.Cards.Contains(box)).IsTrue();
-        AssertInt(PackCount()).IsEqual(2);
+        AssertInt(PackCount()).IsEqual(filled);
     }
 
     [TestCase]

@@ -5,18 +5,6 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Packs.Models;
 
 /// <summary>
-///     Where one item lies in a box: its shape, its pose, and the cell it fills, given by the cell's low corner and
-///     size in the box's inner frame (the floor at y 0, the back left corner at x 0 and z 0). A cell is the posed
-///     item plus <see cref="BoxPacker.Clearance" /> on each side across the floor, so neighbours never touch.
-/// </summary>
-public readonly record struct PackedItem(ItemShape Shape, ItemPose Pose, Vector3 Min, Vector3 Size)
-{
-    public Vector3 Max => Min + Size;
-
-    public Vector3 Center => Min + Size / 2f;
-}
-
-/// <summary>
 ///     Packs items into a box one at a time without overlap. An item goes where it rests lowest, then furthest back,
 ///     then furthest left, in the first of its poses (<see cref="ItemShapes.Poses" />) that fits anywhere: on the
 ///     floor, or on items below it whose tops carry at least <see cref="SupportShare" /> of its base. The spots tried
@@ -29,7 +17,9 @@ public sealed class BoxPacker
     /// <summary>Gap left on each side of an item across the floor, so items side by side never touch.</summary>
     public const float Clearance = 0.002f;
 
-    /// <summary>The share of an item's base that the tops below it must carry when it does not stand on the floor.</summary>
+    /// <summary>
+    ///     The share of an item's base that the tops below it must carry when it does not stand on the floor.
+    /// </summary>
     public const float SupportShare = 0.6f;
 
     private const float Epsilon = 1e-4f;

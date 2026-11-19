@@ -8,9 +8,8 @@ namespace CardCleaner.Scripts.Features.Card.Components;
 public interface IStockHand
 {
     /// <summary>
-    ///     What a click on <paramref name="slot" /> would put there: the held shut container, else one item out of the
-    ///     held open cardboard box (the last one in that the slot takes) or booster box, else the top card in hand. Null
-    ///     when the hand is empty, a drop is being aimed, or nothing in the hand fits the slot.
+    ///     What a click on <paramref name="slot" /> would put there (a held shut container, one item of a held open
+    ///     box, else the top card), or null when nothing in hand fits it or a drop is being aimed.
     /// </summary>
     StockOffer? OfferFor(DeckSlot slot);
 

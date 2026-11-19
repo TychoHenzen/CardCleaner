@@ -60,7 +60,7 @@ public partial class CardPileGatherer : Node
         Gather();
     }
 
-    /// <summary>One pass: loose cards join the piles they lie on, then form new piles, then touching piles merge.</summary>
+    /// <summary>One pass: loose cards join the piles they lie on, form new piles, then touching piles merge.</summary>
     public void Gather()
     {
         if (GetParent() is not { } scope)

@@ -3,8 +3,8 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Card.Components;
 
 /// <summary>
-///     The look of cards lying in one neat stack, drawn as a single block instead of one body per card: a cream block as
-///     tall as the stack, with a card back on its top face. Nothing in it collides.
+///     The look of cards lying in one neat stack, drawn as a single block instead of one body per card: a cream block
+///     as tall as the stack, with a card back on its top face. Nothing in it collides.
 /// </summary>
 public static class CardBlockLook
 {

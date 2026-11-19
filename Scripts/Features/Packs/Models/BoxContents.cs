@@ -38,13 +38,14 @@ public sealed record BoxContents
     ///     An empty box packed by <paramref name="packer" /> with <paramref name="items" /> put in, in order, and the
     ///     items that did not fit.
     /// </summary>
-    public static (BoxContents Contents, IReadOnlyList<StoredItem> Left) Packed(BoxPacker packer,
-        IEnumerable<StoredItem> items) => Empty(packer).Adding(items);
+    public static BoxPacking Packed(BoxPacker packer, IEnumerable<StoredItem> items) => Empty(packer).Adding(items);
 
     /// <summary>True when an item of <paramref name="shape" /> would fit now.</summary>
     public bool HasRoomFor(ItemShape shape) => _packer.Place(_placed, shape) != null;
 
-    /// <summary>These contents with <paramref name="item" /> put in where it fits, or null when there is no room.</summary>
+    /// <summary>
+    ///     These contents with <paramref name="item" /> put in where it fits, or null when there is no room.
+    /// </summary>
     public BoxContents? With(StoredItem item) =>
         _packer.Place(_placed, item.Shape) is { } spot
             ? new BoxContents(_packer, _items.Add(item), _placed.Add(spot))
@@ -64,12 +65,13 @@ public sealed record BoxContents
 
     /// <summary>
     ///     These contents without the item at <paramref name="index" />. Taking out any but the last packs the items
-    ///     after it again, in their order; one that no longer fits comes out as well and is listed in Spilled.
+    ///     after it again, in their order; one that no longer fits comes out as well and is listed in
+    ///     <see cref="BoxPacking.Left" />.
     /// </summary>
-    public (BoxContents Remaining, IReadOnlyList<StoredItem> Spilled) Without(int index) =>
+    public BoxPacking Without(int index) =>
         new BoxContents(_packer, _items.GetRange(0, index), _placed.GetRange(0, index)).Adding(_items.Skip(index + 1));
 
-    private (BoxContents Contents, IReadOnlyList<StoredItem> Left) Adding(IEnumerable<StoredItem> items)
+    private BoxPacking Adding(IEnumerable<StoredItem> items)
     {
         var contents = this;
         var left = new List<StoredItem>();
@@ -81,6 +83,6 @@ public sealed record BoxContents
                 left.Add(item);
         }
 
-        return (contents, left);
+        return new BoxPacking(contents, left);
     }
 }

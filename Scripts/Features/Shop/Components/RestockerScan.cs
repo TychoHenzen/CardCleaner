@@ -79,9 +79,9 @@ internal sealed class RestockerScan
     }
 
     /// <summary>
-    ///     How many items in <paramref name="container" /> a product shelf takes: 1 for a booster box or booster, and for
-    ///     a cardboard box the booster boxes and boosters it holds. Cards stay in a box, and an empty box waits for the
-    ///     player to throw it away, so a box is worth a trip only while this is above 0.
+    ///     How many items in <paramref name="container" /> a product shelf takes: 1 for a booster box or booster, and
+    ///     for a cardboard box the booster boxes and boosters it holds. Cards stay in a box, and an empty box waits for
+    ///     the player to throw it away, so a box is worth a trip only while this is above 0.
     /// </summary>
     public static int ProductsIn(CardContainer container) =>
         container.Storage is not { } storage

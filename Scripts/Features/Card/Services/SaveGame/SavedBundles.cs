@@ -55,7 +55,7 @@ internal static class SavedBundles
         return records.Select(ParseOne).ToList();
     }
 
-    /// <summary>Frees the scene's decks and piles, then adds one under <paramref name="world" /> per saved one.</summary>
+    /// <summary>Frees the scene's decks and piles, then adds each saved one under <paramref name="world" />.</summary>
     internal static void Restore(SceneTree tree, IEnumerable<Saved> saved, Node3D world)
     {
         foreach (var existing in BundlesIn(tree).ToList())

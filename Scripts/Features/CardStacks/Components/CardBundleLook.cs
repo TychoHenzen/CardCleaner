@@ -12,7 +12,7 @@ namespace CardCleaner.Scripts.Features.CardStacks.Components;
 /// </summary>
 internal static class CardBundleLook
 {
-    /// <summary>A pile shows at most this many cards on its surface; the mound under them stands for the rest.</summary>
+    /// <summary>A pile shows at most this many cards on its surface; the mound stands for the rest.</summary>
     public const int MostShownCards = 360;
 
     private const int DomeSegments = 12;
@@ -40,8 +40,9 @@ internal static class CardBundleLook
     }
 
     /// <summary>
-    ///     The points of a dome of <paramref name="radius" /> and <paramref name="height" /> standing on the origin (half
-    ///     an ellipsoid), for a convex collision shape: a few rings of <see cref="DomeSegments" /> points and the top.
+    ///     The points of a dome of <paramref name="radius" /> and <paramref name="height" /> standing on the origin
+    ///     (half an ellipsoid), for a convex collision shape: a few rings of <see cref="DomeSegments" /> points and
+    ///     the top.
     /// </summary>
     public static Vector3[] DomePoints(float radius, float height)
     {
@@ -62,9 +63,9 @@ internal static class CardBundleLook
     }
 
     /// <summary>
-    ///     A mound of <paramref name="radius" /> and <paramref name="height" /> standing on the origin, covered in up to
-    ///     <see cref="MostShownCards" /> of the <paramref name="count" /> cards. The same <paramref name="seed" /> lays
-    ///     the cards the same way.
+    ///     A mound of <paramref name="radius" /> and <paramref name="height" /> standing on the origin, covered in up
+    ///     to <see cref="MostShownCards" /> of the <paramref name="count" /> cards. The same <paramref name="seed" />
+    ///     lays the cards the same way.
     /// </summary>
     public static void AddPile(Node3D parent, float radius, float height, int count, int seed)
     {

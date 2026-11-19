@@ -13,8 +13,8 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 ///     While it stands free with its flaps open, a card, booster pack or booster box that lands on top of it goes in
 ///     where the packer finds room (<see cref="BoxContents" />); one that does not fit stays where it lies. Items come
 ///     out last in, first out: into a shelf slot (<see cref="TakeInto" />), onto the floor (<see cref="TakeOnto" />),
-///     or into every free slot of a shelf at once (<see cref="MoveInto" />). An emptied box stays a box until the player
-///     throws it away. The box shows what it holds once its flaps open (<see cref="CartonView" />).
+///     or into every free slot of a shelf at once (<see cref="MoveInto" />). An emptied box stays a box until the
+///     player throws it away. The box shows what it holds once its flaps open (<see cref="CartonView" />).
 /// </summary>
 public partial class CartonStorage : Node3D, IDependent
 {
@@ -42,7 +42,9 @@ public partial class CartonStorage : Node3D, IDependent
     /// <summary>How many items the box holds.</summary>
     public int Count => Shown.Count;
 
-    /// <summary>What the box holds, in the order the items went in. A fresh box lists its booster boxes unseeded.</summary>
+    /// <summary>
+    ///     What the box holds, in the order the items went in. A fresh box lists its booster boxes unseeded.
+    /// </summary>
     public IReadOnlyList<StoredItem> Items => Shown.Items;
 
     /// <summary>What a save stores: the items once any went in or out, or null for a fresh box.</summary>
@@ -88,7 +90,9 @@ public partial class CartonStorage : Node3D, IDependent
     /// <summary>How many items the box holds that <paramref name="accepts" /> takes.</summary>
     public int CountOf(System.Func<StoredItem, bool> accepts) => Items.Count(accepts);
 
-    /// <summary>The stock of the last item <paramref name="slot" /> would take now, or null when it takes none.</summary>
+    /// <summary>
+    ///     The stock of the last item <paramref name="slot" /> would take now, or null when it takes none.
+    /// </summary>
     public StockKind? NextFor(DeckSlot slot)
     {
         var index = Shown.LastIndexOf(item => slot.CanTake(ShelfPlacementRule.From(item)));
@@ -165,7 +169,9 @@ public partial class CartonStorage : Node3D, IDependent
         return true;
     }
 
-    /// <summary>Takes out the last item and sets it down loose at <paramref name="at" />. False when the box is empty.</summary>
+    /// <summary>
+    ///     Takes out the last item and sets it down loose at <paramref name="at" />. False when the box is empty.
+    /// </summary>
     public bool TakeOnto(Transform3D at)
     {
         if (Box is not { } box || Count == 0)
@@ -213,7 +219,8 @@ public partial class CartonStorage : Node3D, IDependent
         _contents = contents;
         for (var i = 0; i < spilled.Count; i++)
         {
-            var beside = box.GlobalTransform.Origin + box.GlobalBasis.X * SpillSide + Vector3.Up * (SpillStep * (i + 1));
+            var beside = box.GlobalTransform.Origin + box.GlobalBasis.X * SpillSide
+                         + Vector3.Up * (SpillStep * (i + 1));
             StoredItemBodies.Build(spilled[i], LooseParent(box), new Transform3D(Basis.Identity, beside), box);
         }
 

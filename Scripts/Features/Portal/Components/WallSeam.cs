@@ -115,7 +115,9 @@ public partial class WallSeam : Node3D
             TryCross();
     }
 
-    /// <summary>True when the doorway is always open, or the player is in the backoffice with a special card in hand.</summary>
+    /// <summary>
+    ///     True when the doorway is always open, or the player is in the backoffice with a special card in hand.
+    /// </summary>
     public bool IsTriggered()
     {
         if (AlwaysOpen)

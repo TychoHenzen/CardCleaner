@@ -92,7 +92,9 @@ public partial class ContainerHolder : Node3D, IContainerHolder, IDependent
     public bool IsHolding => HeldItems().Count > 0 || IsOpening;
     public bool IsOpening => OpeningInHand() != null;
 
-    /// <summary>How many containers the hand holds: one box, or up to <see cref="MostBoosters" /> booster packs.</summary>
+    /// <summary>
+    ///     How many containers the hand holds: one box, or up to <see cref="MostBoosters" /> booster packs.
+    /// </summary>
     public int HeldCount => HeldItems().Count;
 
     public void Inject(IServiceResolver services) => _services = services;
