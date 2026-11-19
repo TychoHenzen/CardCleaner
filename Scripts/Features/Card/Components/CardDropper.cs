@@ -1,4 +1,5 @@
-﻿using CardCleaner.Scripts.Core.Interfaces;
+﻿using System;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
@@ -19,16 +20,22 @@ public partial class CardDropper : Node3D, IDependent
     private IDropPreview _dropPreview = null!;
     private IInputService? _inputService;
     private IServiceResolver? _services;
+    private Func<bool>? _handBusy;
 
     public bool IsPreparingDrop { get; private set; }
 
     public void Inject(IServiceResolver services) => _services = services;
 
-    public void Initialize(ICardHolder cardHolder, IDropPreview dropPreview, Camera3D camera)
+    /// <param name="handBusy">
+    ///     True while something else occupies the hand (a held container), so X drops no card.
+    /// </param>
+    public void Initialize(ICardHolder cardHolder, IDropPreview dropPreview, Camera3D camera,
+        Func<bool>? handBusy = null)
     {
         _cardHolder = cardHolder;
         _dropPreview = dropPreview;
         _camera = camera;
+        _handBusy = handBusy;
         if (_services == null)
         {
             ILog.Error($"{Name} was not injected");
@@ -83,7 +90,7 @@ public partial class CardDropper : Node3D, IDependent
 
     public void DropSingleCard()
     {
-        if (!_cardHolder.HasCards) return;
+        if (!_cardHolder.HasCards || _handBusy?.Invoke() == true) return;
         _cardHolder.RemoveTopCard();
     }
 

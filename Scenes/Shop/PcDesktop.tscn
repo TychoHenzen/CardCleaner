@@ -80,7 +80,7 @@ columns = 5
 [node name="StockIcon" type="Button" parent="Icons"]
 custom_minimum_size = Vector2(176, 150)
 layout_mode = 2
-tooltip_text = "Order booster boxes, packs and boosters"
+tooltip_text = "Order cardboard boxes, booster boxes and booster packs"
 theme_override_font_sizes/font_size = 26
 text = "Stock"
 

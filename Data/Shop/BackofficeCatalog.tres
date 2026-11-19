@@ -9,21 +9,21 @@
 [sub_resource type="Resource" id="CardboardBoxItem"]
 script = ExtResource("OrderItemScript")
 Id = "cardboard_box"
-DisplayName = "Cardboard box (8 packs)"
+DisplayName = "Cardboard box (8 booster boxes)"
 Price = 60
 Scene = ExtResource("CardboardBox")
 
 [sub_resource type="Resource" id="PackItem"]
 script = ExtResource("OrderItemScript")
 Id = "pack"
-DisplayName = "Pack (8 boosters)"
+DisplayName = "Booster box (8 booster packs)"
 Price = 10
 Scene = ExtResource("Pack")
 
 [sub_resource type="Resource" id="BoosterItem"]
 script = ExtResource("OrderItemScript")
 Id = "booster"
-DisplayName = "Booster (8 cards)"
+DisplayName = "Booster pack (8 cards)"
 Price = 2
 Scene = ExtResource("Booster")
 

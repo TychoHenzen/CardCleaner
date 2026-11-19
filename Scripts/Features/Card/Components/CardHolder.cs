@@ -1,29 +1,66 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
 public partial class CardHolder : Node3D, ICardHolder, IDependent
 {
+    /// <summary>The most cards a hand holds; strapping them into a deck makes room.</summary>
+    public const int MostCards = 100;
+
+    /// <summary>The group every card holder joins, so a load can hand saved cards back to the player's hand.</summary>
+    public const string GroupName = "card_holders";
+
     [Signal]
     public delegate void CardAddedEventHandler(RigidBody3D card);
 
     [Signal]
     public delegate void CardRemovedEventHandler(RigidBody3D card);
 
-    public RigidBody3D[] HeldCards => _heldCards.ToArray();
+    public RigidBody3D[] HeldCards => Held().ToArray();
     private readonly List<RigidBody3D> _heldCards = new();
     private Node3D _handParent = null!;
     private IServiceResolver? _services;
 
+    // True while the cards lie in the drop layout (PositionCardsForDrop) rather than the fan.
+    private bool _laidForDrop;
+
     // Define defaults as constants to use in both field initializers and reversion
     private const uint DefaultCardCollisionLayer = 2;
     private const float DefaultHoldDistance = 2f;
+    private const float DefaultFanRadius = 0.8f;
+    private const float DefaultFanSpreadDegrees = 50f;
+    private const int DefaultFanFillCount = 10;
+    private const float DefaultFanDepthStep = 0.006f;
+    private static readonly Vector3 DefaultFanCenter = new(0.5f, -0.55f, -1.4f);
 
     [Export] public uint CardCollisionLayer = DefaultCardCollisionLayer;
+
+    /// <summary>How far in front of the hand anchor the cards lie while a drop is being aimed.</summary>
     [Export] public float HoldDistance = DefaultHoldDistance;
+
+    /// <summary>Where the middle of the held fan sits, in the hand anchor's frame.</summary>
+    [Export] public Vector3 FanCenter = DefaultFanCenter;
+
+    /// <summary>
+    ///     Distance from the point the fan turns about (straight below the middle card) to each card's centre.
+    /// </summary>
+    [Export] public float FanRadius = DefaultFanRadius;
+
+    /// <summary>
+    ///     Angle between the outermost cards once the hand holds <see cref="FanFillCount" /> cards or more.
+    /// </summary>
+    [Export] public float FanSpreadDegrees = DefaultFanSpreadDegrees;
+
+    /// <summary>How many cards it takes to fill the spread (see <see cref="HandFan" />).</summary>
+    [Export] public int FanFillCount = DefaultFanFillCount;
+
+    /// <summary>How much nearer the camera each next card lies, so the cards never sink into each other.</summary>
+    [Export] public float FanDepthStep = DefaultFanDepthStep;
 
     public override bool _PropertyCanRevert(StringName property)
     {
@@ -31,6 +68,11 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
         {
             nameof(CardCollisionLayer) => true,
             nameof(HoldDistance) => true,
+            nameof(FanCenter) => true,
+            nameof(FanRadius) => true,
+            nameof(FanSpreadDegrees) => true,
+            nameof(FanFillCount) => true,
+            nameof(FanDepthStep) => true,
             _ => base._PropertyCanRevert(property)
         };
     }
@@ -41,31 +83,47 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
         {
             nameof(CardCollisionLayer) => DefaultCardCollisionLayer,
             nameof(HoldDistance) => DefaultHoldDistance,
+            nameof(FanCenter) => DefaultFanCenter,
+            nameof(FanRadius) => DefaultFanRadius,
+            nameof(FanSpreadDegrees) => DefaultFanSpreadDegrees,
+            nameof(FanFillCount) => DefaultFanFillCount,
+            nameof(FanDepthStep) => DefaultFanDepthStep,
             _ => base._PropertyGetRevert(property)
         };
     }
 
-    public int HeldCount => _heldCards.Count;
-    public bool HasCards => _heldCards.Count > 0;
+    public int HeldCount => Held().Count;
+    public bool HasCards => Held().Count > 0;
+
+    /// <summary>How many more cards the hand takes before it holds <see cref="MostCards" />.</summary>
+    public int Room => Math.Max(0, MostCards - Held().Count);
 
     /// <summary>The card a single drop or a stock click takes first, or null when the hand is empty.</summary>
-    public RigidBody3D? TopCard => _heldCards.Count > 0 ? _heldCards[^1] : null;
+    public RigidBody3D? TopCard => Held().Count > 0 ? _heldCards[^1] : null;
 
     public void Inject(IServiceResolver services) => _services = services;
+
+    public override void _EnterTree() => AddToGroup(GroupName);
 
     public void SetReferences(Node3D handAnchor)
     {
         _handParent = handAnchor;
     }
 
-    public void AddCard(RigidBody3D card)
+    /// <summary>
+    ///     Takes <paramref name="card" /> into the hand. False, with the card left where it is, when the hand already
+    ///     holds it or holds <see cref="MostCards" />.
+    /// </summary>
+    public bool AddCard(RigidBody3D card)
     {
-        if (_heldCards.Contains(card)) return;
+        if (Held().Contains(card) || Room == 0) return false;
 
-        // Disable physics and collision
+        // A held card is out of play: frozen, its shape off, and on no collision layer, so no slot trigger it still
+        // overlaps takes it back (DeckSlot.IsFreeStock).
         card.Freeze = true;
-        var shape = card.GetNode<CollisionShape3D>("CardCollision");
+        var shape = card.GetNodeOrNull<CollisionShape3D>("CardCollision");
         if (shape != null) shape.Disabled = true;
+        card.CollisionLayer = 0;
 
         // Reparent to hand
         card.Reparent(_handParent);
@@ -76,6 +134,7 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
 
         PositionCards();
         EmitSignal(SignalName.CardAdded, card);
+        return true;
     }
 
     public void RemoveCard(RigidBody3D card)
@@ -94,7 +153,11 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
         card.Reparent(_services.Get<ICardSpawner>().GetNode());
         CallDeferred(MethodName.EnablePhysicsDeferred, card);
 
-        PositionCardsForDrop();
+        // The cards left keep the layout they had: the fan after a single drop (X), the aimed stack during a drop.
+        if (_laidForDrop)
+            PositionCardsForDrop();
+        else
+            PositionCards();
         EmitSignal(SignalName.CardRemoved, card);
     }
 
@@ -123,37 +186,35 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
 
     public void RemoveTopCard()
     {
-        if (_heldCards.Count == 0) return;
-        var topCard = _heldCards[^1];
-        RemoveCard(topCard);
+        if (TopCard is { } topCard)
+            RemoveCard(topCard);
     }
 
     public void RemoveAllCards()
     {
-        while (_heldCards.Count > 0) RemoveCard(_heldCards[^1]);
+        while (Held().Count > 0) RemoveCard(_heldCards[^1]);
     }
 
+    /// <summary>Lays the held cards out as a fan in front of the hand anchor (see <see cref="FanPose" />).</summary>
     public void PositionCards()
     {
+        _laidForDrop = false;
+        Held();
         for (var i = 0; i < _heldCards.Count; i++)
-        {
-            var card = _heldCards[i];
-            var designer = card.GetNode<CardDesigner>("Designer");
-            var thickness = designer.Thickness;
-            var indexOffset = i * thickness;
-
-            var rotation = Basis.Identity.Rotated(Vector3.Right, Mathf.DegToRad(90));
-            var localPos = new Vector3(
-                1 - indexOffset * 10,
-                0,
-                -HoldDistance + indexOffset
-            );
-            card.Transform = new Transform3D(rotation, localPos);
-        }
+            _heldCards[i].Transform = FanPose(i, _heldCards.Count);
     }
+
+    /// <summary>
+    ///     The pose of the card at <paramref name="index" /> (0 is the leftmost) in a hand of <paramref name="count" />
+    ///     cards, in the hand anchor's frame: the <see cref="CardFan" /> this holder's exports describe.
+    /// </summary>
+    public Transform3D FanPose(int index, int count) =>
+        new CardFan(FanCenter, FanRadius, FanSpreadDegrees, FanFillCount, FanDepthStep).Pose(index, count);
 
     public void PositionCardsForDrop()
     {
+        _laidForDrop = true;
+
         // Drop-prep: face camera yaw, hold horizontally, stacked up
         var camTransform = _handParent.GlobalTransform;
         var forwardCam = -camTransform.Basis.Z;
@@ -163,6 +224,7 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
         var downOffset = forwardCam * HoldDistance;
         var upAxis = Vector3.Up;
 
+        Held();
         for (var i = 0; i < _heldCards.Count; i++)
         {
             var card = _heldCards[i];
@@ -173,10 +235,18 @@ public partial class CardHolder : Node3D, ICardHolder, IDependent
         }
     }
 
+    // What the hand still holds. A card that was freed or taken off the hand anchor without the hand letting go (a
+    // load removes the scene's cards) is dropped here, so Room counts only the cards really in the hand.
+    private List<RigidBody3D> Held()
+    {
+        _heldCards.RemoveAll(card => !IsInstanceValid(card) || card.GetParent() != _handParent);
+        return _heldCards;
+    }
+
     private void EnablePhysics(RigidBody3D card)
     {
         card.Freeze = false;
-        var shape = card.GetNode<CollisionShape3D>("CardCollision");
+        var shape = card.GetNodeOrNull<CollisionShape3D>("CardCollision");
         if (shape != null) shape.Disabled = false;
         card.CollisionLayer = CardCollisionLayer;
     }

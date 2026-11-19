@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" uid="uid://t6rldk1b7o4e" path="res://Scripts/Features/Packs/Components/CardContainer.cs" id="CardContainer"]
 [ext_resource type="Script" uid="uid://6o6juperspfh" path="res://Scripts/Features/Packs/Components/OpeningPart.cs" id="OpeningPart"]
+[ext_resource type="Script" uid="uid://bisff2d6j6us2" path="res://Scripts/Features/Packs/Components/CartonStorage.cs" id="CartonStorage"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Pack.tscn" id="Pack"]
 [ext_resource type="Material" path="res://Data/Ui/AimHighlightMaterial.tres" id="AimHighlight"]
 [ext_resource type="ArrayMesh" path="res://Data/Packs/Meshes/CartonBody.tres" id="BodyMesh"]
@@ -26,6 +27,9 @@ HighlightMesh = NodePath("Highlight")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 shape = SubResource("Shape")
+
+[node name="Storage" type="Node3D" parent="."]
+script = ExtResource("CartonStorage")
 
 [node name="Visual" type="Node3D" parent="."]
 

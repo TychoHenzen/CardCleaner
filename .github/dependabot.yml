@@ -9,3 +9,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # One pull request for every action bump of the week. The three
+    # github/codeql-action steps must share one version, so a separate
+    # pull request per step can never pass Analyze C#.
+    groups:
+      github-actions:
+        patterns:
+          - "*"

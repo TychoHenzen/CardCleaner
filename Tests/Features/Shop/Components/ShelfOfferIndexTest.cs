@@ -59,14 +59,11 @@ public class ShelfOfferIndexTest
     }
 
     [TestCase]
-    public async Task The_price_book_sets_the_asking_price()
+    public async Task The_price_set_on_the_stock_is_the_asking_price()
     {
-        var book = AddNode(new ShopPriceBook());
-        TestServices.Container.RegisterSingleton<IPriceBook>(book);
-        TestServices.ExecutePendingCallbacks();
         var slot = _shelf.Slots.First();
         await Stock(slot);
-        book.Set(CardContainerKind.Booster, 6);
+        ((CardContainer)slot.Cards[^1]).ShopPrice = 6;
 
         var offer = _index.Collect().Single();
 

@@ -11,7 +11,7 @@ using CardCleaner.Tests.TestUtilities;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// End to end in the shop scene: the backoffice wall seam stays hidden and silent until the player
+/// End to end in the shop scene: the backoffice wall seam stays hidden until the player
 /// carries a special card into the backoffice, opens as the player comes close, and moves the player to the
 /// workshop entry with the same facing when the player steps through.
 /// </summary>
@@ -37,7 +37,7 @@ public class ShopSeamSceneTest
     }
 
     [TestCase]
-    public async Task WithoutASpecialCardTheSeamIsHiddenAndSilent()
+    public async Task WithoutASpecialCardTheSeamIsHidden()
     {
         await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
         await _rig.Hold(new CardSignature());
@@ -45,18 +45,16 @@ public class ShopSeamSceneTest
         AssertThat(_rig.Seam.Phase).IsEqual(SeamPhase.Hidden);
         AssertBool(_rig.Seam.Glow!.Visible).IsFalse();
         AssertBool(_rig.Seam.Door!.Visible).IsFalse();
-        AssertBool(_rig.Seam.HumRequested).IsFalse();
     }
 
     [TestCase]
-    public async Task SpecialCardInTheBackofficeShowsAGlowingSeamThatHums()
+    public async Task SpecialCardInTheBackofficeShowsAGlowingSeam()
     {
         await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
         await _rig.Hold(ShopSeamRig.Special());
 
         AssertThat(_rig.Seam.Phase).IsEqual(SeamPhase.Glowing);
         AssertBool(_rig.Seam.Glow!.Visible).IsTrue();
-        AssertBool(_rig.Seam.HumRequested).IsTrue();
         AssertBool(_rig.Seam.Door!.Visible).IsFalse();
     }
 
@@ -67,7 +65,6 @@ public class ShopSeamSceneTest
         await _rig.Hold(ShopSeamRig.Special());
 
         AssertThat(_rig.Seam.Phase).IsEqual(SeamPhase.Hidden);
-        AssertBool(_rig.Seam.HumRequested).IsFalse();
     }
 
     [TestCase]
@@ -98,10 +95,11 @@ public class ShopSeamSceneTest
     }
 
     [TestCase]
-    public void HumHasAGeneratedLoopingStream()
+    public void TheSeamMakesNoSound()
     {
-        AssertThat(_rig.Seam.Hum!.Stream).IsNotNull();
-        AssertBool(_rig.Seam.Hum.Stream!.GetLength() > 0).IsTrue();
+        // The seam used to hum while it glowed; the player asked for it to be silent.
+        var players = _rig.Seam.FindChildren("*", nameof(AudioStreamPlayer3D), true, false);
+        AssertThat(players.Count).IsEqual(0);
     }
 
     [TestCase]

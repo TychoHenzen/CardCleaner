@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -149,6 +150,8 @@ public class FurnitureCameraAimTest
         var box = _world.GetChildren().OfType<FurnitureBox>().Single(candidate => !candidate.IsQueuedForDeletion());
         AssertThat(box.Item!.Id).IsEqual("shelf_unit");
         AssertBool(box.GlobalPosition.X == 8f && box.GlobalPosition.Z == 6f).IsTrue();
+        // Packing takes the piece out of the tree and queues it; let it go before the test returns.
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]

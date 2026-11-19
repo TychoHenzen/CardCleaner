@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
@@ -71,8 +72,7 @@ public class ShopCustomerSceneTest
     public async Task CustomerRefusesAnOverpricedItem()
     {
         var slot = _rig.StockBooster();
-        _rig.Shop.GetNode<ShopPriceBook>("Services/PriceBook")
-            .Set(CardContainerKind.Booster, ProductMarketPrices.BoosterPrice * 2);
+        ((CardContainer)slot.Cards[^1]).ShopPrice = ProductMarketPrices.BoosterPrice * 2;
         var balanceBefore = _rig.Money.Balance;
 
         var customer = _rig.Spawner.SpawnNow()!;

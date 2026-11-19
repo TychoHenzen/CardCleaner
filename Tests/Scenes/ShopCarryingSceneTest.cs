@@ -16,18 +16,19 @@ using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Scripts.Core.Randomness;
+using CardCleaner.Tests.Features.Packs.Components;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using NSubstitute;
 using CardCleaner.Tests.TestUtilities;
-using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 using System;
 
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
 /// End to end in the shop scene: the player's interaction ray picks up an ordered box with a left click, a right
-/// press drops it in front of the camera, Q opens it in hand, and a held box and a card in hand block each other.
+/// press opens and closes it in hand, Q puts it down in front of the camera, and a held box and a card in hand block
+/// each other. A booster pack is the exception: it is picked up with cards in hand and opens into them.
 /// The input service is replaced so the scene's own registered callbacks are captured and invoked directly; the
 /// interaction ray itself runs for real because the camera is aimed at the box.
 /// </summary>
@@ -98,7 +99,7 @@ public class ShopCarryingSceneTest
         input.When(x => x.RegisterAction(Arg.Any<object>(), "card_drop_prepare", MouseButton.Right,
                 Arg.Any<Action<bool>>()))
             .Do(ci => _rightPress = ci.Arg<Action<bool>>());
-        input.When(x => x.RegisterAction(Arg.Any<object>(), "container_open", Key.Q, Arg.Any<Action>()))
+        input.When(x => x.RegisterAction(Arg.Any<object>(), "container_put_down", Key.Q, Arg.Any<Action>()))
             .Do(ci => _qPress = ci.Arg<Action>());
     }
 
@@ -128,7 +129,7 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    public async Task RightPress_DropsBox_InFrontOfCamera()
+    public async Task Q_PutsTheBoxDown_InFrontOfCamera()
     {
         var box = OrderBox();
         await PhysicsFrames(SettleFrames);
@@ -138,7 +139,7 @@ public class ShopCarryingSceneTest
         var camera = _interaction.Camera!;
         var expected = camera.GlobalPosition + (-camera.GlobalBasis.Z * _holder.DropDistance);
 
-        _rightPress!.Invoke(true);
+        _qPress!.Invoke();
 
         AssertBool(_holder.IsHolding).IsFalse();
         AssertBool(box.GetParent() == _shop.GetNode("World/Cards")).IsTrue();
@@ -148,7 +149,7 @@ public class ShopCarryingSceneTest
     }
 
     [TestCase]
-    public async Task Q_OpensHeldBox_Spawns8Packs()
+    public async Task RightPress_OpensTheHeldBoxInHandAndSpillsNothing()
     {
         var box = OrderBox();
         await PhysicsFrames(SettleFrames);
@@ -156,17 +157,18 @@ public class ShopCarryingSceneTest
         await PhysicsFrames(AimFrames);
         _leftClick!.Invoke(true);
 
-        _qPress!.Invoke();
+        _rightPress!.Invoke(true);
+        _rightPress.Invoke(false);
+        await PhysicsFrames(AimFrames);
 
-        AssertBool(_holder.IsHolding).IsFalse();
-        AssertBool(box.IsOpened).IsTrue();
-        await UntilOpened(box);
-        var packs = Containers(CardContainerKind.Pack);
-        AssertThat(packs.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
+        AssertThat(_holder.Held).IsSame(box);
+        AssertBool(box.IsLidOpen).IsTrue();
+        AssertBool(box.IsOpened).IsFalse();
+        AssertThat(Containers(CardContainerKind.Pack).Length).IsEqual(0);
     }
 
     [TestCase]
-    public async Task CardsHeld_BlocksContainerPickup()
+    public async Task CardsHeld_BlocksBoxPickup()
     {
         var box = OrderBox();
         await PhysicsFrames(SettleFrames);
@@ -179,6 +181,33 @@ public class ShopCarryingSceneTest
         AssertBool(_holder.IsHolding).IsFalse();
         AssertBool(box.GetParent() == _interaction.Camera).IsFalse();
         AssertBool(_cardHolder.HasCards).IsTrue();
+    }
+
+    // The player's whole path for a booster pack: picked up with a card already in hand, torn open with the right
+    // button, and its eight real cards join the hand after the card that was there.
+    [TestCase]
+    public async Task ABoosterPickedUpWithACardInHandOpensIntoTheHand()
+    {
+        var booster = Order("booster");
+        await PhysicsFrames(SettleFrames);
+        Aim(booster);
+        await PhysicsFrames(AimFrames);
+        _cardHolder.AddCard(_card);
+
+        _leftClick!.Invoke(true);
+        AssertThat(_holder.Held).IsSame(booster);
+
+        _rightPress!.Invoke(true);
+        _rightPress.Invoke(false);
+        AssertBool(_holder.IsOpening).IsTrue();
+        await ContainerOpeningWait.Until(() => !_holder.IsOpening, "the booster opening in the hand");
+
+        var hand = _cardHolder.HeldCards;
+        AssertThat(hand.Length).IsEqual(9);
+        AssertBool(hand[0] == _card).IsTrue();
+        AssertThat(hand.Skip(1).OfType<CardController>().Count()).IsEqual(8);
+        AssertBool(GodotObject.IsInstanceValid(booster)).IsFalse();
+        AssertBool(_holder.IsHolding).IsFalse();
     }
 
     [TestCase]
@@ -195,8 +224,8 @@ public class ShopCarryingSceneTest
         _card.Interact();
         AssertBool(_cardHolder.HasCards).IsFalse();
 
-        // Once the box is dropped, the same card click is accepted, which proves the click is wired.
-        _rightPress!.Invoke(true);
+        // Once the box is put down, the same card click is accepted, which proves the click is wired.
+        _qPress!.Invoke();
         _card.Interact();
         AssertBool(_cardHolder.HasCards).IsTrue();
     }
@@ -209,7 +238,7 @@ public class ShopCarryingSceneTest
         Aim(box);
         await PhysicsFrames(AimFrames);
         _leftClick!.Invoke(true);
-        _rightPress!.Invoke(true);
+        _qPress!.Invoke();
         AssertBool(_holder.IsHolding).IsFalse();
 
         await PhysicsFrames(SettleFrames);
@@ -226,13 +255,17 @@ public class ShopCarryingSceneTest
     // interaction ray from the camera reaches the box the way a player's aim does.
     private void Aim(CardContainer box)
     {
+        // Into the middle of the container: a box stands 0.6 m tall, a booster pack lies 0.045 m thick.
+        var height = box.Kind == CardContainerKind.Booster ? 0.02f : 0.2f;
         _player.GlobalPosition = box.GlobalPosition + new Vector3(0f, PlayerStandHeight, StandingDistance);
-        _interaction.Camera!.LookAt(box.GlobalPosition + new Vector3(0f, 0.2f, 0f));
+        _interaction.Camera!.LookAt(box.GlobalPosition + new Vector3(0f, height, 0f));
     }
 
-    private CardContainer OrderBox()
+    private CardContainer OrderBox() => Order("cardboard_box");
+
+    private CardContainer Order(string id)
     {
-        var item = Catalog().Items.Single(i => i.Id == "cardboard_box");
+        var item = Catalog().Items.Single(i => i.Id == id);
         _money.Add(item.Price);
         var result = _ordering.Order(item);
         AssertBool(result.Succeeded).IsTrue();

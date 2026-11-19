@@ -1,13 +1,15 @@
-﻿using CardCleaner.Scripts.Core.Interfaces;
+﻿using System;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Utilities;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Player.Controllers;
 
 /// <summary>
-///     Finds the interactable on the camera's centre ray, highlights it, and calls its Interact on a left click.
-///     The target is judged again on every scan, so one that goes out of range or stops accepting interaction is
-///     dropped at once: the prompt under the crosshair never offers a click that would do nothing.
+///     Finds the interactable on the camera's centre ray, highlights it, and calls its Interact on a left click; a
+///     left click with nothing to use raises <see cref="ClickedNothing" /> instead. The target is judged again on
+///     every scan, so one that goes out of range or stops accepting interaction is dropped at once: the prompt under
+///     the crosshair never offers a click that would do nothing.
 /// </summary>
 public partial class InteractionSystem : Node3D, IDependent
 {
@@ -30,6 +32,9 @@ public partial class InteractionSystem : Node3D, IDependent
     [Export] public uint InteractableCollisionMask { get; set; } = DefaultInteractableCollisionMask;
 
     private IInteractable? _target;
+
+    /// <summary>Raised on a left click while no interactable is aimed at, for what the held item does then.</summary>
+    public event Action? ClickedNothing;
 
     /// <summary>
     ///     The interactable a click would use now, or null. A target freed since the last scan reads as null at once,
@@ -156,8 +161,13 @@ public partial class InteractionSystem : Node3D, IDependent
 
     private void OnInteractPressed(bool pressed)
     {
+        if (!pressed)
+            return;
+
         // Judged again at the click: the target can change between scans.
-        if (pressed && Target is { } target && IsUsable(target))
+        if (Target is { } target && IsUsable(target))
             target.Interact();
+        else
+            ClickedNothing?.Invoke();
     }
 }

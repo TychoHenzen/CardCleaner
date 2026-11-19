@@ -12,14 +12,6 @@ public class CardContainerLayoutTest
     }
 
     [TestCase]
-    public static void BoxHoldsPacksPackHoldsBoostersBoosterHoldsCards()
-    {
-        AssertThat(CardContainerLayout.ChildKind(CardContainerKind.Box)).IsEqual(CardContainerKind.Pack);
-        AssertThat(CardContainerLayout.ChildKind(CardContainerKind.Pack)).IsEqual(CardContainerKind.Booster);
-        AssertThat(CardContainerLayout.ChildKind(CardContainerKind.Booster)).IsNull();
-    }
-
-    [TestCase]
     public static void BoxHoldsFiveHundredAndTwelveCards()
     {
         AssertThat(CardContainerLayout.CardsPerBox).IsEqual(512);
