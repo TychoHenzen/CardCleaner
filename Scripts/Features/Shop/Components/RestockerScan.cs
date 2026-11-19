@@ -9,8 +9,8 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     Gathers what the restocker can carry and where it can go: unopened containers on a storage rack or lying
-///     loose near a shelf, and the empty slots of the sales shelves. Containers the player holds or the restocker
-///     already carries are not sources.
+///     loose near a shelf, and the slots of the sales shelves with room (empty ones and part-filled booster stacks).
+///     Containers the player holds or the restocker already carries are not sources.
 /// </summary>
 internal sealed class RestockerScan
 {
@@ -88,11 +88,12 @@ internal sealed class RestockerScan
             ? 1
             : storage.CountOf(item => ShelfPlacementRule.From(item) is StockKind.Pack or StockKind.Booster);
 
+    // Every sales slot with room: an empty one, or a booster stack below its limit, which the restocker tops up.
     private static void AddSlots(RestockerScanResult result, IReadOnlyList<CardShelf> sales)
     {
         foreach (var shelf in sales)
         {
-            foreach (var slot in shelf.Slots.Where(s => !s.HasCards))
+            foreach (var slot in shelf.Slots.Where(s => s.HasRoom))
                 result.AddSlot(slot, shelf);
         }
     }

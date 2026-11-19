@@ -133,7 +133,10 @@ public partial class DeckSlot : Node3D
     ///     True while the slot can take one more body: it is empty, or holds fewer of its stock than that stock's
     ///     limit (<see cref="SeatsFor" />).
     /// </summary>
-    public bool HasRoom => _cards.Count == 0 ? Capacity > 0 : StockOf(_cards[0]) is { } held && HasRoomFor(held);
+    public bool HasRoom => _cards.Count == 0 ? Capacity > 0 : Holds is { } held && HasRoomFor(held);
+
+    /// <summary>The stock this slot holds, or null while it is empty. A slot holds one kind at a time.</summary>
+    public StockKind? Holds => _cards.Count == 0 ? null : StockOf(_cards[0]);
 
     /// <summary>
     /// Whether <see cref="TryLock" /> would lock <paramref name="body" /> now: free stock (<see cref="IsFreeStock" />)

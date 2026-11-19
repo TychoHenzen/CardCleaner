@@ -8,7 +8,8 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
 ///     The restocker in the real shop scene: a hired restocker with the shop open carries a rack pack to the product
-///     shelf, unpacks a box there once enough slots are free (finishing a partly emptied box at the next shelf), and
+///     shelf, tops up a part-filled booster stack, unpacks a box there once enough slots are free (finishing a partly
+///     emptied box at the next shelf), and
 ///     does nothing when it is not hired, the shop is closed, the tree is paused or there is nothing to move.
 /// </summary>
 [TestSuite]
@@ -26,6 +27,25 @@ public class RestockerTest : RestockerTestBase
         AssertBool(moved).IsTrue();
         AssertBool(_rack.Slots.First().HasCards).IsFalse();
         AssertBool(_restocker.Visible).IsTrue();
+    }
+
+    // Customers take boosters off a stack one at a time; the restocker tops a part-filled stack up from the rack even
+    // when no product slot is empty.
+    [TestCase]
+    public async Task HiredRestockerTopsUpAPartFilledBoosterStack()
+    {
+        HireAndOpen();
+        var stack = _product.Slots.First();
+        foreach (var slot in _product.Slots.Skip(1))
+            Stock(PackScene, slot);
+        var shelved = Stock(BoosterScene, stack);
+        var booster = Stock(BoosterScene, _rack.Slots.First());
+
+        var toppedUp = await Poll(() => stack.Cards.Contains(booster));
+
+        AssertBool(toppedUp).IsTrue();
+        AssertInt(stack.Cards.Count).IsEqual(2);
+        AssertBool(stack.Cards.Contains(shelved)).IsTrue();
     }
 
     [TestCase]

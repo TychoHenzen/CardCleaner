@@ -25,6 +25,7 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 public abstract class RestockerTestBase
 {
     private protected const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
+    private protected const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
     private protected const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private protected const int IdleFrames = 120;
     private protected const int LongIdleFrames = 600;

@@ -8,13 +8,14 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
 ///     What the restocker sees: racked and loose containers are sources, held, opened and carried ones are not, and
-///     only empty slots of sales shelves are targets.
+///     the slots of sales shelves with room (empty, or a booster stack below its limit) are targets.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class RestockerScanTest
 {
     private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
+    private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
     private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const string RackScene = "res://Scenes/Shop/Items/StorageRack.tscn";
     private const string ProductShelfScene = "res://Scenes/Shop/Items/ProductShelf.tscn";
@@ -86,6 +87,24 @@ public class RestockerScanTest
         AssertInt(result.Slots.Count).IsEqual(_product.SlotCount - 1);
         AssertBool(result.Slots.All(s => s.Shelf == ShelfKind.ProductShelf)).IsTrue();
         AssertBool(result.Slots.Any(s => s.ShelfId < 0)).IsFalse();
+    }
+
+    // A booster stack below its limit still takes boosters, so it is a target; a full stack is not.
+    [TestCase]
+    public void APartFilledBoosterStackIsATargetAndAFullOneIsNot()
+    {
+        var slots = _product.Slots.ToList();
+        var part = slots[0];
+        AssertBool(part.TryLock(Container(BoosterScene, new Vector3(30f, 1f, 0f)))).IsTrue();
+        for (var i = 0; i < ShelfPlacementRule.BoostersPerProductSlot; i++)
+            AssertBool(slots[1].TryLock(Container(BoosterScene, new Vector3(30f, 1f, 0f)))).IsTrue();
+
+        var result = _scan.Gather(Vector3.Zero);
+
+        AssertInt(result.Slots.Count).IsEqual(_product.SlotCount - 1);
+        var stack = result.Slots.Single(s => !s.IsEmpty);
+        AssertThat(stack.Holds).IsEqual(StockKind.Booster);
+        AssertThat(result.SlotNode(stack.Id)).IsSame(part);
     }
 
     [TestCase]

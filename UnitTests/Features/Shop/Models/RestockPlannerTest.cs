@@ -128,6 +128,40 @@ public class RestockPlannerTest
         AssertThat(step).IsEqual(new RestockStep(RestockStepKind.UnpackBox, 7, 1, 1));
     }
 
+    // A customer takes boosters off a stack one at a time, so a product slot can hold part of a stack.
+    [TestCase]
+    public static void A_booster_tops_up_a_part_filled_booster_stack()
+    {
+        var slots = new[] { PartStack(0, 1) };
+
+        AssertThat(Plan(new[] { Src(1, StockKind.Booster, 1f) }, slots))
+            .IsEqual(new RestockStep(RestockStepKind.Move, 1, 0, 1));
+    }
+
+    [TestCase]
+    public static void A_booster_box_never_goes_onto_a_booster_stack()
+    {
+        AssertThat(Plan(new[] { Src(1, StockKind.Pack, 1f) }, new[] { PartStack(0, 1) })).IsEqual(RestockStep.Idle);
+    }
+
+    [TestCase]
+    public static void A_booster_fills_a_part_filled_stack_before_an_empty_slot()
+    {
+        var slots = ProductSlots(1, 2);
+        slots.Add(PartStack(5, 1));
+
+        AssertThat(Plan(new[] { Src(1, StockKind.Booster, 1f) }, slots).TargetId).IsEqual(5);
+    }
+
+    [TestCase]
+    public static void A_part_filled_stack_does_not_count_toward_unpacking_a_box()
+    {
+        var slots = ProductSlots(1, 7);
+        slots.Add(PartStack(20, 1));
+
+        AssertThat(Plan(new[] { Src(7, StockKind.Box, 1f) }, slots)).IsEqual(RestockStep.Idle);
+    }
+
     [TestCase]
     public static void Empty_inputs_are_Idle()
     {
@@ -140,6 +174,10 @@ public class RestockPlannerTest
     // A box is full (eight booster boxes); a booster box or booster is one product.
     private static StockSource Src(int id, StockKind kind, float distance) =>
         new(id, kind, true, distance, kind == StockKind.Box ? 8 : 1);
+
+    // A product slot holding boosters below the stack limit.
+    private static FreeSlot PartStack(int id, int shelfId) =>
+        new(id, shelfId, ShelfKind.ProductShelf, StockKind.Booster);
 
     private static List<FreeSlot> ProductSlots(int shelfId, int count, int firstId = 0) =>
         Enumerable.Range(firstId, count).Select(i => new FreeSlot(i, shelfId, ShelfKind.ProductShelf)).ToList();

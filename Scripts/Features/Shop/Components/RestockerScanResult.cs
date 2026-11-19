@@ -55,7 +55,7 @@ internal sealed class RestockerScanResult
     {
         var id = _slotIds.For(slot);
         var shelfId = _shelfIds.For(shelf);
-        _slots.Add(new FreeSlot(id, shelfId, shelf.Kind));
+        _slots.Add(new FreeSlot(id, shelfId, shelf.Kind, slot.Holds));
         _slotNodes[id] = slot;
         _shelfNodes[shelfId] = shelf;
     }

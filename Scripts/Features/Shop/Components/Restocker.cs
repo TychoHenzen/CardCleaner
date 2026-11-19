@@ -11,9 +11,10 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     The hired restocker. While it is hired, the shop is open and the tree is not paused, it walks the baked
-///     navigation mesh: it takes a pack or booster from a storage rack (or off the floor) to a free product-shelf
-///     slot, or sets a box down at a product shelf and unpacks it there. <see cref="RestockPlanner" /> decides each
-///     move and <see cref="RestockerJob" /> tracks the walk. Idle, it returns to where the scene placed it.
+///     navigation mesh: it takes a pack or booster from a storage rack (or off the floor) to a product-shelf slot
+///     with room (a booster may top up a booster stack), or sets a box down at a product shelf and unpacks it there.
+///     <see cref="RestockPlanner" /> decides each move and <see cref="RestockerJob" /> tracks the walk. Idle, it
+///     returns to where the scene placed it.
 /// </summary>
 public partial class Restocker : CharacterBody3D, IDependent
 {
@@ -247,14 +248,15 @@ public partial class Restocker : CharacterBody3D, IDependent
 
     // The box stays in the hands: its booster boxes and boosters move straight into the shelf's free slots, and the
     // next scan puts the box back on a rack (or unpacks it at another shelf while it still holds products). Slots may
-    // have been stocked on the walk, so the threshold is checked again.
+    // have been stocked on the walk, so the threshold is checked again, on empty slots as the planner counts them.
     private bool Unpack(RestockStep step)
     {
         if (_hands!.Carried is not { } box || _seen.ShelfNode(step.TargetId) is not CardShelf shelf)
             return false;
 
-        var free = _scan!.Gather(GlobalPosition, box).Slots.Count(s => s.Shelf == ShelfKind.ProductShelf);
-        return free >= RestockPlanner.FreeSlotsToUnpack(BoxUnpackThreshold, RestockerScan.ProductsIn(box))
+        var empty = _scan!.Gather(GlobalPosition, box).Slots
+            .Count(s => s is { Shelf: ShelfKind.ProductShelf, IsEmpty: true });
+        return empty >= RestockPlanner.FreeSlotsToUnpack(BoxUnpackThreshold, RestockerScan.ProductsIn(box))
                && shelf.TryUnpack(box);
     }
 
