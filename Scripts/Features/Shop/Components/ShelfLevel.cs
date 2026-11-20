@@ -63,6 +63,14 @@ public partial class ShelfLevel : Node3D, IItemStore, IDependent
     /// <summary>How many seats hold nothing.</summary>
     public int EmptySeats => Seats.Count(seat => !seat.HasCards);
 
+    /// <summary>How far in front of a level a customer or the restocker stands to reach it.</summary>
+    public const float StandMeters = 0.8f;
+
+    // The level's own position lies inside its shelf at its board's height, where no walk can end, so every walk to
+    // a level ends here: in front of it (its shelf's -Z), on the floor the shelf stands on.
+    /// <summary>Where a person stands to reach this level.</summary>
+    public Vector3 StandPoint => GetParent() is Node3D shelf ? StandPointOf(shelf) : GlobalPosition;
+
     /// <summary>
     ///     Sets the shelf kind on the level and its seats, and takes over their triggers. Called by the shelf.
     /// </summary>
@@ -271,4 +279,10 @@ public partial class ShelfLevel : Node3D, IItemStore, IDependent
         _services != null && _services.Has<ICardSpawningService>() ? _services.Get<ICardSpawningService>() : null;
 
     private static Vector3 Flat(Vector3 offset) => new(offset.X, 0f, offset.Z);
+
+    private Vector3 StandPointOf(Node3D shelf)
+    {
+        var point = GlobalPosition - shelf.GlobalBasis.Z * StandMeters;
+        return new Vector3(point.X, shelf.GlobalPosition.Y, point.Z);
+    }
 }

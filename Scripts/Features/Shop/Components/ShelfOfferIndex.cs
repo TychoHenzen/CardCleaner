@@ -11,8 +11,6 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 /// </summary>
 public sealed class ShelfOfferIndex
 {
-    private const float ApproachMeters = 0.8f;
-
     private readonly SceneTree _tree;
 
     public ShelfOfferIndex(SceneTree tree)
@@ -45,11 +43,11 @@ public sealed class ShelfOfferIndex
     /// <summary>The level an offer id names, or null when it is no longer in the tree.</summary>
     public ShelfLevel? LevelFor(string offerId) => _tree.Root.GetNodeOrNull<ShelfLevel>(new NodePath(offerId));
 
-    /// <summary>The point 0.8 m in front of the level (the shelf's -Z side) at the shelf's height, or null.</summary>
+    /// <summary>Where a customer stands to reach the level an offer names (its stand point), or null.</summary>
     public Vector3? ApproachPointFor(string offerId)
     {
         var level = LevelFor(offerId);
-        return level?.GetParent() is CardShelf shelf ? Approach(shelf, level) : null;
+        return level?.GetParent() is CardShelf ? level.StandPoint : null;
     }
 
     /// <summary>
@@ -65,15 +63,9 @@ public sealed class ShelfOfferIndex
                 continue;
 
             foreach (var level in shelf.Levels)
-                points.Add(Approach(shelf, level));
+                points.Add(level.StandPoint);
         }
 
         return points;
-    }
-
-    private static Vector3 Approach(CardShelf shelf, ShelfLevel level)
-    {
-        var point = level.GlobalPosition - shelf.GlobalBasis.Z * ApproachMeters;
-        return new Vector3(point.X, shelf.GlobalPosition.Y, point.Z);
     }
 }

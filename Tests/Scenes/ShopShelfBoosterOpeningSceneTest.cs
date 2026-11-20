@@ -134,7 +134,8 @@ public class ShopShelfBoosterOpeningSceneTest
                     $"click {placed} aimed at {Describe(_interaction.Target)}, expected {target.Name}; " +
                     $"player at {_player.GlobalPosition}, stood at {standing}")
                 .IsTrue();
-            var seed = ((CardContainer)_hand.Front!).ContentSeed;
+            // Boosters out of an unseeded booster box draw their seed when one is asked for, as the move does.
+            var seed = ((CardContainer)_hand.Front!).SeedForSave();
             _leftClick!.Invoke(new MouseActionArgs(true, false));
             await PhysicsFrames(AimFrames);
 
@@ -149,7 +150,10 @@ public class ShopShelfBoosterOpeningSceneTest
             AssertBool(booster.GlobalPosition.IsEqualApprox(seat.SeatPosition(stackIndex))).IsTrue();
             AssertBool(booster.IsOpened).IsFalse();
             AssertBool(booster.Freeze).IsTrue();
-            AssertThat(booster.ContentSeed).IsEqual(seed);
+            // Compared as a bool: gdUnit binds a nullable expected value to no overload of the ulong assert.
+            AssertBool(booster.ContentSeed == seed)
+                .OverrideFailureMessage($"the shelf booster has seed {booster.ContentSeed}, the held one had {seed}")
+                .IsTrue();
             AssertThat(booster.CollisionLayer & InteractableLayerBit).IsEqual(InteractableLayerBit);
 
             // The boosters still in hand are untouched: held, out of the physics world, and sealed.
@@ -282,8 +286,8 @@ public class ShopShelfBoosterOpeningSceneTest
         _leftClick!.Invoke(new MouseActionArgs(true, false));
         AssertThat(level.Count).IsEqual(before - 1);
         var booster = (CardContainer)_hand.Items.Single(item => !heldBefore.Contains(item));
-        if (seed != null)
-            AssertThat(booster.ContentSeed).IsEqual(seed);
+        if (seed is { } expected)
+            AssertThat(booster.ContentSeed).IsEqual(expected);
         AssertBool(_hand.SetFront(_hand.Items.ToList().IndexOf(booster))).IsTrue();
         await PhysicsFrames(AimFrames);
 

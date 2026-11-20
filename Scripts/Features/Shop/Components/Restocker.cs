@@ -168,7 +168,7 @@ public partial class Restocker : CharacterBody3D, IDependent
         }
 
         _putBackLevel = level;
-        _navigator!.Start(level.GlobalPosition);
+        _navigator!.Start(level.StandPoint);
     }
 
     private void FinishPutBack()

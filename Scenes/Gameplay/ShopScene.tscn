@@ -1827,7 +1827,7 @@ Item = ExtResource("ProductShelfFurniture")
 freeze = true
 
 [node name="StorageRack" type="StaticBody3D" parent="World/Furniture"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 20, 0, -7)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 20, 0, -6.96)
 collision_mask = 0
 script = ExtResource("PlacedFurniture")
 Item = ExtResource("StorageRackFurniture")

@@ -88,11 +88,17 @@ internal sealed class RestockerScanResult
             ? source.GlobalPosition.DistanceTo(slot.GlobalPosition)
             : float.MaxValue;
 
-    public Vector3? SourcePosition(RestockStep step) => SourceNode(step.SourceId)?.GlobalPosition;
+    /// <summary>Where the restocker walks to pick a source up: in front of its level, or to it when it is loose.</summary>
+    public Vector3? SourcePosition(RestockStep step) =>
+        SourceNode(step.SourceId) is not { } source ? null
+        : source.GetParent()?.GetParent() is ShelfLevel level ? level.StandPoint
+        : source.GlobalPosition;
 
-    /// <summary>Where the restocker takes the stock: a level for a move, the shelf for an unpack.</summary>
+    /// <summary>Where the restocker takes the stock: in front of the level for a move, the shelf for an unpack.</summary>
     public Vector3? TargetPosition(RestockStep step) =>
-        (step.Kind == RestockStepKind.UnpackBox ? ShelfNode(step.TargetId) : SlotNode(step.TargetId))?.GlobalPosition;
+        step.Kind == RestockStepKind.UnpackBox
+            ? ShelfNode(step.TargetId)?.GlobalPosition
+            : (SlotNode(step.TargetId) as ShelfLevel)?.StandPoint;
 
     private static Node3D? Live(Node3D? node) => node != null && GodotObject.IsInstanceValid(node) ? node : null;
 }
