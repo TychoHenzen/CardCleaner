@@ -38,9 +38,8 @@ public sealed class BoxPacker
     public Vector3 Interior { get; }
 
     /// <summary>
-    ///     The floor spot and pose of each of the four card stacks, in the order they fill. A flat card's cell is
-    ///     a wide and b deep; the stacks sit flat at (0, 0), turned at (a, 0), flat at (b, a) and turned at (0, b),
-    ///     which covers an (a + b) square with a (b - a) hole in its middle.
+    ///     Floor spot and pose of the four card stacks in fill order: for an a x b card cell, flat at (0, 0), turned at
+    ///     (a, 0), flat at (b, a) and turned at (0, b), a pinwheel round a (b - a) hole in an (a + b) square.
     /// </summary>
     public IReadOnlyList<(ItemPose Pose, Vector3 Floor)> CardStacks { get; }
 

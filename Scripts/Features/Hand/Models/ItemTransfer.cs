@@ -6,13 +6,8 @@ using CardCleaner.Scripts.Features.Packs.Models;
 namespace CardCleaner.Scripts.Features.Hand.Models;
 
 /// <summary>
-///     The one rule for moving items between the hand and a store, the same for every store and item kind. The aimed
-///     part decides: a click on stock takes by the store's policy when the hand has room for the next item, and a
-///     click on free space puts the hand's front item when the store accepts it. Shift takes as many as the hand has
-///     room for, at most <see cref="MostPerShiftClick" />. Piles and decks have no free space: they grow only from
-///     dropped cards and from strapping. While the front item is an open cardboard box, the box is the source
-///     (<see cref="DecideFromHeldBox" />), and the trash can takes only an empty cardboard box
-///     (<see cref="DecideTrash" />).
+///     The one rule for moving items between the hand and any store: a click on stock takes by the store's policy when
+///     the hand has room, and a click on free space puts the hand's front item when the store accepts it.
 /// </summary>
 public static class ItemTransfer
 {

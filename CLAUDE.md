@@ -803,7 +803,7 @@ Code is organized by feature under `Scripts/Features/`:
   with, never from a shared random source), kept by a merge, and saved with the pile (`Seed` in its `SavedBundles`
   record), so a reload lays the same heap. Each shown card is a `CardFace` dressed from its record's signature and look
   seed, the same face a loose card shows. A pile costs about 0.65 ms a frame whatever its size, because it draws at
-  most `FacesShown` faces; `Tests/Features/CardStacks/Probe/PileFrameCostProbe.tscn` measures that through the e2e
+  most `FacesShown` faces (an empty view took 0.59 ms, 4 piles 3.7 ms and 9 piles 6.2 ms, with vsync off); `Tests/Features/CardStacks/Probe/PileFrameCostProbe.tscn` measures that through the e2e
   driver (`call Build [piles, cards]`, `call Measure [frames]`, then `get FrameMs` and `GpuMs` once `Done`).
 - **Deckbuilder/**: Game session management, map generation, combat, exploration
 - **Worldgen/**: Procedural generation support (auto-tiling, biomes, gradients, blob generation)

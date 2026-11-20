@@ -61,9 +61,8 @@ public interface IHand : IItemStore
     bool TryTake(Node3D body);
 
     /// <summary>
-    ///     Gives a held body to a holder that locks it at once (a shelf slot): it leaves the hand frozen where it
-    ///     hangs, moved under the world node first and then given its collision back. False when the hand does not hold
-    ///     it or no world node is registered.
+    ///     Gives a held body, frozen where it hangs, to a holder that locks it at once (a shelf slot): moved under the
+    ///     world node, then given its collision back. False when the hand lacks it or no world node is registered.
     /// </summary>
     bool HandOver(Node3D body);
 
@@ -84,9 +83,8 @@ public interface IHand : IItemStore
     bool SetFront(int index);
 
     /// <summary>
-    ///     The right button on a container in front: swings a cardboard box's flaps, empties a booster box into the
-    ///     hand, or opens a booster into the hand while the hand has room for its cards once it has left. False when
-    ///     the front is a card or nothing happened.
+    ///     The right button on the front container: swings a cardboard box's flaps, empties a booster box into the hand,
+    ///     or opens a booster whose cards fit once it has left. False when the front is a card or nothing happened.
     /// </summary>
     bool UseFront();
 

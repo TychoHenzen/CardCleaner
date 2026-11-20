@@ -129,11 +129,11 @@ public partial class ShelfLevel : Node3D, IItemStore, IDependent
         if (!CanTake(body) || NextSeatFor(DeckSlot.StockOf(body)!.Value) is not { } seat)
             return false;
 
-        var price = ShelfPlacementRule.PriceOnPut(Kind, Count == 0, LevelPrice(), PriceOf(body));
+        var price = ShelfPlacementRule.PriceOnPut(Kind, Count == 0, LevelPrice(), StockPrices.Of(body));
         if (!seat.TryLock(body))
             return false;
 
-        SetPrice(body, price);
+        StockPrices.Set(body, price);
         return true;
     }
 
@@ -148,7 +148,7 @@ public partial class ShelfLevel : Node3D, IItemStore, IDependent
     }
 
     // The price every item on the level asks: the first item's own, which every later one took.
-    private int? LevelPrice() => Stock is [var first, ..] ? PriceOf(first) : null;
+    private int? LevelPrice() => Stock is [var first, ..] ? StockPrices.Of(first) : null;
 
     public StoredItem? Peek() =>
         Last is { } last && StoredItemBodies.ShapeOf(last) != null ? StoredItemBodies.CurrentRecordOf(last) : null;
@@ -160,9 +160,9 @@ public partial class ShelfLevel : Node3D, IItemStore, IDependent
         if (!CanPut(item) || NextSeatFor(ShelfPlacementRule.From(item)) is not { } seat)
             return false;
 
-        var price = ShelfPlacementRule.PriceOnPut(Kind, Count == 0, LevelPrice(), PriceOf(item));
+        var price = ShelfPlacementRule.PriceOnPut(Kind, Count == 0, LevelPrice(), StockPrices.Of(item));
         var at = new Transform3D(seat.GlobalBasis, seat.SeatPosition(seat.Cards.Count));
-        if (StoredItemBodies.Build(Priced(item, price), seat, at, Spawning()) is not { } body)
+        if (StoredItemBodies.Build(StockPrices.With(item, price), seat, at, Spawning()) is not { } body)
             return false;
         if (seat.TryLock(body))
             return true;
@@ -271,38 +271,4 @@ public partial class ShelfLevel : Node3D, IItemStore, IDependent
         _services != null && _services.Has<ICardSpawningService>() ? _services.Get<ICardSpawningService>() : null;
 
     private static Vector3 Flat(Vector3 offset) => new(offset.X, 0f, offset.Z);
-
-    private static int? PriceOf(RigidBody3D body) => body switch
-    {
-        CardController card => card.ShopPrice,
-        CardContainer container => container.ShopPrice,
-        _ => null
-    };
-
-    private static void SetPrice(RigidBody3D body, int? price)
-    {
-        switch (body)
-        {
-            case CardController card:
-                card.ShopPrice = price;
-                break;
-            case CardContainer container:
-                container.ShopPrice = price;
-                break;
-        }
-    }
-
-    private static int? PriceOf(StoredItem item) => item switch
-    {
-        StoredCard card => card.Price,
-        StoredContainer container => container.Price,
-        _ => null
-    };
-
-    private static StoredItem Priced(StoredItem item, int? price) => item switch
-    {
-        StoredCard card => card with { Price = price },
-        StoredContainer container => container with { Price = price },
-        _ => item
-    };
 }

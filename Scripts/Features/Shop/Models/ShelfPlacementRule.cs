@@ -51,15 +51,9 @@ public static class ShelfPlacementRule
         Accepts(shelf, stock) && (holds == null || holds == stock);
 
     /// <summary>
-    ///     The price an item takes as it goes on a level. On a product shelf the level has one price: the first item on
-    ///     an empty level keeps its own and so sets it, and every later item takes it. On a card shelf each card keeps
-    ///     its own price, and rack stock is never sold, so it keeps its own too. Null means the market price. Taking an
-    ///     item off changes no price, so a taken item keeps the one it had on the level.
+    ///     The price an item takes as it goes on a level (null: the market price). A product-shelf level has one price,
+    ///     set by its first item; on any other shelf an item keeps its own. A take changes no price.
     /// </summary>
-    /// <param name="shelf">The level's shelf kind.</param>
-    /// <param name="levelEmpty">Whether the level holds nothing yet.</param>
-    /// <param name="levelPrice">The price of the items already on the level (null for the market price).</param>
-    /// <param name="ownPrice">The item's own price.</param>
     public static int? PriceOnPut(ShelfKind shelf, bool levelEmpty, int? levelPrice, int? ownPrice) =>
         shelf == ShelfKind.ProductShelf && !levelEmpty ? levelPrice : ownPrice;
 

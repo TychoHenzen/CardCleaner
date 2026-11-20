@@ -1,15 +1,6 @@
-using System;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Interfaces;
-
-/// <summary>
-///     What one left click does: the prompt shown under the crosshair and the move that carries the click out. The same
-///     plan judges the target, shows the prompt and runs on the click, so the prompt always names what the click does.
-/// </summary>
-/// <param name="Prompt">What the click does ("Pick up card").</param>
-/// <param name="Apply">Carries the click out; false when it moved nothing after all.</param>
-public sealed record ClickPlan(string Prompt, Func<bool> Apply);
 
 /// <summary>
 ///     The one place that decides what a left click on an item does (the player's hand router). The interaction system
