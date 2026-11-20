@@ -8,8 +8,10 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 
 /// <summary>
 ///     Shows what a cardboard box holds where the packer put each item: a still copy of each booster pack and booster
-///     box (<see cref="StockItemLook" />), turned to its pose, and each stack of cards as one block with a card back
-///     on top. Built from scratch on every change; nothing in it collides. No node of it lives outside the tree: the
+///     box (<see cref="StockItemLook" />), turned to its pose, and each stack of cards as one block with a card back on
+///     top, as tall as the cards in it. A box of cards alone shows the packer's four stacks (<see
+///     cref="BoxPacker.CardStacks" />); a run of cards is one block for as long as each card lies straight on the one
+///     before it. Built from scratch on every change; nothing in it collides. No node of it lives outside the tree: the
 ///     old copies are freed at once and each scene's template only lasts one build.
 /// </summary>
 public partial class CartonView : Node3D

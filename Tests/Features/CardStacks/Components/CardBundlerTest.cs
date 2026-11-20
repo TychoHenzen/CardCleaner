@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.CardStacks.Components;
 using CardCleaner.Scripts.Features.CardStacks.Models;
+using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
@@ -20,22 +21,23 @@ using NSubstitute;
 namespace CardCleaner.Tests.Features.CardStacks.Components;
 
 /// <summary>
-///     The hand's side of decks and piles: V straps the cards in hand into one deck that keeps every card, a click on
-///     a deck unstraps it into the hand when it fits, and a click on a pile takes as many cards as fit.
+///     The hand's side of decks and piles: V straps the cards in hand into one deck that keeps every card; through the
+///     hand router a click on a deck unstraps it into the hand when it fits, a click on a pile takes one card, and a
+///     Shift-click on a pile takes as many as fit.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
 public class CardBundlerTest
 {
-    private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
+    private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
 
     private Node3D _world = null!;
     private Camera3D _eye = null!;
     private Mocking.MockCardSpawner _spawnerNode = null!;
     private ShopTestCardSpawner _spawning = null!;
-    private CardHolder _hand = null!;
-    private ContainerHolder _containers = null!;
+    private Scripts.Features.Hand.Components.Hand _hand = null!;
     private CardBundler _bundler = null!;
+    private CardHighlighter _router = null!;
     private Action? _strapKey;
 
     [BeforeTest]
@@ -58,25 +60,31 @@ public class CardBundlerTest
         TestServices.Container.RegisterSingleton(input);
 
         var interaction = TestServices.Inject(new InteractionSystem { Camera = _eye });
-        _hand = TestServices.Inject(new CardHolder { Name = "Hand" });
+        _hand = TestServices.Inject(new Scripts.Features.Hand.Components.Hand { Name = "Hand" });
         var dropper = TestServices.Inject(new CardDropper());
-        _containers = TestServices.Inject(new ContainerHolder());
         // In the world, so it is freed with it; a node left outside the tree outlives the test.
         _world.AddChild(interaction);
         _world.AddChild(_hand);
         _world.AddChild(dropper);
-        _world.AddChild(_containers);
         _hand.SetReferences(_eye);
-        _containers.SetReferences(_eye, _hand);
 
         _bundler = TestServices.Inject(new CardBundler
         {
             InteractionSystem = interaction,
-            CardHolder = _hand,
+            HandNode = _hand,
             CardDropper = dropper,
-            ContainerHolderNode = _containers,
         });
         _world.AddChild(_bundler);
+
+        _router = TestServices.Inject(new CardHighlighter
+        {
+            InteractionSystem = interaction,
+            HandNode = _hand,
+            CardDropper = dropper,
+            Preview = new DropPreview { Name = "Preview" },
+        });
+        _world.AddChild(_router.Preview);
+        _world.AddChild(_router);
     }
 
     [AfterTest]
@@ -89,7 +97,7 @@ public class CardBundlerTest
 
         _strapKey!.Invoke();
 
-        AssertThat(_hand.HeldCount).IsEqual(0);
+        AssertThat(_hand.Count).IsEqual(0);
         var deck = Bundles().Single();
         AssertThat(deck.Kind).IsEqual(CardBundleKind.Deck);
         AssertObject(deck.GetParent()).IsSame(_spawnerNode);
@@ -107,13 +115,13 @@ public class CardBundlerTest
     {
         var card = ShopTestCards.Create(null);
         _world.AddChild(card);
-        _hand.AddCard(card);
+        _hand.TryTake(card);
         HoldCards(1);
 
-        _bundler.Strap()!.Interact();
+        RouterClicks.Click(_router, _bundler.Strap()!);
 
-        AssertBool(_hand.HeldCards.OfType<CardController>().First().HasSignature).IsFalse();
-        AssertBool(_hand.HeldCards.OfType<CardController>().Last().HasSignature).IsTrue();
+        AssertBool(_hand.Cards.OfType<CardController>().First().HasSignature).IsFalse();
+        AssertBool(_hand.Cards.OfType<CardController>().Last().HasSignature).IsTrue();
         await BoundedWait.ForQueuedFrees();
     }
 
@@ -124,19 +132,24 @@ public class CardBundlerTest
 
         AssertBool(_bundler.CanStrap).IsFalse();
         AssertObject(_bundler.Strap()).IsNull();
-        AssertThat(_hand.HeldCount).IsEqual(1);
+        AssertThat(_hand.Count).IsEqual(1);
     }
 
+    // Only the cards go into the deck; a booster pack held among them stays in the hand.
     [TestCase]
-    public void NothingIsStrappedWhileAContainerIsHeld()
+    public async Task StrappingLeavesTheBoosterPacksInTheHand()
     {
-        HoldCards(2);
-        var box = GD.Load<PackedScene>(BoxScene).Instantiate<CardContainer>();
-        _world.AddChild(box);
-        _containers.TryPickUp(box);
+        HoldCards(1);
+        var booster = GD.Load<PackedScene>(BoosterScene).Instantiate<CardContainer>();
+        _world.AddChild(booster);
+        AssertBool(_hand.TryTake(booster)).IsTrue();
+        HoldCards(1);
 
-        AssertObject(_bundler.Strap()).IsNull();
-        AssertThat(_hand.HeldCount).IsEqual(2);
+        _strapKey!.Invoke();
+
+        AssertThat(_hand.Items.ToArray()).IsEqual(new Node3D[] { booster });
+        AssertThat(Bundles().Single().Count).IsEqual(2);
+        await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]
@@ -145,12 +158,12 @@ public class CardBundlerTest
         HoldCards(3);
         var deck = _bundler.Strap()!;
 
-        AssertString(deck.Prompt).IsEqual("Unstrap the deck (3 cards)");
-        deck.Interact();
+        AssertString(RouterClicks.Prompt(_router, deck)).IsEqual("Unstrap the deck (3 cards)");
+        AssertBool(RouterClicks.Click(_router, deck)).IsTrue();
 
-        AssertThat(_hand.HeldCards.OfType<CardController>().Select(card => card.ShopPrice).ToArray())
+        AssertThat(_hand.Cards.OfType<CardController>().Select(card => card.ShopPrice).ToArray())
             .IsEqual(new int?[] { 10, 11, 12 });
-        AssertThat(_hand.HeldCards.OfType<CardController>().Select(card => card.LookSeed).ToArray())
+        AssertThat(_hand.Cards.OfType<CardController>().Select(card => card.LookSeed).ToArray())
             .IsEqual(new int?[] { 100, 101, 102 });
         AssertBool(deck.IsInsideTree()).IsFalse();
         AssertThat(Bundles().Count()).IsEqual(0);
@@ -162,51 +175,67 @@ public class CardBundlerTest
     {
         HoldCards(3);
         var deck = _bundler.Strap()!;
-        HoldCards(CardHolder.MostCards - 2);
+        HoldCards(IHand.MostPlaces - 2);
 
-        AssertBool(deck.CanInteract).IsFalse();
-        deck.Interact();
+        AssertObject(RouterClicks.Prompt(_router, deck)).IsNull();
+        AssertBool(RouterClicks.Click(_router, deck)).IsFalse();
 
         AssertThat(deck.Count).IsEqual(3);
-        AssertThat(_hand.HeldCount).IsEqual(CardHolder.MostCards - 2);
+        AssertThat(_hand.Count).IsEqual(IHand.MostPlaces - 2);
         await BoundedWait.ForQueuedFrees();
     }
 
     [TestCase]
-    public void APileGivesTheHandTheLastCardsInAsManyAsFit()
+    public void APlainClickOnAPileTakesItsLastCard()
     {
         var pile = CardBundle.Create(CardBundleKind.Pile,
             Enumerable.Range(0, 5).Select(i => new StoredCard(null, i, i)));
         _world.AddChild(pile);
-        HoldCards(CardHolder.MostCards - 3);
 
-        AssertString(pile.Prompt).IsEqual("Take 3 cards from the pile (5 in it)");
-        pile.Interact();
+        AssertString(RouterClicks.Prompt(_router, pile)).IsEqual("Take 1 card from the pile (5 in it)");
+        AssertBool(RouterClicks.Click(_router, pile)).IsTrue();
 
-        AssertThat(_hand.HeldCount).IsEqual(CardHolder.MostCards);
-        AssertThat(_hand.HeldCards.OfType<CardController>().TakeLast(3).Select(card => card.LookSeed).ToArray())
-            .IsEqual(new int?[] { 2, 3, 4 });
+        AssertThat(_hand.Cards.OfType<CardController>().Select(card => card.LookSeed).ToArray())
+            .IsEqual(new int?[] { 4 });
+        AssertThat(pile.Count).IsEqual(4);
+    }
+
+    [TestCase]
+    public void AShiftClickOnAPileGivesTheHandTheLastCardsInAsManyAsFit()
+    {
+        var pile = CardBundle.Create(CardBundleKind.Pile,
+            Enumerable.Range(0, 5).Select(i => new StoredCard(null, i, i)));
+        _world.AddChild(pile);
+        HoldCards(IHand.MostPlaces - 3);
+
+        AssertString(RouterClicks.Prompt(_router, pile, shift: true)).IsEqual("Take 3 cards from the pile (5 in it)");
+        AssertBool(RouterClicks.Click(_router, pile, shift: true)).IsTrue();
+
+        // The same as three plain clicks: the last card in comes first.
+        AssertThat(_hand.Count).IsEqual(IHand.MostPlaces);
+        AssertThat(_hand.Cards.OfType<CardController>().TakeLast(3).Select(card => card.LookSeed).ToArray())
+            .IsEqual(new int?[] { 4, 3, 2 });
         AssertThat(pile.Cards.Select(card => card.LookSeed).ToArray()).IsEqual(new int?[] { 0, 1 });
-        AssertBool(pile.CanInteract).IsFalse();
+        AssertObject(RouterClicks.Prompt(_router, pile)).IsNull();
     }
 
     [TestCase]
     public void AFullHandRefusesTheNextCard()
     {
-        HoldCards(CardHolder.MostCards);
+        HoldCards(IHand.MostPlaces);
         var extra = ShopTestCards.Create(null);
         _world.AddChild(extra);
 
-        AssertBool(_hand.AddCard(extra)).IsFalse();
+        AssertBool(_hand.TryTake(extra)).IsFalse();
 
-        AssertThat(_hand.HeldCount).IsEqual(CardHolder.MostCards);
+        AssertThat(_hand.Count).IsEqual(IHand.MostPlaces);
         AssertThat(_hand.Room).IsEqual(0);
         AssertObject(extra.GetParent()).IsSame(_world);
     }
 
     private CardController[] HoldCards(int count)
     {
-        var start = _hand.HeldCount;
+        var start = _hand.Count;
         var cards = new CardController[count];
         for (var i = 0; i < count; i++)
         {
@@ -215,7 +244,7 @@ public class CardBundlerTest
             card.ShopPrice = 10 + n;
             card.LookSeed = 100 + n;
             _world.AddChild(card);
-            AssertBool(_hand.AddCard(card)).IsTrue();
+            AssertBool(_hand.TryTake(card)).IsTrue();
             cards[i] = card;
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 using Saveable;
@@ -9,9 +10,6 @@ namespace CardCleaner.Scripts.Features.Card.Controllers;
 
 public partial class CardController : RigidBody3D, IInteractable, ISaveable
 {
-    [Signal]
-    public delegate void CardInteractionRequestedEventHandler(CardController card);
-
     [Signal]
     public delegate void CardPickedUpEventHandler(CardController card);
 
@@ -50,14 +48,9 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
 
     private bool IsHeld => GetParent() is Camera3D; // Check if reparented to camera
 
-    /// <summary>
-    ///     Says whether the player's hand would take this card now (it has room and is not busy). The hand sets it when
-    ///     it starts listening to the card; null means nothing stops a pick-up.
-    /// </summary>
-    public Func<bool>? PickUpAllowed { get; set; }
-
-    // IInteractable implementation. A card the hand would not take offers no click, so the prompt never lies.
-    public bool CanInteract => !IsHeld && (PickUpAllowed?.Invoke() ?? true);
+    // IInteractable implementation. The hand router reads this and the hand's room before it plans a pick-up, so a
+    // card the hand would not take offers no click.
+    public bool CanInteract => !IsHeld;
     public Node3D InteractionBody => this;
 
     // Arm's reach, as for boxes and packs (CardContainer); a card across the room is not picked up.
@@ -65,9 +58,9 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
 
     public string Prompt => "Pick up card";
 
+    // The hand router plans every click on a card (it claims this target).
     public void Interact()
     {
-        if (CanInteract) EmitSignal(SignalName.CardInteractionRequested, this);
     }
 
     public void Highlight()
@@ -91,7 +84,6 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
         save.SetOrAddProperty("lookSeed", LookSeed);
         save.SetOrAddProperty("position", GlobalPosition);
         save.SetOrAddProperty("rotation", GlobalRotation);
-        save.SetOrAddProperty("isHeld", IsHeld);
     }
 
     public void Load(NodeSave save)
@@ -108,8 +100,6 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
 
         if (save.TryGetProperty<Vector3>("rotation", out var rot))
             GlobalRotation = rot;
-
-        // Note: IsHeld state will be restored by parent relationship during scene rebuild
     }
 
     public override void _Ready()
@@ -128,6 +118,14 @@ public partial class CardController : RigidBody3D, IInteractable, ISaveable
     {
         foreach (var child in node.GetChildren())
         {
+            // The face sets up its own parts (each finds its siblings through the face); the card only drives its
+            // blacklight each physics frame.
+            if (child is CardFace face)
+            {
+                _physicsComponents.AddRange(face.PhysicsComponents);
+                continue;
+            }
+
             if (child is ICardComponent comp)
             {
                 comp.Setup(this);

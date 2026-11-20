@@ -22,8 +22,8 @@ namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
 
 /// <summary>
 /// A save made before the shop's starting product shelf and storage rack became furniture kept their stock at the old
-/// seats, and its price tags saved markups under the old node paths. Loaded into the current shop, its stock locks into
-/// the same slots again and the old markups are ignored, so the stock asks its market price. A current save loads as
+/// seats, and its price tags saved markups under the old node paths. Loaded into the current shop, its stock goes back
+/// onto the same board (whose seats then fill in order) and the old markups are ignored, so the stock asks its market price. A current save loads as
 /// it is.
 /// </summary>
 [TestSuite]
@@ -94,7 +94,7 @@ public class LegacyShelfSaveMigrationTest
     [TestCase]
     public async Task AnOldSaveKeepsItsShelfStockAndDropsItsOldMarkup()
     {
-        var slot = _product.GetNode<DeckSlot>("Slot2");
+        var slot = (DeckSlot)_product.FindChild("Slot2", true, false);
         var pricing = _product.PricingFor(slot)!;
         AssertBool(slot.TryLock(NewBooster())).IsTrue();
         AssertBool(_saves.ManualSave()).IsTrue();
@@ -104,7 +104,8 @@ public class LegacyShelfSaveMigrationTest
         await SettleAsync();
 
         AssertThat(pricing.AskingValue).IsEqual(ProductMarketPrices.BoosterPrice);
-        var booster = slot.Cards.OfType<CardContainer>().Single();
+        // The old save had it in the board's second seat with the first empty; the board closes up the gap.
+        var booster = _product.LevelOf(slot)!.Stock.OfType<CardContainer>().Single();
         AssertThat(booster.ContentSeed).IsEqual(BoosterSeed);
         AssertThat(BoostersWithTheSeed()).IsEqual(1);
     }
@@ -112,7 +113,7 @@ public class LegacyShelfSaveMigrationTest
     [TestCase]
     public void ACurrentSaveIsLoadedAsItIs()
     {
-        AssertBool(_product.GetNode<DeckSlot>("Slot2").TryLock(NewBooster())).IsTrue();
+        AssertBool(((DeckSlot)_product.FindChild("Slot2", true, false)).TryLock(NewBooster())).IsTrue();
         AssertBool(_saves.ManualSave()).IsTrue();
         var payload = ReadPayload();
 

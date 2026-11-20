@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
@@ -8,11 +9,12 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     A shelf that displays stock in its slots. Each slot is a <see cref="DeckSlot" /> child that holds one kind of
-///     stock (one card, one pack, or a stack of boosters; see <see cref="ShelfPlacementRule" />): a body dropped on a
-///     slot locks and shows there, and picking it up releases it again. The
-///     <see cref="Kind" /> decides which stock the slots take and which group the shelf joins. The restocker unpacks a
-///     cardboard box into its free slots (<see cref="TryUnpack" />).
+///     A shelf that displays stock on its levels. Each board is a <see cref="ShelfLevel" /> child whose seats
+///     (<see cref="DeckSlot" />s) hold one kind of stock (cards, packs, or stacks of boosters; see
+///     <see cref="ShelfPlacementRule" />): a body dropped on a board locks into the level's next free seat, and a click
+///     on the board stocks or takes for the whole level (<see cref="ShelfLevelTarget" />). The <see cref="Kind" />
+///     decides which stock the levels take and which group the shelf joins. The restocker unpacks a cardboard box onto
+///     its levels (<see cref="TryUnpack" />).
 /// </summary>
 public partial class CardShelf : RigidBody3D
 {
@@ -30,10 +32,13 @@ public partial class CardShelf : RigidBody3D
     /// <summary>True for a storage rack.</summary>
     public bool IsStorage => Kind == ShelfKind.StorageRack;
 
-    /// <summary>The slots of this shelf, in scene order.</summary>
-    public IEnumerable<DeckSlot> Slots => GetChildren().OfType<DeckSlot>();
+    /// <summary>The levels (boards) of this shelf, in scene order.</summary>
+    public IEnumerable<ShelfLevel> Levels => GetChildren().OfType<ShelfLevel>();
 
-    /// <summary>Total number of slots.</summary>
+    /// <summary>Every seat of this shelf, level by level.</summary>
+    public IEnumerable<DeckSlot> Slots => Levels.SelectMany(level => level.Seats);
+
+    /// <summary>Total number of seats.</summary>
     public int SlotCount => Slots.Count();
 
     /// <summary>Stock currently shown on the shelf.</summary>
@@ -41,11 +46,31 @@ public partial class CardShelf : RigidBody3D
 
     public int StockedCount => StockedCards.Count();
 
-    /// <summary>The price tags of this shelf, one sibling per slot.</summary>
+    /// <summary>
+    ///     The price tags of this shelf: one per seat on a card shelf, one per level on a product shelf, none on a
+    ///     storage rack.
+    /// </summary>
     public IEnumerable<SlotPricing> Pricings => GetChildren().OfType<SlotPricing>();
 
-    /// <summary>The price tag that prices <paramref name="slot" />, or null when the shelf has none.</summary>
-    public SlotPricing? PricingFor(DeckSlot slot) => Pricings.FirstOrDefault(pricing => pricing.Slot == slot);
+    /// <summary>
+    ///     The price tag that prices the stock on <paramref name="slot" />: its own tag on a card shelf, its level's on
+    ///     a product shelf. Null when the shelf has none.
+    /// </summary>
+    public SlotPricing? PricingFor(DeckSlot slot) =>
+        Pricings.FirstOrDefault(pricing => pricing.Slot == slot)
+        ?? Pricings.FirstOrDefault(pricing => pricing.Level != null && pricing.Level == slot.GetParent());
+
+    /// <summary>
+    ///     The price tag that prices what a customer takes next from <paramref name="level" />: the tag of its last
+    ///     card's seat on a card shelf, the level's own tag on a product shelf. Null when there is none.
+    /// </summary>
+    public SlotPricing? PricingFor(ShelfLevel level) =>
+        Pricings.FirstOrDefault(pricing => pricing.Level == level)
+        ?? (level.Last?.GetParent() is DeckSlot seat ? PricingFor(seat) : null);
+
+    /// <summary>The level holding <paramref name="slot" />, or null when it is no seat of this shelf.</summary>
+    public ShelfLevel? LevelOf(DeckSlot slot) =>
+        slot.GetParent() is ShelfLevel level && level.GetParent() == this ? level : null;
 
     public override bool _PropertyCanRevert(StringName property)
     {
@@ -63,10 +88,10 @@ public partial class CardShelf : RigidBody3D
     {
         AddToGroup(IsStorage ? StorageGroupName : SalesGroupName);
 
-        foreach (var slot in Slots.ToList())
+        foreach (var level in Levels.ToList())
         {
-            slot.Kind = Kind;
-            ShelfSlotTarget.Cover(this, slot);
+            level.Configure(Kind);
+            ShelfLevelTarget.Cover(this, level);
         }
 
         AddFootprintVolume();
@@ -107,14 +132,14 @@ public partial class CardShelf : RigidBody3D
     // In the shelf's own frame, from the shape's local transform, so a turned shelf still gets a box along its sides.
     private static Aabb BoundsOf(CollisionShape3D shape) => shape.Transform * shape.Shape.GetDebugMesh().GetAabb();
 
-    /// <summary>The click targets of this shelf's slots, one per slot.</summary>
-    public IEnumerable<ShelfSlotTarget> SlotTargets => GetChildren().OfType<ShelfSlotTarget>();
+    /// <summary>The click targets of this shelf's levels, one per level.</summary>
+    public IEnumerable<ShelfLevelTarget> LevelTargets => GetChildren().OfType<ShelfLevelTarget>();
 
     /// <summary>
-    ///     Unpacks a cardboard box into this shelf's free slots: every item a free slot takes moves in, the last in
-    ///     first, and the box stays a box with the rest inside. False, with nothing moved, when no slot takes any of
-    ///     its items or the container is not a cardboard box (a booster box or booster pack is opened in the hand).
+    ///     Unpacks a cardboard box onto this shelf's levels: every item a level takes moves in, the last in first, and
+    ///     the box stays a box with the rest inside. False, with nothing moved, when no level takes any of its items or
+    ///     the container is not a cardboard box (a booster box or booster pack is opened in the hand).
     /// </summary>
     public bool TryUnpack(CardContainer container) =>
-        container.Storage is { } storage && storage.MoveInto(Slots.ToList()) > 0;
+        container.Storage is { } storage && storage.MoveInto(Levels.ToList<IItemStore>()) > 0;
 }

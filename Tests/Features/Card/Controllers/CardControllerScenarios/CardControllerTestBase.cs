@@ -12,9 +12,7 @@ public abstract class CardControllerTestBase
     protected CardController _cardController = null!;
     protected CardSignature _testSignature;
     protected int _cardPickedUpEventCount;
-    protected int _cardInteractionRequestedEventCount;
     protected CardController? _lastPickedUpCard;
-    protected CardController? _lastInteractionRequestedCard;
 
     [BeforeTest]
     public void Setup()
@@ -61,26 +59,17 @@ public abstract class CardControllerTestBase
     protected void ConnectToCardEvents()
     {
         _cardController.CardPickedUp += OnCardPickedUp;
-        _cardController.CardInteractionRequested += OnCardInteractionRequested;
     }
 
     protected void ResetEventTracking()
     {
         _cardPickedUpEventCount = 0;
-        _cardInteractionRequestedEventCount = 0;
         _lastPickedUpCard = null;
-        _lastInteractionRequestedCard = null;
     }
 
     protected void OnCardPickedUp(CardController card)
     {
         _cardPickedUpEventCount++;
         _lastPickedUpCard = card;
-    }
-
-    protected void OnCardInteractionRequested(CardController card)
-    {
-        _cardInteractionRequestedEventCount++;
-        _lastInteractionRequestedCard = card;
     }
 }

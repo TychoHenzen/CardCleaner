@@ -91,17 +91,17 @@ public class CardEffectComparisonLayoutTest
     [TestCase]
     public static void TheBatchCyclesThroughEveryRarityAndTier()
     {
-        var cells = Enum.GetValues<CardRarity>()
-            .SelectMany(rarity => Enum.GetValues<IntensityTier>()
-                .Select(tier => CardEffectComparisonGrid.SignatureFor(rarity, tier).ToDebugString()))
+        var cellCount = CardEffectComparisonGrid.Cells.Count;
+        var cells = CardEffectComparisonGrid.Cells
+            .Select(cell => CardEffectComparisonGrid.SignatureFor(cell.Rarity, cell.Tier).ToDebugString())
             .ToHashSet();
 
-        var batch = Enumerable.Range(0, 15)
+        var batch = Enumerable.Range(0, cellCount)
             .Select(i => CardEffectComparisonLayout.BatchSignature(i).ToDebugString())
             .ToHashSet();
 
         AssertThat(batch.SetEquals(cells)).IsTrue();
-        AssertThat(CardEffectComparisonLayout.BatchSignature(15).ToDebugString())
+        AssertThat(CardEffectComparisonLayout.BatchSignature(cellCount).ToDebugString())
             .IsEqual(CardEffectComparisonLayout.BatchSignature(0).ToDebugString());
     }
 }

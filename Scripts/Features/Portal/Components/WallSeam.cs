@@ -1,6 +1,6 @@
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Portal.Models;
 using Godot;
@@ -39,9 +39,12 @@ public partial class WallSeam : Node3D
     [Export]
     public Area3D? Zone { get; set; }
 
-    /// <summary>The player's hand: its cards decide whether the seam shows.</summary>
+    /// <summary>
+    ///     The player's hand (an <see cref="IHand" />; Godot cannot export an interface): its cards decide whether the
+    ///     seam shows.
+    /// </summary>
     [Export]
-    public CardHolder? PlayerHolder { get; set; }
+    public Node3D? PlayerHand { get; set; }
 
     [Export]
     public CharacterBody3D? Player { get; set; }
@@ -124,7 +127,8 @@ public partial class WallSeam : Node3D
             return true;
 
         var inBackoffice = Zone != null && Player != null && Zone.OverlapsBody(Player);
-        var carried = PlayerHolder?.HeldCards.OfType<CardController>().Select(card => card.Signature).ToArray() ?? [];
+        var carried = (PlayerHand as IHand)?.Cards.OfType<CardController>()
+            .Select(card => card.Signature).ToArray() ?? [];
         return SeamTriggerRule.ShouldShow(inBackoffice, carried);
     }
 

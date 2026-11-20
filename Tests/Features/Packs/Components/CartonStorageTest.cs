@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
@@ -113,9 +115,9 @@ public class CartonStorageTest
         await BoundedWait.ForQueuedFrees();
     }
 
-    // The card went in first and the booster last, so each slot takes the last item it can take, not the last item.
+    // The card went in first and the booster last, so each level takes the last item it can take, not the last item.
     [TestCase]
-    public void AMixedBoxFillsACardShelfSlotWithTheCardAndAProductSlotWithTheBooster()
+    public void AMixedBoxFillsACardShelfLevelWithTheCardAndAProductLevelWithTheBooster()
     {
         var signature = new CardSignature([0f, 0.75f, 0f, 0f, 0f, 0f, 0f, 0f]);
         var box = StandingBox(
@@ -123,21 +125,23 @@ public class CartonStorageTest
             new StoredCard(signature, 5, null),
             new StoredContainer(BoosterScene, CardContainerKind.Booster, Seed, 6),
         ]);
-        var cardSlot = Shelf(CardShelfScene, new Vector3(0f, 0f, -5f)).Slots.First();
-        var productSlot = Shelf(ProductShelfScene, new Vector3(5f, 0f, -5f)).Slots.First();
+        // A level builds what it takes through the registered card spawner, as the shop registers its own.
+        TestServices.Container.RegisterSingleton<ICardSpawningService>(_cards);
+        var cardLevel = Shelf(CardShelfScene, new Vector3(0f, 0f, -5f)).Levels.First();
+        var productLevel = Shelf(ProductShelfScene, new Vector3(5f, 0f, -5f)).Levels.First();
 
-        AssertBool(box.Storage!.TakeInto(cardSlot)).IsTrue();
-        AssertBool(box.Storage.TakeInto(productSlot)).IsTrue();
+        AssertBool(box.Storage!.TakeInto(cardLevel)).IsTrue();
+        AssertBool(box.Storage.TakeInto(productLevel)).IsTrue();
 
-        var card = (CardController)cardSlot.Cards.Single();
+        var card = (CardController)cardLevel.Stock.Single();
         AssertThat(card.Signature.Elements).IsEqual(signature.Elements);
         AssertThat(card.LookSeed).IsEqual(5);
-        var booster = (CardContainer)productSlot.Cards.Single();
+        var booster = (CardContainer)productLevel.Stock.Single();
         AssertThat(booster.Kind).IsEqual(CardContainerKind.Booster);
         AssertThat(booster.ContentSeed).IsEqual(Seed);
         AssertThat(booster.ShopPrice).IsEqual(6);
         AssertThat(box.Remaining).IsEqual(0);
-        AssertBool(box.Storage.TakeInto(cardSlot)).IsFalse();
+        AssertBool(box.Storage.TakeInto(cardLevel)).IsFalse();
     }
 
     [TestCase]
@@ -146,7 +150,7 @@ public class CartonStorageTest
         var (holder, eye) = Holder(new Vector3(0f, 1.6f, 0f));
         eye.LookAt(new Vector3(0f, 0f, -2f));
         var box = StandingBox(null);
-        AssertBool(holder.TryPickUp(box)).IsTrue();
+        AssertBool(holder.TryTake(box)).IsTrue();
         box.SetLidOpen(true, instantly: true);
         await ISceneRunner.SyncPhysicsFrame;
 
@@ -167,7 +171,7 @@ public class CartonStorageTest
         var (holder, eye) = Holder(new Vector3(0f, 1.6f, 0f));
         eye.LookAt(new Vector3(0f, 5f, -2f));
         var box = StandingBox(null);
-        AssertBool(holder.TryPickUp(box)).IsTrue();
+        AssertBool(holder.TryTake(box)).IsTrue();
         box.SetLidOpen(true, instantly: true);
         await ISceneRunner.SyncPhysicsFrame;
 
@@ -182,23 +186,27 @@ public class CartonStorageTest
         var (holder, _) = Holder(Vector3.Zero);
         var bin = GD.Load<PackedScene>(TrashCanScene).Instantiate<TrashCan>();
         _world.AddChild(bin);
-        AssertBool(bin.CanInteract).IsFalse();
+        AssertObject(BinPlan(holder, bin)).IsNull();
 
         var full = StandingBox(null);
-        AssertBool(holder.TryPickUp(full)).IsTrue();
-        AssertBool(bin.CanInteract).IsFalse();
-        AssertBool(holder.Drop()).IsTrue();
+        AssertBool(holder.TryTake(full)).IsTrue();
+        AssertObject(BinPlan(holder, bin)).IsNull();
+        AssertBool(holder.PutFrontDown()).IsTrue();
 
         var empty = StandingBox([]);
-        AssertBool(holder.TryPickUp(empty)).IsTrue();
-        AssertBool(bin.CanInteract).IsTrue();
-        bin.Interact();
+        AssertBool(holder.TryTake(empty)).IsTrue();
+        AssertString(BinPlan(holder, bin)!.Prompt).IsEqual("Throw the box away");
+        AssertBool(BinPlan(holder, bin)!.Apply()).IsTrue();
 
-        AssertBool(holder.IsHolding).IsFalse();
+        AssertInt(holder.Count).IsEqual(0);
         AssertBool(!GodotObject.IsInstanceValid(empty) || empty.IsQueuedForDeletion()).IsTrue();
         AssertBool(GodotObject.IsInstanceValid(full) && !full.IsQueuedForDeletion()).IsTrue();
         await BoundedWait.ForQueuedFrees();
     }
+
+    // The click the hand router plans on the bin: the bin itself offers none.
+    private static ClickPlan? BinPlan(IHand hand, TrashCan bin) =>
+        HandClickPlans.For(hand, bin, bin.GlobalPosition, false);
 
     // The booster went in last, so taking one out takes its look away and leaves the card stack.
     [TestCase]
@@ -224,6 +232,101 @@ public class CartonStorageTest
 
         AssertBool(box.Storage!.TakeOnto(new Transform3D(Basis.Identity, new Vector3(3f, 0f, 0f)))).IsTrue();
         AssertThat(ShownMeshes(box).Count).IsLess(shown.Count);
+    }
+
+    [TestCase]
+    public void AnOpenBoxAsAStoreGivesBackTheLastRecordPutInFirst()
+    {
+        var box = StandingBox([]);
+        box.SetLidOpen(true, instantly: true);
+        var store = (IItemStore)box.Storage!;
+        var first = new StoredCard(null, 1, 3);
+        var second = new StoredContainer(BoosterScene, CardContainerKind.Booster, 9, 4);
+
+        AssertBool(store.Put(first) && store.Put(second)).IsTrue();
+
+        AssertThat(store.Count).IsEqual(2);
+        AssertThat(store.Peek()).IsEqual(second);
+        AssertThat(store.TakeLast()).IsEqual(second);
+        AssertThat(store.TakeLast()).IsEqual(first);
+        AssertThat(store.TakeLast()).IsNull();
+        AssertThat(store.Peek()).IsNull();
+    }
+
+    [TestCase]
+    public void AShutBoxTakesNothingAndNoBoxTakesACardboardBox()
+    {
+        var box = StandingBox([]);
+        var store = box.Storage!;
+        var card = new StoredCard(null, 1, null);
+
+        AssertBool(store.CanPut(card) || store.Put(card)).IsFalse();
+        box.SetLidOpen(true, instantly: true);
+        AssertBool(store.CanPut(card)).IsTrue();
+        AssertBool(store.Put(new StoredContainer(BoxScene, CardContainerKind.Box, 1, null))).IsFalse();
+        AssertThat(store.Count).IsEqual(0);
+    }
+
+    [TestCase]
+    public void LookingIntoAFreshBoxDrawsNoSeed()
+    {
+        var box = StandingBox(null);
+        box.SetLidOpen(true, instantly: true);
+        var store = box.Storage!;
+
+        AssertThat(store.Peek()).IsEqual(new StoredContainer(PackScene, CardContainerKind.Pack, null, null));
+        AssertThat(store.TakeLast(item => item is StoredCard)).IsNull();
+        AssertThat(store.PeekLast(item => item is StoredCard)).IsNull();
+
+        AssertBool(store.IsFresh).IsTrue();
+    }
+
+    // The booster box went in first, so a target that takes only it gets it out from under the cards.
+    [TestCase]
+    public void AHeldBoxGivesOutTheLastItemATargetAccepts()
+    {
+        var pack = new StoredContainer(PackScene, CardContainerKind.Pack, 5, 7);
+        var card = new StoredCard(null, 2, null);
+        var box = StandingBox([pack, card, card]);
+
+        AssertThat(box.Storage!.PeekLast(item => item is StoredContainer)).IsEqual(pack);
+        AssertThat(box.Storage.TakeLast(item => item is StoredContainer)).IsEqual(pack);
+
+        AssertBool(box.Storage.Items.SequenceEqual([card, card])).IsTrue();
+    }
+
+    [TestCase]
+    public void AnOpenBoxTakesAtLeast512CardsPutInOneAtATime()
+    {
+        var box = StandingBox([]);
+        box.SetLidOpen(true, instantly: true);
+        var store = box.Storage!;
+
+        var put = 0;
+        while (put < 1000 && store.Put(new StoredCard(null, put, null)))
+            put++;
+
+        AssertThat(put).IsGreaterEqual(512);
+        AssertThat(store.Count).IsEqual(put);
+        AssertThat(store.Peek()).IsEqual(new StoredCard(null, put - 1, null));
+    }
+
+    [TestCase]
+    public void AnOpenBoxOf512CardsShowsFourStacksAsTallAsTheirCards()
+    {
+        var box = StandingBox(Enumerable.Range(0, 512).Select(i => (StoredItem)new StoredCard(null, i, null)).ToList());
+        box.SetLidOpen(true, instantly: true);
+
+        var blocks = ShownMeshes(box).Where(mesh => mesh.Mesh is BoxMesh).ToList();
+
+        AssertThat(blocks.Count).IsEqual(4);
+        var heights = blocks.Sum(block => ((BoxMesh)block.Mesh).Size.Y);
+        AssertThat(heights).IsEqualApprox(512 * ItemShapes.Size(ItemShape.Card).Y, 0.001f);
+        foreach (var block in blocks)
+        {
+            var bounds = box.GlobalTransform.AffineInverse() * block.GlobalTransform * block.GetAabb();
+            AssertBool(InsideTheWalls(bounds)).OverrideFailureMessage($"a stack spans {bounds}").IsTrue();
+        }
     }
 
     // What the box's contents view draws.
@@ -272,14 +375,14 @@ public class CartonStorageTest
         return shelf;
     }
 
-    // A holder whose hand anchor is a camera at eye, the way the player's camera provides one.
-    private (ContainerHolder Holder, Camera3D Eye) Holder(Vector3 eye)
+    // A hand whose anchor is a camera at eye, the way the player's camera provides one.
+    private (Scripts.Features.Hand.Components.Hand Holder, Camera3D Eye) Holder(Vector3 eye)
     {
         TestServices.Container.RegisterSingleton(Substitute.For<IInputService>());
         var camera = new Camera3D { Name = "Eye" };
         _world.AddChild(camera);
         camera.GlobalPosition = eye;
-        var holder = TestServices.Inject(new ContainerHolder());
+        var holder = TestServices.Inject(new Scripts.Features.Hand.Components.Hand());
         _world.AddChild(holder);
         holder.SetReferences(camera);
         return (holder, camera);

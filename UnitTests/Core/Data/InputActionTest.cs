@@ -1,6 +1,7 @@
 ﻿// Tests/Core/Data/InputActionTest.cs
 
 using CardCleaner.Scripts.Core.Data;
+using CardCleaner.Scripts.Core.Interfaces;
 using GdUnit4;
 using Godot;
 
@@ -49,19 +50,19 @@ public class InputActionTest
             Name = "mouse_action",
             Owner = owner,
             MouseButton = MouseButton.Left,
-            MouseCallback = (pressed) =>
+            MouseCallback = args =>
             {
-                lastPressState = pressed;
+                lastPressState = args.Pressed;
                 callCount++;
             }
         };
 
         // Act & Assert
-        action.MouseCallback?.Invoke(true);
+        action.MouseCallback?.Invoke(new MouseActionArgs(true, false));
         Assertions.AssertBool(lastPressState).IsTrue();
         Assertions.AssertThat(callCount).IsEqual(1);
 
-        action.MouseCallback?.Invoke(false);
+        action.MouseCallback?.Invoke(new MouseActionArgs(false, false));
         Assertions.AssertBool(lastPressState).IsFalse();
         Assertions.AssertThat(callCount).IsEqual(2);
     }

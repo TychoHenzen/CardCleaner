@@ -42,20 +42,21 @@ public class ProductShelfTest
         AssertBool(_shelf.IsInGroup(CardShelf.StorageGroupName)).IsFalse();
     }
 
+    // A body landing anywhere on a board goes into that level's first free seat, whichever seat's trigger it entered.
     [TestCase]
-    public async Task BoosterAndPackLockOntoTheProductSlots()
+    public async Task ABoosterAndABoosterBoxDroppedOnTwoLevelsLockIntoTheirFirstSeats()
     {
-        var slots = _shelf.Slots.ToArray();
+        var levels = _shelf.Levels.ToArray();
         var booster = MakeContainer(BoosterScene);
         var pack = MakeContainer(PackScene);
 
-        await Drop(slots[0], booster);
-        await Drop(slots[1], pack);
+        await Drop(levels[0].Seats[^1], booster);
+        await Drop(levels[1].Seats[^1], pack);
 
         AssertBool(booster.Freeze).IsTrue();
-        AssertThat(booster.GetParent()).IsEqual(slots[0]);
+        AssertThat(booster.GetParent()).IsEqual(levels[0].Seats[0]);
         AssertBool(pack.Freeze).IsTrue();
-        AssertThat(pack.GetParent()).IsEqual(slots[1]);
+        AssertThat(pack.GetParent()).IsEqual(levels[1].Seats[0]);
         AssertThat(_shelf.StockedCount).IsEqual(2);
     }
 
@@ -86,23 +87,30 @@ public class ProductShelfTest
         AssertThat(_shelf.StockedCount).IsEqual(0);
     }
 
+    // Boosters stack four to a seat, the seats filling in order, and a booster dropped on a full level is pushed off.
     [TestCase]
-    public async Task FourBoostersStackInOneSlotAndAFifthIsEjected()
+    public async Task BoostersStackFourToASeatAndAFullLevelPushesTheNextOneOff()
     {
-        var slot = _shelf.Slots.First();
-        for (var i = 0; i < ShelfPlacementRule.BoostersPerProductSlot; i++)
-            await Drop(slot, MakeContainer(BoosterScene));
+        var level = _shelf.Levels.First();
+        var seat = level.Seats[0];
+        var perLevel = level.Seats.Count * ShelfPlacementRule.BoostersPerProductSlot;
+        for (var i = 0; i < perLevel; i++)
+            await Drop(seat, MakeContainer(BoosterScene));
         var extra = MakeContainer(BoosterScene);
         extra.Freeze = false;
 
-        await Drop(slot, extra);
+        await Drop(seat, extra);
 
-        AssertThat(slot.Cards.Count).IsEqual(4);
-        for (var i = 0; i < slot.Cards.Count; i++)
-            AssertVector(slot.Cards[i].GlobalPosition)
-                .IsEqualApprox(slot.SeatPosition(i), new Vector3(Near, Near, Near));
+        foreach (var each in level.Seats)
+        {
+            AssertThat(each.Cards.Count).IsEqual(ShelfPlacementRule.BoostersPerProductSlot);
+            for (var i = 0; i < each.Cards.Count; i++)
+                AssertVector(each.Cards[i].GlobalPosition)
+                    .IsEqualApprox(each.SeatPosition(i), new Vector3(Near, Near, Near));
+        }
+
         AssertBool(extra.Freeze).IsFalse();
-        AssertBool(slot.Cards.Contains(extra)).IsFalse();
+        AssertBool(level.Stock.Contains(extra)).IsFalse();
     }
 
     [TestCase]

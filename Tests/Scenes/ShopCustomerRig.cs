@@ -27,7 +27,7 @@ public sealed class ShopCustomerRig : IDisposable
     private const float FastSpeed = 10f;
     private const float TestStuckSeconds = 0.5f;
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
-    private const string ProductSlotPath = "World/Furniture/ProductShelf/Content/Slot1";
+    private const string ProductSlotPath = "World/Furniture/ProductShelf/Content/LowerMiddleBoard/Slot1";
 
     private readonly FastClock _clock;
 

@@ -16,8 +16,7 @@ public class CardEffectComparisonGridTest
     [TestCase]
     public static void EveryCellSignatureHasTheRarityItIsLabelledWith()
     {
-        foreach (var rarity in Enum.GetValues<CardRarity>())
-        foreach (var tier in Enum.GetValues<IntensityTier>())
+        foreach (var (rarity, tier) in CardEffectComparisonGrid.Cells)
         {
             var signature = CardEffectComparisonGrid.SignatureFor(rarity, tier);
 
@@ -30,8 +29,7 @@ public class CardEffectComparisonGridTest
     [TestCase]
     public static void EveryCellSignatureHasTheTierItIsLabelledWith()
     {
-        foreach (var rarity in Enum.GetValues<CardRarity>())
-        foreach (var tier in Enum.GetValues<IntensityTier>())
+        foreach (var (rarity, tier) in CardEffectComparisonGrid.Cells)
         {
             var signature = CardEffectComparisonGrid.SignatureFor(rarity, tier);
             var intensity = CardEffectMapping.IntensityOf(signature.Elements);
@@ -40,6 +38,29 @@ public class CardEffectComparisonGridTest
                 .OverrideFailureMessage($"{rarity} / {tier} has the wrong tier at intensity {intensity}")
                 .IsEqual(tier);
         }
+    }
+
+    [TestCase]
+    public static void OnlyEpicAndLegendaryAtDormantIntensityAreLeftEmpty()
+    {
+        var empty = (from rarity in Enum.GetValues<CardRarity>()
+            from tier in Enum.GetValues<IntensityTier>()
+            where !CardEffectComparisonGrid.Has(rarity, tier)
+            select (rarity, tier)).ToArray();
+
+        AssertThat(empty).IsEqual(new[]
+        {
+            (CardRarity.Epic, IntensityTier.Dormant),
+            (CardRarity.Legendary, IntensityTier.Dormant)
+        });
+        AssertThat(CardEffectComparisonGrid.Cells.Count).IsEqual(13);
+    }
+
+    [TestCase]
+    public static void AnEmptyCellHasNoSignature()
+    {
+        AssertThrown(() => CardEffectComparisonGrid.SignatureFor(CardRarity.Epic, IntensityTier.Dormant))
+            .IsInstanceOf<ArgumentException>();
     }
 
     [TestCase]
@@ -53,9 +74,9 @@ public class CardEffectComparisonGridTest
     [TestCase]
     public static void NoTwoCellsShareASignature()
     {
-        var keys = (from rarity in Enum.GetValues<CardRarity>()
-            from tier in Enum.GetValues<IntensityTier>()
-            select string.Join(",", CardEffectComparisonGrid.SignatureFor(rarity, tier).Elements)).ToArray();
+        var keys = CardEffectComparisonGrid.Cells
+            .Select(cell => string.Join(",", CardEffectComparisonGrid.SignatureFor(cell.Rarity, cell.Tier).Elements))
+            .ToArray();
 
         AssertThat(keys.Distinct().Count()).IsEqual(keys.Length);
     }

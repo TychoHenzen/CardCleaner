@@ -19,7 +19,7 @@ public partial class CardShaderRenderer : Node, ICardComponent
 
     // --- Text fields (front only) ---
     [Export] public Label3D NameLabel { get; set; } = null!;
-    [Export] public Label3D AttrLabel { get; set; } = null!;
+    [Export] public Label3D FlavorLabel { get; set; } = null!;
 
 
     public void Setup(Node cardRoot)

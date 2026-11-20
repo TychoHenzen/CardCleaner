@@ -1,4 +1,5 @@
 ﻿using System;
+using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Data;
@@ -10,7 +11,7 @@ public class InputAction
     public MouseButton? MouseButton { get; set; }
     public required object Owner { get; init; }
     public Action? Callback { get; init; }
-    public Action<bool>? MouseCallback { get; init; } // For mouse actions that need press/release
+    public Action<MouseActionArgs>? MouseCallback { get; init; } // For mouse actions that need press/release
 
     public bool Matches(Key key)
     {

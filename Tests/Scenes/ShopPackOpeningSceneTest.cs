@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
@@ -87,22 +88,21 @@ public class ShopPackOpeningSceneTest
         AssertBool(box.CanInteract).IsTrue();
     }
 
-    // The player's hand empties an ordered booster box into its eight booster packs, and the top one opens into eight
-    // real cards. The booster box was ordered unseeded, so its cards come from the shared random source.
+    // The player's hand empties an ordered booster box into its eight booster packs, and the front one opens into eight
+    // real cards when the front one is opened. The booster box was ordered unseeded, so its cards come from the shared random source.
     [TestCase]
     public async Task AnOrderedBoosterBoxOpensInTheHandToRealCardsWithGeneratedSignatures()
     {
-        var holder = _player.GetNode<ContainerHolder>("CardInteraction/ContainerHolder");
-        var hand = _player.GetNode<CardHolder>("CardInteraction/CardHolder");
+        var hand = _player.GetNode<IHand>("CardInteraction/Hand");
         var pack = Order("pack");
 
-        AssertBool(holder.TryPickUp(pack)).IsTrue();
-        AssertBool(holder.UseHeld()).IsTrue();
-        AssertThat(holder.HeldCount).IsEqual(CardContainerLayout.ItemsPerContainer);
-        AssertBool(holder.UseHeld()).IsTrue();
-        await Until(() => !holder.IsOpening, "the booster opening in the hand");
+        AssertBool(hand.TryTake(pack)).IsTrue();
+        AssertBool(hand.UseFront()).IsTrue();
+        AssertThat(hand.Count).IsEqual(CardContainerLayout.ItemsPerContainer);
+        AssertBool(hand.UseFront()).IsTrue();
+        await Until(() => !hand.IsOpening, "the booster opening in the hand");
 
-        var cards = hand.HeldCards.OfType<CardController>().ToArray();
+        var cards = hand.Cards.OfType<CardController>().ToArray();
         var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBooster();
         AssertThat(cards.Length).IsEqual(CardContainerLayout.ItemsPerContainer);
         for (var i = 0; i < cards.Length; i++)

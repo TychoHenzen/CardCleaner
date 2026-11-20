@@ -15,10 +15,9 @@ namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 /// <summary>
 ///     Writes the sealed containers lying in the scene into a slot and rebuilds them from one. Only sealed
 ///     containers placed from a scene file can be rebuilt; an opened one has spilled its contents. A carried
-///     container is saved with a held flag and handed back to the player's hand on restore, in the order the hand held
-///     it, so a stack of booster packs comes back in the same order. A cardboard box keeps its open flaps and what it
-///     holds (cards, boosters and booster boxes, each with its seed and price, in the order they went in), and every
-///     container the price the player set on it.
+///     container is saved with the hand (<see cref="SavedHand" />), in hand order, not here. A cardboard box keeps its
+///     open flaps and what it holds (cards, boosters and booster boxes, each with its seed and price, in the order they
+///     went in), and every container the price the player set on it.
 /// </summary>
 internal static class SavedContainers
 {
@@ -29,7 +28,6 @@ internal static class SavedContainers
         ulong? Seed,
         Vector3 Position,
         Vector3 Rotation,
-        bool Held = false,
         bool LidOpen = false,
         int? Price = null,
         IReadOnlyList<StoredItem>? Contents = null);
@@ -43,7 +41,6 @@ internal static class SavedContainers
         public string? Seed { get; set; }
         public object? Position { get; set; }
         public object? Rotation { get; set; }
-        public bool Held { get; set; }
         public bool LidOpen { get; set; }
         public object? Price { get; set; }
 
@@ -64,24 +61,26 @@ internal static class SavedContainers
             container.FinishOpening();
     }
 
-    /// <summary>The records to write for the sealed containers in <paramref name="tree" />.</summary>
+    /// <summary>
+    ///     The records to write for the sealed containers in <paramref name="tree" /> that the hand does not hold.
+    /// </summary>
     internal static List<object> Capture(SceneTree tree)
     {
-        return SealedContainersIn(tree)
-            .Select(container => (object)new ContainerRecord
-            {
-                ScenePath = container.SceneFilePath,
-                Kind = container.Kind.ToString(),
-                Seed = container.SeedForSave()?.ToString(CultureInfo.InvariantCulture),
-                Position = container.GlobalPosition,
-                Rotation = container.GlobalRotation,
-                Held = container.IsHeld,
-                LidOpen = container.IsLidOpen,
-                Price = container.ShopPrice,
-                Contents = container.Storage?.SavedItems?.Select(SavedStoredItems.RecordOf).ToList()
-            })
-            .ToList();
+        return SealedContainersIn(tree).Where(container => !container.IsHeld).Select(RecordOf).ToList();
     }
+
+    /// <summary>The record to write for one sealed container.</summary>
+    internal static object RecordOf(CardContainer container) => new ContainerRecord
+    {
+        ScenePath = container.SceneFilePath,
+        Kind = container.Kind.ToString(),
+        Seed = container.SeedForSave()?.ToString(CultureInfo.InvariantCulture),
+        Position = container.GlobalPosition,
+        Rotation = container.GlobalRotation,
+        LidOpen = container.IsLidOpen,
+        Price = container.ShopPrice,
+        Contents = container.Storage?.SavedItems?.Select(SavedStoredItems.RecordOf).ToList()
+    };
 
     /// <summary>
     ///     Checks every container record of a slot and returns them. Throws <see cref="FormatException" /> on the
@@ -133,10 +132,6 @@ internal static class SavedContainers
     /// </summary>
     internal static void Restore(SceneTree tree, IEnumerable<Saved> saved, Node3D world)
     {
-        // ASSUMPTION: one player has one hand (Risk Low), so only the first holder in the group is used. The records
-        // come in tree order, which is the order the hand picked its containers up, so a stack keeps its order.
-        var holder = tree.GetNodesInGroup(ContainerHolder.GroupName).OfType<IContainerHolder>().FirstOrDefault();
-
         foreach (var existing in tree.GetNodesInGroup("card_containers").OfType<CardContainer>()
                      .Where(container => !string.IsNullOrEmpty(container.SceneFilePath)).ToList())
         {
@@ -149,31 +144,8 @@ internal static class SavedContainers
         var seated = new List<(CardContainer Container, DeckSlot Slot, int Seat)>();
         foreach (var record in saved)
         {
-            var packed = ResourceLoader.Load<PackedScene>(record.ScenePath);
-            var node = packed?.Instantiate();
-            if (node is not CardContainer container)
-            {
-                node?.Free();
-                ILog.Error($"Could not restore container from {record.ScenePath}");
-                continue;
-            }
-
-            // The seed is set before AddChild, so the container never draws its own.
-            container.Kind = record.Kind;
-            container.ContentSeed = record.Seed;
-            container.Storage?.Restore(record.Contents);
-            // Before the slot lock below, so the slot's price tag shows this price when it repaints.
-            container.ShopPrice = record.Price;
-            world.AddChild(container);
-            // The transform needs the node in the tree, so it is set after AddChild, and so does the lid, whose parts
-            // take their shut pose in their own _Ready.
-            container.GlobalPosition = record.Position;
-            container.GlobalRotation = record.Rotation;
-            if (record.LidOpen)
-                container.SetLidOpen(true, instantly: true);
-            // A failed pick-up leaves the container at its saved position.
-            if (record.Held) holder?.TryPickUp(container);
-            else if (SeatOf(slots, record.Position) is { } seat) seated.Add((container, seat.Slot, seat.Index));
+            if (Build(record, world) is { } container && SeatOf(slots, record.Position) is { } seat)
+                seated.Add((container, seat.Slot, seat.Index));
         }
 
         // Locked now, before any physics step, not by the slot's trigger: a seat lies inside its shelf's solid
@@ -181,6 +153,37 @@ internal static class SavedContainers
         // lower seats are filled first, so a stack comes back in its saved order.
         foreach (var (container, slot, _) in seated.OrderBy(entry => entry.Seat))
             slot.TryLock(container);
+    }
+
+    /// <summary>
+    ///     Builds one saved container under <paramref name="world" /> at its saved pose, with its seed, contents, price
+    ///     and lid. Null, with a logged error, when its scene cannot be loaded as a container.
+    /// </summary>
+    internal static CardContainer? Build(Saved record, Node3D world)
+    {
+        var packed = ResourceLoader.Load<PackedScene>(record.ScenePath);
+        var node = packed?.Instantiate();
+        if (node is not CardContainer container)
+        {
+            node?.Free();
+            ILog.Error($"Could not restore container from {record.ScenePath}");
+            return null;
+        }
+
+        // The seed is set before AddChild, so the container never draws its own.
+        container.Kind = record.Kind;
+        container.ContentSeed = record.Seed;
+        container.Storage?.Restore(record.Contents);
+        // Before any slot lock, so the slot's price tag shows this price when it repaints.
+        container.ShopPrice = record.Price;
+        world.AddChild(container);
+        // The transform needs the node in the tree, so it is set after AddChild, and so does the lid, whose parts
+        // take their shut pose in their own _Ready.
+        container.GlobalPosition = record.Position;
+        container.GlobalRotation = record.Rotation;
+        if (record.LidOpen)
+            container.SetLidOpen(true, instantly: true);
+        return container;
     }
 
     private static (DeckSlot Slot, int Index)? SeatOf(IEnumerable<DeckSlot> slots, Vector3 position)
@@ -218,7 +221,7 @@ internal static class SavedContainers
             ?? throw new FormatException($"Container from {record.ScenePath} has no position"));
         var rotation = SavedCardReader.GetVector3FromData(record.Rotation
             ?? throw new FormatException($"Container from {record.ScenePath} has no rotation"));
-        return new Saved(record.ScenePath, kind, seed, position, rotation, record.Held, record.LidOpen,
+        return new Saved(record.ScenePath, kind, seed, position, rotation, record.LidOpen,
             SavedStoredItems.ParsePrice(record.Price, "container"), ParseContents(record, kind));
     }
 

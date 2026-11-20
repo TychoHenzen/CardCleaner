@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Features.Card.Controllers;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -8,7 +9,7 @@ namespace CardCleaner.Tests.Features.Packs;
 
 /// <summary>
 ///     Records every card a container asks for. By default it builds no card nodes; with
-///     <paramref name="buildBodies" /> it builds a bare body for each card (a <see cref="RigidBody3D" /> with the
+///     <paramref name="buildBodies" /> it builds a bare card for each one (a <see cref="CardController" /> with the
 ///     "CardCollision" shape a hand expects), so a test can follow the cards into the hand.
 /// </summary>
 public sealed class RecordingCardSpawner(bool buildBodies = false) : ICardSpawningService
@@ -26,7 +27,7 @@ public sealed class RecordingCardSpawner(bool buildBodies = false) : ICardSpawni
         if (!buildBodies)
             return null;
 
-        var card = new RigidBody3D { Name = $"Card{Bodies.Count}" };
+        var card = new CardController { Name = $"Card{Bodies.Count}" };
         card.AddChild(new CollisionShape3D { Name = "CardCollision", Shape = new BoxShape3D() });
         parent.AddChild(card);
         card.GlobalTransform = spawnTransform;

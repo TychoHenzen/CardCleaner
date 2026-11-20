@@ -17,15 +17,13 @@ public static class CardBlockLook
     public static StandardMaterial3D EdgeMaterial() => new() { AlbedoColor = CardEdgeColor };
 
     /// <summary>The card back, or a plain blue when the art is not there (a clone without the assets).</summary>
-    public static StandardMaterial3D BackMaterial(bool twoSided = false)
+    public static StandardMaterial3D BackMaterial()
     {
         var material = new StandardMaterial3D();
         if (ResourceLoader.Exists(CardBackPath))
             material.AlbedoTexture = ResourceLoader.Load<Texture2D>(CardBackPath);
         else
             material.AlbedoColor = PlainBackColor;
-        if (twoSided)
-            material.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
         return material;
     }
 

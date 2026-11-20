@@ -61,7 +61,8 @@ internal sealed class SignatureCardGenerator : ICardGenerator
         SetArtEffects(renderer, signature, look, rarity, cardTemplate.Art.Texture);
 
         renderer.NameLabel.Text = rarity.ToString();
-        renderer.AttrLabel.Text = signature.ToDebugString();
+        // The flavor sentence is seeded like the look, so it needs no saved data of its own.
+        renderer.FlavorLabel.Text = FlavorText.For(signature, look);
     }
 
     private void ApplyRarityVisuals(IRandom rng, CardTemplate cardTemplate, CardRarity rarity)

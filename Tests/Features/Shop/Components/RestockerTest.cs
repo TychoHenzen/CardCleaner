@@ -29,16 +29,22 @@ public class RestockerTest : RestockerTestBase
         AssertBool(_restocker.Visible).IsTrue();
     }
 
-    // Customers take boosters off a stack one at a time; the restocker tops a part-filled stack up from the rack even
-    // when no product slot is empty.
+    // Customers take boosters off a stack one at a time; the restocker tops a part-filled stack up from the rack, and
+    // the board's first seat, the stack, takes it before the board's empty seats. Every other board holds booster
+    // boxes, since a board holds one kind.
     [TestCase]
     public async Task HiredRestockerTopsUpAPartFilledBoosterStack()
     {
         HireAndOpen();
-        var stack = _product.Slots.First();
-        foreach (var slot in _product.Slots.Skip(1))
-            Stock(PackScene, slot);
-        var shelved = Stock(BoosterScene, stack);
+        var boosters = _product.Levels.First();
+        foreach (var level in _product.Levels.Skip(1))
+        {
+            foreach (var _ in level.Seats)
+                StockOn(PackScene, level);
+        }
+
+        var shelved = StockOn(BoosterScene, boosters);
+        var stack = boosters.Seats[0];
         var booster = Stock(BoosterScene, _rack.Slots.First());
 
         var toppedUp = await Poll(() => stack.Cards.Contains(booster));

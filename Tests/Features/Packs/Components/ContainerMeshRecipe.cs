@@ -31,9 +31,9 @@ public static class ContainerMeshRecipe
     public const float PackWall = 0.006f;
 
     // A box is a corrugated shipping carton of 8 packs, closed by two major flaps that meet over the middle and two
-    // minor flaps under them.
+    // minor flaps under them. It is tall enough inside (0.645 m) for four stacks of 128 cards (CartonSpace).
     public const float CartonWidth = 0.80f;
-    public const float CartonHeight = 0.60f;
+    public const float CartonHeight = 0.669f;
     public const float CartonDepth = 0.86f;
     public const float CartonWall = 0.008f;
 

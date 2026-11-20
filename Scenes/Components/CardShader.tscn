@@ -1,14 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://oqrxpyj8qkim"]
+[gd_scene load_steps=10 format=3 uid="uid://oqrxpyj8qkim"]
 
 [ext_resource type="Script" uid="uid://blu0six20pl7f" path="res://Scripts/Features/Card/Controllers/CardController.cs" id="1_btmnp"]
 [ext_resource type="Script" uid="uid://bsbw0i4pq1mve" path="res://Scripts/Features/Card/Components/CardDesigner.cs" id="3_53u5m"]
 [ext_resource type="Script" uid="uid://cdta7jffbewly" path="res://Scripts/Features/Card/Components/FlutterCard.cs" id="4_ycqko"]
-[ext_resource type="Script" uid="uid://bgwgo4ybh5igi" path="res://Scripts/Features/Card/Components/CardShaderRenderer.cs" id="5_1sx76"]
-[ext_resource type="Script" uid="uid://dmqf3ccuvfg32" path="res://Scripts/Features/Card/Controllers/BlacklightController.cs" id="7_hllmr"]
 [ext_resource type="Script" path="res://Scripts/Features/Card/Components/CardSleepEnforcer.cs" id="8_53u5m"]
-[ext_resource type="Script" uid="uid://6wu6tpceqfcc" path="res://Scripts/Features/Card/Components/CardMaterialManager.cs" id="8_ycqko"]
-[ext_resource type="Material" uid="uid://d368k11s8ohrk" path="res://Assets/Materials/CardMaterial.tres" id="9_r6y7f"]
-[ext_resource type="ArrayMesh" path="res://Data/Card/CardMesh.tres" id="10_cardmesh"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/CardFace.tscn" id="11_face"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kudhx"]
 size = Vector3(0.32, 0.005, 0.45)
@@ -47,40 +43,7 @@ script = ExtResource("4_ycqko")
 visible = false
 mesh = SubResource("BoxMesh_outline")
 
-[node name="CardRenderer" type="Node" parent="." node_paths=PackedStringArray("NameLabel", "AttrLabel")]
-script = ExtResource("5_1sx76")
-NameLabel = NodePath("../Title")
-AttrLabel = NodePath("../Description")
-
-[node name="Title" type="Label3D" parent="."]
-transform = Transform3D(0.05, 0, 0, 0, -2.18557e-09, 0.05, 0, -0.05, -2.18557e-09, 0, 0.006, 0.00742067)
-shaded = true
-render_priority = 1
-text = "test"
-font_size = 120
-outline_size = 0
-
-[node name="Description" type="Label3D" parent="."]
-transform = Transform3D(0.05, 0, 0, 0, -2.18557e-09, 0.05, 0, -0.05, -2.18557e-09, -8.03098e-05, 0.00622179, 0.110162)
-shaded = true
-render_priority = 1
-text = "testafgsasdfasdfasdas
-
-asggasfg"
-font_size = 100
-outline_size = 0
-autowrap_mode = 3
-width = 1000.0
+[node name="Face" parent="." instance=ExtResource("11_face")]
 
 [node name="SleepEnforcer" type="Node" parent="."]
 script = ExtResource("8_53u5m")
-
-[node name="BlacklightController" type="Node" parent="."]
-script = ExtResource("7_hllmr")
-
-[node name="MaterialManager" type="Node" parent="."]
-script = ExtResource("8_ycqko")
-CardMaterialTemplate = ExtResource("9_r6y7f")
-
-[node name="OuterBox_Baked" type="MeshInstance3D" parent="."]
-mesh = ExtResource("10_cardmesh")

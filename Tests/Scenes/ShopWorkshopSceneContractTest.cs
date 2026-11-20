@@ -139,7 +139,7 @@ public class ShopWorkshopSceneContractTest
             AssertBool(back.AlwaysOpen).IsTrue();
             AssertSame(back.Exit, shop.GetNode("World/Markers/ShopReturn"));
             AssertSame(back.Player, shop.GetNode("Player"));
-            AssertSame(back.PlayerHolder, shop.GetNode("Player/CardInteraction/CardHolder"));
+            AssertSame(back.PlayerHand, shop.GetNode("Player/CardInteraction/Hand"));
         }
         finally
         {

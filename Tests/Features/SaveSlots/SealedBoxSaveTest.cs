@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services.SaveGame;
 using CardCleaner.Scripts.Features.Packs.Components;
@@ -69,6 +70,25 @@ public class SealedBoxSaveTest
         var reloaded = OnlyBox(scene);
         AssertBool(reloaded.Storage!.IsFresh).IsFalse();
         AssertThat(StoredItemKeys.Of(reloaded.Storage.Items)).IsEqual(StoredItemKeys.Of(items));
+    }
+
+    [TestCase]
+    public static async Task ABoxOf512CardsReloadsHoldingEveryCardInOrder()
+    {
+        using var scene = new SaveWorld("FullCardBoxWorld", addCardsToTree: false);
+        var items = Enumerable.Range(0, 512)
+            .Select(i => (StoredItem)new StoredCard(new CardSignature().With(Element.Febris, i / 512f), i, i % 7 + 1))
+            .ToList();
+        var service = SavedBox(scene, items);
+        AssertThat(OnlyBox(scene).Remaining).IsEqual(512);
+        service.SaveGame();
+
+        service.LoadGame();
+        await scene.TwoFrames();
+
+        var reloaded = OnlyBox(scene);
+        AssertThat(reloaded.Remaining).IsEqual(512);
+        AssertThat(StoredItemKeys.Of(reloaded.Storage!.Items)).IsEqual(StoredItemKeys.Of(items));
     }
 
     [TestCase]

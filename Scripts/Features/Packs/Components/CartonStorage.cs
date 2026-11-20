@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Hand.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
@@ -14,13 +15,20 @@ namespace CardCleaner.Scripts.Features.Packs.Components;
 ///     where the packer finds room (<see cref="BoxContents" />); one that does not fit stays where it lies. Items come
 ///     out last in, first out: into a shelf slot (<see cref="TakeInto" />), onto the floor (<see cref="TakeOnto" />),
 ///     or into every free slot of a shelf at once (<see cref="MoveInto" />). An emptied box stays a box until the
-///     player throws it away. The box shows what it holds once its flaps open (<see cref="CartonView" />).
+///     player throws it away. The box shows what it holds once its flaps open (<see cref="CartonView" />). As an item
+///     store (<see cref="IPickingStore" />) an open box takes records in and gives them out last in, first out, or the
+///     last one a target accepts when it is held.
 /// </summary>
-public partial class CartonStorage : Node3D, IDependent
+public partial class CartonStorage : Node3D, IDependent, IPickingStore
 {
-    // The space over the box's top that catches what lands there: the box's footprint, from just below its top.
+    // The space over the box's top that catches what lands there: the box's footprint, from its top up.
     private static readonly Vector3 CatchSize = new(0.8f, 0.3f, 0.86f);
-    private static readonly Transform3D CatchOffset = new(Basis.Identity, new Vector3(0f, 0.75f, 0f));
+
+    private static readonly Transform3D CatchOffset =
+        new(Basis.Identity, new Vector3(0f, CartonSpace.OutsideHeight + CatchSize.Y / 2f, 0f));
+
+    // How far below the rim an aim still counts as aimed at the open top.
+    private const float OpenTopMargin = 0.05f;
 
     // Containers lie on layer 1 and cards on layer 2.
     private const uint CatchMask = 0b11;
@@ -92,17 +100,72 @@ public partial class CartonStorage : Node3D, IDependent
         _view.Show(Shown);
     }
 
+    /// <summary>The item put in last, read from what the box shows, so a fresh box draws no seed.</summary>
+    public StoredItem? Peek() => PeekLast(static _ => true);
+
+    /// <summary>The last item <paramref name="accepts" /> allows; looking draws no seed.</summary>
+    public StoredItem? PeekLast(System.Func<StoredItem, bool> accepts)
+    {
+        var index = Shown.LastIndexOf(accepts);
+        return index < 0 ? null : Shown.Items[index];
+    }
+
+    /// <summary>
+    ///     True when the box's flaps are open and the packer finds room for <paramref name="item" />: a card, booster
+    ///     pack or booster box, never another cardboard box.
+    /// </summary>
+    // ASSUMPTION: a shut box takes nothing through a click either, as it catches nothing that lands on it (Risk Low).
+    public bool CanPut(StoredItem item) =>
+        Box is { IsLidOpen: true }
+        && item is StoredCard or StoredContainer { Kind: CardContainerKind.Booster or CardContainerKind.Pack }
+        && Shown.HasRoomFor(item.Shape);
+
+    /// <summary>
+    ///     Puts <paramref name="item" /> in where the packer finds room; false, with nothing changed, otherwise.
+    /// </summary>
+    public bool Put(StoredItem item)
+    {
+        if (!CanPut(item) || Contents().With(item) is not { } contents)
+            return false;
+
+        Change(contents);
+        return true;
+    }
+
+    /// <summary>Takes out the item put in last.</summary>
+    public StoredItem? TakeLast() => TakeLast(static _ => true);
+
+    /// <summary>
+    ///     Takes out the last item <paramref name="accepts" /> allows and returns its record; the items after it are
+    ///     packed again, and one that no longer fits is set down beside the box. Null, with no seed drawn, when there
+    ///     is none.
+    /// </summary>
+    public StoredItem? TakeLast(System.Func<StoredItem, bool> accepts)
+    {
+        if (Box is not { } box || Shown.LastIndexOf(accepts) < 0)
+            return null;
+
+        var contents = Contents();
+        var index = contents.LastIndexOf(accepts);
+        if (index < 0)
+            return null;
+
+        var item = contents.Items[index];
+        TakeAt(index, box);
+        return item;
+    }
+
     /// <summary>How many items the box holds that <paramref name="accepts" /> takes.</summary>
     public int CountOf(System.Func<StoredItem, bool> accepts) => Items.Count(accepts);
 
     /// <summary>
-    ///     The stock of the last item <paramref name="slot" /> would take now, or null when it takes none.
+    ///     The part of the box a point on it (world space) lies on: its open top, where a click puts the hand's item,
+    ///     while the box is open, else its stock.
     /// </summary>
-    public StockKind? NextFor(DeckSlot slot)
-    {
-        var index = Shown.LastIndexOf(item => slot.CanTake(ShelfPlacementRule.From(item)));
-        return index < 0 ? null : ShelfPlacementRule.From(Items[index]);
-    }
+    public AimPart PartAt(Vector3 point) =>
+        Box is { IsLidOpen: true } box && box.ToLocal(point).Y >= CartonSpace.OutsideHeight - OpenTopMargin
+            ? AimPart.Space
+            : AimPart.Stock;
 
     public override void _PhysicsProcess(double delta)
     {
@@ -153,31 +216,21 @@ public partial class CartonStorage : Node3D, IDependent
     }
 
     /// <summary>
-    ///     Takes out the last item <paramref name="slot" /> takes and locks it there. False, with nothing taken, when
-    ///     the slot takes none of the items or refuses the one built.
+    ///     Takes out the last item <paramref name="store" /> takes and puts it there. False, with nothing taken, when
+    ///     the store takes none of the items or refuses the one taken. Unlike <see
+    ///     cref="TakeLast(System.Func{StoredItem, bool})" /> followed by a put, this works on a shut box too: the
+    ///     restocker unpacks a box without opening it.
     /// </summary>
-    public bool TakeInto(DeckSlot slot)
+    public bool TakeInto(IItemStore store)
     {
-        // The slot is asked about what the box shows first, so a slot that takes none of it draws no seed.
-        if (Box is not { } box || Shown.LastIndexOf(item => slot.CanTake(ShelfPlacementRule.From(item))) < 0)
+        // The store is asked about what the box shows first, so a store that takes none of it draws no seed.
+        if (Box is not { } box || Shown.LastIndexOf(store.CanPut) < 0)
             return false;
 
         var contents = Contents();
-        var index = contents.LastIndexOf(item => slot.CanTake(ShelfPlacementRule.From(item)));
-        if (index < 0)
+        var index = contents.LastIndexOf(store.CanPut);
+        if (index < 0 || !store.Put(contents.Items[index]))
             return false;
-
-        var seat = new Transform3D(slot.GlobalBasis, slot.SeatPosition(slot.Cards.Count));
-        if (StoredItemBodies.Build(contents.Items[index], slot, seat, box) is not { } body)
-            return false;
-
-        if (!slot.TryLock(body))
-        {
-            // Out of the tree at once, before any physics step can report it entering the slot's trigger.
-            slot.RemoveChild(body);
-            body.QueueFree();
-            return false;
-        }
 
         TakeAt(index, box);
         return true;
@@ -200,26 +253,26 @@ public partial class CartonStorage : Node3D, IDependent
     }
 
     /// <summary>
-    ///     Moves items into <paramref name="slots" /> while any slot takes one, the last item in first, and returns how
-    ///     many moved. A slot that stacks boosters is filled before the next one is started.
+    ///     Moves items into <paramref name="stores" /> while any store takes one, the last item in first, and returns
+    ///     how many moved. The first store that takes an item gets it, so one shelf level fills before the next.
     /// </summary>
-    public int MoveInto(IReadOnlyList<DeckSlot> slots)
+    public int MoveInto(IReadOnlyList<IItemStore> stores)
     {
         var moved = 0;
-        while (NextMove(slots) is { } slot && TakeInto(slot))
+        while (NextMove(stores) is { } store && TakeInto(store))
             moved++;
 
         return moved;
     }
 
-    private DeckSlot? NextMove(IReadOnlyList<DeckSlot> slots)
+    private IItemStore? NextMove(IReadOnlyList<IItemStore> stores)
     {
-        var items = Items;
+        var items = Shown.Items;
         for (var index = items.Count - 1; index >= 0; index--)
         {
-            var stock = ShelfPlacementRule.From(items[index]);
-            if (slots.FirstOrDefault(slot => slot.CanTake(stock)) is { } slot)
-                return slot;
+            var item = items[index];
+            if (stores.FirstOrDefault(store => store.CanPut(item)) is { } store)
+                return store;
         }
 
         return null;

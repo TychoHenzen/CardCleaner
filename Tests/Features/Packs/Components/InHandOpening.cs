@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
@@ -38,9 +38,9 @@ public static class InHandOpening
     /// <summary>
     ///     Opens <paramref name="booster" /> in <paramref name="hand" /> and ends the reveal at once, so every card is
     ///     spawned, in the order the booster gives them. The cards go to <paramref name="cards" />, or to a stand-in
-    ///     hand when it is null.
+    ///     hand that takes none when it is null.
     /// </summary>
-    public static void Open(CardContainer booster, Camera3D hand, ICardHolder? cards = null)
+    public static void Open(CardContainer booster, Camera3D hand, IHand? cards = null)
     {
         Begin(booster, hand, cards);
         booster.FinishOpening();
@@ -49,10 +49,10 @@ public static class InHandOpening
     /// <summary>
     ///     Starts opening <paramref name="booster" /> in <paramref name="hand" /> and leaves the reveal running.
     /// </summary>
-    public static void Begin(CardContainer booster, Camera3D hand, ICardHolder? cards = null)
+    public static void Begin(CardContainer booster, Camera3D hand, IHand? cards = null)
     {
         Hold(booster, hand);
-        AssertBool(booster.OpenInHand(cards ?? Substitute.For<ICardHolder>())).IsTrue();
+        AssertBool(booster.OpenInHand(cards ?? Substitute.For<IHand>())).IsTrue();
     }
 
     /// <summary>Puts <paramref name="container" /> under <paramref name="hand" />, which makes it held.</summary>

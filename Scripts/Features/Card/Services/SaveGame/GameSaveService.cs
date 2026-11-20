@@ -47,6 +47,7 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
     private Timer? _autoSaveTimer;
     private ICardSpawningService? _cardSpawningService;
     private List<object>? _pendingCardData;
+    private SavedHand.Saved? _pendingHand;
     private IServiceResolver? _services;
 
     // The slot files this service reads and writes. Production resolves them in _Ready; tests pass them to the
@@ -139,11 +140,19 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         var bundles = SavedBundles.Capture(GetTree());
         save.SetOrAddProperty("bundles", bundles);
         ILog.Print($"Saved {bundles.Count} decks and piles to persistence data");
+
+        if (SavedHand.HandIn(GetTree()) is { } hand)
+        {
+            save.SetOrAddProperty("hand", SavedHand.Capture(hand));
+            ILog.Print($"Saved {hand.Count} items in hand to persistence data");
+        }
     }
 
+    // A held card is saved with the hand, in hand order, so the card list leaves it out.
     private List<Dictionary<string, object?>> CaptureCards()
     {
         return GetTree().GetNodesInGroup("Cards").OfType<CardController>()
+            .Where(card => card.GetParent() is not Camera3D)
             .Select(card => new Dictionary<string, object?>
             {
                 ["signature_elements"] = card.HasSignature ? card.Signature.Elements : null,
@@ -151,7 +160,6 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
                 ["price"] = card.ShopPrice,
                 ["position"] = card.GlobalPosition,
                 ["rotation"] = card.GlobalRotation,
-                ["isHeld"] = card.GetParent() is Camera3D,
                 ["parentPath"] = card.GetParent()?.GetPath().ToString() ?? ""
             })
             .ToList();
@@ -169,6 +177,17 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         var bundles = save.TryGetProperty<List<object>>("bundles", out var bundleDataRaw)
             ? SavedBundles.Parse(bundleDataRaw ?? new List<object>())
             : null;
+        var hand = save.TryGetProperty<object>("hand", out var handDataRaw) && handDataRaw != null
+            ? SavedHand.Parse(handDataRaw)
+            : null;
+
+        // Deferred like the cards below: the hand first lets go of what it holds now, then takes the saved items.
+        if (hand != null)
+        {
+            _pendingHand = hand;
+            CallDeferred(MethodName.RestoreHand);
+        }
+
         if (containers != null || bundles != null)
         {
             if (GetTree().CurrentScene is not Node3D world)
@@ -251,6 +270,22 @@ public partial class GameSaveService : Node, ISaveable, ISaveGameCommand, IDepen
         // Clear the pending data
         _pendingCardData = null;
         ILog.Print($"Recreated {recreatedCount} cards from save data");
+    }
+
+    private void RestoreHand()
+    {
+        var hand = _pendingHand;
+        _pendingHand = null;
+        if (hand == null)
+            return;
+
+        if (GetTree().CurrentScene is not Node3D world)
+        {
+            ILog.Error("CurrentScene is not a Node3D, cannot restore the hand");
+            return;
+        }
+
+        SavedHand.Restore(GetTree(), hand, world, _cardSpawningService);
     }
 
     private static bool TryRecreateCard(SavedCardRespawner respawner, object cardDataObj)

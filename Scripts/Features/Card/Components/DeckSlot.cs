@@ -10,6 +10,12 @@ using CardController = CardCleaner.Scripts.Features.Card.Controllers.CardControl
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
+/// <summary>
+///     A seat that locks bodies and poses them: frozen, under it, at <see cref="SeatPosition" />, a stack of them
+///     growing by <see cref="StackOffset" />. On its own (a workshop holder) it also locks free stock that lands in its
+///     trigger. On a shelf it is one seat of a <c>ShelfLevel</c>, which turns <see cref="LocksOnEntry" /> off and
+///     decides which seat a landing body goes into.
+/// </summary>
 public partial class DeckSlot : Node3D
 {
     [Signal]
@@ -40,6 +46,12 @@ public partial class DeckSlot : Node3D
 
     // The kind of shelf this slot sits on, which decides the stock it takes (see ShelfPlacementRule).
     [Export] public ShelfKind Kind { get; set; } = DefaultKind;
+
+    /// <summary>
+    ///     Whether free stock landing in the trigger locks here. True on its own; a shelf level sets it false and
+    ///     handles landing bodies itself.
+    /// </summary>
+    public bool LocksOnEntry { get; set; } = true;
 
     public bool HasCards => _cards.Count > 0;
 
@@ -79,7 +91,7 @@ public partial class DeckSlot : Node3D
 
     private void OnBodyEntered(Node3D body)
     {
-        if (_processingEntry) return;
+        if (_processingEntry || !LocksOnEntry) return;
 
         // Only free stock this slot takes locks (see IsFreeStock). Anything else (a box on a card shelf, a card on a
         // storage rack, a card the player just took into the hand) is ignored: it is not frozen and reparented into
@@ -90,7 +102,7 @@ public partial class DeckSlot : Node3D
 
         if (!HasRoomFor(stock))
         {
-            EjectCard(rigid);
+            Eject(rigid);
             return;
         }
 
@@ -176,8 +188,8 @@ public partial class DeckSlot : Node3D
 
     private bool Accepts(StockKind stock) => ShelfPlacementRule.Accepts(Kind, stock);
 
-    // What a body is as stock: a card, or a container of its kind. Null for anything else.
-    private static StockKind? StockOf(Node3D body)
+    /// <summary>What a body is as stock: a card, or a container of its kind. Null for anything else.</summary>
+    public static StockKind? StockOf(Node3D body)
     {
         return body switch
         {
@@ -254,7 +266,8 @@ public partial class DeckSlot : Node3D
         return nearest;
     }
 
-    private void EjectCard(RigidBody3D card)
+    /// <summary>Pushes a body that may not stay here up and off, unfrozen.</summary>
+    public void Eject(RigidBody3D card)
     {
         card.Freeze = false;
         card.ApplyImpulse(Vector3.Up * EjectForce);

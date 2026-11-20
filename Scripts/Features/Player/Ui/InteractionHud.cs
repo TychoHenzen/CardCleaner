@@ -104,7 +104,8 @@ public partial class InteractionHud : Control, IDependent
             return;
 
         var target = Interaction?.Target;
-        var prompt = target?.Prompt ?? string.Empty;
+        // The interaction system's prompt, which the hand router decides for the items it claims.
+        var prompt = Interaction?.Prompt ?? string.Empty;
         _prompt.Visible = prompt.Length > 0;
         if (_promptText.Text != prompt)
             _promptText.Text = prompt;

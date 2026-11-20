@@ -1,7 +1,4 @@
-using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Packs.Components;
-using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
@@ -9,7 +6,7 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 /// <summary>
 ///     A bin the player throws an emptied cardboard box into: a click while holding an empty box frees the box. A
 ///     cardboard box is storage and is never freed when its last item comes out, so this is the one way to be rid of
-///     it.
+///     it. The hand router decides the click (ItemTransfer.DecideTrash); the bin itself offers none.
 /// </summary>
 public partial class TrashCan : StaticBody3D, IInteractable
 {
@@ -22,12 +19,11 @@ public partial class TrashCan : StaticBody3D, IInteractable
     [Export]
     public float InteractionRange { get; set; } = DefaultInteractionRange;
 
-    /// <summary>Only an empty cardboard box in hand can be thrown away; with anything else the aim passes on.</summary>
-    public bool CanInteract => EmptyBoxInHand() != null;
+    public bool CanInteract => false;
 
     public Node3D InteractionBody => this;
 
-    public string Prompt => "Throw the box away";
+    public string Prompt => string.Empty;
 
     public override void _Ready()
     {
@@ -35,10 +31,9 @@ public partial class TrashCan : StaticBody3D, IInteractable
         ClearHighlight();
     }
 
+    // The hand router plans every click on the bin (it claims this target).
     public void Interact()
     {
-        if (EmptyBoxInHand() is { } holder)
-            holder.Discard();
     }
 
     public void Highlight()
@@ -51,15 +46,5 @@ public partial class TrashCan : StaticBody3D, IInteractable
     {
         if (HighlightMesh != null)
             HighlightMesh.Visible = false;
-    }
-
-    // The player's holder, when it holds a cardboard box with nothing left in it.
-    private IContainerHolder? EmptyBoxInHand()
-    {
-        if (!IsInsideTree())
-            return null;
-
-        var holder = GetTree().GetNodesInGroup(ContainerHolder.GroupName).OfType<IContainerHolder>().FirstOrDefault();
-        return holder?.Held is { Kind: CardContainerKind.Box, Remaining: 0 } ? holder : null;
     }
 }

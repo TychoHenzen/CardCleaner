@@ -38,7 +38,7 @@ public class CardMeshBakeTest
     {
         var card = ResourceLoader.Load<PackedScene>(CardScenePath).Instantiate<Node3D>();
         Assertions.AddNode(card);
-        var body = card.GetNode<MeshInstance3D>("OuterBox_Baked");
+        var body = card.GetNode<MeshInstance3D>("Face/OuterBox_Baked");
         Assertions.AssertString(body.Mesh.ResourcePath).IsEqual(MeshPath);
     }
 

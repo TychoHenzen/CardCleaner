@@ -18,8 +18,7 @@ public class SavedCardReaderTest
             ["signature_elements"] = SavedElements,
             ["position"] = new Vector3(1f, 2f, 3f),
             ["rotation"] = new Vector3(-4f, 5f, -6f),
-            ["isHeld"] = true,
-            ["parentPath"] = "World/Camera",
+            ["parentPath"] = "World/Shelf",
         };
 
         var record = SavedCardReader.Read(entry);
@@ -28,8 +27,7 @@ public class SavedCardReaderTest
         AssertThat(record!.Signature!.Value.Elements).IsEqual(SavedElements);
         AssertThat(record.Position).IsEqual(new Vector3(1f, 2f, 3f));
         AssertThat(record.Rotation).IsEqual(new Vector3(-4f, 5f, -6f));
-        AssertThat(record.IsHeld).IsTrue();
-        AssertThat(record.ParentPath).IsEqual("World/Camera");
+        AssertThat(record.ParentPath).IsEqual("World/Shelf");
     }
 
     [TestCase]
@@ -89,7 +87,6 @@ public class SavedCardReaderTest
         ["signature_elements"] = SavedElements,
         ["position"] = Vector3.Zero,
         ["rotation"] = Vector3.Zero,
-        ["isHeld"] = false,
         ["parentPath"] = "",
     };
 

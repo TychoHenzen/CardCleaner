@@ -4,20 +4,24 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
+using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using NSubstitute;
 
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-///     A click on a free shelf slot stocks what the hand holds: the top card on a card shelf, a held booster on a
-///     product shelf. The interaction ray runs for real from the camera aimed at the slot. A stocked slot leaves its
-///     stock to be clicked and picked up again, and a slot refuses stock its shelf kind does not take.
+///     A click on free space on a shelf level stocks the hand's front item into the level's next free seat: a card on a
+///     card shelf, a held booster on a product shelf. The interaction ray runs for real from the camera aimed at the
+///     seat. A click on the stock takes the level's last item back into the hand, and a level refuses stock its shelf
+///     kind does not take. Items move as records, so the stocked card is a new body with the same signature.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -40,12 +44,11 @@ public class ShopShelfStockSceneTest
     private Node3D _shop = null!;
     private PlayerController _player = null!;
     private InteractionSystem _interaction = null!;
-    private CardHolder _cardHolder = null!;
-    private ContainerHolder _holder = null!;
+    private IHand _hand = null!;
     private CardShelf _cardShelf = null!;
     private CardShelf _productShelf = null!;
     private CardController _card = null!;
-    private Action<bool>? _leftClick;
+    private Action<MouseActionArgs>? _leftClick;
 
     [BeforeTest]
     public async Task Setup()
@@ -53,23 +56,23 @@ public class ShopShelfStockSceneTest
         _shop = GD.Load<PackedScene>(ShopSceneProbe.ScenePath).Instantiate<Node3D>();
         _player = _shop.GetNode<PlayerController>("Player");
         _interaction = _player.GetNode<InteractionSystem>("Head/Camera3D/InteractionSystem");
-        _cardHolder = _player.GetNode<CardHolder>("CardInteraction/CardHolder");
-        _holder = _player.GetNode<ContainerHolder>("CardInteraction/ContainerHolder");
+        _hand = _player.GetNode<IHand>("CardInteraction/Hand");
         _cardShelf = _shop.GetNode<CardShelf>("World/Furniture/CardShelf/Content");
         _productShelf = _shop.GetNode<CardShelf>("World/Furniture/ProductShelf/Content");
 
-        // The test scene is not the current scene, so the scene-owned services, the stock hand among them, are
-        // handed over directly; registered before the shop enters the tree, the slot targets resolve the hand at once.
+        // The test scene is not the current scene, so the scene-owned services are handed over directly, before the
+        // shop enters the tree. The level targets find the hand through its group.
         ShopSceneServices.RegisterWithCardSpawner(_shop, Seed);
-        TestServices.Container.RegisterSingleton<IStockHand>(_player.GetNode<CardHighlighter>("CardInteraction"));
 
         var input = Substitute.For<IInputService>();
         TestServices.Container.RegisterSingleton(input);
-        input.When(x => x.RegisterAction(Arg.Any<object>(), "interact", MouseButton.Left, Arg.Any<Action<bool>>()))
-            .Do(ci => _leftClick = ci.Arg<Action<bool>>());
+        input.When(x => x.RegisterAction(
+                Arg.Any<object>(), "interact", MouseButton.Left, Arg.Any<Action<MouseActionArgs>>()))
+            .Do(ci => _leftClick = ci.Arg<Action<MouseActionArgs>>());
 
         // The card joins the Cards group in its _Ready, before the player's CardHighlighter readies (World precedes
-        // Player in the shop), so the highlighter connects to its click and a stocked card can be picked up again.
+        // Player in the shop), so the highlighter puts it on the card layer, where the aim finds it, and a stocked card
+        // can be picked up again.
         _card = GD.Load<PackedScene>(CardScene).Instantiate<CardController>();
         _card.Position = new Vector3(-30f, 5f, -30f);
         _shop.GetNode<Node3D>("World").AddChild(_card);
@@ -85,139 +88,139 @@ public class ShopShelfStockSceneTest
     }
 
     [TestCase]
-    public void EverySlotOfEveryShelfHasOneClickTarget()
+    public void EveryLevelOfEveryShelfHasOneClickTarget()
     {
         foreach (var shelf in new[] { _cardShelf, _productShelf })
         {
-            var covered = shelf.SlotTargets.Select(target => target.Slot).ToArray();
-            AssertThat(covered.Length).IsEqual(shelf.SlotCount);
-            AssertThat(covered.Distinct().Count()).IsEqual(shelf.SlotCount);
+            var covered = shelf.LevelTargets.Select(target => target.Level).ToArray();
+            var levels = shelf.Levels.Count();
+            AssertThat(covered.Length).IsEqual(levels);
+            AssertThat(covered.Distinct().Count()).IsEqual(levels);
         }
     }
 
     [TestCase]
-    public async Task AClickOnAFreeCardSlotStocksTheTopCardInHand()
+    public async Task AClickOnAFreeCardSeatStocksTheFrontCardInHand()
     {
-        var card = _card;
-        _cardHolder.AddCard(card);
-        var target = TargetOf(_cardShelf, "Slot2");
+        var signature = _card.Signature;
+        AssertBool(_hand.TryTake(_card)).IsTrue();
+        var (target, seat) = TargetOf(_cardShelf, "Slot1");
 
-        await AimAt(target);
+        await AimAt(seat);
         AssertBool(ReferenceEquals(_interaction.Target, target))
             .OverrideFailureMessage($"aimed at {Describe(_interaction.Target)}, expected {target.Name}")
             .IsTrue();
-        AssertThat(_interaction.Target!.Prompt).IsEqual("Put the card here");
-        _leftClick!.Invoke(true);
+        AssertThat(_interaction.Prompt).IsEqual("Put the card here");
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
 
-        AssertBool(target.Slot!.Cards.Contains(card)).IsTrue();
-        AssertBool(card.GetParent() == target.Slot).IsTrue();
-        AssertBool(_cardHolder.HasCards).IsFalse();
-        AssertThat(target.CollisionLayer).IsEqual(0u);
-    }
-
-    [TestCase]
-    public async Task AimingAtTheSpotTheCardGoesFromAStepBackFindsTheSlotTarget()
-    {
-        _cardHolder.AddCard(_card);
-        var target = TargetOf(_cardShelf, "Slot1");
-        var slot = target.Slot!;
-        var standing = slot.GlobalPosition + ShelfFront(slot) * StepBackDistance;
-        _player.GlobalPosition = new Vector3(standing.X, PlayerStandHeight, standing.Z);
-        _player.Rotation = Vector3.Zero;
-        _interaction.Camera!.LookAt(slot.GlobalPosition);
-        await PhysicsFrames(AimFrames);
-
-        AssertBool(ReferenceEquals(_interaction.Target, target))
-            .OverrideFailureMessage($"aimed at {Describe(_interaction.Target)}, expected {target.Name}")
-            .IsTrue();
-    }
-
-    [TestCase]
-    public async Task AStockedCardIsPickedUpAgainByClickingIt()
-    {
-        var card = _card;
-        _cardHolder.AddCard(card);
-        var target = TargetOf(_cardShelf, "Slot2");
-        await AimAt(target);
-        _leftClick!.Invoke(true);
-        AssertBool(target.Slot!.Cards.Contains(card)).IsTrue();
-
-        await AimAt(card);
-        AssertBool(ReferenceEquals(_interaction.Target, card))
-            .OverrideFailureMessage($"aimed at {Describe(_interaction.Target)}, expected the stocked card")
-            .IsTrue();
-        _leftClick!.Invoke(true);
-
-        AssertBool(_cardHolder.HeldCards.Contains(card)).IsTrue();
-        AssertBool(target.Slot.HasCards).IsFalse();
+        AssertInt(target.Level!.Count).IsEqual(1);
+        AssertThat(((CardController)seat.Cards.Single()).Signature).IsEqual(signature);
+        AssertInt(_hand.Count).IsEqual(0);
         AssertThat(target.CollisionLayer).IsEqual(4u);
     }
 
-    // The pick-up reparents the card to the camera while it still lies on the seat, which reports it entering the
-    // slot's trigger again at once. The slot must not take it back once the frames after the click have run: before
-    // the hand took cards out of play, the card ended up both in the hand and locked in the slot.
-    [TestCase("Slot2")]
-    [TestCase("Slot6")]
-    public async Task ACardPickedUpOffAOneCardSlotStaysInTheHand(string slotName)
+    // A level fills its seats in order: aimed at its last seat, the card still goes into the first free one.
+    [TestCase]
+    public async Task ACardPutAnywhereOnALevelGoesIntoItsFirstFreeSeat()
     {
-        var card = _card;
-        _cardHolder.AddCard(card);
-        var target = TargetOf(_cardShelf, slotName);
-        await AimAt(target);
-        _leftClick!.Invoke(true);
-        AssertBool(target.Slot!.Cards.Contains(card)).IsTrue();
+        AssertBool(_hand.TryTake(_card)).IsTrue();
+        var (target, last) = TargetOf(_cardShelf, "Slot4");
 
-        await AimAt(card);
-        _leftClick!.Invoke(true);
-        await PhysicsFrames(AimFrames);
+        await AimAt(last);
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
 
-        AssertBool(_cardHolder.HeldCards.Contains(card)).IsTrue();
-        AssertBool(card.GetParent() == _interaction.Camera).IsTrue();
-        AssertBool(target.Slot.HasCards).IsFalse();
-        AssertBool(card.Freeze).IsTrue();
-        AssertThat(card.CollisionLayer).IsEqual(0u);
+        AssertBool(target.Level!.Seats[0].HasCards).IsTrue();
+        AssertBool(last.HasCards).IsFalse();
     }
 
     [TestCase]
-    public async Task AClickOnAFreeProductSlotStocksTheHeldBooster()
+    public async Task AimingAtTheSeatFromAStepBackFindsTheLevelTarget()
     {
-        var booster = NewBooster();
-        await PhysicsFrames(1);
-        AssertBool(_holder.TryPickUp(booster)).IsTrue();
-        var target = TargetOf(_productShelf, "Slot1");
+        AssertBool(_hand.TryTake(_card)).IsTrue();
+        var (target, seat) = TargetOf(_cardShelf, "Slot1");
+        var standing = seat.GlobalPosition + ShelfFront(seat) * StepBackDistance;
+        _player.GlobalPosition = new Vector3(standing.X, PlayerStandHeight, standing.Z);
+        _player.Rotation = Vector3.Zero;
+        _interaction.Camera!.LookAt(seat.GlobalPosition);
+        await PhysicsFrames(AimFrames);
 
-        await AimAt(target);
         AssertBool(ReferenceEquals(_interaction.Target, target))
             .OverrideFailureMessage($"aimed at {Describe(_interaction.Target)}, expected {target.Name}")
             .IsTrue();
-        AssertThat(_interaction.Target!.Prompt).IsEqual("Put the booster pack here");
-        _leftClick!.Invoke(true);
+    }
 
-        AssertBool(_holder.IsHolding).IsFalse();
-        AssertBool(target.Slot!.Cards.Contains(booster)).IsTrue();
-        AssertBool(booster.GetParent() == target.Slot).IsTrue();
-        AssertBool(booster.Freeze).IsTrue();
+    // Taking a card off its seat builds it again under the camera while the old body still lies on the seat, and the
+    // level must not take either back once the frames after the click have run: before the hand took cards out of
+    // play, a card ended up both in the hand and locked in a seat.
+    [TestCase("Slot1")]
+    [TestCase("Slot5")]
+    public async Task AStockedCardIsTakenBackIntoTheHandByClickingIt(string seatName)
+    {
+        var signature = _card.Signature;
+        AssertBool(_hand.TryTake(_card)).IsTrue();
+        var (target, seat) = TargetOf(_cardShelf, seatName);
+        await AimAt(seat);
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
+        AssertBool(seat.HasCards).IsTrue();
+
+        await AimAt(seat);
+        AssertThat(_interaction.Prompt).IsEqual("Pick up card");
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
+        await PhysicsFrames(AimFrames);
+
+        AssertInt(_hand.Count).IsEqual(1);
+        var held = (CardController)_hand.Front!;
+        AssertThat(held.Signature).IsEqual(signature);
+        AssertBool(held.GetParent() == _interaction.Camera).IsTrue();
+        AssertBool(held.Freeze).IsTrue();
+        AssertThat(held.CollisionLayer).IsEqual(0u);
+        AssertInt(target.Level!.Count).IsEqual(0);
     }
 
     [TestCase]
-    public async Task ACardShelfSlotRefusesAHeldBooster()
+    public async Task AClickOnAFreeProductSeatStocksTheHeldBooster()
     {
         var booster = NewBooster();
         await PhysicsFrames(1);
-        AssertBool(_holder.TryPickUp(booster)).IsTrue();
-        var target = TargetOf(_cardShelf, "Slot1");
+        AssertBool(_hand.TryTake(booster)).IsTrue();
+        var (target, seat) = TargetOf(_productShelf, "Slot1");
 
-        await AimAt(target);
-        AssertBool(target.CanInteract).IsFalse();
-        AssertBool(ReferenceEquals(_interaction.Target, target)).IsFalse();
-        _leftClick!.Invoke(true);
+        await AimAt(seat);
+        AssertBool(ReferenceEquals(_interaction.Target, target))
+            .OverrideFailureMessage($"aimed at {Describe(_interaction.Target)}, expected {target.Name}")
+            .IsTrue();
+        AssertThat(_interaction.Prompt).IsEqual("Put the booster pack here");
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
 
-        AssertBool(ReferenceEquals(_holder.Held, booster)).IsTrue();
-        AssertBool(target.Slot!.HasCards).IsFalse();
+        AssertInt(_hand.Count).IsEqual(0);
+        var stocked = seat.Cards.Single();
+        AssertThat(((CardContainer)stocked).Kind).IsEqual(CardContainerKind.Booster);
+        AssertBool(stocked.Freeze).IsTrue();
     }
 
-    private static ShelfSlotTarget TargetOf(CardShelf shelf, string slotName) =>
-        shelf.SlotTargets.Single(target => target.Slot!.Name == slotName);
+    [TestCase]
+    public async Task ACardShelfLevelRefusesAHeldBooster()
+    {
+        var booster = NewBooster();
+        await PhysicsFrames(1);
+        AssertBool(_hand.TryTake(booster)).IsTrue();
+        var (target, seat) = TargetOf(_cardShelf, "Slot1");
+
+        await AimAt(seat);
+        AssertObject(RouterClicks.PromptAt(_interaction.Router!, target, seat.SeatPosition(0))).IsNull();
+        AssertBool(ReferenceEquals(_interaction.Target, target)).IsFalse();
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
+
+        AssertBool(ReferenceEquals(_hand.Front, booster)).IsTrue();
+        AssertInt(target.Level!.Count).IsEqual(0);
+    }
+
+    // The click target of the level that holds the named seat, and that seat.
+    private static (ShelfLevelTarget Target, DeckSlot Seat) TargetOf(CardShelf shelf, string seatName)
+    {
+        var seat = shelf.Slots.Single(slot => slot.Name == seatName);
+        return (shelf.LevelTargets.Single(target => target.Level == shelf.LevelOf(seat)), seat);
+    }
 
     // Stands the player StandingDistance in front of the body (shelves face their local -Z) and turns the camera
     // onto it, so the interaction ray reaches it the way a player's aim does.

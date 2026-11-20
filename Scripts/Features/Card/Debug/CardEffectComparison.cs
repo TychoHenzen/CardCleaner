@@ -132,7 +132,8 @@ public partial class CardEffectComparison : Node3D, IDependent
     {
         return CardParent.GetChildren().Concat(BatchParent.GetChildren())
             .Where(card => !card.IsQueuedForDeletion())
-            .SelectMany(card => card.GetChildren().OfType<CardShaderRenderer>());
+            .SelectMany(card => card.GetChildren().OfType<CardFace>())
+            .Select(face => face.Renderer);
     }
 
     private void FitCamera()
@@ -149,8 +150,7 @@ public partial class CardEffectComparison : Node3D, IDependent
     private void SpawnGrid(ICardSpawningService spawner)
     {
         _spawner = spawner;
-        foreach (var rarity in Enum.GetValues<CardRarity>())
-        foreach (var tier in Enum.GetValues<IntensityTier>())
+        foreach (var (rarity, tier) in CardEffectComparisonGrid.Cells)
         {
             var center = CardEffectComparisonLayout.CellCenter(rarity, tier);
             SpawnFrozen(CardEffectComparisonGrid.SignatureFor(rarity, tier), center, CardParent,

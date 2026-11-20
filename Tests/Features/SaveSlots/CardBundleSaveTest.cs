@@ -47,6 +47,8 @@ public class CardBundleSaveTest
         AddNode(scene.World, autoFree: false);
         scene.Enter();
         service.SaveGame();
+        var pileSeed = pile.PileSeed;
+        var pilePoses = ShownPoses(pile);
 
         service.LoadGame();
 
@@ -63,6 +65,9 @@ public class CardBundleSaveTest
         AssertThat(deckBack.GlobalPosition).IsEqualApprox(DeckPosition, new Vector3(0.001f, 0.001f, 0.001f));
         AssertThat(deckBack.GlobalRotation).IsEqualApprox(DeckRotation, new Vector3(0.001f, 0.001f, 0.001f));
         AssertThat(pileBack.GlobalPosition).IsEqualApprox(PilePosition, new Vector3(0.001f, 0.001f, 0.001f));
+        // The pile keeps its seed, so its shown cards lie where they lay before the save.
+        AssertThat(pileBack.PileSeed).IsEqual(pileSeed);
+        AssertThat(ShownPoses(pileBack)).IsEqual(pilePoses);
         await BoundedWait.ForQueuedFrees();
     }
 
@@ -92,6 +97,9 @@ public class CardBundleSaveTest
 
         Assertions.AssertThrown(() => SavedBundles.Parse(raw)).IsInstanceOf<FormatException>();
     }
+
+    private static Transform3D[] ShownPoses(CardBundle pile) =>
+        pile.ShownCards.OrderBy(entry => entry.Key).Select(entry => entry.Value.Transform).ToArray();
 
     private static CardBundle Add(SaveWorld scene, CardBundleKind kind, IEnumerable<StoredCard> cards, Vector3 at,
         Vector3 rotation)

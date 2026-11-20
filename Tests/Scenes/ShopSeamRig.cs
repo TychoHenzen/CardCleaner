@@ -2,10 +2,10 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Portal.Components;
 using CardCleaner.Tests.Features.Shop;
@@ -33,14 +33,14 @@ public sealed class ShopSeamRig
         Player = shop.GetNode<PlayerController>("Player");
         Seam = shop.GetNode<WallSeam>("World/Markers/SeamLocation/Seam");
         WorkshopEntry = shop.GetNode<Node3D>("World/Workshop/WorkshopEntry");
-        Holder = Player.GetNode<CardHolder>("CardInteraction/CardHolder");
+        Hand = Player.GetNode<IHand>("CardInteraction/Hand");
     }
 
     public Node3D Shop { get; }
     public PlayerController Player { get; }
     public WallSeam Seam { get; }
     public Node3D WorkshopEntry { get; }
-    public CardHolder Holder { get; }
+    public IHand Hand { get; }
 
     public static async Task<ShopSeamRig> Create()
     {
@@ -64,14 +64,14 @@ public sealed class ShopSeamRig
     {
         var card = ShopTestCards.Create(signature);
         Shop.GetNode("World/Cards").AddChild(card);
-        Holder.AddCard(card);
+        Hand.TryTake(card);
         await Settle();
         return card;
     }
 
     public async Task Drop(CardController card)
     {
-        Holder.RemoveCard(card);
+        Hand.ReleaseCard(card);
         await Settle();
     }
 

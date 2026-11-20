@@ -2,7 +2,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Card.Services.SaveGame;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Services;
@@ -17,7 +18,7 @@ namespace CardCleaner.Tests.Features.Packs.Components;
 
 /// <summary>
 ///     A booster opened in the player's hand (<see cref="CardContainer.OpenInHand" />, through
-///     <see cref="ContainerHolder.UseHeld" />): its cards are the ones its seed gives, they never meet the world, the
+///     <see cref="IHand.UseFront" />): its cards are the ones its seed gives, they never meet the world, the
 ///     hand stays busy until they are in it, and they end up in the hand of cards after the cards it already held, in
 ///     the order they left the booster.
 /// </summary>
@@ -30,10 +31,9 @@ public class BoosterRevealTest
     private const ulong Seed = 0xB0057EEUL;
 
     private Node3D _world = null!;
-    private Camera3D _hand = null!;
+    private Camera3D _anchor = null!;
     private RecordingCardSpawner _spawner = null!;
-    private CardHolder _cards = null!;
-    private ContainerHolder _holder = null!;
+    private Scripts.Features.Hand.Components.Hand _hand = null!;
 
     [Before]
     public static void SetupSuite() => TestServices.Reset();
@@ -42,17 +42,14 @@ public class BoosterRevealTest
     public void Setup()
     {
         _world = AddNode(new Node3D());
-        _hand = new Camera3D { Name = "HandAnchor" };
-        _world.AddChild(_hand);
+        _anchor = new Camera3D { Name = "HandAnchor" };
+        _world.AddChild(_anchor);
         _spawner = new RecordingCardSpawner(buildBodies: true);
         TestServices.Container.RegisterSingleton(Substitute.For<IInputService>());
 
-        _cards = TestServices.Inject(new CardHolder());
-        _world.AddChild(_cards);
-        _cards.SetReferences(_hand);
-        _holder = TestServices.Inject(new ContainerHolder());
-        _world.AddChild(_holder);
-        _holder.SetReferences(_hand, _cards);
+        _hand = TestServices.Inject(new Scripts.Features.Hand.Components.Hand());
+        _world.AddChild(_hand);
+        _hand.SetReferences(_anchor);
     }
 
     [AfterTest]
@@ -63,13 +60,13 @@ public class BoosterRevealTest
     {
         var booster = HeldBooster();
 
-        AssertBool(_holder.UseHeld()).IsTrue();
-        await Until(() => !_holder.IsOpening, "the booster opening in the hand");
+        AssertBool(_hand.UseFront()).IsTrue();
+        await Until(() => !_hand.IsOpening, "the booster opening in the hand");
 
-        AssertThat(_cards.HeldCount).IsEqual(8);
-        AssertThat(_cards.HeldCards).ContainsExactly(_spawner.Bodies.ToArray());
+        AssertThat(_hand.Cards.Count).IsEqual(8);
+        AssertThat(_hand.Cards.ToArray()).ContainsExactly(_spawner.Bodies.ToArray());
         AssertBool(!GodotObject.IsInstanceValid(booster) || booster.IsQueuedForDeletion()).IsTrue();
-        AssertBool(_holder.IsHolding).IsFalse();
+        AssertThat(_hand.Count).IsEqual(8);
     }
 
     // The booster's seed decides its cards and their order.
@@ -77,7 +74,7 @@ public class BoosterRevealTest
     public void TheCardsAreTheOnesTheBoostersSeedGives()
     {
         HeldBooster();
-        _holder.UseHeld();
+        _hand.UseFront();
         FinishTheOpeningBooster();
 
         var expected = new CardPackGenerator(RandomSources.Create(Seed)).OpenBooster();
@@ -89,17 +86,17 @@ public class BoosterRevealTest
     {
         var held = new[] { LooseCard("Held0"), LooseCard("Held1") };
         foreach (var card in held)
-            _cards.AddCard(card);
+            _hand.TryTake(card);
         HeldBooster();
 
-        _holder.UseHeld();
-        await Until(() => !_holder.IsOpening, "the booster opening in the hand");
+        _hand.UseFront();
+        await Until(() => !_hand.IsOpening, "the booster opening in the hand");
 
-        var hand = _cards.HeldCards;
-        AssertThat(hand.Length).IsEqual(10);
+        var hand = _hand.Items;
+        AssertThat(hand.Count).IsEqual(10);
         AssertThat(hand.Take(2).ToArray()).ContainsExactly(held);
-        for (var i = 0; i < hand.Length; i++)
-            AssertBool(hand[i].Transform.IsEqualApprox(_cards.FanPose(i, hand.Length)))
+        for (var i = 0; i < hand.Count; i++)
+            AssertBool(hand[i].Transform.IsEqualApprox(_hand.PoseOf(i, hand.Count)))
                 .OverrideFailureMessage($"card {i} is at {hand[i].Transform}, not its fan pose")
                 .IsTrue();
     }
@@ -111,16 +108,16 @@ public class BoosterRevealTest
         var box = GD.Load<PackedScene>(BoxScene).Instantiate<CardContainer>();
         _world.AddChild(box);
 
-        _holder.UseHeld();
+        _hand.UseFront();
         await Frames(2);
 
-        AssertBool(_holder.IsOpening).IsTrue();
-        AssertBool(_holder.IsHolding).IsTrue();
-        AssertThat(_holder.Held).IsNull();
-        AssertBool(_holder.TryPickUp(box)).IsFalse();
-        AssertBool(_holder.Drop()).IsFalse();
-        AssertBool(_holder.UseHeld()).IsFalse();
-        AssertBool(booster.GetParent() == _hand).IsTrue();
+        AssertBool(_hand.IsOpening).IsTrue();
+        AssertThat(_hand.Front).IsNull();
+        AssertThat(_hand.Room).IsEqual(0);
+        AssertBool(_hand.TryTake(box)).IsFalse();
+        AssertBool(_hand.PutFrontDown()).IsFalse();
+        AssertBool(_hand.UseFront()).IsFalse();
+        AssertBool(booster.GetParent() == _anchor).IsTrue();
         AssertBool(box.GetParent() == _world).IsTrue();
 
         FinishTheOpeningBooster();
@@ -132,14 +129,14 @@ public class BoosterRevealTest
     {
         HeldBooster();
 
-        _holder.UseHeld();
+        _hand.UseFront();
         await BoundedWaitFor(() => _spawner.Bodies.Count >= 3, "three cards out of the booster");
 
         foreach (var card in _spawner.Bodies)
         {
             AssertBool(card.Freeze).IsTrue();
             AssertBool(card.GetNode<CollisionShape3D>("CardCollision").Disabled).IsTrue();
-            AssertBool(card.GetParent() == _hand).IsTrue();
+            AssertBool(card.GetParent() == _anchor).IsTrue();
         }
 
         FinishTheOpeningBooster();
@@ -150,13 +147,13 @@ public class BoosterRevealTest
     public async Task ASaveMidOpeningPutsEveryCardInTheHandAndStoresNoBooster()
     {
         HeldBooster();
-        _holder.UseHeld();
+        _hand.UseFront();
         await Frames(2);
 
         SavedContainers.FinishOpenings(_world.GetTree());
 
-        AssertThat(_cards.HeldCount).IsEqual(8);
-        AssertBool(_holder.IsOpening).IsFalse();
+        AssertThat(_hand.Cards.Count).IsEqual(8);
+        AssertBool(_hand.IsOpening).IsFalse();
         AssertThat(SavedContainers.Capture(_world.GetTree()).Count).IsEqual(0);
     }
 
@@ -166,13 +163,15 @@ public class BoosterRevealTest
         booster.ContentSeed = Seed;
         booster.Spawning = _spawner;
         _world.AddChild(booster);
-        AssertBool(_holder.TryPickUp(booster)).IsTrue();
+        AssertBool(_hand.TryTake(booster)).IsTrue();
+        // Only the front item is used, so the booster comes to the front.
+        _hand.SetFront(_hand.Count - 1);
         return booster;
     }
 
-    private RigidBody3D LooseCard(string name)
+    private CardController LooseCard(string name)
     {
-        var card = new RigidBody3D { Name = name };
+        var card = new CardController { Name = name };
         card.AddChild(new CollisionShape3D { Name = "CardCollision", Shape = new BoxShape3D() });
         _world.AddChild(card);
         return card;
@@ -181,7 +180,7 @@ public class BoosterRevealTest
     // The booster opening in the hand is no longer Held, so it is found among the hand anchor's children.
     private void FinishTheOpeningBooster()
     {
-        foreach (var container in _hand.GetChildren().OfType<CardContainer>())
+        foreach (var container in _anchor.GetChildren().OfType<CardContainer>())
             container.FinishOpening();
     }
 

@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.CardStacks.Models;
-using CardCleaner.Scripts.Features.Packs.Components;
-using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.CardStacks.Components;
@@ -14,8 +11,10 @@ namespace CardCleaner.Scripts.Features.CardStacks.Components;
 ///     A loose card is one at rest in the world: frozen (a card freezes once it lies still), on a collision layer, and
 ///     held by no hand, slot or booster reveal. More than <see cref="CardBundleRules.MostLooseCards" /> loose cards
 ///     linked within <see cref="LinkDistance" /> of each other become one pile where they lay; a loose card that comes
-///     to rest on or beside a pile joins it; and two piles that run into each other become one. The shop puts it
-///     directly under its scene root, which is where a save load puts the cards, decks and piles it restores.
+///     to rest on or beside a pile joins it; and two piles that run into each other become one, the newer pile's cards
+///     going on top of the older's. A card that touches a pile joins it sooner, through the pile's own join area. The
+///     shop puts it directly under its scene root, which is where a save load puts the cards, decks and piles it
+///     restores.
 /// </summary>
 public partial class CardPileGatherer : Node
 {
@@ -67,7 +66,8 @@ public partial class CardPileGatherer : Node
             return;
 
         var piles = GetTree().GetNodesInGroup(CardBundle.GroupName).OfType<CardBundle>()
-            .Where(bundle => bundle.Kind == CardBundleKind.Pile && IsAlive(bundle) && scope.IsAncestorOf(bundle))
+            .Where(bundle => bundle.Kind == CardBundleKind.Pile && LooseCards.IsAlive(bundle)
+                             && scope.IsAncestorOf(bundle))
             .ToList();
         var loose = GetTree().GetNodesInGroup("Cards").OfType<CardController>()
             .Where(card => scope.IsAncestorOf(card) && IsLoose(card)).ToList();
@@ -77,20 +77,8 @@ public partial class CardPileGatherer : Node
         MergePiles(piles);
     }
 
-    private static bool IsAlive(Node node) => node.IsInsideTree() && !node.IsQueuedForDeletion();
-
-    private static bool IsLoose(CardController card) =>
-        IsAlive(card) && card.Freeze && card.CollisionLayer != 0 && !HasAncestor<DeckSlot>(card)
-        && !HasAncestor<Camera3D>(card);
-
-    private static bool HasAncestor<T>(Node node)
-    {
-        for (var parent = node.GetParent(); parent != null; parent = parent.GetParent())
-            if (parent is T)
-                return true;
-
-        return false;
-    }
+    // A free card that has come to rest (a card freezes once it lies still).
+    private static bool IsLoose(CardController card) => card.Freeze && LooseCards.IsFree(card);
 
     // Each card that lies on or beside a pile goes into the nearest such pile; the joined cards leave the list.
     private void JoinPiles(List<CardController> loose, List<CardBundle> piles)
@@ -109,7 +97,7 @@ public partial class CardPileGatherer : Node
 
         foreach (var (pile, cards) in joining.Where(entry => entry.Value.Count > 0))
         {
-            pile.Add(Take(cards));
+            pile.Add(LooseCards.TakeRecords(cards));
             loose.RemoveAll(cards.Contains);
         }
     }
@@ -136,14 +124,15 @@ public partial class CardPileGatherer : Node
 
             var centre = cards.Aggregate(Vector3.Zero, (sum, card) => sum + card.GlobalPosition) / cards.Count;
             var floor = cards.Min(card => card.GlobalPosition.Y) - CardBundleRules.CardSize.Y / 2f;
-            var pile = CardBundle.Create(CardBundleKind.Pile, Take(cards));
+            var pile = CardBundle.Create(CardBundleKind.Pile, LooseCards.TakeRecords(cards));
             parent.AddChild(pile);
             pile.GlobalPosition = new Vector3(centre.X, floor + StartLift, centre.Z);
             piles.Add(pile);
         }
     }
 
-    // A later pile pours into an earlier one it runs into, so the pile that formed first keeps its place.
+    // A later pile pours into an earlier one it runs into, so the pile that formed first keeps its place and its seed,
+    // and the later pile's cards are laid after its own, on top.
     private static void MergePiles(List<CardBundle> piles)
     {
         for (var i = 0; i < piles.Count; i++)
@@ -163,19 +152,6 @@ public partial class CardPileGatherer : Node
         var height = Mathf.Max(CardBundleRules.PileHeight(a.Count), CardBundleRules.PileHeight(b.Count));
         return Flat(a.GlobalPosition - b.GlobalPosition).Length() <= reach
                && Mathf.Abs(a.GlobalPosition.Y - b.GlobalPosition.Y) <= height;
-    }
-
-    // The cards become records and leave the tree at once, so no later pass finds them again.
-    private static List<StoredCard> Take(List<CardController> cards)
-    {
-        var records = cards.Select(card => (StoredCard)StoredItemBodies.RecordOf(card)).ToList();
-        foreach (var card in cards)
-        {
-            card.GetParent()?.RemoveChild(card);
-            card.QueueFree();
-        }
-
-        return records;
     }
 
     private static Vector2 Flat(Vector3 offset) => new(offset.X, offset.Z);

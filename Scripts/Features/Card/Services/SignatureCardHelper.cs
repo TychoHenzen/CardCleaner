@@ -11,44 +11,24 @@ public static class SignatureCardHelper
 {
     public static ulong ComputeSeed(CardSignature signature) => CardSignatureHash.Of(signature);
 
+    /// <summary>An element whose magnitude reaches this is pure.</summary>
+    public const float PureThreshold = 0.9f;
+
+    /// <summary>
+    ///     Rarity is the number of pure elements: none Common, one Uncommon, two Rare, three Epic, four or more
+    ///     Legendary. Strength is the magnitude on the -1 to +1 range, so the sign never matters and a stronger element
+    ///     never lowers the count.
+    /// </summary>
     public static CardRarity DetermineRarity(CardSignature[] signature)
     {
-        // The scorer rewards distance from 0.5, so an all-zero (common) signature would otherwise score Legendary.
-        if (signature.All(sig => !sig.HasMagicalPotential()))
-            return CardRarity.Common;
-
-        return RarityForScore(RarityScore(signature));
-    }
-
-    private static float RarityScore(CardSignature[] signature)
-    {
-        var totalPoints = signature.Sum(sig => sig.Elements.Sum(e => PointsForElement(e)));
-        var maxPoints = signature.Length * 8 * 8;
-        var rarityRatio = (float)totalPoints / maxPoints;
-        return (float)Math.Log10(1f + 9f * rarityRatio);
-    }
-
-    private static int PointsForElement(float element)
-    {
-        var v = Mathf.Abs(Math.Abs(element) - 0.5f);
-        return v switch
+        // ASSUMPTION: every caller passes one card's signature; with several, their pure elements add up.
+        var pure = signature.Sum(sig => sig.Elements.Count(e => MathF.Abs(e) >= PureThreshold));
+        return pure switch
         {
-            < 0.1f => 0,
-            < 0.2f => 1,
-            < 0.3f => 2,
-            < 0.4f => 4,
-            _ => 8
-        };
-    }
-
-    private static CardRarity RarityForScore(float logScaled)
-    {
-        return logScaled switch
-        {
-            < 0.70f => CardRarity.Common,
-            < 0.80f => CardRarity.Uncommon,
-            < 0.92f => CardRarity.Rare,
-            < 0.96f => CardRarity.Epic,
+            0 => CardRarity.Common,
+            1 => CardRarity.Uncommon,
+            2 => CardRarity.Rare,
+            3 => CardRarity.Epic,
             _ => CardRarity.Legendary
         };
     }

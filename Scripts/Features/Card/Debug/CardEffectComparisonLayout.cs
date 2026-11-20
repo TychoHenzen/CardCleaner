@@ -48,12 +48,14 @@ public static class CardEffectComparisonLayout
 
     /// <summary>
     ///     The signature of the batch card at <paramref name="index" />: a copy of a grid cell's, cycling through all
-    ///     of them so a batch shows every effect equally often.
+    ///     of them so a batch shows every effect equally often. The grid keeps a place for every rarity and tier, and
+    ///     a cell no card can reach (<see cref="CardEffectComparisonGrid.Has" />) stays empty.
     /// </summary>
     public static CardSignature BatchSignature(int index)
     {
-        var cell = index % (Rarities.Length * Tiers.Length);
-        return CardEffectComparisonGrid.SignatureFor(Rarities[cell / Tiers.Length], Tiers[cell % Tiers.Length]);
+        var cells = CardEffectComparisonGrid.Cells;
+        var (rarity, tier) = cells[index % cells.Count];
+        return CardEffectComparisonGrid.SignatureFor(rarity, tier);
     }
 
     public static Vector2 BatchCenter(int index)

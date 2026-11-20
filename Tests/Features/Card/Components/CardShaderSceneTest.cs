@@ -27,7 +27,7 @@ public class CardShaderSceneTest
         var box = outline.Mesh as BoxMesh;
         Assertions.AssertThat(box).IsNotNull();
         Assertions.AssertBool(box!.FlipFaces).IsTrue();
-        var bodySize = card.GetNode<MeshInstance3D>("OuterBox_Baked").Mesh.GetAabb().Size;
+        var bodySize = card.GetNode<MeshInstance3D>("Face/OuterBox_Baked").Mesh.GetAabb().Size;
         var expected = bodySize + Vector3.One * OutlineMargin;
         Assertions.AssertBool(box.Size.IsEqualApprox(expected))
             .OverrideFailureMessage($"OutlineBox size {box.Size} should be the card mesh size plus margin, {expected}")
@@ -53,7 +53,7 @@ public class CardShaderSceneTest
         var card = ResourceLoader.Load<PackedScene>(CardScenePath).Instantiate<Node3D>();
         Assertions.AddNode(card);
         var designer = card.GetNode<CardDesigner>("Designer");
-        var size = card.GetNode<MeshInstance3D>("OuterBox_Baked").Mesh.GetAabb().Size;
+        var size = card.GetNode<MeshInstance3D>("Face/OuterBox_Baked").Mesh.GetAabb().Size;
         var dimensions = new Vector3(designer.Width, designer.Thickness, designer.Height);
         Assertions.AssertBool(dimensions.IsEqualApprox(size)).IsTrue();
     }

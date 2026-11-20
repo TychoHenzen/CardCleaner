@@ -35,14 +35,12 @@ public class SavedCardReaderFixtureTest
         AssertThat(held.Signature!.Value.Elements).IsEqual(SavedCardFixture.HeldElements);
         AssertThat(held.Position).IsEqual(SavedCardFixture.HeldPosition);
         AssertThat(held.Rotation).IsEqual(SavedCardFixture.HeldRotation);
-        AssertBool(held.IsHeld).IsTrue();
         AssertThat(held.ParentPath).IsEqual(SavedCardFixture.HeldParentPath);
 
         var placed = records[1]!;
         AssertThat(placed.Signature!.Value.Elements).IsEqual(SavedCardFixture.PlacedElements);
         AssertThat(placed.Position).IsEqual(SavedCardFixture.PlacedPosition);
         AssertThat(placed.Rotation).IsEqual(SavedCardFixture.PlacedRotation);
-        AssertBool(placed.IsHeld).IsFalse();
         AssertThat(placed.ParentPath).IsEqual(SavedCardFixture.PlacedParentPath);
     }
 }

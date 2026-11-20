@@ -26,7 +26,9 @@ public class CardPackGenerator(IRandom rng)
 
     /// <summary>
     /// Rolls one card: special with probability 1 /
-    /// <see cref="SpecialCardOdds" />, otherwise common.
+    /// <see cref="SpecialCardOdds" />, otherwise common. A special pack card
+    /// is faint (<see cref="SignatureRandom.CreateFaint" />), so it reads as
+    /// only just above mundane and rates Common.
     /// </summary>
     public CardSignature NextCardSignature()
     {
@@ -34,7 +36,7 @@ public class CardPackGenerator(IRandom rng)
         // RandiRange rejects the biased tail.
         var isSpecial = rng.RandiRange(0, SpecialCardOdds - 1) == 0;
         return isSpecial
-            ? SignatureRandom.CreateSpecial(rng)
+            ? SignatureRandom.CreateFaint(rng)
             : CommonSignature();
     }
 

@@ -1,13 +1,13 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     Maps the stocked slots of the sales shelves (groups "sales_shelves": card and product shelves, never storage
-///     racks) to <see cref="ShelfOffer" /> values and back. An offer id is the slot's node path.
+///     Maps the stocked levels of the sales shelves (groups "sales_shelves": card and product shelves, never storage
+///     racks) to <see cref="ShelfOffer" /> values and back. An offer is the item a customer takes next from a level,
+///     its last one, at the price its tag prints; an offer id is the level's node path.
 /// </summary>
 public sealed class ShelfOfferIndex
 {
@@ -20,7 +20,7 @@ public sealed class ShelfOfferIndex
         _tree = tree;
     }
 
-    /// <summary>One offer per slot that holds stock with a market value above 0 and has a price tag.</summary>
+    /// <summary>One offer per level that holds stock with a market value above 0 and has a price tag.</summary>
     public IReadOnlyList<ShelfOffer> Collect()
     {
         var offers = new List<ShelfOffer>();
@@ -29,31 +29,31 @@ public sealed class ShelfOfferIndex
             if (node is not CardShelf shelf)
                 continue;
 
-            foreach (var slot in shelf.Slots)
+            foreach (var level in shelf.Levels)
             {
-                var pricing = shelf.PricingFor(slot);
-                if (pricing is null || !slot.HasCards || pricing.MarketValue <= 0)
+                var pricing = shelf.PricingFor(level);
+                if (pricing is null || level.Count == 0 || pricing.MarketValue <= 0)
                     continue;
 
-                offers.Add(new ShelfOffer(slot.GetPath().ToString(), pricing.AskingValue, pricing.MarketValue));
+                offers.Add(new ShelfOffer(level.GetPath().ToString(), pricing.AskingValue, pricing.MarketValue));
             }
         }
 
         return offers;
     }
 
-    /// <summary>The slot an offer id names, or null when it is no longer in the tree.</summary>
-    public DeckSlot? SlotFor(string offerId) => _tree.Root.GetNodeOrNull<DeckSlot>(new NodePath(offerId));
+    /// <summary>The level an offer id names, or null when it is no longer in the tree.</summary>
+    public ShelfLevel? LevelFor(string offerId) => _tree.Root.GetNodeOrNull<ShelfLevel>(new NodePath(offerId));
 
-    /// <summary>The point 0.8 m in front of the slot (the shelf's -Z side) at the shelf's height, or null.</summary>
+    /// <summary>The point 0.8 m in front of the level (the shelf's -Z side) at the shelf's height, or null.</summary>
     public Vector3? ApproachPointFor(string offerId)
     {
-        var slot = SlotFor(offerId);
-        return slot?.GetParent() is CardShelf shelf ? Approach(shelf, slot) : null;
+        var level = LevelFor(offerId);
+        return level?.GetParent() is CardShelf shelf ? Approach(shelf, level) : null;
     }
 
     /// <summary>
-    ///     The approach point of every slot of every shown sales shelf, stocked or not, in tree order: where a
+    ///     The approach point of every level of every shown sales shelf, stocked or not, in tree order: where a
     ///     customer with nothing to buy stands to look. A shelf being carried (hidden) has none.
     /// </summary>
     public IReadOnlyList<Vector3> BrowsePoints()
@@ -64,16 +64,16 @@ public sealed class ShelfOfferIndex
             if (node is not CardShelf shelf || !shelf.IsVisibleInTree())
                 continue;
 
-            foreach (var slot in shelf.Slots)
-                points.Add(Approach(shelf, slot));
+            foreach (var level in shelf.Levels)
+                points.Add(Approach(shelf, level));
         }
 
         return points;
     }
 
-    private static Vector3 Approach(CardShelf shelf, DeckSlot slot)
+    private static Vector3 Approach(CardShelf shelf, ShelfLevel level)
     {
-        var point = slot.GlobalPosition - shelf.GlobalBasis.Z * ApproachMeters;
+        var point = level.GlobalPosition - shelf.GlobalBasis.Z * ApproachMeters;
         return new Vector3(point.X, shelf.GlobalPosition.Y, point.Z);
     }
 }

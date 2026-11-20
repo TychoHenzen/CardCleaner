@@ -115,9 +115,12 @@ public class CardPileGathererTest
         var first = AddPile(120, Vector3.Zero, firstSeed: 0);
         var second = AddPile(110, new Vector3(0.3f, 0f, 0f), firstSeed: 1000);
         var apart = AddPile(105, new Vector3(10f, 0f, 0f), firstSeed: 2000);
+        var seed = first.PileSeed;
 
         _gatherer.Gather();
 
+        // The first pile keeps its seed, so none of its own cards moves; the second pile's cards lie on top.
+        AssertThat(first.PileSeed).IsEqual(seed);
         AssertThat(first.Count).IsEqual(230);
         AssertThat(first.Cards[120].LookSeed).IsEqual(1000);
         AssertBool(second.IsInsideTree()).IsFalse();
@@ -127,7 +130,7 @@ public class CardPileGathererTest
     }
 
     [TestCase]
-    public void TheShopGathersCardsUnderItsSceneRoot()
+    public static void TheShopGathersCardsUnderItsSceneRoot()
     {
         var state = GD.Load<PackedScene>(ShopScene).GetState();
         var gatherers = Enumerable.Range(0, state.GetNodeCount())

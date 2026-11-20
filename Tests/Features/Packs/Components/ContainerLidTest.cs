@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Features.Hand.Components;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace CardCleaner.Tests.Features.Packs.Components;
 
 /// <summary>
 ///     A cardboard box opened in the hand: its flaps swing open and shut without spilling anything, and each
-///     <see cref="CardContainer.TakeOneInto" /> moves the next item into a shelf slot with the child seed of its place
+///     <see cref="CardContainer.TakeOneInto" /> moves the next item into a shelf level with the child seed of its place
 ///     in the box. A cardboard box is storage: emptied, it stays, and it never opens whole. A booster box and a booster
 ///     pack have no lid: one empties into the hand, the other opens into the hand of cards.
 /// </summary>
@@ -103,11 +104,11 @@ public class ContainerLidTest
     {
         var shelf = AddShelf();
         var box = MakeContainer(BoxScene);
-        var slot = shelf.Slots.First();
+        var level = shelf.Levels.First();
 
-        AssertBool(box.TakeOneInto(slot)).IsFalse();
+        AssertBool(box.TakeOneInto(level)).IsFalse();
 
-        AssertBool(slot.HasCards).IsFalse();
+        AssertThat(level.Count).IsEqual(0);
         AssertThat(box.Remaining).IsEqual(CardContainerLayout.ItemsPerContainer);
     }
 
@@ -117,13 +118,13 @@ public class ContainerLidTest
         var shelf = AddShelf();
         var box = MakeContainer(BoxScene);
         box.SetLidOpen(true, instantly: true);
-        var slots = shelf.Slots.Take(2).ToArray();
+        var level = shelf.Levels.First();
 
-        AssertBool(box.TakeOneInto(slots[0])).IsTrue();
-        AssertBool(box.TakeOneInto(slots[1])).IsTrue();
+        AssertBool(box.TakeOneInto(level)).IsTrue();
+        AssertBool(box.TakeOneInto(level)).IsTrue();
 
-        var first = (CardContainer)slots[0].Cards.Single();
-        var second = (CardContainer)slots[1].Cards.Single();
+        var first = (CardContainer)level.Seats[0].Cards.Single();
+        var second = (CardContainer)level.Seats[1].Cards.Single();
         AssertThat(first.Kind).IsEqual(CardContainerKind.Pack);
         AssertBool(first.ContentSeed == ContainerSeeds.ChildSeed(Seed, 0)).IsTrue();
         AssertBool(second.ContentSeed == ContainerSeeds.ChildSeed(Seed, 1)).IsTrue();
@@ -139,30 +140,36 @@ public class ContainerLidTest
         var box = MakeContainer(BoxScene);
         box.SetLidOpen(true, instantly: true);
 
-        foreach (var slot in shelf.Slots.Take(CardContainerLayout.ItemsPerContainer))
-            AssertBool(box.TakeOneInto(slot)).IsTrue();
+        // Four booster boxes fill a level, so the box's eight go onto the first two levels.
+        foreach (var level in shelf.Levels.Take(2))
+        {
+            for (var i = 0; i < level.Seats.Count; i++)
+                AssertBool(box.TakeOneInto(level)).IsTrue();
+        }
 
         AssertThat(shelf.StockedCount).IsEqual(CardContainerLayout.ItemsPerContainer);
         AssertThat(box.Remaining).IsEqual(0);
         AssertBool(box.IsOpened).IsFalse();
         AssertBool(box.IsQueuedForDeletion()).IsFalse();
-        AssertBool(box.TakeOneInto(shelf.Slots.Last())).IsFalse();
+        AssertBool(box.TakeOneInto(shelf.Levels.Last())).IsFalse();
         AssertBool(box.SetLidOpen(false)).IsTrue();
     }
 
-    // The item is spawned into the slot before the slot is asked to lock it, so a refusal must free it again.
+    // The item is built into the level only once the level has said it takes it, so a full level gets no stray item.
     [TestCase]
-    public void ATakeIntoAFullSlotTakesNothingAndLeavesNoStrayItem()
+    public void ATakeIntoAFullLevelTakesNothingAndLeavesNoStrayItem()
     {
         var shelf = AddShelf();
-        var slot = shelf.Slots.First();
-        AssertBool(slot.TryLock(MakeContainer(PackScene))).IsTrue();
+        var level = shelf.Levels.First();
+        for (var i = 0; i < level.Seats.Count; i++)
+            AssertBool(level.TryLock(MakeContainer(PackScene))).IsTrue();
         var box = MakeContainer(BoxScene);
         box.SetLidOpen(true, instantly: true);
 
-        AssertBool(box.TakeOneInto(slot)).IsFalse();
+        AssertBool(box.TakeOneInto(level)).IsFalse();
 
-        AssertThat(slot.GetChildren().OfType<CardContainer>().Count()).IsEqual(1);
+        AssertThat(level.Seats.Sum(seat => seat.GetChildren().OfType<CardContainer>().Count()))
+            .IsEqual(level.Seats.Count);
         AssertThat(box.Remaining).IsEqual(CardContainerLayout.ItemsPerContainer);
     }
 
@@ -174,7 +181,7 @@ public class ContainerLidTest
         InHandOpening.Hold(box, hand);
 
         AssertThat(box.EmptyIntoHand().Count).IsEqual(0);
-        AssertBool(box.OpenInHand(Substitute.For<ICardHolder>())).IsFalse();
+        AssertBool(box.OpenInHand(Substitute.For<IHand>())).IsFalse();
 
         AssertBool(box.IsOpened).IsFalse();
         AssertThat(hand.GetChildren().OfType<CardContainer>().Count()).IsEqual(1);
@@ -189,8 +196,8 @@ public class ContainerLidTest
         var shelf = AddShelf();
         var box = MakeContainer(BoxScene);
         box.SetLidOpen(true, instantly: true);
-        foreach (var slot in shelf.Slots.Take(3))
-            AssertBool(box.TakeOneInto(slot)).IsTrue();
+        for (var i = 0; i < 3; i++)
+            AssertBool(box.TakeOneInto(shelf.Levels.First())).IsTrue();
 
         AssertBool(shelf.TryUnpack(box)).IsTrue();
 

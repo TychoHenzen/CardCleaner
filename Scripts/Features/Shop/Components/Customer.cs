@@ -247,22 +247,22 @@ public partial class Customer : CharacterBody3D, ICheckoutCustomer
         ActThen(acted, WalkToNextPick);
     }
 
-    // A slot whose stock is gone is skipped with no purchase; the customer complains only if it ends up with nothing.
-    // Returns what the figure shows at the slot: picking the item up, or refusing its price.
+    // A level whose stock is gone is skipped with no purchase; the customer complains only if it ends up with nothing.
+    // Returns what the figure shows at the level: picking the item up, or refusing its price.
     private FigureClip? TryPick(PlannedPick pick)
     {
-        var slot = _offers!.SlotFor(pick.Offer.OfferId);
-        if (slot is null || !slot.HasCards)
+        var level = _offers!.LevelFor(pick.Offer.OfferId);
+        if (level is not { Count: > 0 })
             return null;
 
-        _figure?.FaceToward(slot.GlobalPosition);
+        _figure?.FaceToward(level.GlobalPosition);
         if (!pick.Outcome.Buys)
         {
             Complain(pick.Outcome.Reason ?? RefusalReason.PriceTooHigh);
             return FigureClip.Refuse;
         }
 
-        return _carried.TryTake(slot, pick.Offer) ? FigureClip.PickUp : null;
+        return _carried.TryTake(level, pick.Offer) ? FigureClip.PickUp : null;
     }
 
     private void Finish()

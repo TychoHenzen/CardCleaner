@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
@@ -13,8 +14,9 @@ using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
-///     Unpacking onto a shelf: a cardboard box moves the booster boxes it holds straight into the free slots that take
-///     them, the last in first, and keeps whatever no slot takes. Nothing else unpacks.
+///     Unpacking onto a shelf: a cardboard box moves the booster boxes it holds straight into the levels that take
+///     them, the last in first, each level filling its seats in order, and keeps whatever no level takes. Nothing else
+///     unpacks.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -56,11 +58,11 @@ public class ShelfUnpackTest
 
         AssertBool(shelf.TryUnpack(box)).IsTrue();
 
-        // The first eight slots, the two middle boards, take one booster box each, at once.
-        foreach (var slot in shelf.Slots.Take(8))
+        // The first two levels, the middle boards at eye height, take four booster boxes each, one to a seat, at once.
+        foreach (var seat in shelf.Levels.Take(2).SelectMany(level => level.Seats))
         {
-            AssertThat(slot.Cards.Count).IsEqual(1);
-            AssertThat(((CardContainer)slot.Cards[0]).Kind).IsEqual(CardContainerKind.Pack);
+            AssertThat(seat.Cards.Count).IsEqual(1);
+            AssertThat(((CardContainer)seat.Cards[0]).Kind).IsEqual(CardContainerKind.Pack);
         }
 
         AssertThat(shelf.StockedCount).IsEqual(8);
@@ -70,7 +72,7 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    public void TheShelfsFirstSlotGetsTheBoosterBoxASameSeedBoxGivesOutFirst()
+    public void TheShelfsFirstSeatGetsTheBoosterBoxASameSeedBoxGivesOutFirst()
     {
         var shelf = AddShelf();
         var unpacked = MakeContainer(BoxScene, Seed);
@@ -109,7 +111,7 @@ public class ShelfUnpackTest
     public void TryUnpackOntoAFullShelfMovesNothingAndKeepsEveryItemInTheBox()
     {
         var shelf = AddShelf();
-        // Two boxes of 8 booster boxes fill the shelf's 16 slots.
+        // Two boxes of 8 booster boxes fill the shelf's 16 seats.
         AssertBool(shelf.TryUnpack(MakeContainer(BoxScene, Seed))).IsTrue();
         AssertBool(shelf.TryUnpack(MakeContainer(BoxScene, Seed + 2))).IsTrue();
         var box = MakeContainer(BoxScene, Seed + 1);
@@ -132,7 +134,7 @@ public class ShelfUnpackTest
     }
 
     [TestCase]
-    public void TryUnpackBoxOntoAStorageRackFillsItsFourSlotsAndKeepsTheOtherFour()
+    public void TryUnpackBoxOntoAStorageRackFillsItsFourSeatsAndKeepsTheOtherFour()
     {
         var rack = AddShelf(StorageRackScene);
         var box = MakeContainer(BoxScene, Seed);
@@ -165,19 +167,21 @@ public class ShelfUnpackTest
     {
         var box = MakeContainer(BoxScene, Seed);
 
-        AssertThat(box.Storage!.MoveInto(Array.Empty<DeckSlot>())).IsEqual(0);
+        AssertThat(box.Storage!.MoveInto(Array.Empty<IItemStore>())).IsEqual(0);
         AssertThat(box.Remaining).IsEqual(8);
     }
 
     [TestCase]
-    public void MovingIntoThreeFreeSlotsMovesThreeAndKeepsFive()
+    public void MovingIntoALevelWithThreeFreeSeatsMovesThreeAndKeepsFive()
     {
         var shelf = AddShelf();
+        var level = shelf.Levels.First();
+        AssertBool(level.TryLock(MakeContainer(PackScene, Seed))).IsTrue();
         var box = MakeContainer(BoxScene, Seed);
 
-        AssertThat(box.Storage!.MoveInto(FreeSlots(shelf).Take(3).ToArray())).IsEqual(3);
+        AssertThat(box.Storage!.MoveInto([level])).IsEqual(3);
 
-        AssertThat(shelf.StockedCount).IsEqual(3);
+        AssertThat(level.Count).IsEqual(4);
         AssertThat(box.Remaining).IsEqual(5);
     }
 
@@ -189,7 +193,6 @@ public class ShelfUnpackTest
         return AddNode(shelf);
     }
 
-    private static DeckSlot[] FreeSlots(CardShelf shelf) => shelf.Slots.Where(slot => !slot.HasCards).ToArray();
 
     private CardContainer MakeContainer(string scenePath, ulong seed, Node3D? parent = null)
     {

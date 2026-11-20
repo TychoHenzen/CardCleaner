@@ -1,0 +1,52 @@
+[gd_scene load_steps=19 format=3]
+
+[ext_resource type="Script" path="res://Tests/Features/CardStacks/Probe/PileFrameCostProbe.cs" id="Probe"]
+[ext_resource type="Script" path="res://Scripts/Features/Card/Services/CardServiceProvider.cs" id="CardServiceProvider"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Common.tres" id="Common"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Uncommon.tres" id="Uncommon"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Rare.tres" id="Rare"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Epic.tres" id="Epic"]
+[ext_resource type="Resource" path="res://Assets/CardRarity/Legendary.tres" id="Legendary"]
+[ext_resource type="Resource" path="res://Assets/CardBases/Weapon.tres" id="Weapon"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Solidum.tres" id="Solidum"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Febris.tres" id="Febris"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Ordinem.tres" id="Ordinem"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Lumines.tres" id="Lumines"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Varias.tres" id="Varias"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Inertiae.tres" id="Inertiae"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Subsidium.tres" id="Subsidium"]
+[ext_resource type="Resource" path="res://Assets/CardGems/Spatium.tres" id="Spatium"]
+
+[sub_resource type="Environment" id="Environment_probe"]
+background_mode = 1
+background_color = Color(0.18, 0.2, 0.24, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.75, 0.75, 0.78, 1)
+ambient_light_energy = 0.6
+
+[node name="PileFrameCostProbe" type="Node3D" node_paths=PackedStringArray("PileParent")]
+script = ExtResource("Probe")
+PileParent = NodePath("Piles")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_probe")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.81923, -0.45593, 0.34783, 0, 0.60655, 0.79505, -0.57346, -0.65133, 0.4969, 0, 4, 0)
+light_energy = 1.2
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.7071068, 0.7071068, 0, -0.7071068, 0.7071068, 0, 3, 3)
+fov = 60.0
+
+[node name="Piles" type="Node3D" parent="."]
+
+[node name="Services" type="Node" parent="."]
+
+[node name="CardServiceProvider" type="Node" parent="Services" node_paths=PackedStringArray("CardRoot")]
+script = ExtResource("CardServiceProvider")
+RarityVisuals = Array[Object]([ExtResource("Common"), ExtResource("Uncommon"), ExtResource("Rare"), ExtResource("Epic"), ExtResource("Legendary")])
+BaseCardTypes = Array[Object]([ExtResource("Weapon")])
+GemVisuals = Array[Object]([ExtResource("Solidum"), ExtResource("Febris"), ExtResource("Ordinem"), ExtResource("Lumines"), ExtResource("Varias"), ExtResource("Inertiae"), ExtResource("Subsidium"), ExtResource("Spatium")])
+CardRoot = NodePath("../../Piles")

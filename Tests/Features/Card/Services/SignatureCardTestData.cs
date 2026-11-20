@@ -55,7 +55,8 @@ public static class SignatureCardTestData
         commonVisual.BaseOptions = new[] { CreateMockTexture() };
         commonVisual.BorderOptions = new[] { CreateMockTexture() };
 
-        // A card with the test base type's signature scores Epic in SignatureCardHelper.DetermineRarity.
+        // A visual for a rarity above Common, so a test can tell the Common visual apart. The test base type's
+        // signature (Solidum 0.5) has no pure element and rates Common.
         var epicVisual = new RarityVisual();
         epicVisual.Rarity = CardRarity.Epic;
         epicVisual.BaseOptions = new[] { CreateMockTexture() };

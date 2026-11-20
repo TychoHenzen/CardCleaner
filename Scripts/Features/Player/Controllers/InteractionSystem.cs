@@ -6,10 +6,12 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Player.Controllers;
 
 /// <summary>
-///     Finds the interactable on the camera's centre ray, highlights it, and calls its Interact on a left click; a
-///     left click with nothing to use raises <see cref="ClickedNothing" /> instead. The target is judged again on
-///     every scan, so one that goes out of range or stops accepting interaction is dropped at once: the prompt under
-///     the crosshair never offers a click that would do nothing.
+///     Finds the interactable on the camera's centre ray, highlights it, and carries out a left click on it. A target
+///     the <see cref="Router" /> claims (an item the hand can move) is judged, prompted and clicked through the
+///     router's one plan, aimed at the point the ray hit; any other target through its own members. A left click with
+///     nothing to use asks the router what it does then. The target is judged again on every scan, so one that goes out
+///     of range or stops accepting interaction is dropped at once: the prompt under the crosshair never offers a click
+///     that would do nothing.
 /// </summary>
 public partial class InteractionSystem : Node3D, IDependent
 {
@@ -32,15 +34,26 @@ public partial class InteractionSystem : Node3D, IDependent
     [Export] public uint InteractableCollisionMask { get; set; } = DefaultInteractableCollisionMask;
 
     private IInteractable? _target;
+    private Vector3 _aimPoint;
 
-    /// <summary>Raised on a left click while no interactable is aimed at, for what the held item does then.</summary>
-    public event Action? ClickedNothing;
+    /// <summary>
+    ///     The player's hand router, which decides clicks on the items it claims. Set by the router itself.
+    /// </summary>
+    public IClickRouter? Router { get; set; }
 
     /// <summary>
     ///     The interactable a click would use now, or null. A target freed since the last scan reads as null at once,
     ///     because the HUD reads it every frame.
     /// </summary>
     public IInteractable? Target => _target != null && IsAlive(_target) ? _target : null;
+
+    /// <summary>Where the last scan's ray met the target, in world space.</summary>
+    public Vector3 AimPoint => _aimPoint;
+
+    /// <summary>What a click on the target does now, or empty while there is no target.</summary>
+    public string Prompt => Target is not { } target ? string.Empty
+        : Claimed(target) ? Router!.PlanFor(target, _aimPoint, false)?.Prompt ?? string.Empty
+        : target.Prompt;
 
     public void Inject(IServiceResolver services) => _services = services;
 
@@ -115,8 +128,11 @@ public partial class InteractionSystem : Node3D, IDependent
         _ray.To = origin + forward * RayLength;
         _ray.CollisionMask = InteractableCollisionMask;
         var result = GetWorld3D().DirectSpaceState.IntersectRay(_ray);
+        if (result.Count == 0 || result["collider"].Obj is not Node3D body)
+            return null;
 
-        return result.Count > 0 && result["collider"].Obj is Node3D body ? body : null;
+        _aimPoint = result["position"].AsVector3();
+        return body;
     }
 
     private static IInteractable? FindInteractableInHierarchy(Node3D startNode)
@@ -149,7 +165,11 @@ public partial class InteractionSystem : Node3D, IDependent
     // A freed node (an opened box, a sold card) can still be the last target; it is never touched again.
     private static bool IsAlive(IInteractable target) => target is not GodotObject node || IsInstanceValid(node);
 
-    private bool IsUsable(IInteractable target) => IsAlive(target) && target.CanInteract && IsTargetInRange(target);
+    private bool IsUsable(IInteractable target) =>
+        IsAlive(target) && IsTargetInRange(target)
+                        && (Claimed(target) ? Router!.PlanFor(target, _aimPoint, false) != null : target.CanInteract);
+
+    private bool Claimed(IInteractable target) => Router?.Claims(target) == true;
 
     private bool IsTargetInRange(IInteractable target)
     {
@@ -159,15 +179,18 @@ public partial class InteractionSystem : Node3D, IDependent
         return distanceSquared <= target.InteractionRange * target.InteractionRange;
     }
 
-    private void OnInteractPressed(bool pressed)
+    private void OnInteractPressed(MouseActionArgs args)
     {
-        if (!pressed)
+        if (!args.Pressed)
             return;
 
-        // Judged again at the click: the target can change between scans.
-        if (Target is { } target && IsUsable(target))
-            target.Interact();
+        // Judged again at the click: the target can change between scans. Shift reaches the plan only here; the prompt
+        // names the plain click.
+        if (Target is not { } target || !IsUsable(target))
+            Router?.PlanForNothing()?.Apply();
+        else if (Claimed(target))
+            Router!.PlanFor(target, _aimPoint, args.Shift)?.Apply();
         else
-            ClickedNothing?.Invoke();
+            target.Interact();
     }
 }

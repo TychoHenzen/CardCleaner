@@ -155,3 +155,5 @@ tools/HiddenDesktop/bin/
 UnitTests/bin/
 UnitTests/obj/
 UnitTests/TestResults/
+# HagiCode and the OpenSpec CLI (openspec new, openspec archive) write change folders and archives here
+openspec/changes/

@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services.SaveGame;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
@@ -21,8 +23,9 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
 /// Stock on the shop's product shelf and storage rack goes into the shop save and comes back in the same slots after a
-/// reload. The restored stock is locked back into its slot during the load, before any physics step, and a container
-/// that lies outside every slot restores without an error. The slot files live in an in-memory file system.
+/// reload. The restored stock is locked back into its slot during the load, before any physics step, each board keeps
+/// its stock in the order it was put on with its prices, and a container that lies outside every slot restores without
+/// an error. The slot files live in an in-memory file system.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -122,10 +125,49 @@ public class ShelfStockSaveTest
         await BoundedWait.ForQueuedFrees();
     }
 
+    // Five boosters on a product board (four on its first seat, one on its second) all ask the first one's price, and
+    // two cards on a card board keep their own; after a reload, before any physics step, each board holds the same
+    // items in the same order at the same prices.
+    [TestCase]
+    public async Task EachBoardsStockComesBackInOrderWithItsPricesBeforeAnyPhysicsStep()
+    {
+        var boosters = _product.Levels.First();
+        for (var i = 0; i < 5; i++)
+        {
+            var booster = NewContainer(BoosterScene, BoosterSeed + (ulong)i);
+            booster.ShopPrice = i == 0 ? 7 : 20;
+            AssertBool(boosters.TryLock(booster)).IsTrue();
+        }
+
+        var cards = _shop.GetNode<CardShelf>("World/Furniture/CardShelf/Content").Levels.First();
+        foreach (var (febris, price) in new[] { (0.25f, 3), (0.5f, 12) })
+        {
+            var card = ShopTestCards.Create(new CardSignature([0f, febris, 0f, 0f, 0f, 0f, 0f, 0f]));
+            card.ShopPrice = price;
+            _shop.GetNode<Node3D>("World").AddChild(card);
+            AssertBool(cards.TryLock(card)).IsTrue();
+        }
+
+        var savedBoosters = Boosters(boosters);
+        var savedCards = Cards(cards);
+        AssertThat(savedBoosters.Select(b => b.Price).Distinct().Single()).IsEqual(7);
+        AssertThat(boosters.Seats[0].Cards.Count).IsEqual(4);
+        AssertBool(_saves.ManualSave()).IsTrue();
+
+        _saves.LoadGame();
+
+        AssertThat(Boosters(boosters)).IsEqual(savedBoosters);
+        AssertThat(boosters.Seats[0].Cards.Count).IsEqual(4);
+        AssertThat(boosters.Seats[1].Cards.Count).IsEqual(1);
+        AssertThat(Cards(cards)).IsEqual(savedCards);
+        AssertThat(Cards(cards).Select(c => c.Price).ToArray()).IsEqual(new int?[] { 3, 12 });
+        await BoundedWait.ForQueuedFrees();
+    }
+
     [TestCase]
     public async Task ABoxOnAProductShelfSlotIsIgnoredAndStaysUnlockedAfterReload()
     {
-        var slot2 = _product.GetNode<DeckSlot>("Slot2");
+        var slot2 = (DeckSlot)_product.FindChild("Slot2", true, false);
         var box = NewContainer(BoxScene, LooseBoxSeed);
         box.GlobalPosition = slot2.GlobalPosition;
 
@@ -183,6 +225,14 @@ public class ShelfStockSaveTest
         await SettleAsync();
         return before;
     }
+
+    // The boosters on a level in the order they were put on, by seed and price.
+    private static (ulong? Seed, int? Price)[] Boosters(ShelfLevel level) =>
+        level.Stock.Cast<CardContainer>().Select(b => (b.ContentSeed, b.ShopPrice)).ToArray();
+
+    // The cards on a level in the order they were put on, by their second signature element and price.
+    private static (float Febris, int? Price)[] Cards(ShelfLevel level) =>
+        level.Stock.Cast<CardController>().Select(c => (c.Signature.Elements[1], c.ShopPrice)).ToArray();
 
     private CardContainer NewContainer(string scenePath, ulong seed)
     {

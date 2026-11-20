@@ -9,8 +9,8 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     Gathers what the restocker can carry and where it can go: unopened containers on a storage rack or lying
-///     loose near a shelf, and the slots of the sales shelves with room (empty ones and part-filled booster stacks).
-///     Containers the player holds or the restocker already carries are not sources.
+///     loose near a shelf, and the levels of the sales shelves with room (empty ones and part-filled ones, which take
+///     only more of what they hold). Containers the player holds or the restocker already carries are not sources.
 /// </summary>
 internal sealed class RestockerScan
 {
@@ -46,9 +46,9 @@ internal sealed class RestockerScan
         }
         else
             AddSources(result, from, sales.Concat(storage).ToList());
-        AddSlots(result, sales);
-        foreach (var slot in storage.SelectMany(rack => rack.Slots).Where(s => !s.HasCards))
-            result.AddRackSlot(slot);
+        AddLevels(result, sales);
+        foreach (var level in storage.SelectMany(rack => rack.Levels).Where(level => level.HasRoom))
+            result.AddRackLevel(level);
         return result;
     }
 
@@ -69,8 +69,10 @@ internal sealed class RestockerScan
         var parent = container.GetParent();
         if (container.IsOpened || container.IsHeld || parent?.Name.ToString() == HandName || ProductsIn(container) == 0)
             return null;
-        if (parent is DeckSlot slot)
-            return slot.GetParent() is CardShelf { IsStorage: true } ? true : null;
+        if (parent is DeckSlot seat)
+            return seat.GetParent() is ShelfLevel { } level && level.GetParent() is CardShelf { IsStorage: true }
+                ? true
+                : null;
         if (container.Freeze)
             return null;
         return shelves.Any(shelf => shelf.GlobalPosition.DistanceTo(container.GlobalPosition) <= _pickupRadius)
@@ -88,13 +90,13 @@ internal sealed class RestockerScan
             ? 1
             : storage.CountOf(item => ShelfPlacementRule.From(item) is StockKind.Pack or StockKind.Booster);
 
-    // Every sales slot with room: an empty one, or a booster stack below its limit, which the restocker tops up.
-    private static void AddSlots(RestockerScanResult result, IReadOnlyList<CardShelf> sales)
+    // Every sales level with room: an empty one, or a part-filled one, which the restocker tops up.
+    private static void AddLevels(RestockerScanResult result, IReadOnlyList<CardShelf> sales)
     {
         foreach (var shelf in sales)
         {
-            foreach (var slot in shelf.Slots.Where(s => s.HasRoom))
-                result.AddSlot(slot, shelf);
+            foreach (var level in shelf.Levels.Where(level => level.HasRoom))
+                result.AddLevel(level, shelf);
         }
     }
 }

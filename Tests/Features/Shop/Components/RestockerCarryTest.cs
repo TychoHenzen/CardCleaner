@@ -113,7 +113,7 @@ public class RestockerCarryTest : RestockerTestBase
         var (near, far) = await TwoRackPacksWhileWalkingToTheNearOne();
         var camera = new Camera3D();
         _shop.AddChild(camera);
-        // What ContainerHolder.TryPickUp does: off every layer, frozen, then under the camera.
+        // What the hand's TryTake does: off every layer, frozen, then under the camera.
         near.CollisionLayer = 0;
         near.CollisionMask = 0;
         near.Freeze = true;
