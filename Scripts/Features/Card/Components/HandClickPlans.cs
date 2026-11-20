@@ -122,7 +122,7 @@ internal static class HandClickPlans
         if (part == AimPart.Space && hand.Front is CardContainer { Kind: CardContainerKind.Box } held)
         {
             if (level.CanTake(StockKind.Box))
-                plan = new ClickPlan($"Put the {boxName} here", () => hand.HandOver(held) && level.TryLock(held));
+                plan = new ClickPlan($"Put the {boxName} here", () => PutBoxOn(hand, held, level));
             return true;
         }
 
@@ -132,6 +132,20 @@ internal static class HandClickPlans
         if (hand.CanTake(stocked))
             plan = new ClickPlan($"Pick up {boxName}", () => hand.TryTake(stocked));
         return true;
+    }
+
+    // The box must leave the hand before the level can lock it (a held body is no free stock), and the hand-over leaves
+    // it frozen where it hung, so a level that refuses it after all hands it back rather than leaving it in the air.
+    private static bool PutBoxOn(IHand hand, CardContainer box, ShelfLevel level)
+    {
+        if (!hand.HandOver(box))
+            return false;
+        if (level.TryLock(box))
+            return true;
+
+        if (!hand.TryTake(box))
+            box.Freeze = false;
+        return false;
     }
 
     private static ClickPlan? Trash(IHand hand)

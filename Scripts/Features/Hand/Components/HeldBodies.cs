@@ -77,7 +77,8 @@ internal sealed class HeldBodies
         card.Reparent(world);
         Callable.From(() =>
         {
-            if (!GodotObject.IsInstanceValid(card))
+            // A card taken back into the hand (or locked into a slot) in the same frame belongs to it now.
+            if (!GodotObject.IsInstanceValid(card) || card.GetParent() != world)
                 return;
             card.Freeze = false;
             Restore(card);

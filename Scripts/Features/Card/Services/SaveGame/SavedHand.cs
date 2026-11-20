@@ -110,6 +110,9 @@ internal static class SavedHand
 
             if (!hand.TryTake(body))
             {
+                // Built at the world origin (a card) or its saved pose (a container); moved to the player instead.
+                if (hand is Node3D at)
+                    body.GlobalPosition = at.GlobalPosition;
                 ILog.Error($"{Holder} refused saved item {i}; it is left where the player stands");
                 continue;
             }

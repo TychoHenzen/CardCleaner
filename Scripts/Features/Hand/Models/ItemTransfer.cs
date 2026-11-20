@@ -128,7 +128,8 @@ public static class ItemTransfer
         {
             if (!to.Put(item))
             {
-                from.Put(item);
+                if (!from.Put(item))
+                    ILog.Error("An item taken from a store could not be put anywhere and was lost");
                 break;
             }
 

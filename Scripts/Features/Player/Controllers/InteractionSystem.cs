@@ -52,7 +52,7 @@ public partial class InteractionSystem : Node3D, IDependent
 
     /// <summary>What a click on the target does now, or empty while there is no target.</summary>
     public string Prompt => Target is not { } target ? string.Empty
-        : Claimed(target) ? Router!.PlanFor(target, _aimPoint, false)?.Prompt ?? string.Empty
+        : Claimed(target) ? RoutedPlan(target)?.Prompt ?? string.Empty
         : target.Prompt;
 
     public void Inject(IServiceResolver services) => _services = services;
@@ -167,7 +167,12 @@ public partial class InteractionSystem : Node3D, IDependent
 
     private bool IsUsable(IInteractable target) =>
         IsAlive(target) && IsTargetInRange(target)
-                        && (Claimed(target) ? Router!.PlanFor(target, _aimPoint, false) != null : target.CanInteract);
+                        && (Claimed(target) ? RoutedPlan(target) != null : target.CanInteract);
+
+    // The plain click's plan, or the Shift-click's when only that moves anything (a deck bigger than the hand's room,
+    // an empty hand on the free part of a stocked level), so a target a Shift-click takes from stays the target.
+    private ClickPlan? RoutedPlan(IInteractable target) =>
+        Router!.PlanFor(target, _aimPoint, false) ?? Router.PlanFor(target, _aimPoint, true);
 
     private bool Claimed(IInteractable target) => Router?.Claims(target) == true;
 
@@ -185,7 +190,7 @@ public partial class InteractionSystem : Node3D, IDependent
             return;
 
         // Judged again at the click: the target can change between scans. Shift reaches the plan only here; the prompt
-        // names the plain click.
+        // names the plain click, or the Shift-click when the plain one moves nothing.
         if (Target is not { } target || !IsUsable(target))
             Router?.PlanForNothing()?.Apply();
         else if (Claimed(target))
