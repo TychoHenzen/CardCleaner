@@ -7,11 +7,11 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Hand.Components;
 
 /// <summary>
-///     How a body goes into the hand and out of it again. A held body is out of play: frozen under the hand anchor and on
-///     no collision layer, so no slot trigger it still overlaps takes it back (<c>DeckSlot.IsFreeStock</c>). Leaving, a
-///     container gets back the layers it had, and a card the card layer.
+///     How a body goes into the hand and out of it again. A held body is out of play: frozen under the hand anchor and
+///     on no collision layer, so no slot trigger it still overlaps takes it back (<c>DeckSlot.IsFreeStock</c>).
+///     Leaving, a container gets back the layers it had, and a card the card layer.
 /// </summary>
-internal sealed class HeldBodies(Func<uint> cardLayer)
+internal sealed class HeldBodies
 {
     // How far away, and how level, the spot an item out of an open box is set down on may be: arm's reach, and a
     // surface no steeper than about 45 degrees. The item is set down a little above the spot and falls onto it.
@@ -22,6 +22,11 @@ internal sealed class HeldBodies(Func<uint> cardLayer)
 
     // The collision a container had before the hand took it, so setting it down restores exactly that.
     private readonly Dictionary<Node3D, (uint Layer, uint Mask)> _collision = new();
+
+    // The layer a card gets back, read when it leaves (the hand's export can change after construction).
+    private readonly Func<uint> _cardLayer;
+
+    public HeldBodies(Func<uint> cardLayer) => _cardLayer = cardLayer;
 
     /// <summary>Takes <paramref name="body" /> out of play under <paramref name="anchor" />.</summary>
     public void Hold(RigidBody3D body, Node3D anchor)
@@ -64,8 +69,8 @@ internal sealed class HeldBodies(Func<uint> cardLayer)
     }
 
     /// <summary>
-    ///     Lets a card fall where it hangs. Its physics comes back a frame after it moved under <paramref name="world" />,
-    ///     so it does not meet the hand's other cards.
+    ///     Lets a card fall where it hangs. Its physics comes back a frame after it moved under
+    ///     <paramref name="world" />, so it does not meet the hand's other cards.
     /// </summary>
     public void Drop(RigidBody3D card, Node world)
     {
@@ -124,7 +129,7 @@ internal sealed class HeldBodies(Func<uint> cardLayer)
         {
             if (card.GetNodeOrNull<CollisionShape3D>("CardCollision") is { } shape)
                 shape.Disabled = false;
-            card.CollisionLayer = cardLayer();
+            card.CollisionLayer = _cardLayer();
         }
     }
 }

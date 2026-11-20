@@ -59,8 +59,9 @@ internal static class HandLayout
         Defaults.TryGetValue(property.ToString(), out value);
 
     /// <summary>
-    ///     The pose of item <paramref name="index" /> of <paramref name="count" /> in the fan. The front item stands out
-    ///     along its own lean (the fan's radius through it) and a little nearer the camera, so it shows over the others.
+    ///     The pose of item <paramref name="index" /> of <paramref name="count" /> in the fan. The front item stands
+    ///     out along its own lean (the fan's radius through it) and a little nearer the camera, so it shows over the
+    ///     others.
     /// </summary>
     public static Transform3D FanPose(CardFan fan, int index, int count, bool front, float raise, float depthStep)
     {
@@ -73,8 +74,8 @@ internal static class HandLayout
     }
 
     /// <summary>
-    ///     Where card <paramref name="index" /> lies while a drop is aimed: <paramref name="holdDistance" /> ahead of the
-    ///     eye, face turned back along the view, each card one <paramref name="thickness" /> above the one before.
+    ///     Where card <paramref name="index" /> lies while a drop is aimed: <paramref name="holdDistance" /> ahead of
+    ///     the eye, face turned back along the view, each card one <paramref name="thickness" /> above the one before.
     /// </summary>
     public static Transform3D DropPose(Transform3D eye, float holdDistance, int index, float thickness)
     {

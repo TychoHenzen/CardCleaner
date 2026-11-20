@@ -83,8 +83,8 @@ public interface IHand : IItemStore
     bool SetFront(int index);
 
     /// <summary>
-    ///     The right button on the front container: swings a cardboard box's flaps, empties a booster box into the hand,
-    ///     or opens a booster whose cards fit once it has left. False when the front is a card or nothing happened.
+    ///     The right button on the front container: swings a cardboard box's flaps, empties a booster box into the
+    ///     hand, or opens a booster whose cards fit once it has left. False for a card or when nothing happened.
     /// </summary>
     bool UseFront();
 
