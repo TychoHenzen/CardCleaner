@@ -10,8 +10,8 @@ using Saveable.Extensions;
 namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
 
 /// <summary>
-///     Writes the decks and piles lying in the scene into a slot and rebuilds them from one: each with its pose and
-///     every card it holds, in the order they went in.
+///     Writes the decks and piles lying in the scene into a slot and rebuilds them from one: each with its pose, its
+///     pile seed and every card it holds, in the order they went in, so a pile reloads as the same heap.
 /// </summary>
 internal static class SavedBundles
 {
@@ -20,7 +20,8 @@ internal static class SavedBundles
         CardBundleKind Kind,
         Vector3 Position,
         Vector3 Rotation,
-        IReadOnlyList<StoredCard> Cards);
+        IReadOnlyList<StoredCard> Cards,
+        int? Seed);
 
     // Position and Rotation are typed object, as the card and container records are: a Vector3 cannot be read back
     // into a typed property, so they are read through SavedCardReader.
@@ -30,6 +31,10 @@ internal static class SavedBundles
         public object? Position { get; set; }
         public object? Rotation { get; set; }
         public List<SavedStoredItems.Record>? Cards { get; set; }
+
+        // ASSUMPTION (Low): a record written before piles kept a seed has none; it then gets the seed of the cards it
+        // starts with, as a new pile does. That is no migration: the game is not released.
+        public int? Seed { get; set; }
     }
 
     /// <summary>The records to write for the decks and piles in <paramref name="tree" />.</summary>
@@ -40,7 +45,8 @@ internal static class SavedBundles
                 Kind = bundle.Kind.ToString(),
                 Position = bundle.GlobalPosition,
                 Rotation = bundle.GlobalRotation,
-                Cards = bundle.Cards.Select(card => SavedStoredItems.RecordOf(card)).ToList()
+                Cards = bundle.Cards.Select(card => SavedStoredItems.RecordOf(card)).ToList(),
+                Seed = bundle.PileSeed
             })
             .ToList();
 
@@ -66,7 +72,7 @@ internal static class SavedBundles
 
         foreach (var record in saved)
         {
-            var bundle = CardBundle.Create(record.Kind, record.Cards);
+            var bundle = CardBundle.Create(record.Kind, record.Cards, record.Seed);
             world.AddChild(bundle);
             bundle.GlobalPosition = record.Position;
             bundle.GlobalRotation = record.Rotation;
@@ -91,6 +97,6 @@ internal static class SavedBundles
         var rotation = SavedCardReader.GetVector3FromData(record.Rotation
             ?? throw new FormatException($"{holder} has no rotation"));
         return new Saved(kind, position, rotation,
-            cards.Select(card => SavedStoredItems.ParseCard(card, holder)).ToList());
+            cards.Select(card => SavedStoredItems.ParseCard(card, holder)).ToList(), record.Seed);
     }
 }

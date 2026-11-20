@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Services;
+using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
@@ -28,7 +29,8 @@ namespace CardCleaner.Tests.Scenes;
 /// <summary>
 /// End to end in the shop scene: the player's interaction ray picks up an ordered box with a left click, a right
 /// press opens and closes it in hand, Q puts it down in front of the camera, and a held box and a card in hand block
-/// each other. A booster pack is the exception: it is picked up with cards in hand and opens into them.
+/// each other. A booster pack is the exception: it is picked up with cards in hand, wheeled to the front and opens
+/// into them.
 /// The input service is replaced so the scene's own registered callbacks are captured and invoked directly; the
 /// interaction ray itself runs for real because the camera is aimed at the box.
 /// </summary>
@@ -50,14 +52,14 @@ public class ShopCarryingSceneTest
     private Node3D _world = null!;
     private PlayerController _player = null!;
     private InteractionSystem _interaction = null!;
-    private CardHolder _cardHolder = null!;
-    private ContainerHolder _holder = null!;
+    private IHand _hand = null!;
     private CardController _card = null!;
     private MoneyService _money = null!;
     private OrderingService _ordering = null!;
-    private Action<bool>? _leftClick;
-    private Action<bool>? _rightPress;
+    private Action<MouseActionArgs>? _leftClick;
+    private Action<MouseActionArgs>? _rightPress;
     private Action? _qPress;
+    private Action<MouseActionArgs>? _wheelUp;
 
     private FastClock? _clock;
 
@@ -69,8 +71,7 @@ public class ShopCarryingSceneTest
         _world = _shop.GetNode<Node3D>("World");
         _player = _shop.GetNode<PlayerController>("Player");
         _interaction = _player.GetNode<InteractionSystem>("Head/Camera3D/InteractionSystem");
-        _cardHolder = _player.GetNode<CardHolder>("CardInteraction/CardHolder");
-        _holder = _player.GetNode<ContainerHolder>("CardInteraction/ContainerHolder");
+        _hand = _player.GetNode<IHand>("CardInteraction/Hand");
         _money = _shop.GetNode<MoneyService>("Services/MoneyService");
         _ordering = _shop.GetNode<OrderingService>("Services/OrderingService");
 
@@ -89,18 +90,21 @@ public class ShopCarryingSceneTest
         await PhysicsFrames(AimFrames);
     }
 
-    // Captures the three callbacks the scene registers, so the test presses them the way the device would.
+    // Captures the four callbacks the scene registers, so the test presses them the way the device would.
     private void CaptureInputCallbacks()
     {
         var input = Substitute.For<IInputService>();
         TestServices.Container.RegisterSingleton(input);
-        input.When(x => x.RegisterAction(Arg.Any<object>(), "interact", MouseButton.Left, Arg.Any<Action<bool>>()))
-            .Do(ci => _leftClick = ci.Arg<Action<bool>>());
+        input.When(x => x.RegisterAction(Arg.Any<object>(), "interact", MouseButton.Left, Arg.Any<Action<MouseActionArgs>>()))
+            .Do(ci => _leftClick = ci.Arg<Action<MouseActionArgs>>());
         input.When(x => x.RegisterAction(Arg.Any<object>(), "card_drop_prepare", MouseButton.Right,
-                Arg.Any<Action<bool>>()))
-            .Do(ci => _rightPress = ci.Arg<Action<bool>>());
-        input.When(x => x.RegisterAction(Arg.Any<object>(), "container_put_down", Key.Q, Arg.Any<Action>()))
+                Arg.Any<Action<MouseActionArgs>>()))
+            .Do(ci => _rightPress = ci.Arg<Action<MouseActionArgs>>());
+        input.When(x => x.RegisterAction(Arg.Any<object>(), "hand_put_down", Key.Q, Arg.Any<Action>()))
             .Do(ci => _qPress = ci.Arg<Action>());
+        input.When(x => x.RegisterAction(Arg.Any<object>(), "hand_next", MouseButton.WheelUp,
+                Arg.Any<Action<MouseActionArgs>>()))
+            .Do(ci => _wheelUp = ci.Arg<Action<MouseActionArgs>>());
     }
 
     [AfterTest]
@@ -121,10 +125,9 @@ public class ShopCarryingSceneTest
         var hit = AimedHit();
         AssertBool(hit == box).OverrideFailureMessage($"aimed ray hit {hit?.Name ?? "nothing"}, expected {box.Name}")
             .IsTrue();
-        _leftClick!.Invoke(true);
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
 
-        AssertBool(_holder.IsHolding).IsTrue();
-        AssertThat(_holder.Held).IsSame(box);
+        AssertThat(_hand.Items).ContainsExactly(box);
         AssertBool(box.GetParent() == _interaction.Camera).IsTrue();
     }
 
@@ -135,13 +138,13 @@ public class ShopCarryingSceneTest
         await PhysicsFrames(SettleFrames);
         Aim(box);
         await PhysicsFrames(AimFrames);
-        _leftClick!.Invoke(true);
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
         var camera = _interaction.Camera!;
-        var expected = camera.GlobalPosition + (-camera.GlobalBasis.Z * _holder.DropDistance);
+        var expected = camera.GlobalPosition + (-camera.GlobalBasis.Z * ((Scripts.Features.Hand.Components.Hand)_hand).PutDownDistance);
 
         _qPress!.Invoke();
 
-        AssertBool(_holder.IsHolding).IsFalse();
+        AssertInt(_hand.Count).IsEqual(0);
         AssertBool(box.GetParent() == _shop.GetNode("World/Cards")).IsTrue();
         AssertBool(box.GlobalPosition.DistanceTo(expected) < 0.01f)
             .OverrideFailureMessage($"box dropped at {box.GlobalPosition}, expected {expected}")
@@ -155,13 +158,13 @@ public class ShopCarryingSceneTest
         await PhysicsFrames(SettleFrames);
         Aim(box);
         await PhysicsFrames(AimFrames);
-        _leftClick!.Invoke(true);
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
 
-        _rightPress!.Invoke(true);
-        _rightPress.Invoke(false);
+        _rightPress!.Invoke(new MouseActionArgs(true, false));
+        _rightPress.Invoke(new MouseActionArgs(false, false));
         await PhysicsFrames(AimFrames);
 
-        AssertThat(_holder.Held).IsSame(box);
+        AssertThat(_hand.Front).IsSame(box);
         AssertBool(box.IsLidOpen).IsTrue();
         AssertBool(box.IsOpened).IsFalse();
         AssertThat(Containers(CardContainerKind.Pack).Length).IsEqual(0);
@@ -174,17 +177,17 @@ public class ShopCarryingSceneTest
         await PhysicsFrames(SettleFrames);
         Aim(box);
         await PhysicsFrames(AimFrames);
-        _cardHolder.AddCard(_card);
+        AssertBool(_hand.TryTake(_card)).IsTrue();
 
-        _leftClick!.Invoke(true);
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
 
-        AssertBool(_holder.IsHolding).IsFalse();
+        AssertThat(_hand.Items).ContainsExactly(_card);
         AssertBool(box.GetParent() == _interaction.Camera).IsFalse();
-        AssertBool(_cardHolder.HasCards).IsTrue();
     }
 
-    // The player's whole path for a booster pack: picked up with a card already in hand, torn open with the right
-    // button, and its eight real cards join the hand after the card that was there.
+    // The player's whole path for a booster pack: picked up with a card already in hand, which stays in front, wheeled
+    // to the front, torn open with the right button, and its eight real cards join the hand after the card that was
+    // there.
     [TestCase]
     public async Task ABoosterPickedUpWithACardInHandOpensIntoTheHand()
     {
@@ -192,22 +195,25 @@ public class ShopCarryingSceneTest
         await PhysicsFrames(SettleFrames);
         Aim(booster);
         await PhysicsFrames(AimFrames);
-        _cardHolder.AddCard(_card);
+        AssertBool(_hand.TryTake(_card)).IsTrue();
 
-        _leftClick!.Invoke(true);
-        AssertThat(_holder.Held).IsSame(booster);
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
+        AssertThat(_hand.Items).ContainsExactly(_card, booster);
+        _wheelUp!.Invoke(new MouseActionArgs(true, false));
+        _wheelUp.Invoke(new MouseActionArgs(false, false));
+        AssertThat(_hand.Front).IsSame(booster);
 
-        _rightPress!.Invoke(true);
-        _rightPress.Invoke(false);
-        AssertBool(_holder.IsOpening).IsTrue();
-        await ContainerOpeningWait.Until(() => !_holder.IsOpening, "the booster opening in the hand");
+        _rightPress!.Invoke(new MouseActionArgs(true, false));
+        _rightPress.Invoke(new MouseActionArgs(false, false));
+        AssertBool(_hand.IsOpening).IsTrue();
+        await ContainerOpeningWait.Until(() => !_hand.IsOpening, "the booster opening in the hand");
 
-        var hand = _cardHolder.HeldCards;
-        AssertThat(hand.Length).IsEqual(9);
+        var hand = _hand.Cards;
+        AssertThat(hand.Count).IsEqual(9);
         AssertBool(hand[0] == _card).IsTrue();
         AssertThat(hand.Skip(1).OfType<CardController>().Count()).IsEqual(8);
         AssertBool(GodotObject.IsInstanceValid(booster)).IsFalse();
-        AssertBool(_holder.IsHolding).IsFalse();
+        AssertThat(_hand.Items.OfType<CardContainer>().Count()).IsEqual(0);
     }
 
     [TestCase]
@@ -217,17 +223,17 @@ public class ShopCarryingSceneTest
         await PhysicsFrames(SettleFrames);
         Aim(box);
         await PhysicsFrames(AimFrames);
-        _leftClick!.Invoke(true);
-        AssertBool(_holder.IsHolding).IsTrue();
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
+        AssertThat(_hand.Items).ContainsExactly(box);
 
         // A card click while the box is held must not reach the hand.
-        _card.Interact();
-        AssertBool(_cardHolder.HasCards).IsFalse();
+        RouterClicks.Click(_interaction.Router!, _card);
+        AssertBool(_hand.Cards.Count == 0).IsTrue();
 
         // Once the box is put down, the same card click is accepted, which proves the click is wired.
         _qPress!.Invoke();
-        _card.Interact();
-        AssertBool(_cardHolder.HasCards).IsTrue();
+        RouterClicks.Click(_interaction.Router!, _card);
+        AssertThat(_hand.Cards).ContainsExactly(_card);
     }
 
     [TestCase]
@@ -237,17 +243,16 @@ public class ShopCarryingSceneTest
         await PhysicsFrames(SettleFrames);
         Aim(box);
         await PhysicsFrames(AimFrames);
-        _leftClick!.Invoke(true);
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
         _qPress!.Invoke();
-        AssertBool(_holder.IsHolding).IsFalse();
+        AssertInt(_hand.Count).IsEqual(0);
 
         await PhysicsFrames(SettleFrames);
         Aim(box);
         await PhysicsFrames(AimFrames);
-        _leftClick!.Invoke(true);
+        _leftClick!.Invoke(new MouseActionArgs(true, false));
 
-        AssertBool(_holder.IsHolding).IsTrue();
-        AssertThat(_holder.Held).IsSame(box);
+        AssertThat(_hand.Items).ContainsExactly(box);
         AssertBool(box.GetParent() == _interaction.Camera).IsTrue();
     }
 

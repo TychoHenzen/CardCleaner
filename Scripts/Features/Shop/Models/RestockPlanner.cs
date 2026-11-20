@@ -5,10 +5,11 @@ using System.Linq;
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>
-///     Picks the restocker's next step from the stock and the slots with room. A pack or booster that fits a
-///     product-shelf slot goes first, a booster onto a part-filled booster stack before an empty slot; otherwise a box
-///     is unpacked onto the emptiest product shelf once enough slots are empty (<see cref="FreeSlotsToUnpack" />);
-///     otherwise the restocker idles. Pure, so it is tested without a scene.
+///     Picks the restocker's next step from the stock and the shelf levels with room (<see cref="FreeSlot" />). A pack
+///     or booster that fits a product-shelf level goes first, onto a part-filled level of the same product before an
+///     empty level; otherwise a box is unpacked onto the emptiest product shelf once enough seats are free for its
+///     booster boxes (<see cref="FreeSlotsToUnpack" />, <see cref="SeatsForBoxContents" />); otherwise the restocker
+///     idles. Pure, so it is tested without a scene.
 /// </summary>
 public static class RestockPlanner
 {
@@ -33,8 +34,17 @@ public static class RestockPlanner
 
     // ASSUMPTION: a partly emptied box is unpacked as soon as its rest fits (Risk Low); the threshold only keeps a
     // full box from being opened for a slot or two.
-    /// <summary>Empty product-shelf slots needed to unpack a box of <paramref name="products" /> items.</summary>
+    /// <summary>Free product-shelf seats needed to unpack a box of <paramref name="products" /> items.</summary>
     public static int FreeSlotsToUnpack(int threshold, int products) => Math.Max(1, Math.Min(threshold, products));
+
+    /// <summary>
+    ///     The seats a box's booster boxes can go into across <paramref name="levels" />: the empty seats of every
+    ///     product-shelf level that takes a booster box. A booster box fills a seat alone, and a level holds one kind,
+    ///     so the free seats of a level of boosters do not count.
+    /// </summary>
+    public static int SeatsForBoxContents(IEnumerable<FreeSlot> levels) =>
+        levels.Where(level => level.Shelf == ShelfKind.ProductShelf && level.Takes(StockKind.Pack))
+            .Sum(level => level.EmptySeats);
 
     private static RestockStep? PlanMove(
         IReadOnlyList<StockSource> sources,
@@ -43,8 +53,8 @@ public static class RestockPlanner
         IReadOnlySet<(int Source, int Shelf)> unreachable,
         Func<int, int, float> sourceToSlotDistance)
     {
-        // ASSUMPTION: a booster tops up a part-filled stack before it takes an empty slot (Risk Low), so empty slots
-        // stay open for booster boxes, which fill a slot alone.
+        // A pack or booster tops up a part-filled level of its own product before it takes an empty level, so empty
+        // levels stay open for other products (shelf-levels spec).
         var best = (from source in sources
                 where source.Kind is StockKind.Pack or StockKind.Booster
                 from slot in productSlots
@@ -53,7 +63,7 @@ public static class RestockPlanner
                 orderby source.DistanceFromRestocker, slot.IsEmpty, sourceToSlotDistance(source.Id, slot.Id), slot.Id,
                     source.Id
                 select (source, slot))
-            .Cast<(StockSource source, FreeSlot slot)?>()
+            .Select(pair => ((StockSource source, FreeSlot slot)?)pair)
             .FirstOrDefault();
         return best is { } pair
             ? new RestockStep(RestockStepKind.Move, pair.source.Id, pair.slot.Id, pair.slot.ShelfId)
@@ -67,21 +77,22 @@ public static class RestockPlanner
         IReadOnlySet<(int Source, int Shelf)> unreachable,
         int threshold)
     {
-        // A box holds booster boxes, which fill a slot alone, so only empty slots count toward unpacking one.
-        var empty = productSlots.Where(s => s.IsEmpty).ToList();
-        var shelves = empty.GroupBy(s => s.ShelfId)
-            .OrderByDescending(g => g.Count())
+        // A box holds booster boxes, which fill a seat alone, so only seats a booster box can take count.
+        var open = productSlots.Where(s => s.Takes(StockKind.Pack)).ToList();
+        var seats = SeatsForBoxContents(open);
+        var shelves = open.GroupBy(s => s.ShelfId)
+            .OrderByDescending(g => g.Sum(s => s.EmptySeats))
             .ThenBy(g => g.Key)
             .Select(g => g.Key)
             .ToList();
         var best = (from box in sources
                 where box.Kind == StockKind.Box
-                      && empty.Count >= FreeSlotsToUnpack(threshold, box.Products)
+                      && seats >= FreeSlotsToUnpack(threshold, box.Products)
                 from shelfId in shelves
                 where !blocked.Contains((box.Id, shelfId)) && !unreachable.Contains((box.Id, shelfId))
                 orderby box.DistanceFromRestocker, box.Id, shelves.IndexOf(shelfId)
                 select (box, shelfId))
-            .Cast<(StockSource box, int shelfId)?>()
+            .Select(pair => ((StockSource box, int shelfId)?)pair)
             .FirstOrDefault();
         return best is { } pair
             ? new RestockStep(RestockStepKind.UnpackBox, pair.box.Id, pair.shelfId, pair.shelfId)

@@ -1,4 +1,7 @@
-﻿using CardCleaner.Scripts.Core.Services;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Core.Services;
 using GdUnit4;
 using Godot;
 
@@ -35,9 +38,9 @@ public class InputServiceTest
     [TestCase]
     public void TestRegisterMouseAction()
     {
-        _service.RegisterAction(this, "test_mouse", MouseButton.Left, (pressed) =>
+        _service.RegisterAction(this, "test_mouse", MouseButton.Left, args =>
         {
-            _mouseActionPressed = pressed;
+            _mouseActionPressed = args.Pressed;
             _actionCallCount++;
         });
 
@@ -137,9 +140,9 @@ public class InputServiceTest
     [TestCase]
     public void TestSimulateMousePress()
     {
-        _service.RegisterAction(this, "test_mouse", MouseButton.Left, (pressed) =>
+        _service.RegisterAction(this, "test_mouse", MouseButton.Left, args =>
         {
-            _mouseActionPressed = pressed;
+            _mouseActionPressed = args.Pressed;
             _actionCallCount++;
         });
 
@@ -157,9 +160,9 @@ public class InputServiceTest
     [TestCase]
     public void TestSimulateMouseRelease()
     {
-        _service.RegisterAction(this, "test_mouse", MouseButton.Left, (pressed) =>
+        _service.RegisterAction(this, "test_mouse", MouseButton.Left, args =>
         {
-            _mouseActionPressed = pressed;
+            _mouseActionPressed = args.Pressed;
             _actionCallCount++;
         });
 
@@ -232,9 +235,9 @@ public class InputServiceTest
     {
         _service.RegisterAction(this, "test_action", Key.Space, () => _actionCallCount++);
         var mouseCalls = 0;
-        _service.RegisterAction(this, "test_mouse", MouseButton.Left, pressed =>
+        _service.RegisterAction(this, "test_mouse", MouseButton.Left, args =>
         {
-            _mouseActionPressed = pressed;
+            _mouseActionPressed = args.Pressed;
             mouseCalls++;
         });
         _service._Input(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true });
@@ -253,6 +256,47 @@ public class InputServiceTest
         _service._Input(new InputEventKey { Keycode = Key.Space, Pressed = true });
 
         Assertions.AssertThat(_actionCallCount).IsEqual(1);
+    }
+
+    // Godot sends one wheel step as a press and then a release, so a test sends both, never the press alone.
+    [TestCase]
+    public void AWheelStepUpAndDownEachReachTheirAction()
+    {
+        var calls = new List<(string Action, MouseActionArgs Args)>();
+        _service.RegisterAction(this, "wheel_up", MouseButton.WheelUp, args => calls.Add(("wheel_up", args)));
+        _service.RegisterAction(this, "wheel_down", MouseButton.WheelDown, args => calls.Add(("wheel_down", args)));
+
+        WheelStep(MouseButton.WheelUp);
+        WheelStep(MouseButton.WheelDown);
+
+        Assertions.AssertThat(calls.Select(call => $"{call.Action}:{call.Args.Pressed}").ToArray())
+            .IsEqual(new[] { "wheel_up:True", "wheel_up:False", "wheel_down:True", "wheel_down:False" });
+        Assertions.AssertBool(_service.IsActionPressed("wheel_up")).IsFalse();
+        Assertions.AssertBool(_service.IsActionPressed("wheel_down")).IsFalse();
+    }
+
+    [TestCase]
+    public void AClickReportsWhetherShiftWasHeld()
+    {
+        var seen = new List<MouseActionArgs>();
+        _service.RegisterAction(this, "test_mouse", MouseButton.Left, seen.Add);
+
+        _service._Input(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true, ShiftPressed = true });
+        _service._Input(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false, ShiftPressed = true });
+        _service._Input(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true });
+
+        Assertions.AssertThat(seen.ToArray()).IsEqual(new[]
+        {
+            new MouseActionArgs(true, true),
+            new MouseActionArgs(false, true),
+            new MouseActionArgs(true, false)
+        });
+    }
+
+    private void WheelStep(MouseButton wheel)
+    {
+        _service._Input(new InputEventMouseButton { ButtonIndex = wheel, Pressed = true });
+        _service._Input(new InputEventMouseButton { ButtonIndex = wheel, Pressed = false });
     }
 
     [TestCase]

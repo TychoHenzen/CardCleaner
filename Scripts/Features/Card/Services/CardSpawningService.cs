@@ -70,11 +70,10 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
             CallDeferred(MethodName.EmitCardSpawnedSignal, controller);
         }
 
-        // Set up card renderer with deferred baking
-        var renderer = cardInstance.GetNodeOrNull<CardShaderRenderer>("CardRenderer");
-        if (renderer != null)
-            // Use CallDeferred to ensure all components are ready
-            Callable.From(() => BakeCardRenderer(renderer, signature, look)).CallDeferred();
+        // Dressed a frame later, once the generator has been resolved and the card is ready.
+        var face = cardInstance.GetNodeOrNull<CardFace>("Face");
+        if (face != null)
+            Callable.From(() => DressFace(face, signature, look)).CallDeferred();
 
         return cardInstance;
     }
@@ -94,11 +93,11 @@ public partial class CardSpawningService : Node, ICardSpawningService, IServiceP
         );
     }
 
-    private void BakeCardRenderer(CardShaderRenderer renderer, CardSignature signature, int? look)
+    // The card may have been freed before its deferred dressing ran.
+    private void DressFace(CardFace face, CardSignature signature, int? look)
     {
-        var template = new CardTemplate();
-        _generator.GenerateCardRenderer(renderer, signature, look, template);
-        renderer.Bake(template);
+        if (IsInstanceValid(face))
+            face.Dress(_generator, signature, look);
     }
 
     private void EmitCardSpawnedSignal(CardController card)

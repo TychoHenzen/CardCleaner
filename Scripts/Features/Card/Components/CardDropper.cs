@@ -1,9 +1,15 @@
-﻿using System;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Card.Controllers;
+using CardCleaner.Scripts.Features.Hand.Components;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 
+/// <summary>
+///     Lets go of held cards: X drops the front card where it hangs, and a drop aimed with the right button lays every
+///     held card flat in front of the player and lets go of them all on release. Booster packs held beside the cards
+///     stay in the hand.
+/// </summary>
 public partial class CardDropper : Node3D, IDependent
 {
     [Signal]
@@ -15,27 +21,19 @@ public partial class CardDropper : Node3D, IDependent
     [Signal]
     public delegate void DropStartedEventHandler();
 
-    private Camera3D _camera = null!;
-    private ICardHolder _cardHolder = null!;
+    private IHand _hand = null!;
     private IDropPreview _dropPreview = null!;
     private IInputService? _inputService;
     private IServiceResolver? _services;
-    private Func<bool>? _handBusy;
 
     public bool IsPreparingDrop { get; private set; }
 
     public void Inject(IServiceResolver services) => _services = services;
 
-    /// <param name="handBusy">
-    ///     True while something else occupies the hand (a held container), so X drops no card.
-    /// </param>
-    public void Initialize(ICardHolder cardHolder, IDropPreview dropPreview, Camera3D camera,
-        Func<bool>? handBusy = null)
+    public void Initialize(IHand hand, IDropPreview dropPreview)
     {
-        _cardHolder = cardHolder;
+        _hand = hand;
         _dropPreview = dropPreview;
-        _camera = camera;
-        _handBusy = handBusy;
         if (_services == null)
         {
             ILog.Error($"{Name} was not injected");
@@ -57,11 +55,11 @@ public partial class CardDropper : Node3D, IDependent
 
     public void StartDropPreparation()
     {
-        if (!_cardHolder.HasCards) return;
+        if (_hand.Cards.Count == 0 || _hand.IsOpening) return;
 
         IsPreparingDrop = true;
         _dropPreview.ShowPreview(true);
-        _cardHolder.PositionCardsForDrop();
+        _hand.PositionCardsForDrop();
 
         EmitSignal(SignalName.DropStarted);
     }
@@ -72,7 +70,7 @@ public partial class CardDropper : Node3D, IDependent
 
         IsPreparingDrop = false;
         _dropPreview.ShowPreview(false);
-        _cardHolder.PositionCards(); // Reset to normal hand position
+        _hand.PositionItems(); // Reset to normal hand position
 
         EmitSignal(SignalName.DropCancelled);
     }
@@ -81,31 +79,33 @@ public partial class CardDropper : Node3D, IDependent
     {
         if (!IsPreparingDrop) return;
 
-        _cardHolder.RemoveAllCards();
+        // The last card first, as the old holder let go of them, so each release re-lays the rest only once.
+        var cards = _hand.Cards;
+        for (var i = cards.Count - 1; i >= 0; i--)
+            _hand.ReleaseCard(cards[i]);
         IsPreparingDrop = false;
         _dropPreview.ShowPreview(false);
+        _hand.PositionItems();
 
         EmitSignal(SignalName.DropCompleted);
     }
 
+    /// <summary>X: lets go of the front item where it hangs when it is a card; a container in front stays.</summary>
     public void DropSingleCard()
     {
-        if (!_cardHolder.HasCards || _handBusy?.Invoke() == true) return;
-        _cardHolder.RemoveTopCard();
+        if (IsPreparingDrop || _hand.Front is not CardController card) return;
+        _hand.ReleaseCard(card);
     }
 
     public void UpdateDropPreview()
     {
-        if (!IsPreparingDrop || !_cardHolder.HasCards) return;
+        var cards = _hand.Cards;
+        if (!IsPreparingDrop || cards.Count == 0) return;
 
         // Update card positions to follow camera
-        _cardHolder.PositionCardsForDrop();
+        _hand.PositionCardsForDrop();
 
         // Update preview ray
-        var bottomCard = _cardHolder.HeldCards[0];
-        var origin = bottomCard.GlobalTransform.Origin;
-        var direction = Vector3.Down;
-
-        _dropPreview.UpdatePreview(origin, direction);
+        _dropPreview.UpdatePreview(cards[0].GlobalTransform.Origin, Vector3.Down);
     }
 }

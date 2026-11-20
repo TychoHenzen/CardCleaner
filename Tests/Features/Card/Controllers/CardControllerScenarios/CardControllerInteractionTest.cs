@@ -31,30 +31,16 @@ public class CardControllerInteractionTest : CardControllerTestBase
         Assertions.AssertBool(_cardController.CanInteract).IsFalse();
     }
 
+    // A click on a card is the hand router's (CardHighlighter); the card on its own does nothing.
     [TestCase]
-    public void Interact_WhenCanInteract_EmitsInteractionRequestedSignal()
+    public void Interact_OnItsOwn_LeavesTheCardWhereItIs()
     {
-        // Act
+        var parent = _cardController.GetParent();
+
         _cardController.Interact();
 
-        // Assert
-        Assertions.AssertThat(_cardInteractionRequestedEventCount).IsEqual(1);
-        Assertions.AssertThat(_lastInteractionRequestedCard).IsEqual(_cardController);
-    }
-
-    [TestCase]
-    public void Interact_WhenCannotInteract_DoesNotEmitSignal()
-    {
-        // Arrange - Make card non-interactable by holding it
-        var camera = new Camera3D();
-        Assertions.AddNode(camera);
-        _cardController.Reparent(camera);
-
-        // Act
-        _cardController.Interact();
-
-        // Assert
-        Assertions.AssertThat(_cardInteractionRequestedEventCount).IsEqual(0);
+        Assertions.AssertObject(_cardController.GetParent()).IsSame(parent);
+        Assertions.AssertThat(_cardPickedUpEventCount).IsEqual(0);
     }
 
     #endregion
@@ -116,16 +102,12 @@ public class CardControllerInteractionTest : CardControllerTestBase
     }
 
     [TestCase]
-    public void MultipleInteractions_EmitMultipleSignals()
+    public void EachPickupSignalIsEmittedOnce()
     {
-        // Act
-        _cardController.Interact();
-        _cardController.Interact();
+        _cardController.EmitPickupSignal();
         _cardController.EmitPickupSignal();
 
-        // Assert
-        Assertions.AssertThat(_cardInteractionRequestedEventCount).IsEqual(2);
-        Assertions.AssertThat(_cardPickedUpEventCount).IsEqual(1);
+        Assertions.AssertThat(_cardPickedUpEventCount).IsEqual(2);
     }
 
     #endregion

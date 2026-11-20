@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Features.Hand.Components;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -117,7 +118,7 @@ public class CardContainerTest
         InHandOpening.Begin(booster, _hand);
 
         AssertBool(booster.IsOpened).IsTrue();
-        AssertBool(booster.OpenInHand(Substitute.For<ICardHolder>())).IsFalse();
+        AssertBool(booster.OpenInHand(Substitute.For<IHand>())).IsFalse();
         booster.FinishOpening();
         AssertThat(_spawner.Spawned.Count).IsEqual(CardContainerLayout.ItemsPerContainer);
     }
@@ -130,22 +131,21 @@ public class CardContainerTest
 
         AssertBool(booster.CanInteract).IsFalse();
         InHandOpening.Hold(booster, _hand);
-        AssertBool(booster.OpenInHand(Substitute.For<ICardHolder>())).IsFalse();
+        AssertBool(booster.OpenInHand(Substitute.For<IHand>())).IsFalse();
         AssertBool(booster.IsOpened).IsFalse();
     }
 
     [TestCase]
-    public void Interact_EmitsPickUpRequested_AndDoesNotOpen()
+    // A click on a container is the hand router's (CardHighlighter); on its own it never opens or moves the box.
+    public void Interact_OnItsOwn_NeitherOpensNorMovesTheBox()
     {
         var box = Make(BoxScene);
-        var received = new List<CardContainer>();
-        box.Connect(CardContainer.SignalName.PickUpRequested, Callable.From<CardContainer>(received.Add));
+        var parent = box.GetParent();
 
         box.Interact();
 
         AssertBool(box.IsOpened).IsFalse();
-        AssertThat(received.Count).IsEqual(1);
-        AssertBool(received[0] == box).IsTrue();
+        AssertObject(box.GetParent()).IsSame(parent);
     }
 
     [TestCase]

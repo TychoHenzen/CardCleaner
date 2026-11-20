@@ -5,12 +5,16 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Packs.Models;
 
 /// <summary>
-///     Packs items into a box one at a time without overlap. An item goes where it rests lowest, then furthest back,
-///     then furthest left, in the first of its poses (<see cref="ItemShapes.Poses" />) that fits anywhere: on the
-///     floor, or on items below it whose tops carry at least <see cref="SupportShare" /> of its base. The spots tried
-///     are the box's back left corner and the corners next to, on and behind every item already in. A card or booster
-///     goes straight on top of the item put in just before it when that item has the same shape, so a run of cards
-///     becomes one stack. The same items in the same order always land in the same places.
+///     Packs items into a box one at a time without overlap. The same items in the same order always land in the same
+///     places. <para> Cards lie in four stacks in a pinwheel on the floor (<see cref="CardStacks" />): two flat and two
+///     turned, around a small square hole, the whole centred on the floor. A card goes on top of the first stack that
+///     still has room, so one stack fills before the next is started and the last card in is always on top of its
+///     stack. Cards use the stack places that containers leave free, so a box with containers in it holds fewer cards.
+///     </para> <para> A container goes where it rests lowest, then furthest back, then furthest left, in the first of
+///     its poses (<see cref="ItemShapes.Poses" />) that fits anywhere: on the floor, or on items below it whose tops
+///     carry at least <see cref="SupportShare" /> of its base. The spots tried are the box's back left corner and the
+///     corners next to, on and behind every item already in. A booster goes straight on top of the booster put in just
+///     before it, so a run of boosters becomes one stack. </para>
 /// </summary>
 public sealed class BoxPacker
 {
@@ -27,10 +31,17 @@ public sealed class BoxPacker
     public BoxPacker(Vector3 interior)
     {
         Interior = interior;
+        CardStacks = Pinwheel(interior);
     }
 
     /// <summary>The inner size of the box, which every item must stay within.</summary>
     public Vector3 Interior { get; }
+
+    /// <summary>
+    ///     Floor spot and pose of the four card stacks in fill order: for an a x b card cell, flat at (0, 0), turned at
+    ///     (a, 0), flat at (b, a) and turned at (0, b), a pinwheel round a (b - a) hole in an (a + b) square.
+    /// </summary>
+    public IReadOnlyList<(ItemPose Pose, Vector3 Floor)> CardStacks { get; }
 
     /// <summary>
     ///     Where an item of <paramref name="shape" /> goes, given the items <paramref name="placed" /> so far; null
@@ -38,6 +49,9 @@ public sealed class BoxPacker
     /// </summary>
     public PackedItem? Place(IReadOnlyList<PackedItem> placed, ItemShape shape)
     {
+        if (shape == ItemShape.Card)
+            return OnACardStack(placed);
+
         if (OnTopOfLast(placed, shape) is { } stacked)
             return stacked;
 
@@ -53,6 +67,47 @@ public sealed class BoxPacker
         }
 
         return null;
+    }
+
+    private static (ItemPose Pose, Vector3 Floor)[] Pinwheel(Vector3 interior)
+    {
+        var flat = Cell(ItemShape.Card, ItemPose.Flat);
+        var side = flat.X + flat.Z;
+        var origin = new Vector3(Math.Max(0f, (interior.X - side) / 2f), 0f, Math.Max(0f, (interior.Z - side) / 2f));
+        return
+        [
+            (ItemPose.Flat, origin),
+            (ItemPose.Turned, origin + new Vector3(flat.X, 0f, 0f)),
+            (ItemPose.Flat, origin + new Vector3(flat.Z, 0f, flat.X)),
+            (ItemPose.Turned, origin + new Vector3(0f, 0f, flat.Z)),
+        ];
+    }
+
+    // The card goes on the highest item over the first stack place that still takes it.
+    private PackedItem? OnACardStack(IReadOnlyList<PackedItem> placed)
+    {
+        foreach (var (pose, floor) in CardStacks)
+        {
+            var size = Cell(ItemShape.Card, pose);
+            var min = floor with { Y = TopOver(placed, floor, size) };
+            if (Fits(placed, min, size))
+                return new PackedItem(ItemShape.Card, pose, min, size);
+        }
+
+        return null;
+    }
+
+    // The top of the highest item whose floor plan shares any area with the cell at floor.
+    private static float TopOver(IReadOnlyList<PackedItem> placed, Vector3 floor, Vector3 size)
+    {
+        var top = 0f;
+        foreach (var item in placed)
+        {
+            if (item.Max.Y > top && SharedFloor(floor, floor + size, item) > Epsilon * Epsilon)
+                top = item.Max.Y;
+        }
+
+        return top;
     }
 
     private PackedItem? OnTopOfLast(IReadOnlyList<PackedItem> placed, ItemShape shape)
@@ -93,7 +148,8 @@ public sealed class BoxPacker
     private bool Fits(IReadOnlyList<PackedItem> placed, Vector3 min, Vector3 size)
     {
         var max = min + size;
-        if (max.X > Interior.X + Epsilon || max.Y > Interior.Y + Epsilon || max.Z > Interior.Z + Epsilon)
+        if (min.X < -Epsilon || min.Y < -Epsilon || min.Z < -Epsilon
+            || max.X > Interior.X + Epsilon || max.Y > Interior.Y + Epsilon || max.Z > Interior.Z + Epsilon)
             return false;
 
         var carried = 0f;

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
 using Godot;
@@ -21,13 +22,6 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
 {
     // Seconds a cardboard box's flaps take to swing open or shut in the hand.
     private const float LidSeconds = 0.4f;
-
-    /// <summary>
-    ///     Raised when the player interacts with a container that can be opened or carried. The holder that
-    ///     listens for it decides whether the container is picked up; interacting never opens it directly.
-    /// </summary>
-    [Signal]
-    public delegate void PickUpRequestedEventHandler(CardContainer container);
 
     private const float DefaultInteractionRange = 4.5f;
     private const uint InteractableLayerBit = 4; // Layer 3, in the InteractionSystem mask
@@ -100,7 +94,8 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     /// </summary>
     public int Remaining => Storage?.Count ?? CardContainerLayout.ItemsPerContainer;
 
-    // A cardboard box can always be carried, even empty, so the player can take it to the trash can.
+    // A cardboard box can always be carried, even empty, so the player can take it to the trash can. The hand router
+    // reads this before it plans a pick-up; the click itself is the router's.
     public bool CanInteract => !IsOpened && !IsHeld && (Kind == CardContainerKind.Box || HasContents);
 
     public Node3D InteractionBody => this;
@@ -216,11 +211,11 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     }
 
     /// <summary>
-    ///     Locks the last item this open cardboard box holds that <paramref name="slot" /> takes into it; false, with
-    ///     nothing taken, when the flaps are shut or nothing fits. An emptied box stays a box.
+    ///     Puts the last item this open cardboard box holds that <paramref name="store" /> takes into it (a shelf
+    ///     level); false, with nothing taken, when the flaps are shut or nothing fits. An emptied box stays a box.
     /// </summary>
-    public bool TakeOneInto(DeckSlot slot) =>
-        IsLidOpen && !IsOpened && Storage is { } storage && storage.TakeInto(slot);
+    public bool TakeOneInto(IItemStore store) =>
+        IsLidOpen && !IsOpened && Storage is { } storage && storage.TakeInto(store);
 
     // A booster taken out of the tree while it opens in the hand (a load clears the scene's containers) hands the
     // cards already out of it to the hand.
@@ -244,10 +239,9 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
         QueueFree();
     }
 
+    // The hand router plans every click on a container (it claims this target); a click never opens it.
     public void Interact()
     {
-        if (CanInteract)
-            EmitSignal(SignalName.PickUpRequested, this);
     }
 
     public void Highlight()
@@ -296,7 +290,7 @@ public partial class CardContainer : RigidBody3D, IInteractable, IDependent
     ///     whole time and is freed when the cards are in the hand. False unless this is a held, unopened booster that
     ///     has its contents.
     /// </summary>
-    public bool OpenInHand(ICardHolder hand)
+    public bool OpenInHand(IHand hand)
     {
         if (Kind != CardContainerKind.Booster || IsOpened || !IsHeld || !HasContents
             || GetParent() is not Node3D anchor)

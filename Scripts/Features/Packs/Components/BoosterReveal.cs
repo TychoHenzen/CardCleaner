@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
+using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
@@ -33,7 +34,7 @@ internal sealed class BoosterReveal
 
     private readonly CardContainer _wrapper;
     private readonly Node3D _anchor;
-    private readonly ICardHolder _hand;
+    private readonly IHand _hand;
     private readonly IReadOnlyList<CardSignature> _signatures;
     private readonly ICardSpawningService _spawning;
     private readonly BoosterRevealPlan _plan;
@@ -46,7 +47,7 @@ internal sealed class BoosterReveal
     private float _intoHandAt = -1f;
     private bool _given;
 
-    public BoosterReveal(CardContainer wrapper, Node3D anchor, ICardHolder hand,
+    public BoosterReveal(CardContainer wrapper, Node3D anchor, IHand hand,
         IReadOnlyList<CardSignature> signatures, ICardSpawningService spawning)
     {
         _wrapper = wrapper;
@@ -116,7 +117,7 @@ internal sealed class BoosterReveal
         {
             foreach (var card in cards)
                 if (StillOurs(card) && card.IsInsideTree())
-                    _hand.AddCard(card);
+                    _hand.TryTake(card);
         }).CallDeferred();
     }
 
@@ -165,16 +166,17 @@ internal sealed class BoosterReveal
         }
     }
 
-    // Each card, held and revealed alike, slides from where it is to its place in the hand it is about to become.
+    // Each item, held and revealed alike, slides from where it is to its place in the hand it is about to become: the
+    // hand's own pose, front raised, so nothing snaps when the cards join.
     private void StartSlide()
     {
         _intoHandAt = _time;
-        var held = _hand.HeldCards;
-        var total = held.Length + _cards.Count;
-        for (var j = 0; j < held.Length; j++)
-            _slides.Add(new Slide(held[j], held[j].Transform, _hand.FanPose(j, total)));
+        var held = _hand.Items;
+        var total = held.Count + _cards.Count;
+        for (var j = 0; j < held.Count; j++)
+            _slides.Add(new Slide(held[j], held[j].Transform, _hand.PoseOf(j, total)));
         for (var k = 0; k < _cards.Count; k++)
-            _slides.Add(new Slide(_cards[k], _cards[k].Transform, _hand.FanPose(held.Length + k, total)));
+            _slides.Add(new Slide(_cards[k], _cards[k].Transform, _hand.PoseOf(held.Count + k, total)));
     }
 
     private void SlideIntoHand()
@@ -194,13 +196,13 @@ internal sealed class BoosterReveal
         _given = true;
         foreach (var card in _cards)
             if (StillOurs(card))
-                _hand.AddCard(card);
+                _hand.TryTake(card);
     }
 
     // A card is still the reveal's (or the hand's) to move while it lives and hangs under the anchor; one a load freed
     // or the player dropped is left alone.
-    private bool StillOurs(RigidBody3D card) =>
+    private bool StillOurs(Node3D card) =>
         GodotObject.IsInstanceValid(card) && GodotObject.IsInstanceValid(_anchor) && card.GetParent() == _anchor;
 
-    private readonly record struct Slide(RigidBody3D Card, Transform3D From, Transform3D To);
+    private readonly record struct Slide(Node3D Card, Transform3D From, Transform3D To);
 }

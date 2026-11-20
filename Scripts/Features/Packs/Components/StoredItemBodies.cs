@@ -2,6 +2,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
+using CardCleaner.Scripts.Features.Packs.Services;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Packs.Components;
@@ -45,15 +46,33 @@ internal static class StoredItemBodies
     }
 
     /// <summary>
+    ///     The record <paramref name="body" /> stands for now, without drawing a seed: a look at an item that is not
+    ///     moved yet (a prompt, a room check) must not change the shared random source's draw order.
+    /// </summary>
+    public static StoredItem CurrentRecordOf(RigidBody3D body) =>
+        body is CardContainer container
+            ? new StoredContainer(container.SceneFilePath, container.Kind, container.ContentSeed, container.ShopPrice)
+            : RecordOf(body);
+
+    /// <summary>
     ///     Builds <paramref name="item" /> under <paramref name="parent" /> at <paramref name="at" />, sharing the
     ///     card spawner and test generator of <paramref name="box" />. Null when it could not be built.
     /// </summary>
-    public static RigidBody3D? Build(StoredItem item, Node3D parent, Transform3D at, CardContainer box)
+    public static RigidBody3D? Build(StoredItem item, Node3D parent, Transform3D at, CardContainer box) =>
+        Build(item, parent, at, box.Spawning, box.Generator);
+
+    /// <summary>
+    ///     Builds <paramref name="item" /> under <paramref name="parent" /> at <paramref name="at" />. A card needs
+    ///     <paramref name="spawning" />; a container left without one picks up the registered spawner when it is
+    ///     ready. Null when it could not be built.
+    /// </summary>
+    public static RigidBody3D? Build(StoredItem item, Node3D parent, Transform3D at, ICardSpawningService? spawning,
+        CardPackGenerator? generator = null)
     {
         return item switch
         {
-            StoredCard card => BuildCard(card, parent, at, box.Spawning),
-            StoredContainer container => BuildContainer(container, parent, at, box),
+            StoredCard card => BuildCard(card, parent, at, spawning),
+            StoredContainer container => BuildContainer(container, parent, at, spawning, generator),
             _ => null
         };
     }
@@ -79,7 +98,7 @@ internal static class StoredItemBodies
     }
 
     private static CardContainer? BuildContainer(StoredContainer stored, Node3D parent, Transform3D at,
-        CardContainer box)
+        ICardSpawningService? spawning, CardPackGenerator? generator)
     {
         var node = ResourceLoader.Load<PackedScene>(stored.ScenePath)?.Instantiate();
         if (node is not CardContainer container)
@@ -93,8 +112,8 @@ internal static class StoredItemBodies
         // Set before AddChild, so the container never draws a seed of its own.
         container.ContentSeed = stored.Seed;
         container.ShopPrice = stored.Price;
-        container.Spawning = box.Spawning;
-        container.Generator = box.Generator;
+        container.Spawning = spawning;
+        container.Generator = generator;
         parent.AddChild(container);
         container.GlobalTransform = at;
         return container;

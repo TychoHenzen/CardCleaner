@@ -28,7 +28,7 @@ public class CardLabelDrawOrderTest
         var card = AutoFree(scene.Instantiate())!;
         var faceMaterial = GD.Load<Material>(CardMaterialPath);
         var facePriority = faceMaterial.RenderPriority;
-        var label = card.GetNode<Label3D>(labelName);
+        var label = card.GetNode<Label3D>($"Face/{labelName}");
 
         // Assert - the text must sort after the face
         AssertInt(label.RenderPriority).IsGreater(facePriority);

@@ -71,7 +71,7 @@ public class ShopCarryingPoseSceneTest
         await ISceneRunner.SyncPhysicsFrame;
 
         // The shop scene has no input node of its own, so the test adds the real one and resolves the
-        // callbacks that InteractionSystem, CardHighlighter and ContainerHolder queued while waiting for it.
+        // callbacks that InteractionSystem, CardHighlighter and the hand queued while waiting for it.
         var input = AddNode(new InputService());
         TestServices.Container.RegisterSingleton<IInputService>(input);
         TestServices.ExecutePendingCallbacks();
@@ -96,13 +96,13 @@ public class ShopCarryingPoseSceneTest
 
         var camera = Camera();
         var holder = Holder();
-        AssertBool(ReferenceEquals(holder.Held, box))
+        AssertBool(ReferenceEquals(holder.Front, box))
             .OverrideFailureMessage(
-                $"nothing picked up: camera y={camera.GlobalPosition.Y}, box top y={box.GlobalPosition.Y + 0.6f}, " +
-                $"Held={holder.Held?.Name ?? "null"}")
+                $"nothing picked up: camera y={camera.GlobalPosition.Y}, box top y={box.GlobalPosition.Y + CartonSpace.OutsideHeight}, " +
+                $"Held={holder.Front?.Name ?? "null"}")
             .IsTrue();
         AssertBool(ReferenceEquals(box.GetParent(), camera)).IsTrue();
-        AssertBool(box.Transform.Origin.IsEqualApprox(holder.HoldOffset)).IsTrue();
+        AssertBool(box.Transform.Origin.IsEqualApprox(holder.BoxHoldOffset)).IsTrue();
         AssertBool(camera.IsPositionInFrustum(box.GlobalPosition)).IsTrue();
 
         var inFrustum = AssertCornersInFront(box, camera);
@@ -121,7 +121,7 @@ public class ShopCarryingPoseSceneTest
         await ClickAsync(MouseButton.Left);
         await PhysicsFrames(2);
         var holder = Holder();
-        AssertBool(ReferenceEquals(holder.Held, box)).IsTrue();
+        AssertBool(ReferenceEquals(holder.Front, box)).IsTrue();
 
         var carriedTransform = box.Transform;
         var start = _player.GlobalPosition;
@@ -132,7 +132,7 @@ public class ShopCarryingPoseSceneTest
         await PlayerWalker.WalkTo(_player, target);
         await PhysicsFrames(CarryFrames);
 
-        AssertBool(ReferenceEquals(holder.Held, box)).IsTrue();
+        AssertBool(ReferenceEquals(holder.Front, box)).IsTrue();
         AssertBool(box.Transform.IsEqualApprox(carriedTransform)).IsTrue();
         var walked = new Vector2(_player.GlobalPosition.X, _player.GlobalPosition.Z).DistanceTo(startXz);
         AssertBool(walked >= 1.5f).OverrideFailureMessage($"player walked only {walked} m").IsTrue();
@@ -144,7 +144,7 @@ public class ShopCarryingPoseSceneTest
         await FaceBox(box);
         await ClickAsync(MouseButton.Left);
         await PhysicsFrames(2);
-        AssertBool(ReferenceEquals(holder.Held, box))
+        AssertBool(ReferenceEquals(holder.Front, box))
             .OverrideFailureMessage(Describe(box))
             .IsTrue();
 
@@ -154,7 +154,7 @@ public class ShopCarryingPoseSceneTest
 
         AssertBool(box.IsLidOpen).IsTrue();
         AssertBool(box.IsOpened).IsFalse();
-        AssertBool(ReferenceEquals(holder.Held, box)).IsTrue();
+        AssertBool(ReferenceEquals(holder.Front, box)).IsTrue();
         AssertBool(box.Transform.IsEqualApprox(carriedTransform)).IsTrue();
         var packs = SpawnerNode().GetChildren().OfType<CardContainer>()
             .Where(c => c.Kind == CardContainerKind.Pack).ToArray();
@@ -197,11 +197,11 @@ public class ShopCarryingPoseSceneTest
         return inFrustum;
     }
 
-    private async Task AssertDroppedAhead(CardContainer box, ContainerHolder holder, uint layer, uint mask)
+    private async Task AssertDroppedAhead(CardContainer box, Scripts.Features.Hand.Components.Hand holder, uint layer, uint mask)
     {
         var camera = Camera();
-        var expected = camera.GlobalPosition + (-camera.GlobalBasis.Z * holder.DropDistance);
-        AssertBool(holder.Held == null).IsTrue();
+        var expected = camera.GlobalPosition + (-camera.GlobalBasis.Z * holder.PutDownDistance);
+        AssertBool(holder.Front == null).IsTrue();
         AssertBool(ReferenceEquals(box.GetParent(), SpawnerNode())).IsTrue();
         AssertBool(box.CollisionLayer == layer && box.CollisionMask == mask).IsTrue();
         AssertBool(!box.Freeze).IsTrue();
@@ -227,7 +227,8 @@ public class ShopCarryingPoseSceneTest
     private OrderCatalog Catalog() =>
         _shop.GetNode<StockApp>("PcDesktopViewport/StockApp").Catalog!;
 
-    private ContainerHolder Holder() => _player.GetNode<ContainerHolder>("CardInteraction/ContainerHolder");
+    private Scripts.Features.Hand.Components.Hand Holder() =>
+        _player.GetNode<Scripts.Features.Hand.Components.Hand>("CardInteraction/Hand");
 
     private static Node3D SpawnerNode() => TestServices.Resolver.Get<ICardSpawner>().GetNode();
 

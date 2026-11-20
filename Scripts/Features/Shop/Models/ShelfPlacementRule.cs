@@ -4,10 +4,11 @@ using CardCleaner.Scripts.Features.Packs.Models;
 namespace CardCleaner.Scripts.Features.Shop.Models;
 
 /// <summary>
-///     Which stock each shelf kind takes, and how much of it one slot stacks. A card shelf takes cards, a product
-///     shelf boosters and packs, and a storage rack boxes, packs and boosters. A slot holds one kind of stock at a
-///     time. On a product shelf a pack fills its slot alone and boosters lie in a stack of
-///     <see cref="BoostersPerProductSlot" />, so its 16 slots hold 16 packs or 64 boosters. Pure rules, so the table is
+///     Which stock each shelf kind takes, how much of it one seat stacks, and the rules of a shelf level. A card shelf
+///     takes cards, a product shelf boosters and packs, and a storage rack boxes, packs and boosters. A level (one
+///     board) holds one kind of stock at a time (<see cref="LevelTakes" />), and on a product shelf it has one price
+///     (<see cref="PriceOnPut" />). On a product shelf a pack fills its seat alone and boosters lie in a stack of
+///     <see cref="BoostersPerProductSlot" />, so its 16 seats hold 16 packs or 64 boosters. Pure rules, so the table is
 ///     tested without a scene.
 /// </summary>
 public static class ShelfPlacementRule
@@ -40,6 +41,21 @@ public static class ShelfPlacementRule
             _ => throw new ArgumentOutOfRangeException(nameof(shelf), shelf, "Unknown shelf kind.")
         };
     }
+
+    /// <summary>
+    ///     True when a level of a <paramref name="shelf" /> that holds <paramref name="holds" /> (null while it is
+    ///     empty) takes one more <paramref name="stock" />, room aside: its shelf takes that stock, and the level holds
+    ///     nothing else.
+    /// </summary>
+    public static bool LevelTakes(ShelfKind shelf, StockKind? holds, StockKind stock) =>
+        Accepts(shelf, stock) && (holds == null || holds == stock);
+
+    /// <summary>
+    ///     The price an item takes as it goes on a level (null: the market price). A product-shelf level has one price,
+    ///     set by its first item; on any other shelf an item keeps its own. A take changes no price.
+    /// </summary>
+    public static int? PriceOnPut(ShelfKind shelf, bool levelEmpty, int? levelPrice, int? ownPrice) =>
+        shelf == ShelfKind.ProductShelf && !levelEmpty ? levelPrice : ownPrice;
 
     /// <summary>The stock an item kept in a cardboard box is, for placement.</summary>
     public static StockKind From(StoredItem item)

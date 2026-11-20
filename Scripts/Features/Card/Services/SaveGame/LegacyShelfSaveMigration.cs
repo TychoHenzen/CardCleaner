@@ -77,7 +77,9 @@ internal static class LegacyShelfSaveMigration
             {
                 var oldSeat = shelf.OldOrigin + shelf.SlotOrigins[i] + OldSeatOffset;
                 if (position.DistanceTo(oldSeat) <= SeatMatchMeters)
-                    return root.GetNodeOrNull<DeckSlot>($"{shelf.NewPath}/Slot{i + 1}")?.SeatPosition(0);
+                    // Seats sit under the shelf's levels now, so the seat is found by its name, not its path.
+                    return (root.GetNodeOrNull($"{shelf.NewPath}")?.FindChild($"Slot{i + 1}", true, false) as DeckSlot)
+                        ?.SeatPosition(0);
             }
         }
 

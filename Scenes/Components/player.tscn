@@ -1,12 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://wv6a67swhus"]
+[gd_scene load_steps=11 format=3 uid="uid://wv6a67swhus"]
 
 [ext_resource type="Script" uid="uid://mykuqlivmgwc" path="res://Scripts/Features/Player/Controllers/PlayerController.cs" id="1_v0iea"]
 [ext_resource type="Script" uid="uid://ck2dgpln07wf4" path="res://Scripts/Features/Player/Controllers/InteractionSystem.cs" id="2_3smsa"]
 [ext_resource type="Script" uid="uid://coebm8tgbgmqv" path="res://Scripts/Features/Card/Components/CardHighlighter.cs" id="2_cvnsp"]
 [ext_resource type="Script" uid="uid://dvoklxj3c2cba" path="res://Scripts/Features/Card/Components/DropPreview.cs" id="5_f1ek2"]
-[ext_resource type="Script" uid="uid://cgcld0ulj1e3p" path="res://Scripts/Features/Card/Components/CardHolder.cs" id="6_tx1dd"]
+[ext_resource type="Script" uid="uid://d3yg27l10iull" path="res://Scripts/Features/Hand/Components/Hand.cs" id="6_hand"]
 [ext_resource type="Script" uid="uid://dmugtsg7qkg3m" path="res://Scripts/Features/Card/Components/CardDropper.cs" id="7_gymyn"]
-[ext_resource type="Script" uid="uid://dic66gso1rs2y" path="res://Scripts/Features/Packs/Components/ContainerHolder.cs" id="8_chold"]
 [ext_resource type="Script" path="res://Scripts/Features/Player/Ui/InteractionHud.cs" id="9_ihud"]
 [ext_resource type="Script" uid="uid://cxq0o7innnwob" path="res://Scripts/Features/CardStacks/Components/CardBundler.cs" id="10_bundl"]
 
@@ -37,33 +36,27 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.520677, -0.145628, 0)
 script = ExtResource("2_3smsa")
 Camera = NodePath("..")
 
-[node name="CardInteraction" type="Node3D" parent="." node_paths=PackedStringArray("InteractionSystem", "CardDropper", "CardHolder", "ContainerHolderNode", "Preview")]
+[node name="CardInteraction" type="Node3D" parent="." node_paths=PackedStringArray("InteractionSystem", "CardDropper", "HandNode", "Preview")]
 script = ExtResource("2_cvnsp")
 InteractionSystem = NodePath("../Head/Camera3D/InteractionSystem")
 CardDropper = NodePath("CardDropper")
-CardHolder = NodePath("CardHolder")
-ContainerHolderNode = NodePath("ContainerHolder")
+HandNode = NodePath("Hand")
 Preview = NodePath("DropPreview")
 
 [node name="DropPreview" type="Node3D" parent="CardInteraction"]
 script = ExtResource("5_f1ek2")
 
-[node name="CardHolder" type="Node3D" parent="CardInteraction"]
-script = ExtResource("6_tx1dd")
-HoldDistance = 1.0
+[node name="Hand" type="Node3D" parent="CardInteraction"]
+script = ExtResource("6_hand")
 
 [node name="CardDropper" type="Node3D" parent="CardInteraction"]
 script = ExtResource("7_gymyn")
 
-[node name="ContainerHolder" type="Node3D" parent="CardInteraction"]
-script = ExtResource("8_chold")
-
-[node name="CardBundler" type="Node" parent="CardInteraction" node_paths=PackedStringArray("InteractionSystem", "CardHolder", "CardDropper", "ContainerHolderNode")]
+[node name="CardBundler" type="Node" parent="CardInteraction" node_paths=PackedStringArray("InteractionSystem", "HandNode", "CardDropper")]
 script = ExtResource("10_bundl")
 InteractionSystem = NodePath("../../Head/Camera3D/InteractionSystem")
-CardHolder = NodePath("../CardHolder")
+HandNode = NodePath("../Hand")
 CardDropper = NodePath("../CardDropper")
-ContainerHolderNode = NodePath("../ContainerHolder")
 
 [node name="AimHud" type="CanvasLayer" parent="."]
 layer = 5

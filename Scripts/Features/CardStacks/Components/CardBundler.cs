@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.CardStacks.Models;
+using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
@@ -13,37 +14,36 @@ using Godot;
 namespace CardCleaner.Scripts.Features.CardStacks.Components;
 
 /// <summary>
-///     The hand's side of decks and piles. V straps the cards in hand into a deck (<see cref="CardBundle" />), which is
-///     set down in front of the player. A click on a deck unstraps it into the hand when every card fits; a click on a
-///     pile takes as many cards as the hand has room for. Neither works while a container is held or a drop is aimed.
+///     Straps the hand into a deck: V straps the cards in hand into a deck (<see cref="CardBundle" />), which is set
+///     down in front of the player. It does nothing while a booster opens in the hand or a drop is aimed. Booster packs
+///     held beside the cards stay in the hand when it straps. Clicks on decks and piles are the hand router's
+///     (<see cref="CardHighlighter" />).
 /// </summary>
 public partial class CardBundler : Node, IDependent
 {
     private const float DefaultSetDownDistance = 1.2f;
 
     [Export] public InteractionSystem InteractionSystem = null!;
-    [Export] public CardHolder CardHolder = null!;
     [Export] public CardDropper CardDropper = null!;
 
-    // ASSUMPTION: the export names the concrete ContainerHolder because Godot cannot export an interface (as in
-    // CardHighlighter). This class only reads IsHolding through IContainerHolder.
-    [Export] public ContainerHolder ContainerHolderNode = null!;
+    /// <summary>The player's hand; Godot cannot export an interface, so the node is read through IHand.</summary>
+    [Export] public Node3D HandNode = null!;
 
     /// <summary>How far in front of the camera a new deck is set down.</summary>
     [Export] public float SetDownDistance = DefaultSetDownDistance;
 
     private IServiceResolver? _services;
     private IInputService? _input;
-    private IContainerHolder? _containers;
+    private IHand? _hand;
 
     public void Inject(IServiceResolver services) => _services = services;
 
     /// <summary>True when V would strap the hand into a deck now.</summary>
     public bool CanStrap =>
-        HandIsFree && CardHolder.HeldCards.OfType<CardController>().Count() >= CardBundleRules.FewestToStrap;
+        HandIsFree && _hand!.Cards.Count >= CardBundleRules.FewestToStrap;
 
-    // A held container occupies the hand, and a drop being aimed keeps the cards where they are.
-    private bool HandIsFree => _containers is { IsHolding: false } && !CardDropper.IsPreparingDrop;
+    // A booster opening fills the hand, and a drop being aimed keeps the cards where they are.
+    private bool HandIsFree => _hand is { IsOpening: false } && !CardDropper.IsPreparingDrop;
 
     public override void _Ready()
     {
@@ -54,32 +54,27 @@ public partial class CardBundler : Node, IDependent
         }
 
         if (NodeExports.ExportCheck(InteractionSystem, nameof(InteractionSystem), this) ||
-            NodeExports.ExportCheck(CardHolder, nameof(CardHolder), this) ||
             NodeExports.ExportCheck(CardDropper, nameof(CardDropper), this) ||
-            NodeExports.ExportCheck(ContainerHolderNode, nameof(ContainerHolderNode), this))
+            NodeExports.ExportCheck(HandNode, nameof(HandNode), this))
             return;
 
-        _containers = ContainerHolderNode;
+        _hand = HandNode as IHand;
+        if (_hand == null)
+        {
+            ILog.Error($"{nameof(HandNode)} of {Name} is not a hand");
+            return;
+        }
+
         _services.Get<IInputService>(input =>
         {
             _input = input;
             _input.RegisterAction(this, "card_strap", Key.V, () => Strap());
         });
-
-        foreach (var bundle in GetTree().GetNodesInGroup(CardBundle.GroupName).OfType<CardBundle>())
-            Connect(bundle);
-        GetTree().NodeAdded += OnNodeAdded;
     }
 
     public override void _ExitTree()
     {
         _input?.UnregisterAllActions(this);
-        GetTree().NodeAdded -= OnNodeAdded;
-        foreach (var bundle in GetTree().GetNodesInGroup(CardBundle.GroupName).OfType<CardBundle>())
-        {
-            bundle.TakeRequested -= OnTakeRequested;
-            bundle.HandRoom = null;
-        }
     }
 
     /// <summary>
@@ -92,12 +87,12 @@ public partial class CardBundler : Node, IDependent
         if (!CanStrap || _services == null || InteractionSystem.Camera is not { } eye)
             return null;
 
-        var cards = CardHolder.HeldCards.OfType<CardController>().ToList();
+        var cards = _hand!.Cards.OfType<CardController>().ToList();
         var records = new List<StoredCard>(cards.Count);
         foreach (var card in cards)
         {
             records.Add((StoredCard)StoredItemBodies.RecordOf(card));
-            CardHolder.HandOver(card);
+            _hand.HandOver(card);
             card.GetParent()?.RemoveChild(card);
             card.QueueFree();
         }
@@ -108,41 +103,5 @@ public partial class CardBundler : Node, IDependent
         deck.GlobalTransform = new Transform3D(new Basis(Vector3.Up, eye.GlobalRotation.Y),
             eye.GlobalPosition - eye.GlobalBasis.Z * SetDownDistance);
         return deck;
-    }
-
-    private void OnNodeAdded(Node node)
-    {
-        if (node is CardBundle bundle)
-            Connect(bundle);
-    }
-
-    private void Connect(CardBundle bundle)
-    {
-        bundle.HandRoom = () => HandIsFree ? CardHolder.Room : 0;
-        bundle.TakeRequested -= OnTakeRequested;
-        bundle.TakeRequested += OnTakeRequested;
-    }
-
-    // The cards come out where the bundle lies and go into the hand in the order they went into the bundle.
-    private void OnTakeRequested(CardBundle bundle)
-    {
-        var count = bundle.TakeCount;
-        if (count == 0 || _services == null)
-            return;
-
-        var spawning = _services.Get<ICardSpawningService>();
-        var parent = _services.Get<ICardSpawner>().GetNode();
-        var at = bundle.GlobalTransform;
-        var lost = 0;
-        foreach (var stored in bundle.Take(count))
-        {
-            if (StoredItemBodies.BuildCard(stored, parent, at, spawning) is { } card)
-                CardHolder.AddCard(card);
-            else
-                lost++;
-        }
-
-        if (lost > 0)
-            ILog.Error($"{lost} cards taken from a {bundle.Kind} could not be spawned and were lost");
     }
 }

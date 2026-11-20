@@ -15,8 +15,9 @@ using Godot;
 namespace CardCleaner.Tests.Scenes;
 
 /// <summary>
-/// Price tags on the shelf scenes: every slot has its own tag, the tag prints the price of its stock, and the
-/// interaction ray reaches the tag and the card as two separate targets.
+/// Price tags on the shelf scenes: a card shelf has one tag per seat, a product shelf one per board, which prints the
+/// price every item on the board asks, and a storage rack none, since nothing on it is sold. The interaction ray
+/// reaches the tag and the card as two separate targets.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -27,36 +28,57 @@ public class ShelfPriceTagSceneTest
     private const string StorageRackScene = "res://Scenes/Shop/Items/StorageRack.tscn";
     private const string BoosterScene = "res://Scenes/Shop/Items/Booster.tscn";
     private const string PackScene = "res://Scenes/Shop/Items/Pack.tscn";
-    private const string BoxScene = "res://Scenes/Shop/Items/CardboardBox.tscn";
     private const uint InteractableMask = 6;
     private const uint TagLayer = 4;
 
     [BeforeTest]
-    public void Setup()
+    public static void Setup()
     {
         TestServices.Reset();
     }
 
     [TestCase]
-    public async Task EveryTaggedShelfSceneHasOneTagPerSlot()
+    public static async Task ACardShelfHasOneTagPerSeat()
     {
-        foreach (var path in new[] { ShelfScene, ProductShelfScene, StorageRackScene })
-        {
-            var shelf = LoadShelf(path);
-            await Settle();
+        var shelf = LoadShelf(ShelfScene);
+        await Settle();
 
-            var slots = shelf.Slots.ToList();
-            AssertThat(shelf.Pricings.Count()).IsEqual(slots.Count);
-            AssertThat(shelf.Pricings.Select(pricing => pricing.Slot).Distinct().Count()).IsEqual(slots.Count);
-            foreach (var slot in slots)
-            {
-                AssertThat(shelf.PricingFor(slot)).IsNotNull();
-            }
+        var slots = shelf.Slots.ToList();
+        AssertThat(shelf.Pricings.Count()).IsEqual(slots.Count);
+        AssertThat(shelf.Pricings.Select(pricing => pricing.Slot).Distinct().Count()).IsEqual(slots.Count);
+        foreach (var slot in slots)
+            AssertThat(shelf.PricingFor(slot)!.Slot).IsEqual(slot);
+    }
+
+    [TestCase]
+    public static async Task AProductShelfHasOneTagPerBoardThatEverySeatOfTheBoardShares()
+    {
+        var shelf = LoadShelf(ProductShelfScene);
+        await Settle();
+
+        var levels = shelf.Levels.ToList();
+        AssertThat(shelf.Pricings.Count()).IsEqual(levels.Count);
+        AssertThat(shelf.Pricings.Select(pricing => pricing.Level).Distinct().Count()).IsEqual(levels.Count);
+        foreach (var level in levels)
+        {
+            var tag = shelf.PricingFor(level)!;
+            AssertThat(tag.Level).IsEqual(level);
+            AssertBool(level.Seats.All(seat => shelf.PricingFor(seat) == tag)).IsTrue();
         }
     }
 
     [TestCase]
-    public async Task AStockedCardShelfSlotPrintsTheCardPrice()
+    public static async Task AStorageRackHasNoPriceTags()
+    {
+        var shelf = LoadShelf(StorageRackScene);
+        await Settle();
+
+        AssertThat(shelf.Pricings.Count()).IsEqual(0);
+        AssertObject(shelf.PricingFor(shelf.Slots.First())).IsNull();
+    }
+
+    [TestCase]
+    public static async Task AStockedCardShelfSlotPrintsTheCardPrice()
     {
         var shelf = LoadShelf(ShelfScene);
         var slot = shelf.Slots.First();
@@ -75,44 +97,45 @@ public class ShelfPriceTagSceneTest
     }
 
     [TestCase]
-    public async Task AProductShelfBoosterShowsTheBoosterPrice()
+    public static async Task AProductShelfBoosterShowsTheBoosterPrice()
     {
         var shelf = LoadShelf(ProductShelfScene);
-        var slot = shelf.Slots.First();
+        var level = shelf.Levels.First();
         var booster = AddNode(Load<CardContainer>(BoosterScene));
-        AssertBool(slot.TryLock(booster)).IsTrue();
+        AssertBool(level.TryLock(booster)).IsTrue();
         await Settle();
 
-        AssertThat(shelf.PricingFor(slot)!.TagLabel!.Text)
+        AssertThat(shelf.PricingFor(level)!.TagLabel!.Text)
             .IsEqual($"{ProductMarketPrices.BoosterPrice}");
     }
 
+    // A booster box on a board shows its price on the board's tag; an empty board's tag prints nothing.
     [TestCase]
-    public async Task AStorageRackPackShowsThePackPriceAndABoxShowsNone()
+    public static async Task AProductShelfBoardPrintsItsBoosterBoxPriceAndAnEmptyBoardNone()
     {
-        var shelf = LoadShelf(StorageRackScene);
-        var slots = shelf.Slots.ToList();
+        var shelf = LoadShelf(ProductShelfScene);
+        var levels = shelf.Levels.ToList();
         var pack = AddNode(Load<CardContainer>(PackScene));
-        var box = AddNode(Load<CardContainer>(BoxScene));
-        AssertBool(slots[0].TryLock(pack)).IsTrue();
-        AssertBool(slots[1].TryLock(box)).IsTrue();
+        AssertBool(levels[0].TryLock(pack)).IsTrue();
         await Settle();
 
-        var packTag = shelf.PricingFor(slots[0])!;
-        var boxTag = shelf.PricingFor(slots[1])!;
-        AssertThat(packTag.TagLabel!.Text).IsEqual($"{ProductMarketPrices.PackPrice}");
-        AssertThat(boxTag.TagLabel!.Text).IsEqual(string.Empty);
-        AssertBool(boxTag.CanInteract).IsFalse();
+        AssertThat(shelf.PricingFor(levels[0])!.TagLabel!.Text).IsEqual($"{ProductMarketPrices.PackPrice}");
+        var emptyTag = shelf.PricingFor(levels[1])!;
+        AssertThat(emptyTag.TagLabel!.Text).IsEqual(string.Empty);
+        AssertBool(emptyTag.CanInteract).IsFalse();
     }
 
+    // The board's click target stands in front of its stock, so the ray at a shelved card reaches the board, whose
+    // click takes the card; the tag stays a target of its own.
     [TestCase]
-    public async Task TheRayPicksTheTagAtTheTagAndTheCardAtTheCard()
+    public static async Task TheRayPicksTheTagAtTheTagAndTheBoardAtTheCard()
     {
         var shelf = LoadShelf(ShelfScene);
-        var slot = shelf.Slots.First();
+        var level = shelf.Levels.First();
+        var slot = level.Seats[0];
         var tag = shelf.PricingFor(slot)!;
         var card = AddNode(ShopTestCards.Create(new CardSignature()));
-        slot.TryLock(card);
+        AssertBool(level.TryLock(card)).IsTrue();
         await Settle();
 
         AssertBool(tag.CollisionLayer == TagLayer).IsTrue();
@@ -125,7 +148,10 @@ public class ShelfPriceTagSceneTest
 
         var cardHit = Climb(Cast(
             space, card.GlobalPosition + new Vector3(0, 1, 0), card.GlobalPosition + new Vector3(0, -1, 0)));
-        AssertBool(ReferenceEquals(cardHit, card)).IsTrue();
+        var board = shelf.LevelTargets.Single(target => target.Level == level);
+        AssertBool(ReferenceEquals(cardHit, board))
+            .OverrideFailureMessage($"the ray at the card hit {(cardHit as Node)?.Name}, expected {board.Name}")
+            .IsTrue();
     }
 
     private static T Load<T>(string path) where T : Node
@@ -133,7 +159,7 @@ public class ShelfPriceTagSceneTest
         return GD.Load<PackedScene>(path).Instantiate<T>();
     }
 
-    private CardShelf LoadShelf(string path)
+    private static CardShelf LoadShelf(string path)
     {
         var shelf = AddNode(Load<CardShelf>(path));
         shelf.Freeze = true;

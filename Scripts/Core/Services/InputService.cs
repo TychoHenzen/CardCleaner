@@ -52,7 +52,7 @@ public partial class InputService : Node, IInputService
         ILog.Print($"Registered action '{actionName}' -> {key}");
     }
 
-    public void RegisterAction(object owner, string actionName, MouseButton button, Action<bool> callback)
+    public void RegisterAction(object owner, string actionName, MouseButton button, Action<MouseActionArgs> callback)
     {
         var action = new InputAction
         {
@@ -184,9 +184,6 @@ public partial class InputService : Node, IInputService
     public override void _Ready()
     {
         SetProcessInput(true);
-
-        // Register some default actions that most games need
-        RegisterDefaultActions();
     }
 
     public override void _Input(InputEvent @event)
@@ -229,10 +226,11 @@ public partial class InputService : Node, IInputService
         // Check registered actions - O(1) dictionary lookup instead of LINQ
         if (_mouseActions.TryGetValue(mouse.ButtonIndex, out var actions))
         {
+            var args = new MouseActionArgs(mouse.Pressed, mouse.ShiftPressed);
             foreach (var action in actions)
             {
                 UpdateActionState(action.Name, mouse.Pressed);
-                action.MouseCallback?.Invoke(mouse.Pressed);
+                action.MouseCallback?.Invoke(args);
             }
         }
     }
@@ -270,11 +268,5 @@ public partial class InputService : Node, IInputService
             _actionJustPressed[actionName] = true;
         else if (!pressed && wasPressed)
             _actionJustReleased[actionName] = true;
-    }
-
-    private void RegisterDefaultActions()
-    {
-        // These are common actions that many components might need
-        // Components can still override these by registering their own version
     }
 }

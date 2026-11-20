@@ -62,16 +62,26 @@ public class CardEffectComparisonSceneTest
     }
 
     [TestCase]
-    public void TheSceneHoldsFifteenCards()
+    public void TheSceneHoldsOneCardPerReachableCell()
     {
-        AssertThat(Cards("Cards").Length).IsEqual(15);
+        // Five rarities by three tiers, less Epic and Legendary at Dormant intensity, which no card can reach.
+        AssertThat(Cards("Cards").Length).IsEqual(13);
     }
 
     [TestCase]
-    public void EveryRarityAndTierHasALabelledCard()
+    public void TheUnreachableCellsHaveNoCardAndNoLabel()
     {
-        foreach (var rarity in Enum.GetValues<CardRarity>())
-        foreach (var tier in Enum.GetValues<IntensityTier>())
+        foreach (var rarity in new[] { CardRarity.Epic, CardRarity.Legendary })
+        {
+            AssertThat(_scene.GetNodeOrNull($"Cards/{rarity}_{IntensityTier.Dormant}")).IsNull();
+            AssertThat(_scene.GetNodeOrNull($"Labels/{rarity}_{IntensityTier.Dormant}")).IsNull();
+        }
+    }
+
+    [TestCase]
+    public void EveryReachableRarityAndTierHasALabelledCard()
+    {
+        foreach (var (rarity, tier) in CardEffectComparisonGrid.Cells)
         {
             var label = _scene.GetNodeOrNull<Label3D>($"Labels/{rarity}_{tier}");
 
@@ -91,8 +101,7 @@ public class CardEffectComparisonSceneTest
     {
         await WaitForEffects("Cards");
 
-        foreach (var rarity in Enum.GetValues<CardRarity>())
-        foreach (var tier in Enum.GetValues<IntensityTier>())
+        foreach (var (rarity, tier) in CardEffectComparisonGrid.Cells)
         {
             var material = Material(_scene.GetNode<CardController>($"Cards/{rarity}_{tier}"))!;
 
@@ -197,11 +206,11 @@ public class CardEffectComparisonSceneTest
         AssertThat(normalMapsPerArt.Length).IsLess(withRarity.Length);
         AssertThat(normalMapsPerArt.All(count => count == 1)).IsTrue();
         // The same signature and look seed always get the same art seed, and different ones mostly get different
-        // seeds. A zero-signature card carries its own look seed, so there can be more groups than the fifteen
+        // seeds. A zero-signature card carries its own look seed, so there can be more groups than the thirteen
         // gameplay signatures, never fewer. The art seed is a mixed value mod 10000, so a rare collision between
         // about 110 cards is allowed.
-        AssertThat(gameplaySignatures).IsEqual(15);
-        AssertThat(seedsPerSignature.Length).IsGreaterEqual(15);
+        AssertThat(gameplaySignatures).IsEqual(CardEffectComparisonGrid.Cells.Count);
+        AssertThat(seedsPerSignature.Length).IsGreaterEqual(CardEffectComparisonGrid.Cells.Count);
         AssertThat(seedsPerSignature.All(seeds => seeds.Count() == 1)).IsTrue();
         AssertThat(seedsPerSignature.Select(seeds => seeds.Single()).Distinct().Count())
             .IsGreaterEqual((int)(seedsPerSignature.Length * 0.9));
@@ -277,7 +286,7 @@ public class CardEffectComparisonSceneTest
 
     private static ShaderMaterial? Material(CardController card)
     {
-        return card.GetNodeOrNull<MeshInstance3D>("OuterBox_Baked")?.MaterialOverride as ShaderMaterial;
+        return card.GetNodeOrNull<MeshInstance3D>("Face/OuterBox_Baked")?.MaterialOverride as ShaderMaterial;
     }
 
     private static int ArtIndexOf(CardTemplate template)

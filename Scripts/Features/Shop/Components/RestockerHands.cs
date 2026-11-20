@@ -6,7 +6,8 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
 ///     What the restocker holds: at most one container, parked on its Hand anchor. A container is taken from a rack
-///     slot or the floor, then either locked into a shelf slot or set down in the world.
+///     level or the floor, then either locked onto a shelf level or set down in the world. It moves as a body, not as
+///     a record, so a cardboard box keeps its contents and a container its seed and price.
 /// </summary>
 internal sealed class RestockerHands
 {
@@ -27,10 +28,10 @@ internal sealed class RestockerHands
     public CardContainer? Carried =>
         _carried != null && GodotObject.IsInstanceValid(_carried) ? _carried : null;
 
-    /// <summary>The slot the carried container was taken from, or null when it came off the floor.</summary>
-    public DeckSlot? Origin { get; private set; }
+    /// <summary>The level the carried container was taken from, or null when it came off the floor.</summary>
+    public ShelfLevel? Origin { get; private set; }
 
-    /// <summary>Takes the container (freeing its rack slot). True when it is in the hands afterwards.</summary>
+    /// <summary>Takes the container (freeing its seat). True when it is in the hands afterwards.</summary>
     public bool Take(CardContainer container)
     {
         if (ReferenceEquals(Carried, container))
@@ -38,8 +39,9 @@ internal sealed class RestockerHands
         if (Carried != null || !GodotObject.IsInstanceValid(container) || container.IsOpened || container.IsHeld)
             return false;
 
-        Origin = container.GetParent() as DeckSlot;
-        Origin?.ReleaseCard(container);
+        var seat = container.GetParent() as DeckSlot;
+        Origin = seat?.GetParent() as ShelfLevel;
+        seat?.ReleaseCard(container);
 
         // Off every collision layer while carried: the Area of the slot it left would otherwise see the reparented
         // body enter again and lock it straight back.
@@ -54,14 +56,14 @@ internal sealed class RestockerHands
         return true;
     }
 
-    /// <summary>Locks the carried container into the slot. False, still carried, when the slot refuses.</summary>
-    public bool Shelve(DeckSlot slot)
+    /// <summary>Locks the carried container onto the level. False, still carried, when the level refuses.</summary>
+    public bool Shelve(ShelfLevel level)
     {
         if (Carried is not { } container)
             return false;
 
         container.CollisionLayer = _savedLayer;
-        if (slot.TryLock(container))
+        if (level.TryLock(container))
         {
             _carried = null;
             return true;

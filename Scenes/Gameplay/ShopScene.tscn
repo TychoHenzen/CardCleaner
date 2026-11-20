@@ -1827,7 +1827,7 @@ Item = ExtResource("ProductShelfFurniture")
 freeze = true
 
 [node name="StorageRack" type="StaticBody3D" parent="World/Furniture"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 20, 0, -7)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 20, 0, -6.96)
 collision_mask = 0
 script = ExtResource("PlacedFurniture")
 Item = ExtResource("StorageRackFurniture")
@@ -2027,19 +2027,19 @@ shape = SubResource("BackofficeZoneShape")
 [node name="Workshop" parent="World" instance=ExtResource("Workshop")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 0, -4)
 
-[node name="Seam" parent="World/Markers/SeamLocation" node_paths=PackedStringArray("Zone", "PlayerHolder", "Player", "Exit") instance=ExtResource("PortalDoorway")]
+[node name="Seam" parent="World/Markers/SeamLocation" node_paths=PackedStringArray("Zone", "PlayerHand", "Player", "Exit") instance=ExtResource("PortalDoorway")]
 Zone = NodePath("../../../BackofficeZone")
-PlayerHolder = NodePath("../../../../Player/CardInteraction/CardHolder")
+PlayerHand = NodePath("../../../../Player/CardInteraction/Hand")
 Player = NodePath("../../../../Player")
 Exit = NodePath("../../../Workshop/WorkshopEntry")
 
 [node name="ShopReturn" type="Marker3D" parent="World/Markers"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 12, 1.5, -6)
 
-[node name="ReturnSeam" parent="World/Workshop" node_paths=PackedStringArray("PlayerHolder", "Player", "Exit") instance=ExtResource("PortalDoorway")]
+[node name="ReturnSeam" parent="World/Workshop" node_paths=PackedStringArray("PlayerHand", "Player", "Exit") instance=ExtResource("PortalDoorway")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.8, 1.5, 5.8)
 AlwaysOpen = true
-PlayerHolder = NodePath("../../../Player/CardInteraction/CardHolder")
+PlayerHand = NodePath("../../../Player/CardInteraction/Hand")
 Player = NodePath("../../../Player")
 Exit = NodePath("../../Markers/ShopReturn")
 

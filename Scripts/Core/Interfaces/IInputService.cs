@@ -24,7 +24,11 @@ public interface IInputService
 
     // Action registration system
     void RegisterAction(object owner, string actionName, Key key, Action callback);
-    void RegisterAction(object owner, string actionName, MouseButton button, Action<bool> callback); // bool = pressed
+    /// <summary>
+    ///     Registers a mouse action. The callback runs on every press and release of the button, the wheel included
+    ///     (Godot sends a wheel step as a press and then a release).
+    /// </summary>
+    void RegisterAction(object owner, string actionName, MouseButton button, Action<MouseActionArgs> callback);
     void UnregisterAction(object owner, string actionName);
     void UnregisterAllActions(object owner);
 

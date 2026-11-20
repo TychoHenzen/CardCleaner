@@ -18,7 +18,6 @@ public class DeliveryFootprintExemptionTest
     private const float ProbeSize = 0.4f;
     private const string ShelfScene = "res://Scenes/Shop/Items/Shelf.tscn";
     private const string ProductShelfScene = "res://Scenes/Shop/Items/ProductShelf.tscn";
-    private const string StorageRackScene = "res://Scenes/Shop/Items/StorageRack.tscn";
     private const string PriceTagScene = "res://Scenes/Shop/Items/PriceTag.tscn";
     private static readonly Vector2 Cell = new(3f, 3f);
 
@@ -86,10 +85,11 @@ public class DeliveryFootprintExemptionTest
         tag.Free();
     }
 
+    // A storage rack has no price tags (rack stock is never sold), so only the sales shelves are checked.
     [TestCase]
     public void AShelfWithTagsHasTheFootprintOfAShelfWithout()
     {
-        foreach (var path in new[] { ShelfScene, ProductShelfScene, StorageRackScene })
+        foreach (var path in new[] { ShelfScene, ProductShelfScene })
         {
             var shelf = GD.Load<PackedScene>(path).Instantiate<CardShelf>();
             _world.AddChild(shelf);

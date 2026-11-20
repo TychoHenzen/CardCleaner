@@ -29,10 +29,10 @@ public static class ItemShapes
     public static IReadOnlyList<ItemPose> Poses(ItemShape shape) => shape == ItemShape.Pack ? BoxPoses : LyingPoses;
 
     /// <summary>
-    ///     True for a flat item (a card or booster) that a packer stacks straight on top of the same item put in just
-    ///     before it, so a run of them forms one tidy stack.
+    ///     True for a booster, which a packer stacks straight on top of the booster put in just before it, so a run of
+    ///     them forms one tidy stack. Cards have stack places of their own (<see cref="BoxPacker.CardStacks" />).
     /// </summary>
-    public static bool Stacks(ItemShape shape) => shape != ItemShape.Pack;
+    public static bool Stacks(ItemShape shape) => shape == ItemShape.Booster;
 
     /// <summary>The size of an item of <paramref name="size" /> once it takes <paramref name="pose" />.</summary>
     public static Vector3 SizeIn(Vector3 size, ItemPose pose)

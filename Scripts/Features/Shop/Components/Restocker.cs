@@ -37,7 +37,7 @@ public partial class Restocker : CharacterBody3D, IDependent
     private Vector3 _home;
     private double _sinceScan;
     private bool _homing;
-    private DeckSlot? _putBackSlot;
+    private ShelfLevel? _putBackLevel;
 
     [Export] public float MoveSpeed { get; set; } = DefaultMoveSpeed;
 
@@ -48,7 +48,7 @@ public partial class Restocker : CharacterBody3D, IDependent
 
     [Export] public float ScanSeconds { get; set; } = DefaultScanSeconds;
 
-    /// <summary>Free product-shelf slots needed before a box is unpacked (see <see cref="RestockPlanner" />).</summary>
+    /// <summary>Free product-shelf seats needed before a box is unpacked (see <see cref="RestockPlanner" />).</summary>
     [Export] public int BoxUnpackThreshold { get; set; } = DefaultBoxUnpackThreshold;
 
     /// <summary>The job phase, for tests.</summary>
@@ -103,7 +103,7 @@ public partial class Restocker : CharacterBody3D, IDependent
         if (_navigator == null || !Active)
             return;
 
-        if (_job.Phase == RestockerPhase.Idle && _putBackSlot == null)
+        if (_job.Phase == RestockerPhase.Idle && _putBackLevel == null)
         {
             _sinceScan += delta;
             if (_sinceScan >= ScanSeconds)
@@ -113,7 +113,7 @@ public partial class Restocker : CharacterBody3D, IDependent
             }
         }
 
-        if (_job.Phase != RestockerPhase.Idle || _homing || _putBackSlot != null)
+        if (_job.Phase != RestockerPhase.Idle || _homing || _putBackLevel != null)
             _navigator.Step(delta, MoveSpeed, StuckSeconds);
     }
 
@@ -130,7 +130,7 @@ public partial class Restocker : CharacterBody3D, IDependent
     private void StandDown()
     {
         _hands?.SetDown();
-        _putBackSlot = null;
+        _putBackLevel = null;
         _homing = false;
         _job.Cancel();
     }
@@ -156,26 +156,26 @@ public partial class Restocker : CharacterBody3D, IDependent
         _navigator!.Start(source);
     }
 
-    // Walks the carried container to the rack slot it came from, or another empty one. With no rack slot free it is
-    // set down on the floor, unfrozen, where the next scan finds it as a loose source.
+    // Walks the carried container to the rack level it came from, or another that takes it. With no rack level free
+    // it is set down on the floor, unfrozen, where the next scan finds it as a loose source.
     private void PutBack()
     {
-        var slot = _seen.PutBackSlot(_hands!.Carried!, _hands.Origin, GlobalPosition);
-        if (slot == null)
+        var level = _seen.PutBackLevel(_hands!.Carried!, _hands.Origin, GlobalPosition);
+        if (level == null)
         {
             _hands.SetDown();
             return;
         }
 
-        _putBackSlot = slot;
-        _navigator!.Start(slot.GlobalPosition);
+        _putBackLevel = level;
+        _navigator!.Start(level.StandPoint);
     }
 
     private void FinishPutBack()
     {
-        var slot = _putBackSlot;
-        _putBackSlot = null;
-        if (slot == null || !GodotObject.IsInstanceValid(slot) || !_hands!.Shelve(slot))
+        var level = _putBackLevel;
+        _putBackLevel = null;
+        if (level == null || !GodotObject.IsInstanceValid(level) || !_hands!.Shelve(level))
             _hands!.SetDown();
     }
 
@@ -200,7 +200,7 @@ public partial class Restocker : CharacterBody3D, IDependent
                 break;
             default:
                 _homing = false;
-                if (_putBackSlot != null)
+                if (_putBackLevel != null)
                     FinishPutBack();
                 break;
         }
@@ -215,7 +215,7 @@ public partial class Restocker : CharacterBody3D, IDependent
         }
 
         _homing = false;
-        if (_putBackSlot != null)
+        if (_putBackLevel != null)
             FinishPutBack();
     }
 
@@ -244,19 +244,18 @@ public partial class Restocker : CharacterBody3D, IDependent
     }
 
     private bool Shelve(RestockStep step) =>
-        _seen.SlotNode(step.TargetId) is DeckSlot slot && _hands!.Shelve(slot);
+        _seen.SlotNode(step.TargetId) is ShelfLevel level && _hands!.Shelve(level);
 
-    // The box stays in the hands: its booster boxes and boosters move straight into the shelf's free slots, and the
-    // next scan puts the box back on a rack (or unpacks it at another shelf while it still holds products). Slots may
-    // have been stocked on the walk, so the threshold is checked again, on empty slots as the planner counts them.
+    // The box stays in the hands: its booster boxes and boosters move straight onto the shelf's levels, and the next
+    // scan puts the box back on a rack (or unpacks it at another shelf while it still holds products). Levels may have
+    // been stocked on the walk, so the threshold is checked again, on free seats as the planner counts them.
     private bool Unpack(RestockStep step)
     {
         if (_hands!.Carried is not { } box || _seen.ShelfNode(step.TargetId) is not CardShelf shelf)
             return false;
 
-        var empty = _scan!.Gather(GlobalPosition, box).Slots
-            .Count(s => s is { Shelf: ShelfKind.ProductShelf, IsEmpty: true });
-        return empty >= RestockPlanner.FreeSlotsToUnpack(BoxUnpackThreshold, RestockerScan.ProductsIn(box))
+        var seats = RestockPlanner.SeatsForBoxContents(_scan!.Gather(GlobalPosition, box).Slots);
+        return seats >= RestockPlanner.FreeSlotsToUnpack(BoxUnpackThreshold, RestockerScan.ProductsIn(box))
                && shelf.TryUnpack(box);
     }
 

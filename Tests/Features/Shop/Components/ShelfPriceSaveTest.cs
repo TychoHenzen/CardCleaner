@@ -89,7 +89,7 @@ public class ShelfPriceSaveTest
     [TestCase]
     public async Task TheBoosterPriceSurvivesSaveAndReload()
     {
-        var slot1 = _product.GetNode<DeckSlot>("Slot1");
+        var slot1 = (DeckSlot)_product.FindChild("Slot1", true, false);
         var booster = NewBooster();
         AssertBool(slot1.TryLock(booster)).IsTrue();
         var pricing = _product.PricingFor(slot1)!;
@@ -109,7 +109,7 @@ public class ShelfPriceSaveTest
     [TestCase]
     public async Task ACardPriceComesBackWithTheCardInItsSlot()
     {
-        var slot1 = _cards.GetNode<DeckSlot>("Slot1");
+        var slot1 = (DeckSlot)_cards.FindChild("Slot1", true, false);
         var card = ShopTestCards.Create(new CardSignature());
         _shop.GetNode<Node3D>("World").AddChild(card);
         AssertBool(slot1.TryLock(card)).IsTrue();
@@ -127,7 +127,7 @@ public class ShelfPriceSaveTest
     [TestCase]
     public void AnOldTagMarkupIsIgnoredOnLoad()
     {
-        var slot1 = _product.GetNode<DeckSlot>("Slot1");
+        var slot1 = (DeckSlot)_product.FindChild("Slot1", true, false);
         AssertBool(slot1.TryLock(NewBooster())).IsTrue();
         var pricing = _product.PricingFor(slot1)!;
 

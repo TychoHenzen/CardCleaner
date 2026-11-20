@@ -1,4 +1,5 @@
 using System.Linq;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
@@ -8,7 +9,7 @@ namespace CardCleaner.Tests.Features.Shop.Components;
 
 /// <summary>
 ///     What the restocker sees: racked and loose containers are sources, held, opened and carried ones are not, and
-///     the slots of sales shelves with room (empty, or a booster stack below its limit) are targets.
+///     the levels of sales shelves with room (a free seat, or a booster stack below its limit) are targets.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -36,10 +37,10 @@ public class RestockerScanTest
     }
 
     [TestCase]
-    public void PackOnARackSlotIsARackSource()
+    public void PackOnARackLevelIsARackSource()
     {
         var pack = Container(PackScene, new Vector3(0f, 1f, 0f));
-        AssertBool(_rack.Slots.First().TryLock(pack)).IsTrue();
+        AssertBool(_rack.Levels.First().TryLock(pack)).IsTrue();
 
         var result = _scan.Gather(Vector3.Zero);
 
@@ -76,34 +77,39 @@ public class RestockerScanTest
         AssertInt(result.Sources.Count).IsEqual(0);
     }
 
+    // A level is one target, with its free seats counted; a full level is none.
     [TestCase]
-    public void OnlyEmptySalesShelfSlotsAreFreeTargets()
+    public void OnlySalesShelfLevelsWithRoomAreTargets()
     {
-        var filled = Container(PackScene, new Vector3(30f, 1f, 0f));
-        AssertBool(_product.Slots.First().TryLock(filled)).IsTrue();
+        var full = _product.Levels.First();
+        for (var i = 0; i < full.Seats.Count; i++)
+            AssertBool(full.TryLock(Container(PackScene, new Vector3(30f, 1f, 0f)))).IsTrue();
 
         var result = _scan.Gather(Vector3.Zero);
 
-        AssertInt(result.Slots.Count).IsEqual(_product.SlotCount - 1);
+        AssertInt(result.Slots.Count).IsEqual(_product.Levels.Count() - 1);
+        AssertBool(result.Slots.All(s => s.EmptySeats == 4)).IsTrue();
         AssertBool(result.Slots.All(s => s.Shelf == ShelfKind.ProductShelf)).IsTrue();
         AssertBool(result.Slots.Any(s => s.ShelfId < 0)).IsFalse();
     }
 
-    // A booster stack below its limit still takes boosters, so it is a target; a full stack is not.
+    // A level of boosters below its limit still takes boosters, so it is a target; a full one is not.
     [TestCase]
-    public void APartFilledBoosterStackIsATargetAndAFullOneIsNot()
+    public void APartFilledBoosterLevelIsATargetAndAFullOneIsNot()
     {
-        var slots = _product.Slots.ToList();
-        var part = slots[0];
+        var levels = _product.Levels.ToList();
+        var part = levels[0];
         AssertBool(part.TryLock(Container(BoosterScene, new Vector3(30f, 1f, 0f)))).IsTrue();
-        for (var i = 0; i < ShelfPlacementRule.BoostersPerProductSlot; i++)
-            AssertBool(slots[1].TryLock(Container(BoosterScene, new Vector3(30f, 1f, 0f)))).IsTrue();
+        var full = levels[1];
+        for (var i = 0; i < full.Seats.Count * ShelfPlacementRule.BoostersPerProductSlot; i++)
+            AssertBool(full.TryLock(Container(BoosterScene, new Vector3(30f, 1f, 0f)))).IsTrue();
 
         var result = _scan.Gather(Vector3.Zero);
 
-        AssertInt(result.Slots.Count).IsEqual(_product.SlotCount - 1);
+        AssertInt(result.Slots.Count).IsEqual(levels.Count - 1);
         var stack = result.Slots.Single(s => !s.IsEmpty);
         AssertThat(stack.Holds).IsEqual(StockKind.Booster);
+        AssertThat(stack.EmptySeats).IsEqual(part.Seats.Count - 1);
         AssertThat(result.SlotNode(stack.Id)).IsSame(part);
     }
 
@@ -136,20 +142,20 @@ public class RestockerScanTest
     }
 
     [TestCase]
-    public void CarriedContainerIsTheOnlySourceAndRackSlotsListTheEmptyOnes()
+    public void CarriedContainerIsTheOnlySourceAndRackLevelsListTheOnesWithRoom()
     {
         var pack = Container(PackScene, new Vector3(1f, 1f, 0f));
         Container(PackScene, new Vector3(-1f, 1f, 0f));
-        AssertBool(_rack.Slots.First().TryLock(pack)).IsTrue();
-        var origin = _rack.Slots.First();
-        origin.ReleaseCard(pack);
+        var origin = _rack.Levels.First();
+        AssertBool(origin.TryLock(pack)).IsTrue();
+        pack.GetParent<DeckSlot>().ReleaseCard(pack);
 
         var result = _scan.Gather(Vector3.Zero, pack);
 
         AssertInt(result.Sources.Count).IsEqual(1);
         AssertThat(result.SourceNode(result.Sources[0].Id)).IsEqual(pack);
-        AssertInt(result.RackSlots.Count).IsEqual(_rack.SlotCount);
-        AssertThat(result.PutBackSlot(pack, origin, Vector3.Zero)).IsEqual(origin);
+        AssertInt(result.RackLevels.Count).IsEqual(_rack.Levels.Count());
+        AssertThat(result.PutBackLevel(pack, origin, Vector3.Zero)).IsEqual(origin);
     }
 
     private static CardShelf Shelf(string path, Vector3 at)

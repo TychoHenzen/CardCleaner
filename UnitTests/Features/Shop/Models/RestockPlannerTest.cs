@@ -162,6 +162,68 @@ public class RestockPlannerTest
         AssertThat(Plan(new[] { Src(7, StockKind.Box, 1f) }, slots)).IsEqual(RestockStep.Idle);
     }
 
+    // A level is one board of four seats; every free seat a booster box can take counts toward a box.
+    [TestCase]
+    public static void Two_empty_levels_of_four_seats_are_enough_to_unpack_a_full_box()
+    {
+        var levels = new[] { Level(0, 1, null, 4), Level(1, 1, null, 3) };
+        var more = new[] { Level(0, 1, null, 4), Level(1, 1, null, 4) };
+
+        AssertThat(Plan(new[] { Src(7, StockKind.Box, 1f) }, levels)).IsEqual(RestockStep.Idle);
+        AssertThat(Plan(new[] { Src(7, StockKind.Box, 1f) }, more))
+            .IsEqual(new RestockStep(RestockStepKind.UnpackBox, 7, 1, 1));
+    }
+
+    [TestCase]
+    public static void The_free_seats_of_a_level_of_booster_boxes_count_toward_a_box_and_of_boosters_do_not()
+    {
+        var levels = new List<FreeSlot> { Level(0, 1, StockKind.Pack, 2), Level(1, 1, StockKind.Booster, 3) };
+
+        AssertThat(RestockPlanner.SeatsForBoxContents(levels)).IsEqual(2);
+    }
+
+    [TestCase]
+    public static void Card_shelf_and_rack_levels_do_not_count_toward_a_box()
+    {
+        var levels = new[]
+        {
+            new FreeSlot(0, 1, ShelfKind.CardShelf, null, 4), new FreeSlot(1, 2, ShelfKind.StorageRack, null, 2)
+        };
+
+        AssertThat(RestockPlanner.SeatsForBoxContents(levels)).IsEqual(0);
+    }
+
+    [TestCase]
+    public static void A_booster_box_tops_up_a_level_of_booster_boxes_before_an_empty_level()
+    {
+        var levels = new[] { Level(0, 1, null, 4), Level(5, 1, StockKind.Pack, 2) };
+
+        AssertThat(Plan(new[] { Src(1, StockKind.Pack, 1f) }, levels).TargetId).IsEqual(5);
+    }
+
+    [TestCase]
+    public static void A_booster_never_goes_onto_a_level_of_booster_boxes()
+    {
+        var levels = new[] { Level(0, 1, StockKind.Pack, 3) };
+
+        AssertThat(Plan(new[] { Src(1, StockKind.Booster, 1f) }, levels)).IsEqual(RestockStep.Idle);
+    }
+
+    [TestCase]
+    public static void A_box_unpacks_onto_the_shelf_with_the_most_free_seats_not_the_most_levels()
+    {
+        // Shelf 1 has three levels with one free seat each, shelf 2 one empty level of four.
+        var levels = new[]
+        {
+            Level(0, 1, StockKind.Pack, 1), Level(1, 1, StockKind.Pack, 1), Level(2, 1, StockKind.Pack, 1),
+            Level(3, 2, null, 4)
+        };
+
+        var step = Plan(new[] { new StockSource(7, StockKind.Box, false, 0f, 3) }, levels);
+
+        AssertThat(step).IsEqual(new RestockStep(RestockStepKind.UnpackBox, 7, 2, 2));
+    }
+
     [TestCase]
     public static void Empty_inputs_are_Idle()
     {
@@ -178,6 +240,10 @@ public class RestockPlannerTest
     // A product slot holding boosters below the stack limit.
     private static FreeSlot PartStack(int id, int shelfId) =>
         new(id, shelfId, ShelfKind.ProductShelf, StockKind.Booster);
+
+    // A product-shelf level holding `holds` (null while empty) with `emptySeats` seats that hold nothing.
+    private static FreeSlot Level(int id, int shelfId, StockKind? holds, int emptySeats) =>
+        new(id, shelfId, ShelfKind.ProductShelf, holds, emptySeats);
 
     private static List<FreeSlot> ProductSlots(int shelfId, int count, int firstId = 0) =>
         Enumerable.Range(firstId, count).Select(i => new FreeSlot(i, shelfId, ShelfKind.ProductShelf)).ToList();

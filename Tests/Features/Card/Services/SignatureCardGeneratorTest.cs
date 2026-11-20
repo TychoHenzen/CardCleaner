@@ -130,7 +130,7 @@ public class SignatureCardGeneratorTest
         Assertions.AssertThat(template1.CardBase.Texture).IsEqual(template2.CardBase.Texture);
         Assertions.AssertThat(template1.Art.Texture).IsEqual(template2.Art.Texture);
         Assertions.AssertThat(renderer1.NameLabel.Text).IsEqual(renderer2.NameLabel.Text);
-        Assertions.AssertThat(renderer1.AttrLabel.Text).IsEqual(renderer2.AttrLabel.Text);
+        Assertions.AssertThat(renderer1.FlavorLabel.Text).IsEqual(renderer2.FlavorLabel.Text);
     }
 
     [TestCase]
@@ -284,14 +284,15 @@ public class SignatureCardGeneratorTest
     }
 
     [TestCase]
-    public void MundaneCardKeepsTheAttributeLabel()
+    public void MundaneCardShowsAFillerFlavorSentence()
     {
         var renderer = Assertions.AddNode(CreateRealRenderer());
         _generator.GenerateCardRenderer(renderer, new CardSignature(), 3, new CardTemplate());
 
         Assertions.AssertThat(renderer.NameLabel.Text).IsEqual("Common");
-        Assertions.AssertThat(renderer.AttrLabel.Visible).IsTrue();
-        Assertions.AssertThat(renderer.AttrLabel.Text).IsEqual(new CardSignature().ToDebugString());
+        Assertions.AssertThat(renderer.FlavorLabel.Visible).IsTrue();
+        Assertions.AssertThat(renderer.FlavorLabel.Text).IsEqual(FlavorText.For(new CardSignature(), 3));
+        Assertions.AssertThat(FlavorText.Filler.Contains(renderer.FlavorLabel.Text)).IsTrue();
     }
 
     /// <summary>Generates a card on a real renderer with the signature and look seed; returns its material.</summary>
@@ -321,8 +322,8 @@ public class SignatureCardGeneratorTest
         renderer.AddChild(manager);
         renderer.NameLabel = new Label3D();
         renderer.AddChild(renderer.NameLabel);
-        renderer.AttrLabel = new Label3D();
-        renderer.AddChild(renderer.AttrLabel);
+        renderer.FlavorLabel = new Label3D();
+        renderer.AddChild(renderer.FlavorLabel);
         renderer.Setup(renderer);
         return renderer;
     }
@@ -336,7 +337,7 @@ public class SignatureCardGeneratorTest
         renderer.AddChild(name);
         renderer.NameLabel = name;
         renderer.AddChild(desc);
-        renderer.AttrLabel = desc;
+        renderer.FlavorLabel = desc;
 
         renderer.Setup(_cardRoot);
         return renderer;
@@ -373,7 +374,8 @@ public class SignatureCardGeneratorTest
     [TestCase]
     public void TestGenerateCardRenderer_WithMockedRenderer()
     {
-        var signature = new CardSignature(new[] { 0.7f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
+        // Two pure elements (magnitude at least 0.9) make the card Rare.
+        var signature = new CardSignature(new[] { 0.95f, -0.92f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
 
         // Use NSubstitute for the renderer interface behavior we care about
         var mockMaterialManager = Substitute.For<ICardMaterialComponent>();
@@ -389,8 +391,8 @@ public class SignatureCardGeneratorTest
         realRenderer.Setup(realRenderer);
         realRenderer.NameLabel = new Label3D();
         realRenderer.AddChild(realRenderer.NameLabel);
-        realRenderer.AttrLabel = new Label3D();
-        realRenderer.AddChild(realRenderer.AttrLabel);
+        realRenderer.FlavorLabel = new Label3D();
+        realRenderer.AddChild(realRenderer.FlavorLabel);
 
 
         Assertions.AddNode(realRenderer);
@@ -400,7 +402,6 @@ public class SignatureCardGeneratorTest
 
         // Verify the expected behavior without relying on custom mock implementations
         Assertions.AssertThat(realRenderer.NameLabel.Text).IsEqual("Rare");
-        Assertions.AssertThat(realRenderer.AttrLabel.Text)
-            .IsEqual("Signature[0.70, -0.50, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]");
+        Assertions.AssertThat(realRenderer.FlavorLabel.Text).IsEqual(FlavorText.For(signature, null));
     }
 }

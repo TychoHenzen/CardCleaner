@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
+using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Pause.Components;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
@@ -27,7 +28,7 @@ public class ShopOrderingSceneTest
     private const float StandingDistanceToPc = 2.9f;
     // Only bounds an order loop that never fills; boxes stack in layers, so far more than one grid of them fit.
     private const int OrderBound = 200;
-    private const float BoxHeight = 0.6f;
+    private const float BoxHeight = CartonSpace.OutsideHeight;
     private const float HeightTolerance = 0.001f;
     private static readonly string[] ExpectedItems =
         ["cardboard_box", "pack", "booster"];

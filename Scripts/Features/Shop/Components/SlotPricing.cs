@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
@@ -11,12 +12,14 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     Price tag beside one shelf slot. It prints the asking price of the stock in its slot, and a click opens the
-///     pricing screen for that stock. Every item asks its own price: a card its
-///     <see cref="CardController.ShopPrice" />, a booster or pack its <see cref="CardContainer.ShopPrice" />. The price
-///     lives with the stock, not the tag, so the tag saves nothing and a price follows its item to any shelf. The tag
-///     prints the price of the item a customer takes next (the top of a booster stack). The tag sits on the interaction
-///     layer and collides with nothing, so a ray hits it separately from the card in front of it.
+///     Price tag on a shelf: beside one card seat (<see cref="Slot" />) on a card shelf, or under one whole level
+///     (<see cref="Level" />) on a product shelf. It prints the asking price of the stock it covers, and a click opens
+///     the pricing screen for that stock. Every item asks its own price: a card its
+///     <see cref="CardController.ShopPrice" />, a booster or pack its <see cref="CardContainer.ShopPrice" />. On a
+///     product-shelf level every item has the same price (<see cref="ShelfPlacementRule.PriceOnPut" />), and setting it
+///     prices them all. The price lives with the stock, not the tag, so the tag saves nothing and a price follows its
+///     item to any shelf. The tag prints the price of the item a customer takes next (the level's last one). The tag
+///     sits on the interaction layer and collides with nothing, so a ray hits it separately from the stock behind it.
 /// </summary>
 public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
 {
@@ -24,6 +27,7 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
     private const float DefaultInteractionRange = 3.0f;
 
     private DeckSlot? _slot;
+    private ShelfLevel? _level;
     private IServiceResolver? _services;
     private IWholesaleCosts? _wholesale;
     private IPricingScreen? _screen;
@@ -38,7 +42,7 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
     [Export]
     public float InteractionRange { get; set; } = DefaultInteractionRange;
 
-    /// <summary>The slot this tag prices. Set on the instance root in the shelf scene.</summary>
+    /// <summary>The card seat this tag prices, on a card shelf. Set on the instance root in the shelf scene.</summary>
     [Export]
     public DeckSlot? Slot
     {
@@ -47,6 +51,20 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
         {
             UnsubscribeSlot();
             _slot = value;
+            SubscribeSlot();
+            Refresh();
+        }
+    }
+
+    /// <summary>The level this tag prices, on a product shelf. Set on the instance root in the shelf scene.</summary>
+    [Export]
+    public ShelfLevel? Level
+    {
+        get => _level;
+        set
+        {
+            UnsubscribeSlot();
+            _level = value;
             SubscribeSlot();
             Refresh();
         }
@@ -72,8 +90,12 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
 
     public string Prompt => $"Set price (now {AskingValue})";
 
-    // The item a customer takes next: the top of the slot's stack (CarriedStock takes Cards[^1]).
-    private RigidBody3D? Stock => Slot is { Cards.Count: > 0 } slot ? slot.Cards[^1] : null;
+    // The item a customer takes next: the level's last one, or the top of the seat's stack.
+    private RigidBody3D? Stock =>
+        Level != null ? Level.Last : Slot is { Cards.Count: > 0 } slot ? slot.Cards[^1] : null;
+
+    // Everything this tag prices.
+    private IReadOnlyList<RigidBody3D> Covered => Level?.Stock ?? Slot?.Cards ?? [];
 
     public void Inject(IServiceResolver services) => _services = services;
 
@@ -121,10 +143,10 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
         };
     }
 
-    // Every container in a slot is of one kind (ShelfPlacementRule.StackLimit), so one price covers the slot.
+    // Every container on a level is of one kind (ShelfPlacementRule.LevelTakes), so one price covers the level.
     private ContainerStockPrice ContainerPrice(CardContainer top)
     {
-        var stack = Slot!.Cards;
+        var stack = Covered;
         return new ContainerStockPrice(top.Kind, stack.Count, MarketValue, _wholesale?.WholesaleFor(top.Kind),
             () => top.ShopPrice, price =>
             {
@@ -170,11 +192,15 @@ public partial class SlotPricing : StaticBody3D, IInteractable, IDependent
     {
         if (Slot != null)
             Slot.CardsChanged += Refresh;
+        if (Level != null)
+            Level.Changed += Refresh;
     }
 
     private void UnsubscribeSlot()
     {
         if (Slot != null)
             Slot.CardsChanged -= Refresh;
+        if (Level != null)
+            Level.Changed -= Refresh;
     }
 }

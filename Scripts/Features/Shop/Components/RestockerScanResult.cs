@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
@@ -8,9 +7,10 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     What one <see cref="RestockerScan" /> found: the planner's Godot-free sources and free slots, and the maps
-///     from their ids back to the live nodes. Ids come from the scan's <see cref="RestockerIds" />, so a node keeps
-///     its id across scans; slot ids and shelf ids are separate id spaces.
+///     What one <see cref="RestockerScan" /> found: the planner's Godot-free sources and free levels
+///     (<see cref="FreeSlot" />), and the maps from their ids back to the live nodes. Ids come from the scan's
+///     <see cref="RestockerIds" />, so a node keeps its id across scans; level ids and shelf ids are separate id
+///     spaces.
 /// </summary>
 internal sealed class RestockerScanResult
 {
@@ -19,7 +19,7 @@ internal sealed class RestockerScanResult
     private readonly RestockerIds _shelfIds;
     private readonly List<StockSource> _sources = new();
     private readonly List<FreeSlot> _slots = new();
-    private readonly List<DeckSlot> _rackSlots = new();
+    private readonly List<ShelfLevel> _rackLevels = new();
     private readonly Dictionary<int, Node3D> _sourceNodes = new();
     private readonly Dictionary<int, Node3D> _slotNodes = new();
     private readonly Dictionary<int, Node3D> _shelfNodes = new();
@@ -40,8 +40,8 @@ internal sealed class RestockerScanResult
 
     public IReadOnlyList<FreeSlot> Slots => _slots;
 
-    /// <summary>The empty slots of the storage racks, where a container that cannot be shelved goes back.</summary>
-    public IReadOnlyList<DeckSlot> RackSlots => _rackSlots;
+    /// <summary>The storage-rack levels with room, where a container that cannot be shelved goes back.</summary>
+    public IReadOnlyList<ShelfLevel> RackLevels => _rackLevels;
 
     public void AddSource(CardContainer container, bool onRack, float distance)
     {
@@ -51,16 +51,16 @@ internal sealed class RestockerScanResult
         _sourceNodes[id] = container;
     }
 
-    public void AddSlot(DeckSlot slot, CardShelf shelf)
+    public void AddLevel(ShelfLevel level, CardShelf shelf)
     {
-        var id = _slotIds.For(slot);
+        var id = _slotIds.For(level);
         var shelfId = _shelfIds.For(shelf);
-        _slots.Add(new FreeSlot(id, shelfId, shelf.Kind, slot.Holds));
-        _slotNodes[id] = slot;
+        _slots.Add(new FreeSlot(id, shelfId, shelf.Kind, level.Holds, level.EmptySeats));
+        _slotNodes[id] = level;
         _shelfNodes[shelfId] = shelf;
     }
 
-    public void AddRackSlot(DeckSlot slot) => _rackSlots.Add(slot);
+    public void AddRackLevel(ShelfLevel level) => _rackLevels.Add(level);
 
     public Node3D? SourceNode(int id) => Live(_sourceNodes.GetValueOrDefault(id));
 
@@ -69,17 +69,17 @@ internal sealed class RestockerScanResult
     public Node3D? ShelfNode(int id) => Live(_shelfNodes.GetValueOrDefault(id));
 
     /// <summary>
-    ///     The empty rack slot that takes the container: its origin slot when that one is still empty, else the
-    ///     nearest to <paramref name="from" />. Null when no rack slot has room.
+    ///     The rack level that takes the container: the level it came from when that one still takes it, else the
+    ///     nearest to <paramref name="from" /> that does. Null when no rack level takes it.
     /// </summary>
-    public DeckSlot? PutBackSlot(CardContainer container, DeckSlot? origin, Vector3 from)
+    public ShelfLevel? PutBackLevel(CardContainer container, ShelfLevel? origin, Vector3 from)
     {
         var stock = ShelfPlacementRule.From(container.Kind);
-        var fitting = _rackSlots.Where(s => ShelfPlacementRule.Accepts(s.Kind, stock)).ToList();
+        var fitting = _rackLevels.Where(level => level.CanTake(stock)).ToList();
         if (origin != null && fitting.Contains(origin))
             return origin;
 
-        return fitting.OrderBy(s => s.GlobalPosition.DistanceTo(from)).FirstOrDefault();
+        return fitting.OrderBy(level => level.GlobalPosition.DistanceTo(from)).FirstOrDefault();
     }
 
     /// <summary>Straight-line distance from a source to a slot; huge when either node is gone.</summary>
@@ -88,11 +88,17 @@ internal sealed class RestockerScanResult
             ? source.GlobalPosition.DistanceTo(slot.GlobalPosition)
             : float.MaxValue;
 
-    public Vector3? SourcePosition(RestockStep step) => SourceNode(step.SourceId)?.GlobalPosition;
+    /// <summary>Where the restocker walks to pick a source up: in front of its level, or to it when it is loose.</summary>
+    public Vector3? SourcePosition(RestockStep step) =>
+        SourceNode(step.SourceId) is not { } source ? null
+        : source.GetParent()?.GetParent() is ShelfLevel level ? level.StandPoint
+        : source.GlobalPosition;
 
-    /// <summary>Where the restocker takes the stock: a slot for a move, the shelf for an unpack.</summary>
+    /// <summary>Where the restocker takes the stock: in front of the level for a move, the shelf for an unpack.</summary>
     public Vector3? TargetPosition(RestockStep step) =>
-        (step.Kind == RestockStepKind.UnpackBox ? ShelfNode(step.TargetId) : SlotNode(step.TargetId))?.GlobalPosition;
+        step.Kind == RestockStepKind.UnpackBox
+            ? ShelfNode(step.TargetId)?.GlobalPosition
+            : (SlotNode(step.TargetId) as ShelfLevel)?.StandPoint;
 
     private static Node3D? Live(Node3D? node) => node != null && GodotObject.IsInstanceValid(node) ? node : null;
 }

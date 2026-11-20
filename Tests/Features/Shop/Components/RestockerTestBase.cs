@@ -124,6 +124,15 @@ public abstract class RestockerTestBase
         return container;
     }
 
+    // Puts a container on a board through the board, so it goes into the board's next seat at the board's price.
+    private protected CardContainer StockOn(string scenePath, ShelfLevel level)
+    {
+        var container = GD.Load<PackedScene>(scenePath).Instantiate<CardContainer>();
+        _shop.GetNode("World").AddChild(container);
+        AssertBool(level.TryLock(container)).IsTrue();
+        return container;
+    }
+
     // Two packs on the rack; returns them nearest-to-the-restocker first once it is walking to the first.
     private protected async Task<(CardContainer Near, CardContainer Far)> TwoRackPacksWhileWalkingToTheNearOne()
     {

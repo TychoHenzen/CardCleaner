@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -69,6 +70,20 @@ public class CardSpawnerSpecialCardTest
             Arg.Any<Transform3D>(), Arg.Any<Node3D>());
         _spawning.Received(1).SpawnCard(Arg.Any<CardSignature>(), Arg.Any<Transform3D>(), Arg.Any<Node3D>());
         _spawning.DidNotReceive().SpawnRandomCard(Arg.Any<Transform3D>(), Arg.Any<Node3D>());
+    }
+
+    [TestCase]
+    public void KeyFourDrawsAFullRangeSignatureNotAFaintOne()
+    {
+        var spawnSpecial = RegisteredCallback("spawn_special", Key.Key4);
+
+        for (var press = 0; press < 5; press++)
+            spawnSpecial();
+
+        // Pack cards are faint (every element within SignatureRandom.FaintCap); the debug card is not limited to it.
+        _spawning.Received(5).SpawnCard(
+            Arg.Is<CardSignature>(signature => signature.Elements.Any(e => Mathf.Abs(e) > SignatureRandom.FaintCap)),
+            Arg.Any<Transform3D>(), Arg.Any<Node3D>());
     }
 
     [TestCase]

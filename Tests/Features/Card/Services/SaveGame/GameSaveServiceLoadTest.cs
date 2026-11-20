@@ -18,8 +18,8 @@ namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
 
 /// <summary>
 /// Loads the committed pre-move save through the real save system (#172 U1). The game save service respawns each saved
-/// card, the held card goes back into the player's hand, and a card saved on a slot's seat is locked back into that
-/// slot.
+/// card, and a card saved on a slot's seat is locked back into that slot. That save predates the hand record
+/// (SavedHand), so its held card comes back loose in the world; the hand's own round trip is HandSaveTest.
 /// The service reads and writes an in-memory slot file system, so no test touches the user folder.
 /// </summary>
 [TestSuite]
@@ -30,7 +30,7 @@ public class GameSaveServiceLoadTest
     private const string CardSlotScene = "res://Scenes/UI/CardSlot.tscn";
 
     [TestCase]
-    public static async Task LoadingTheSaveRespawnsEachCardAndPutsTheHeldOneBackInTheHand()
+    public static async Task LoadingTheSaveRespawnsEachCard()
     {
         using var scene = new SaveWorld("GameSaveLoadWorld");
         var activeSlot = SaveWorld.SlotNamed("a");
@@ -38,16 +38,6 @@ public class GameSaveServiceLoadTest
         var envelope = SaveEnvelope.Write(SavedCardFixture.ReadText(), DateTime.UtcNow);
         files.Seed(SaveSlotLayout.FileFor(activeSlot.Current), envelope);
 
-        var player = new Node3D { Name = "Player" };
-        var head = new Node3D { Name = "Head" };
-        var camera = new Camera3D { Name = "Camera3D" };
-        player.AddToGroup("player");
-        head.AddChild(camera);
-        player.AddChild(head);
-        var hand = new CardHolder { Name = "CardHolder" };
-        player.AddChild(hand);
-        hand.SetReferences(camera);
-        scene.World.AddChild(player);
         var service = scene.Add(new GameSaveService(files, activeSlot) { AutoLoadOnStart = false });
         AddNode(scene.World, autoFree: false);
         scene.Enter();
@@ -58,9 +48,7 @@ public class GameSaveServiceLoadTest
         AssertThat(scene.Spawner.Spawned).HasSize(2);
         AssertSpawn(scene.Spawner.Spawned[0], SavedCardFixture.HeldElements, SavedCardFixture.HeldPosition,
             SavedCardFixture.HeldRotation);
-        // In the hand's list, not only under the camera, so the hand can drop, stock and strap it.
-        AssertObject(scene.Spawner.Spawned[0].Card.GetParent()).IsSame(camera);
-        AssertThat(hand.HeldCards).ContainsExactly(scene.Spawner.Spawned[0].Card);
+        AssertObject(scene.Spawner.Spawned[0].Card.GetParent()).IsSame(scene.World);
         AssertSpawn(scene.Spawner.Spawned[1], SavedCardFixture.PlacedElements, SavedCardFixture.PlacedPosition,
             SavedCardFixture.PlacedRotation);
         AssertObject(scene.Spawner.Spawned[1].Card.GetParent()).IsSame(scene.World);
@@ -131,8 +119,8 @@ public class GameSaveServiceLoadTest
         var slotPath = slot.GetPath().ToString();
 
         var oldSeat = slot.SeatPosition(0) + new Vector3(0.5f, 0.3f, -0.2f);
-        respawner.Respawn(new SavedCardRecord(new CardSignature(), oldSeat, Vector3.Zero, false, slotPath));
-        respawner.Respawn(new SavedCardRecord(new CardSignature(), oldSeat, Vector3.Zero, false, slotPath));
+        respawner.Respawn(new SavedCardRecord(new CardSignature(), oldSeat, Vector3.Zero, slotPath));
+        respawner.Respawn(new SavedCardRecord(new CardSignature(), oldSeat, Vector3.Zero, slotPath));
 
         var seated = scene.Spawner.Spawned[0].Card;
         var extra = scene.Spawner.Spawned[1].Card;

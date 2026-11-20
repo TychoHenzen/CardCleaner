@@ -21,6 +21,8 @@ public class ShelfSeatTest
     private const string RackScene = "res://Scenes/Shop/Items/StorageRack.tscn";
     private const string CardMeshPath = "res://Data/Card/CardMesh.tres";
     private const string CardScenePath = "res://Scenes/Components/CardShader.tscn";
+    private const string CardFaceScenePath = Scripts.Features.Card.Components.CardFace.ScenePath;
+    private const string CardFaceNode = "Face";
     private const string CardMeshNode = "OuterBox_Baked";
     private const float Tolerance = 0.015f;
 
@@ -61,6 +63,28 @@ public class ShelfSeatTest
                                         + $"{surface?.ToString() ?? "none"}")
                 .IsTrue();
             AssertInside(footprint, onShelf, $"{slot.Name}: {stock}");
+        }
+    }
+
+    // A box is 0.669 m tall since it holds four stacks of 128 cards; it must not reach into the board above its seat.
+    [TestCase]
+    public static void ABoxOnEveryRackSeatClearsTheBoardAboveIt()
+    {
+        var shelf = TurnedShelf(RackScene);
+        var boards = ShelfBoxes(shelf).Where(box => box.Owner == shelf).ToList();
+
+        foreach (var slot in shelf.Slots)
+        {
+            var box = AddNode(GD.Load<PackedScene>("res://Scenes/Shop/Items/CardboardBox.tscn")
+                .Instantiate<RigidBody3D>());
+            AssertBool(slot.TryLock(box)).OverrideFailureMessage($"{slot.Name} refused a cardboard box").IsTrue();
+
+            var onShelf = BodyShapesIn(shelf, box);
+            var hit = boards.FirstOrDefault(board => board.Overlaps(onShelf));
+            AssertThat(hit.Owner).OverrideFailureMessage(
+                    $"{slot.Name}: a box from {onShelf.Position.Y:0.000} to {onShelf.End.Y:0.000} m reaches into "
+                    + $"{hit.Name} ({hit.Box.Position.Y:0.000} to {hit.Box.End.Y:0.000} m)")
+                .IsNull();
         }
     }
 
@@ -201,12 +225,16 @@ public class ShelfSeatTest
         return (onBody * top, onBody * mesh.GetAabb().GetCenter(), onBody.Basis * Vector3.Up);
     });
 
-    private static Transform3D CardMeshNodeTransform()
+    // The mesh lies in the card's face scene, which the card scene instances as its Face child.
+    private static Transform3D CardMeshNodeTransform() =>
+        StoredTransform(CardScenePath, CardFaceNode) * StoredTransform(CardFaceScenePath, CardMeshNode);
+
+    private static Transform3D StoredTransform(string scene, string nodeName)
     {
-        var state = GD.Load<PackedScene>(CardScenePath).GetState();
+        var state = GD.Load<PackedScene>(scene).GetState();
         for (var node = 0; node < state.GetNodeCount(); node++)
         {
-            if (state.GetNodeName(node) != CardMeshNode)
+            if (state.GetNodeName(node) != nodeName)
                 continue;
             for (var property = 0; property < state.GetNodePropertyCount(node); property++)
             {
@@ -217,7 +245,7 @@ public class ShelfSeatTest
             return Transform3D.Identity;
         }
 
-        throw new InvalidOperationException($"{CardScenePath} has no {CardMeshNode}");
+        throw new InvalidOperationException($"{scene} has no {nodeName}");
     }
 
     // The shelf's own collision boxes and its price tags' boxes, in the shelf's frame: what blocks a view or a card.

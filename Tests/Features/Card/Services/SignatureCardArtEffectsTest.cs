@@ -19,8 +19,9 @@ namespace CardCleaner.Tests.Features.Card.Services;
 [RequireGodotRuntime]
 public class SignatureCardArtEffectsTest
 {
-    // A Rare card (glow) with a mean element magnitude of 0.15, which is Dormant (worn).
-    private static readonly float[] RareDormant = { 0.7f, -0.5f, 0f, 0f, 0f, 0f, 0f, 0f };
+    // A Rare card (glow: two pure elements) with a mean element magnitude of 0.225, which is Dormant (worn). It lies
+    // 0.985 from the test base type (Solidum 0.5, match radius 1), so it gets that type's art and waits for its bevel.
+    private static readonly float[] RareDormant = { 0.9f, -0.9f, 0f, 0f, 0f, 0f, 0f, 0f };
 
     private SignatureCardGenerator _generator = null!;
 
@@ -228,8 +229,8 @@ public class SignatureCardArtEffectsTest
         renderer.AddChild(manager);
         renderer.NameLabel = new Label3D();
         renderer.AddChild(renderer.NameLabel);
-        renderer.AttrLabel = new Label3D();
-        renderer.AddChild(renderer.AttrLabel);
+        renderer.FlavorLabel = new Label3D();
+        renderer.AddChild(renderer.FlavorLabel);
         renderer.Setup(renderer);
         return renderer;
     }

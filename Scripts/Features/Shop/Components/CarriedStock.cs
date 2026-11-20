@@ -7,14 +7,14 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Shop.Components;
 
 /// <summary>
-///     The shelf items a customer is carrying. A body is held out of the scene tree while carried, so the slot's
-///     Area cannot claim it again.
+///     The shelf items a customer is carrying. A body is held out of the scene tree while carried, so the level's
+///     triggers cannot claim it again.
 /// </summary>
 internal sealed class CarriedStock
 {
     private readonly List<Carried> _items = new();
 
-    private sealed record Carried(RigidBody3D Body, DeckSlot Slot, ShelfOffer Offer);
+    private sealed record Carried(RigidBody3D Body, ShelfLevel Level, ShelfOffer Offer);
 
     public int Count => _items.Count;
 
@@ -27,33 +27,33 @@ internal sealed class CarriedStock
         .ToList();
 
     /// <summary>
-    ///     Takes the top of the slot's stack, so the rest of a booster stack stays where it lies. False when the slot
-    ///     does not give it up.
+    ///     Takes the level's last item, the one put on last, so the rest stays where it lies. False when the level is
+    ///     empty or its seat does not give it up.
     /// </summary>
-    public bool TryTake(DeckSlot slot, ShelfOffer offer)
+    public bool TryTake(ShelfLevel level, ShelfOffer offer)
     {
-        var body = slot.Cards[^1];
-        if (!slot.ReleaseCard(body))
+        if (level.Last is not { } body || body.GetParent() is not DeckSlot seat || !seat.ReleaseCard(body))
             return false;
 
-        body.GetParent()?.RemoveChild(body);
-        _items.Add(new Carried(body, slot, offer));
+        seat.RemoveChild(body);
+        _items.Add(new Carried(body, level, offer));
         return true;
     }
 
-    /// <summary>Puts every item back in its slot; one whose slot is gone or refuses it is freed.</summary>
+    /// <summary>Puts every item back on its level; one whose level is gone or refuses it is freed.</summary>
     public void ReturnToSlots()
     {
         foreach (var item in Valid())
         {
-            if (!GodotObject.IsInstanceValid(item.Slot))
+            if (!GodotObject.IsInstanceValid(item.Level))
             {
                 item.Body.Free();
                 continue;
             }
 
-            item.Slot.AddChild(item.Body);
-            if (!item.Slot.TryLock(item.Body))
+            // In the tree under the level first: a level takes only a body in play.
+            item.Level.AddChild(item.Body);
+            if (!item.Level.TryLock(item.Body))
                 item.Body.Free();
         }
 

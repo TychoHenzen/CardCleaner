@@ -24,6 +24,7 @@ public class BoxPackerTest
         // From the inside floor up to the underside of the closed flaps.
         AssertThat(CartonSpace.Floor + CartonSpace.Interior.Y)
             .IsEqualApprox(ContainerMeshRecipe.CartonHeight - 2f * wall, Tolerance);
+        AssertThat(CartonSpace.OutsideHeight).IsEqualApprox(ContainerMeshRecipe.CartonHeight, Tolerance);
     }
 
     [TestCase]
@@ -60,12 +61,74 @@ public class BoxPackerTest
     [TestCase]
     public static void AFullStackOfCardsStartsANewStackOnTheFloor()
     {
-        var perStack = (int)(CartonSpace.Interior.Y / ItemShapes.Size(ItemShape.Card).Y + Tolerance);
-        var placed = PackAll(CartonSpace.Packer(), Enumerable.Repeat(ItemShape.Card, perStack + 1));
+        var placed = PackAll(CartonSpace.Packer(), Enumerable.Repeat(ItemShape.Card, 200));
+        var firstStack = placed.TakeWhile(item => SameSpot(item, placed[0])).Count();
 
-        AssertThat(placed.Count).IsEqual(perStack + 1);
-        AssertThat(placed[^1].Min.Y).IsEqual(0f);
-        AssertThat(placed[^1].Min.X > placed[0].Min.X || placed[^1].Min.Z > placed[0].Min.Z).IsTrue();
+        AssertThat(firstStack >= 128).OverrideFailureMessage($"the first stack holds {firstStack} cards").IsTrue();
+        AssertThat(placed[firstStack].Min.Y).IsEqual(0f);
+        AssertThat(placed.Skip(firstStack).All(item => SameSpot(item, placed[firstStack]))).IsTrue();
+    }
+
+    [TestCase]
+    public static void AnEmptyBoxTakesAtLeast512CardsOfTheirRealSize()
+    {
+        var placed = PackAll(CartonSpace.Packer(), Enumerable.Repeat(ItemShape.Card, 600));
+        var card = new Vector3(CardMeshBakeTest.Width, CardMeshBakeTest.Thickness, CardMeshBakeTest.Height);
+
+        AssertThat(placed.Count >= 512).OverrideFailureMessage($"the box took {placed.Count} cards").IsTrue();
+        AssertThat(CartonSpace.Packer().Place(placed, ItemShape.Card) == null).IsTrue();
+        AssertThat(placed.All(item =>
+                ItemShapes.SizeIn(card, item.Pose) + new Vector3(2f * BoxPacker.Clearance, 0f, 2f * BoxPacker.Clearance)
+                    == item.Size))
+            .IsTrue();
+        AssertSound(CartonSpace.Interior, placed);
+    }
+
+    [TestCase]
+    public static void CardsFillTheFourPinwheelStacksOneAtATime()
+    {
+        var packer = CartonSpace.Packer();
+        var placed = PackAll(packer, Enumerable.Repeat(ItemShape.Card, 600));
+
+        var spots = placed.Select(item => new Vector2(item.Min.X, item.Min.Z)).Distinct().ToList();
+        AssertThat(spots.SequenceEqual(packer.CardStacks.Select(stack => new Vector2(stack.Floor.X, stack.Floor.Z))))
+            .OverrideFailureMessage($"cards lie at {string.Join(", ", spots)}").IsTrue();
+        // Each stack is one unbroken run of the order the cards went in.
+        var runs = placed.Select((item, i) => i == 0 || !SameSpot(item, placed[i - 1])).Count(starts => starts);
+        AssertThat(runs).IsEqual(4);
+    }
+
+    [TestCase]
+    public static void TheLastCardInIsTheFirstOut()
+    {
+        var cards = Enumerable.Range(0, 200).Select(price => (StoredItem)new StoredCard(null, null, price));
+        var (box, left) = BoxContents.Packed(CartonSpace.Packer(), cards);
+        var last = new StoredCard(null, null, 999);
+
+        var withLast = box.With(last)!;
+        var spot = withLast.Placed[^1];
+        var (taken, spilled) = withLast.Without(withLast.Count - 1);
+
+        AssertThat(left.Count).IsEqual(0);
+        AssertThat(withLast.Items[withLast.LastIndexOf(item => item is StoredCard)]).IsEqual(last);
+        // Nothing lies over it: it is the top of its stack.
+        AssertThat(withLast.Placed.Take(withLast.Count - 1)
+                .Any(item => item.Min.Y >= spot.Max.Y - Tolerance && FloorShare(item, spot) > 0f))
+            .IsFalse();
+        AssertThat(spilled.Count).IsEqual(0);
+        AssertThat(taken.Items.SequenceEqual(box.Items) && taken.Placed.SequenceEqual(box.Placed)).IsTrue();
+    }
+
+    [TestCase]
+    public static void CardsPutAfterBoosterBoxesUseTheStackPlacesTheyLeaveFree()
+    {
+        var shapes = Enumerable.Repeat(ItemShape.Pack, 2).Concat(Enumerable.Repeat(ItemShape.Card, 600)).ToList();
+
+        var placed = PackAll(CartonSpace.Packer(), shapes);
+
+        AssertThat(placed.Count(item => item.Shape == ItemShape.Pack)).IsEqual(2);
+        AssertThat(placed.Count(item => item.Shape == ItemShape.Card) is > 0 and < 512).IsTrue();
+        AssertSound(CartonSpace.Interior, placed);
     }
 
     [TestCase]
@@ -76,7 +139,28 @@ public class BoxPackerTest
 
         var placed = PackAll(CartonSpace.Packer(), shapes);
 
-        AssertThat(placed.Count > 20).IsTrue();
+        // Cards lie only on the four stack places, never where the corner search puts containers, so a random mix
+        // packs few cards; every shape still goes in.
+        AssertThat(placed.Select(item => item.Shape).Distinct().Count()).OverrideFailureMessage("placed " + string.Join(
+                ", ", placed.GroupBy(item => item.Shape).Select(group => $"{group.Count()} {group.Key}")))
+            .IsEqual(3);
+        AssertSound(CartonSpace.Interior, placed);
+    }
+
+    // The two orders a player meets: cards put into a delivered box after half its booster boxes came out, and cards
+    // put in after one booster pack. The counts are printed, so a change in what a box holds shows in the test log.
+    [TestCase(4, ItemShape.Pack)]
+    [TestCase(1, ItemShape.Booster)]
+    public static void CardsStillGoInAfterContainers(int containers, ItemShape shape)
+    {
+        var shapes = Enumerable.Repeat(shape, containers).Concat(Enumerable.Repeat(ItemShape.Card, 600)).ToList();
+
+        var placed = PackAll(CartonSpace.Packer(), shapes);
+        var cards = placed.Count(item => item.Shape == ItemShape.Card);
+
+        Console.WriteLine($"box packer: {containers} {shape} then cards: {cards} cards fit");
+        AssertThat(placed.Count(item => item.Shape == shape)).IsEqual(containers);
+        AssertThat(cards >= 128).OverrideFailureMessage($"only {cards} cards fit").IsTrue();
         AssertSound(CartonSpace.Interior, placed);
     }
 
@@ -112,27 +196,38 @@ public class BoxPackerTest
         return placed;
     }
 
+    private static bool SameSpot(PackedItem a, PackedItem b) =>
+        Math.Abs(a.Min.X - b.Min.X) <= Tolerance && Math.Abs(a.Min.Z - b.Min.Z) <= Tolerance;
+
+    // Every item inside the box, none overlapping another, none resting on air. The problems are gathered and asserted
+    // once, since a full box has hundreds of thousands of pairs.
     private static void AssertSound(Vector3 interior, IReadOnlyList<PackedItem> placed)
     {
+        var problems = new List<string>();
         for (var i = 0; i < placed.Count; i++)
         {
             var item = placed[i];
-            AssertThat(item.Min.X >= -Tolerance && item.Min.Y >= -Tolerance && item.Min.Z >= -Tolerance).IsTrue();
-            AssertThat(item.Max.X <= interior.X + Tolerance && item.Max.Y <= interior.Y + Tolerance
-                                                             && item.Max.Z <= interior.Z + Tolerance).IsTrue();
+            if (item.Min.X < -Tolerance || item.Min.Y < -Tolerance || item.Min.Z < -Tolerance
+                || item.Max.X > interior.X + Tolerance || item.Max.Y > interior.Y + Tolerance
+                || item.Max.Z > interior.Z + Tolerance)
+                problems.Add($"item {i} lies outside the box");
+
             var carried = 0f;
             for (var j = 0; j < placed.Count; j++)
             {
                 if (j == i)
                     continue;
-                AssertThat(Overlap(item, placed[j])).OverrideFailureMessage($"items {i} and {j} overlap").IsFalse();
+                if (Overlap(item, placed[j]))
+                    problems.Add($"items {i} and {j} overlap");
                 if (Math.Abs(placed[j].Max.Y - item.Min.Y) <= Tolerance)
                     carried += FloorShare(item, placed[j]);
             }
 
-            var supported = item.Min.Y <= Tolerance || carried >= BoxPacker.SupportShare * item.Size.X * item.Size.Z;
-            AssertThat(supported).OverrideFailureMessage($"item {i} rests on air").IsTrue();
+            if (item.Min.Y > Tolerance && carried < BoxPacker.SupportShare * item.Size.X * item.Size.Z)
+                problems.Add($"item {i} rests on air");
         }
+
+        AssertThat(string.Join("; ", problems.Take(5))).IsEqual("");
     }
 
     private static bool Overlap(PackedItem a, PackedItem b) =>

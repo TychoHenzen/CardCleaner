@@ -1,5 +1,7 @@
 using System.Linq;
+using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
+using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Scripts.Core.Randomness;
@@ -74,6 +76,23 @@ public class CardPackGeneratorTest
         AssertThat(special.Length).IsGreater(0);
         foreach (var card in special)
             AssertThat(card.Elements.Any(e => e != 0f)).IsTrue();
+    }
+
+    [TestCase]
+    public static void EveryPackCardStaysUnderTheFaintCapAndRatesCommon()
+    {
+        var specialSeen = 0;
+        for (ulong seed = 1; seed <= 400; seed++)
+        foreach (var card in Seeded(seed).OpenBox())
+        {
+            AssertThat(card.Elements.All(e => Mathf.Abs(e) <= SignatureRandom.FaintCap)).IsTrue();
+            AssertThat(SignatureCardHelper.DetermineRarity(new[] { card })).IsEqual(CardRarity.Common);
+            if (card.HasMagicalPotential())
+                specialSeen++;
+        }
+
+        // About 1000 faint cards are drawn, so the cap is checked on real faint cards, not only on mundane ones.
+        AssertThat(specialSeen).IsGreater(500);
     }
 
     [TestCase]

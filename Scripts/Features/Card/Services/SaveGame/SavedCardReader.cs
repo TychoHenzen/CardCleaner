@@ -36,7 +36,6 @@ internal static class SavedCardReader
             signature,
             GetVector3FromData(cardData["position"]),
             GetVector3FromData(cardData["rotation"]),
-            Convert.ToBoolean(cardData["isHeld"]),
             cardData["parentPath"]?.ToString() ?? "",
             lookSeed,
             PriceFrom(cardData));
