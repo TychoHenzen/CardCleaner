@@ -157,3 +157,8 @@ UnitTests/obj/
 UnitTests/TestResults/
 # HagiCode and the OpenSpec CLI (openspec new, openspec archive) write change folders and archives here
 openspec/changes/
+# The impeccable design hook writes its dedup cache, pending queue and per-developer consent here
+# (.impeccable/config.json is shared and committed)
+.impeccable/hook.cache.json
+.impeccable/hook.pending.json
+.impeccable/config.local.json
