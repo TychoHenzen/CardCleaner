@@ -1,0 +1,147 @@
+/* Card Cleaner mess map. The look is the shop itself: cream walls, warm floor
+   tiles, kraft cardboard, printed shop signs and the owner's marker notes. */
+:root {
+  --paper: #f7f1e5;
+  --ink: #33281f;
+  --ink-soft: #6b5a4a;
+  --wall: #5a4636;
+  --floor: #f1e4cb;
+  --tile: #e6d3b0;
+  --backroom: #e9e1d2;
+  --workshop: #dfe3e8;
+  --office: #ece4f0;
+  --dock: #efe6d6;
+  --street: #b9b4ab;
+  --kerb: #d8d3ca;
+  --kraft: #c99a5e;
+  --kraft-dark: #8f6332;
+  --kraft-light: #e2bf8c;
+  --wood: #8b6a48;
+  --wood-light: #b38e66;
+  --tag: #f3cf55;
+  --mess: #c8402f;
+  --mess-soft: #f4d3c9;
+  --open: #2f7d4f;
+  --foil-a: #4f74b3;
+  --foil-b: #b45a7a;
+  --fog: #ece8e0;
+}
+
+.paper { fill: var(--paper); }
+.head .title { font: 700 46px 'Bahnschrift', 'Segoe UI', sans-serif; fill: var(--ink); letter-spacing: 1px; }
+.head .stamp { font: 400 17px 'Bahnschrift', 'Segoe UI', sans-serif; fill: var(--ink-soft); }
+.head .subtitle { font: 400 24px 'Segoe Print', 'Ink Free', cursive; fill: var(--ink); }
+
+/* Shapes get the hand-drawn wobble. Text never does. */
+.shapes path, .shapes rect, .shapes circle, .shapes ellipse, .shapes polygon, .shapes line, .shapes polyline {
+  filter: url(#rough);
+}
+.crisp, .crisp * { filter: none !important; }
+
+/* Rooms of the shop */
+.wall { fill: none; stroke: var(--wall); stroke-width: 7; stroke-linejoin: round; }
+.wall-thin { fill: none; stroke: var(--wall); stroke-width: 3.5; }
+.floor { fill: var(--floor); }
+.tiles { stroke: var(--tile); stroke-width: 1.2; }
+.backroom { fill: var(--backroom); }
+.workshop { fill: var(--workshop); }
+.office { fill: var(--office); }
+.dock { fill: var(--dock); }
+.street { fill: var(--street); }
+.kerb { fill: var(--kerb); }
+.lane { stroke: #f5f2ea; stroke-width: 4; stroke-dasharray: 26 18; fill: none; }
+.door-gap { stroke: var(--floor); stroke-width: 9; }
+.door-swing { fill: none; stroke: var(--wall); stroke-width: 1.5; stroke-dasharray: 4 4; }
+
+/* Furniture and stock */
+.shelf { fill: var(--wood); stroke: var(--ink); stroke-width: 1.5; }
+.shelf-top { fill: var(--wood-light); stroke: var(--ink); stroke-width: 1.2; }
+.rack { fill: none; stroke: var(--ink-soft); stroke-width: 2.5; }
+.box { fill: var(--kraft); stroke: var(--kraft-dark); stroke-width: 1.6; }
+.box-top { fill: var(--kraft-light); stroke: var(--kraft-dark); stroke-width: 1.4; }
+.box-tape { stroke: #e9d7b5; stroke-width: 3; }
+.box-empty { fill: #f3e8d4; stroke: var(--kraft-dark); stroke-width: 1.4; stroke-dasharray: 5 4; }
+.card { fill: #fffdf8; stroke: var(--ink); stroke-width: 1.2; }
+.card-a { fill: var(--foil-a); stroke: var(--ink); stroke-width: 1; }
+.card-b { fill: var(--foil-b); stroke: var(--ink); stroke-width: 1; }
+.counter { fill: #a7865f; stroke: var(--ink); stroke-width: 1.6; }
+.desk { fill: #9b8bb0; stroke: var(--ink); stroke-width: 1.6; }
+.screen { fill: #2e3440; stroke: var(--ink); stroke-width: 1.4; }
+.screen-glow { fill: #8fd3a8; }
+.machine { fill: #b8c2cc; stroke: var(--ink); stroke-width: 1.6; }
+.portal { fill: #a98bd6; stroke: #5e3f91; stroke-width: 2.5; }
+.binder { fill: #2f5d8a; stroke: var(--ink); stroke-width: 1.6; }
+.pages { fill: #fffdf6; stroke: var(--ink-soft); stroke-width: 1; }
+.trash { fill: #7c8a83; stroke: var(--ink); stroke-width: 1.6; }
+.hatch-door { fill: #6e5440; stroke: var(--ink); stroke-width: 2; }
+.camera { fill: #4a4f57; stroke: var(--ink); stroke-width: 1.2; }
+.camera-cone { fill: #f6e7a6; opacity: 0.55; }
+.web { fill: none; stroke: #a59d92; stroke-width: 1; }
+.string { fill: none; stroke: var(--mess); stroke-width: 2.6; stroke-linecap: round; }
+.string-soft { fill: none; stroke: var(--mess); stroke-width: 1.8; stroke-dasharray: 6 5; }
+.arrow { fill: none; stroke: var(--ink); stroke-width: 2; }
+.arrow-head { fill: var(--ink); }
+.flow { fill: none; stroke: var(--ink-soft); stroke-width: 2; stroke-dasharray: 7 6; }
+.dust { fill: #cfc4b2; opacity: 0.8; }
+.fog-lot { fill: var(--fog); opacity: 0.88; }
+.fence { fill: none; stroke: #8c857a; stroke-width: 2; stroke-dasharray: 3 7; }
+.sign-board { fill: #fffaf0; stroke: var(--ink); stroke-width: 1.8; }
+.sign-post { stroke: var(--ink); stroke-width: 3; }
+.bar-game { fill: #6c9a6e; stroke: var(--ink); stroke-width: 1.2; }
+.bar-test { fill: #c9a24e; stroke: var(--ink); stroke-width: 1.2; }
+.bar-mess { fill: var(--mess); stroke: var(--ink); stroke-width: 1.2; }
+.bar-quiet { fill: #d9d0c1; stroke: var(--ink); stroke-width: 1.2; }
+
+/* Price tags mark each mess. Number and severity word are both printed. */
+.tag { fill: var(--tag); stroke: var(--ink); stroke-width: 1.8; }
+.tag-hole { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
+.tag-num { font: 700 21px 'Bahnschrift', 'Segoe UI', sans-serif; fill: var(--ink); }
+.lens { fill: none; stroke: var(--mess); stroke-width: 3; }
+.leader { fill: none; stroke: var(--mess); stroke-width: 2.2; stroke-dasharray: 9 7; }
+
+/* Insets are index cards pinned around the floor plan */
+.inset { fill: #fffdf7; stroke: var(--ink); stroke-width: 2.2; }
+.inset-title { font: 700 22px 'Bahnschrift', 'Segoe UI', sans-serif; fill: var(--ink); }
+.sev { font: 700 15px 'Bahnschrift', 'Segoe UI', sans-serif; fill: var(--mess); letter-spacing: 1px; }
+.sev-med { fill: #b0702a; }
+.sev-low { fill: #6b7d4a; }
+
+/* Text */
+.room { font: 700 21px 'Bahnschrift', 'Segoe UI', sans-serif; fill: var(--ink); letter-spacing: 1.5px; }
+.room-sub { font: 400 15px 'Bahnschrift', 'Segoe UI', sans-serif; fill: var(--ink-soft); }
+.label { font: 400 16px 'Segoe UI', sans-serif; fill: var(--ink); }
+.label-b { font: 600 16px 'Segoe UI', sans-serif; fill: var(--ink); }
+.small { font: 400 14px 'Segoe UI', sans-serif; fill: var(--ink-soft); }
+.note { font: 400 17px 'Segoe Print', 'Ink Free', cursive; fill: var(--ink); }
+.note-mess { font: 400 17px 'Segoe Print', 'Ink Free', cursive; fill: var(--mess); }
+.caption { font: 400 16px 'Segoe Print', 'Ink Free', cursive; fill: var(--ink-soft); }
+.big-num { font: 700 40px 'Bahnschrift', 'Segoe UI', sans-serif; fill: var(--mess); }
+.mid-num { font: 700 26px 'Bahnschrift', 'Segoe UI', sans-serif; fill: var(--ink); }
+.sign-text { font: 700 15px 'Bahnschrift', 'Segoe UI', sans-serif; fill: var(--ink); letter-spacing: 1px; }
+.halo { paint-order: stroke; stroke: var(--paper); stroke-width: 5px; stroke-linejoin: round; }
+.halo-floor { paint-order: stroke; stroke: var(--floor); stroke-width: 5px; stroke-linejoin: round; }
+.mono { font: 400 14px 'Cascadia Mono', 'Consolas', monospace; fill: var(--ink); }
+.label-w { font: 600 15px 'Segoe UI', sans-serif; fill: #fffdf7; }
+.stamp-text { font: 700 13px 'Bahnschrift', 'Segoe UI', sans-serif; letter-spacing: 1px; }
+.stamp-git .stamp-text { fill: var(--mess); }
+.stamp-local .stamp-text { fill: var(--ink-soft); }
+.col-head { font: 700 21px 'Bahnschrift', 'Segoe UI', sans-serif; fill: var(--ink); }
+
+/* Extra shapes */
+.light-ok { fill: var(--open); stroke: var(--ink); stroke-width: 1; }
+.dial { fill: #f3f7f1; stroke: var(--ink); stroke-width: 1.6; }
+.bar-contract { fill: #b9ad97; stroke: var(--ink); stroke-width: 1.2; }
+.bar-code { fill: #d8c39a; stroke: var(--ink); stroke-width: 1.2; }
+.stamp-git rect { fill: none; stroke: var(--mess); stroke-width: 1.8; }
+.stamp-local rect { fill: none; stroke: var(--ink-soft); stroke-width: 1.4; stroke-dasharray: 4 3; }
+.door-gap-dock { stroke: var(--dock); stroke-width: 9; }
+.door-gap-office { stroke: var(--office); stroke-width: 9; }
+.divider { fill: none; stroke: var(--ink-soft); stroke-width: 1.4; stroke-dasharray: 6 5; }
+.map-sheet { fill: #fbf6ea; stroke: var(--ink); stroke-width: 1.4; }
+.map-line { fill: none; stroke: #8aa37c; stroke-width: 1.2; }
+.clip-board { fill: #b38e66; stroke: var(--ink); stroke-width: 2; }
+.clip-paper { fill: #fffdf7; stroke: var(--ink-soft); stroke-width: 1.2; }
+.clip-metal { fill: #9aa3ab; stroke: var(--ink); stroke-width: 1.6; }
+.sev-prop { fill: var(--foil-a); }
+.van { fill: #fffdf8; stroke: var(--ink); stroke-width: 1.6; }
+.van-cab { fill: #8fa6bf; stroke: var(--ink); stroke-width: 1.6; }

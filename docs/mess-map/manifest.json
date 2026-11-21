@@ -1,0 +1,534 @@
+{
+  "schemaVersion": "1.1",
+  "feature": "Where the mess is in the Card Cleaner repository",
+  "audience": "the owner of the repo, deciding what to clean up first",
+  "decision": "Which mess should be cleaned first, what can simply be thrown out, and what needs a design decision?",
+  "source": "TychoHenzen/cardcleaner @ e458b795 (master, 2026-11-21); read in the checkout at c72bad57, which only adds a design-plugin setup on top; plus the local working folder",
+  "date": "2026-11-21",
+  "version": "v1",
+  "metaphor": {
+    "scene": "The game's own card shop, seen as a floor plan from above. Every room is a part of the repo; every mess is tagged with a yellow price tag, as the owner would tag it on a walk-through.",
+    "mapping": {
+      "sales floor": "the shop half of the game code (Shop, Card, Hand, Packs, CardStacks, Player)",
+      "back room": "Scripts/Core, the shared code",
+      "inspector's camera on the sales floor wall": "the dependency gate (Tests/Architecture); its cone is one wide lens over the whole shop half",
+      "workshop": "the adventure half (Deckbuilder and Worldgen)",
+      "back office": "the test rig: runner, fixtures, quality gate",
+      "delivery area": "reports/, where every test run delivers a folder",
+      "rule binder on the counter": "CLAUDE.md",
+      "notice board": "docs/ and openspec/",
+      "cellar": "local leftovers and tracked proofs of concept",
+      "dusty corner": "legacy and dead code",
+      "locked expansion lot": "out of scope: art, engine and tool caches, vendored add-on code",
+      "delivery van on the street": "the built game assembly, which carries the test code and test packages",
+      "index cards around the plan": "close-ups of one mess each; a dashed red leader joins each card to its lens on the plan",
+      "clipboard": "the proposed cleaning order",
+      "price tag": "one mess; the number links the plan, the index cards and the clipboard, and is not a ranking; each card names its severity in words"
+    }
+  },
+  "parts": [
+    {
+      "id": "click-tangle",
+      "name": "One click, six folders, three move rules",
+      "kind": "code-mess",
+      "scope": "in",
+      "mapsTo": [
+        "Scripts/Features/Player",
+        "Scripts/Features/Card/Components",
+        "Scripts/Features/Hand",
+        "Scripts/Features/Shop/Components",
+        "Scripts/Core/Interfaces"
+      ],
+      "responsibility": "Routing a click from the hand to a shelf, box, deck or pile",
+      "summary": "One click passes through about 20 small files in six folders. The 'one move rule' has three paths: records, a cardboard box moved as a body, and an open box held as the source. The box exception is restated in five files, and three click targets stub IInteractable with CanInteract => false so a type switch can decide for them.",
+      "evidence": [
+        "Scripts/Features/Card/Components/HandClickPlans.cs#L25-L26 (type switch on five concrete types)",
+        "Scripts/Features/Card/Components/HandClickPlans.cs#L85-L149 (three branches; BoxBodyOnLevel)",
+        "Scripts/Features/Hand/Components/IHand.cs#L56-L67 (body API beside the record API)",
+        "Scripts/Features/Shop/Components/ShelfLevelTarget.cs#L28, Scripts/Features/CardStacks/Components/CardBundle.cs#L69, Scripts/Features/Shop/Components/TrashCan.cs#L22 (CanInteract => false)",
+        "Scripts/Features/Player/Controllers/InteractionSystem.cs#L168-L199 (branches around the interface)"
+      ],
+      "epistemic": "observed",
+      "importance": {
+        "design": "high",
+        "visual": "hero",
+        "implementation": "high"
+      },
+      "tag": 1
+    },
+    {
+      "id": "gate-blind-spot",
+      "name": "The gate is green but cannot see the shop",
+      "kind": "code-mess",
+      "scope": "in",
+      "mapsTo": [
+        "Tests/Architecture/DependencyGate",
+        "Tests/Architecture/dependency-baseline.json"
+      ],
+      "responsibility": "Keeping the code's layers in order",
+      "summary": "Every gated number is at its floor (no upward edges, no loop, no leaky seam). But all 241 Godot node classes form one UI module, so no loop inside the shop half can show. The gate builds its class map from its own Roslyn compile of Scripts/, which reported 83 errors in a local run on 2026-11-19 and carries on; the game itself builds. 69 of 92 interfaces have exactly one implementation.",
+      "evidence": [
+        "Tests/Architecture/dependency-baseline.json (all four numbers at floor, all lists empty)",
+        "Tests/Architecture/DependencyGate/ClassGraphExtractor.cs#L115 (counts Roslyn error diagnostics; extraction continues)",
+        "reports/gatediag/godot.stdout.log (local run, 2026-11-19): 'dependency gate: run 1 extracted (83 script errors, 38 scene links)'; reports/step6-run.log and reports/stepD-run.log (2026-11-16) printed 55 and 76",
+        "code audit: 792 classes = 171 data, 69 contracts, 311 middle, 241 UI"
+      ],
+      "epistemic": "observed",
+      "importance": {
+        "design": "high",
+        "visual": "major",
+        "implementation": "medium"
+      },
+      "tag": 2
+    },
+    {
+      "id": "shop-heap",
+      "name": "Shop folder: ten topics in one heap",
+      "kind": "code-mess",
+      "scope": "in",
+      "mapsTo": [
+        "Scripts/Features/Shop"
+      ],
+      "responsibility": "Checkout, furniture, staff, ordering, expansion, restocker, shelves and more",
+      "summary": "197 files and 13,051 lines sorted by file kind (Components 58, Models 87 flat, Services 33, Ui 19), so one topic touches four folders. Shelf code also sits in Card (DeckSlot) and the whole-game save sits under Card.",
+      "evidence": [
+        "Scripts/Features/Shop",
+        "Scripts/Features/Card/Components/DeckSlot.cs",
+        "Scripts/Features/Card/Services/SaveGame/GameSaveService.cs"
+      ],
+      "epistemic": "observed",
+      "importance": {
+        "design": "medium",
+        "visual": "minor",
+        "implementation": "high"
+      },
+      "tag": 3
+    },
+    {
+      "id": "core-tile-code",
+      "name": "Core is mostly tile loading",
+      "kind": "code-mess",
+      "scope": "in",
+      "mapsTo": [
+        "Scripts/Core/Services"
+      ],
+      "responsibility": "Shared code",
+      "summary": "61 of the 71 files in Core/Services load tiles, atlases, TMX or Wang sets, which only the map generators and the tile editor use. 22 Core files import Deckbuilder.Tiles, so shared code depends on a feature.",
+      "evidence": [
+        "Scripts/Core/Services",
+        "code audit: 4,292 of 5,104 Core/Services lines are tile loading"
+      ],
+      "epistemic": "observed",
+      "importance": {
+        "design": "medium",
+        "visual": "minor",
+        "implementation": "medium"
+      },
+      "tag": 4
+    },
+    {
+      "id": "workshop-pipelines",
+      "name": "Two map pipelines in two homes",
+      "kind": "code-mess",
+      "scope": "in",
+      "mapsTo": [
+        "Scripts/Features/Deckbuilder",
+        "Scripts/Features/Worldgen"
+      ],
+      "responsibility": "Turning cards into an adventure map",
+      "summary": "The square-grid generator lives under Deckbuilder, the irregular mesh (about 5,500 lines) under Worldgen. Both are reachable. Worldgen is the biggest folder (15,071 lines) but saw almost no change in November. Keeping both is an owner decision.",
+      "evidence": [
+        "Scripts/Features/Deckbuilder/Controllers/DeckBuilderController.cs#L110-L134",
+        "Scenes/Components/Workshop.tscn#L76-L95"
+      ],
+      "epistemic": "observed",
+      "importance": {
+        "design": "medium",
+        "visual": "minor",
+        "implementation": "medium"
+      },
+      "tag": 5
+    },
+    {
+      "id": "legacy-corner",
+      "name": "Legacy and dead code",
+      "kind": "code-mess",
+      "scope": "in",
+      "mapsTo": [
+        "Scenes/Gameplay/StartScene.tscn",
+        "Scripts/Features/Card/Services/SaveGame/LegacyShelfSaveMigration.cs",
+        "Scripts/Features/SaveSlots/Services/LegacySaveImporter.cs",
+        "Scripts/Features/Shop/Components/OrderTerminal.cs"
+      ],
+      "responsibility": "Code kept for old saves, an old start scene and a second ordering screen",
+      "summary": "StartScene is no longer the main scene but three tests hold it in place. Two legacy save classes (172 lines, 452 lines of tests) serve a game with no released saves, though CLAUDE.md keeps one on purpose. OrderTerminal is a second ordering screen used only in the workshop. A few tile helpers are dead or used only by tests.",
+      "evidence": [
+        "Scripts/Features/Card/Services/SaveGame/LegacyShelfSaveMigration.cs",
+        "Scripts/Features/SaveSlots/Services/LegacySaveImporter.cs",
+        "Scripts/Features/Shop/Components/OrderTerminal.cs#L124-L149"
+      ],
+      "epistemic": "observed",
+      "importance": {
+        "design": "low",
+        "visual": "minor",
+        "implementation": "low"
+      },
+      "tag": 6
+    },
+    {
+      "id": "test-rig",
+      "name": "Test rig bigger than what it tests",
+      "kind": "test-mess",
+      "scope": "in",
+      "mapsTo": [
+        "Scripts/ci",
+        "Tests/TestUtilities",
+        ".github/quality-guard-godot.patch"
+      ],
+      "responsibility": "Running and guarding the tests",
+      "summary": "The runner's fixture is 1,514 lines for an 814-line runner. 33 suites write their own wait helper beside the shared BoundedWait. Engine and vendor workarounds each carry a pin test and prose with no stated exit. The repo patches its own scanner instead of fixing it at the source.",
+      "evidence": [
+        "Scripts/ci/Test-RunGdUnit.ps1",
+        "Scripts/ci/Run-GdUnit.ps1",
+        "Tests/TestUtilities/Helpers/BoundedWait.cs",
+        ".github/quality-guard-godot.patch"
+      ],
+      "epistemic": "observed",
+      "importance": {
+        "design": "medium",
+        "visual": "minor",
+        "implementation": "medium"
+      },
+      "tag": 7
+    },
+    {
+      "id": "test-build",
+      "name": "Test code compiles into the game",
+      "kind": "test-mess",
+      "scope": "in",
+      "mapsTo": [
+        "CardCleaner.csproj",
+        "project.godot"
+      ],
+      "responsibility": "What the game assembly contains",
+      "summary": "gdUnit runs C# tests inside Godot, so Tests/ must compile into the game assembly: that part is the price of in-engine tests. The gap is that nothing leaves tests, Roslyn, FsCheck and NSubstitute out of an exported build, and the AI-editor helper autoload starts with the game. Whether an export carries them is not verified.",
+      "evidence": [
+        "CardCleaner.csproj#L13-L39 (no Compile Remove for Tests; test packages referenced)",
+        "project.godot [autoload] (_mcp_game_helper, Automation)"
+      ],
+      "epistemic": "inferred",
+      "importance": {
+        "design": "medium",
+        "visual": "minor",
+        "implementation": "low"
+      },
+      "tag": 8
+    },
+    {
+      "id": "reports-pile",
+      "name": "The delivery area is full",
+      "kind": "artifact-mess",
+      "scope": "in",
+      "mapsTo": [
+        "reports/"
+      ],
+      "responsibility": "Output of every local test run and e2e session",
+      "summary": "About 2 GB in about 750 run folders since 2026-10-03, most named after one ticket or one bisect step. The runner keeps every report (-rc 100000) and nothing ever deletes a folder. Git ignores the folder, so it never shows up.",
+      "evidence": [
+        "reports/ (750 entries, 1.9 GB measured)",
+        "Scripts/ci/Run-GdUnit.ps1 (-rc 100000; removes only stale godot logs)",
+        ".gitignore#L6"
+      ],
+      "epistemic": "observed",
+      "importance": {
+        "design": "high",
+        "visual": "major",
+        "implementation": "low"
+      },
+      "tag": 9
+    },
+    {
+      "id": "rule-binder",
+      "name": "CLAUDE.md re-describes the code",
+      "kind": "doc-mess",
+      "scope": "in",
+      "mapsTo": [
+        "CLAUDE.md"
+      ],
+      "responsibility": "Instructions for agents working in the repo",
+      "summary": "116 KB and 950 lines. About 70 percent describes current classes, about 16 percent is incident history, about 13 percent is commands and rules. 80 of the 329 commits since November 1 had to touch it. Several statements are already stale.",
+      "evidence": [
+        "CLAUDE.md",
+        "stale: openspec/specs is empty; 'OverlayUi' and 'GeneratePreview' exist nowhere; plan v4 (#239) closed 2026-10-29"
+      ],
+      "epistemic": "observed",
+      "importance": {
+        "design": "high",
+        "visual": "major",
+        "implementation": "low"
+      },
+      "tag": 10,
+      "note": "Size, commit count and stale statements are measured; the 70/16/13 percent split is an approximate hand classification of the sections."
+    },
+    {
+      "id": "stale-docs",
+      "name": "Old plans on the notice board",
+      "kind": "doc-mess",
+      "scope": "in",
+      "mapsTo": [
+        "docs/",
+        "openspec/"
+      ],
+      "responsibility": "Design documents",
+      "summary": "9,043 lines of docs, 5,136 of them map-generation plans and questionnaires from October whose names partly no longer exist in the code. openspec/specs is empty and its config is the untouched template.",
+      "evidence": [
+        "docs/MAP_GENERATION_*.md",
+        "docs/MODULAR_DEVICE_ARCHITECTURE.md (Status: Design Phase)",
+        "docs/quality-gates.md (says weekly; the run is daily)",
+        "openspec/config.yaml"
+      ],
+      "epistemic": "observed",
+      "importance": {
+        "design": "medium",
+        "visual": "minor",
+        "implementation": "low"
+      },
+      "tag": 11
+    },
+    {
+      "id": "cellar",
+      "name": "The cellar: leftovers nobody opens",
+      "kind": "file-mess",
+      "scope": "in",
+      "mapsTo": [
+        ".venv-poc",
+        "tools/irregular_grid_poc.py",
+        "tools/*.png",
+        ".quality",
+        ".runsettings",
+        "CardCleaner.sln.DotSettings.user",
+        "gdunit4_testadapter_v5",
+        "export_context.ps1",
+        ".github/quality/architecture-decisions.json"
+      ],
+      "responsibility": "Nothing any more",
+      "summary": "A 312 MB Python environment for a January prototype; the prototype itself (1,501 lines) and 11 images (21 MB) still tracked in tools/; crash dumps and old logs at the root; a stale .quality folder; an old IDE test-runner chain; a context-export script; a 345-line waiver file nothing in the repo reads.",
+      "evidence": [
+        ".venv-poc (312 MB)",
+        "tools/irregular_grid_poc.py",
+        "nul, hs_err_pid36288.log, grep.exe.stackdump, .tmp-gdunit103-*.log, test_output.txt",
+        ".github/quality/architecture-decisions.json (no reader in the repo)"
+      ],
+      "epistemic": "observed",
+      "importance": {
+        "design": "medium",
+        "visual": "major",
+        "implementation": "low"
+      },
+      "tag": 12
+    },
+    {
+      "id": "expansion-lot",
+      "name": "Not part of this map",
+      "kind": "out-of-scope",
+      "scope": "out",
+      "mapsTo": [
+        "Assets/",
+        ".godot/",
+        ".code-review-graph/",
+        ".Serena/",
+        "floorplan/",
+        "addons/gdUnit4",
+        "addons/asset_manager",
+        "addons/godot_ai",
+        "addons/saveable",
+        "addons/tile_editor"
+      ],
+      "responsibility": "Art, engine and tool caches, vendored add-on code",
+      "summary": "These are big, but they are someone else's code or a tool's own cache. Leaving them off this map is the author's scope choice. Only the project's own patches and autoloads inside them are counted above.",
+      "evidence": [
+        ".godot (297 MB engine import cache)",
+        "Assets (private art submodule)"
+      ],
+      "epistemic": "proposed",
+      "importance": {
+        "design": "low",
+        "visual": "minor",
+        "implementation": "low"
+      },
+      "tag": null
+    }
+  ],
+  "relationships": [
+    {
+      "id": "gate-cannot-see-shop",
+      "from": "gate-blind-spot",
+      "to": "click-tangle",
+      "kind": "cannot-observe",
+      "direction": "forward",
+      "label": "sees the shop half as one lump",
+      "summary": "All Godot node classes are one UI module, so the hand, shelves and checkout are never checked against each other.",
+      "evidence": [
+        "code audit of reports/split gate output"
+      ],
+      "epistemic": "observed"
+    },
+    {
+      "id": "rig-fills-dock",
+      "from": "test-rig",
+      "to": "reports-pile",
+      "kind": "produces",
+      "direction": "forward",
+      "label": "every run delivers a folder",
+      "summary": "Each local runner or e2e run writes a new folder under reports/, and no step ever removes one.",
+      "evidence": [
+        "Scripts/ci/Run-GdUnit.ps1",
+        "tools/e2e/e2e.mjs"
+      ],
+      "epistemic": "observed"
+    },
+    {
+      "id": "tiles-belong-in-workshop",
+      "from": "core-tile-code",
+      "to": "workshop-pipelines",
+      "kind": "belongs-to",
+      "direction": "forward",
+      "label": "tile loading serves the maps and the tile editor",
+      "summary": "The tile, atlas and Wang loading in Core is used by the map pipelines and the tile editor only.",
+      "evidence": [
+        "code audit: 22 Core files import Deckbuilder.Tiles"
+      ],
+      "epistemic": "inferred"
+    },
+    {
+      "id": "binder-mirrors-code",
+      "from": "rule-binder",
+      "to": "shop-heap",
+      "kind": "duplicates",
+      "direction": "forward",
+      "label": "describes classes one by one",
+      "summary": "Most of CLAUDE.md restates what the shop and card code does, so every rename needs a second edit.",
+      "evidence": [
+        "CLAUDE.md sections Checkout, Container Meshes, Shop Scene"
+      ],
+      "epistemic": "inferred",
+      "visual": false
+    },
+    {
+      "id": "plans-describe-old-maps",
+      "from": "stale-docs",
+      "to": "workshop-pipelines",
+      "kind": "describes-outdated",
+      "direction": "forward",
+      "label": "plans for maps that changed since",
+      "summary": "The map-generation plans name types that no longer exist.",
+      "evidence": [
+        "docs/MAP_GENERATION_IMPLEMENTATION_PLAN.md",
+        "docs/WORLDGEN_ARCHITECTURE.md"
+      ],
+      "epistemic": "observed",
+      "visual": false
+    },
+    {
+      "id": "poc-preceded-mesh",
+      "from": "cellar",
+      "to": "workshop-pipelines",
+      "kind": "leftover-of",
+      "direction": "forward",
+      "label": "Python prototype of the irregular mesh",
+      "summary": "The tracked Python prototype and its images were the first sketch of the irregular mesh, which now lives in C#.",
+      "evidence": [
+        "tools/irregular_grid_poc.py",
+        "Scripts/Features/Worldgen/IrregularMesh"
+      ],
+      "epistemic": "inferred",
+      "visual": false
+    }
+  ],
+  "messages": [
+    "The worst code mess is on the shop floor: one click crosses six folders, and the one move rule has three paths.",
+    "The architecture gate is green but blind: it sees the shop half as one lump, and its own compile of the code hits 83 errors that it ignores.",
+    "Test runs fill the delivery area: about 2 GB in about 750 folders, and nothing ever clears them.",
+    "CLAUDE.md mostly re-describes the code, and the plans in docs/ no longer match it.",
+    "Throw out first, tidy second, then redesign the hand's move rule and the gate."
+  ],
+  "cleanupOrder": {
+    "epistemic": "proposed",
+    "note": "Matches the clipboard on the poster; the number after each item is its tag.",
+    "throwOut": [
+      "prune reports/ to the last few runs (9)",
+      "delete .venv-poc and the dumps at the root (12)",
+      "delete the Python prototype and its images (12)",
+      "delete .quality, the waiver file and the old IDE runner chain (12)"
+    ],
+    "tidy": [
+      "move tile loading out of Core (4)",
+      "regroup Shop by topic, not by file kind (3)",
+      "move the whole-game save out of Card (3)",
+      "move the hand's router out of Card (1)",
+      "one shared wait helper for the tests (7)",
+      "cut CLAUDE.md to commands and rules (10)",
+      "retire the October map plans, once 5 is decided (11)"
+    ],
+    "redesign": [
+      "one move rule for every item, the cardboard box included (1)",
+      "a gate that looks inside the shop half and fails on compile errors (2)"
+    ],
+    "decide": [
+      "keep both map pipelines? (5)",
+      "keep the legacy save code? (6)",
+      "leave tests out of exported builds? Check what an export carries first. (8)",
+      "how many report runs to keep? (9)",
+      "use openspec or drop it? (11)"
+    ]
+  },
+  "findings": [
+    "During this survey a commit on the checked-out branch (c72bad57) added .impeccable/, PRODUCT.md and a .gitignore change for a design plugin. None of it touches what this map measures.",
+    "Folder cycles (Card with Packs, Packs with Shop, Deckbuilder with Worldgen) were counted from using directives, which unused directives inflate; treat the counts as approximate.",
+    "The link between new interfaces and the gate rests on commit messages (195 of 568 Scripts commits mention gate, seam, split or refactor); it is inferred, not proven.",
+    "The reports/ and cellar figures were measured in the local working folder, not in git; a fresh clone has neither pile.",
+    "The gate's cone on the plan covers the whole sales floor on purpose: the gate sees that half as one module."
+  ],
+  "openQuestions": [
+    "Keep both map pipelines (square grid and irregular mesh), or retire one?",
+    "Keep LegacyShelfSaveMigration and LegacySaveImporter now that no released save exists? CLAUDE.md currently keeps the first on purpose.",
+    "Should exported builds leave out Tests/ and the test packages, and does an export carry them today?",
+    "How many reports/ run folders are worth keeping?",
+    "Use openspec or drop it? CLAUDE.md names openspec/specs as part of the workflow, but the folder is empty."
+  ],
+  "views": [
+    {
+      "id": "overview",
+      "target": "page"
+    },
+    {
+      "id": "focus-tangle",
+      "target": "inset-tangle"
+    },
+    {
+      "id": "focus-gate",
+      "target": "inset-gate"
+    },
+    {
+      "id": "focus-dock",
+      "target": "inset-dock"
+    },
+    {
+      "id": "focus-binder",
+      "target": "inset-binder",
+      "parts": [
+        "rule-binder",
+        "stale-docs"
+      ],
+      "note": "Tag 11 (stale-docs) sits on the binder card beside tag 10; only tag 10 has a leader to the plan."
+    },
+    {
+      "id": "focus-cellar",
+      "target": "inset-cellar"
+    },
+    {
+      "id": "focus-clipboard",
+      "target": "inset-clipboard"
+    }
+  ]
+}

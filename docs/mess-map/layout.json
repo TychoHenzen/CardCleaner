@@ -1,0 +1,70 @@
+{
+  "title": "Where the mess is in Card Cleaner",
+  "date": "2026-11-21",
+  "version": "v1",
+  "source": "TychoHenzen/cardcleaner @ e458b795 (master), for the repo owner",
+  "subtitle": "Our repo drawn as our own card shop: every yellow tag marks a mess, and the numbers match the cards and the cleaning list.",
+  "look": "look.css",
+  "canvas": {
+    "w": 2700,
+    "h": 1820,
+    "class": "none"
+  },
+  "minGap": 80,
+  "head": {
+    "title": 66,
+    "stamp": 20,
+    "subtitle": 30
+  },
+  "sections": [
+    {
+      "id": "plan",
+      "file": "sections/plan.svg",
+      "x": 680,
+      "y": 0
+    },
+    {
+      "id": "inset-tangle",
+      "file": "sections/inset-tangle.svg",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "inset-gate",
+      "file": "sections/inset-gate.svg",
+      "x": 0,
+      "y": 760
+    },
+    {
+      "id": "inset-cellar",
+      "file": "sections/inset-cellar.svg",
+      "x": 2100,
+      "y": 0
+    },
+    {
+      "id": "inset-dock",
+      "file": "sections/inset-dock.svg",
+      "x": 2100,
+      "y": 640
+    },
+    {
+      "id": "inset-clipboard",
+      "file": "sections/inset-clipboard.svg",
+      "x": 0,
+      "y": 1380
+    },
+    {
+      "id": "inset-binder",
+      "file": "sections/inset-binder.svg",
+      "x": 1600,
+      "y": 1380
+    },
+    {
+      "id": "leaders",
+      "file": "sections/leaders.svg",
+      "x": 0,
+      "y": 0,
+      "overlay": true
+    }
+  ]
+}

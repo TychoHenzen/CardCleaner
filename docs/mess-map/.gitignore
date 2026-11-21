@@ -1,0 +1,6 @@
+# Written by draw/build.mjs (one SVG per poster section, read by compose.mjs)
+sections/
+# Written by draw/semantic.mjs (the machine read-back of page.svg)
+semantic.json
+# Written by the one-page-design skill's look.mjs (review renders)
+views/
