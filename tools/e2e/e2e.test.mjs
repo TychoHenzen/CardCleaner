@@ -46,6 +46,14 @@ try {
     'once it stops, a session is counted with the others');
   cases++;
 
+  // The oldest folder is the one being started, named in other letter case, so only the name check keeps it.
+  const caseRoot = join(scratch, 'case', 'e2e');
+  session(caseRoot, 'default', 50);
+  session(caseRoot, 'newer', 1);
+  assert.deepEqual(pruneSessions(caseRoot, 'Default', 2, () => false), [], 'the starting session matches in any case');
+  assert.deepEqual(readdirSync(caseRoot).sort(), ['default', 'newer']);
+  cases++;
+
   const missing = join(scratch, 'missing');
   assert.deepEqual(pruneSessions(missing, 'current', 5, () => false), [], 'no e2e folder, nothing to do');
   cases++;

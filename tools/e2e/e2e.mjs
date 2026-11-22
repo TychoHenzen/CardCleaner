@@ -96,8 +96,10 @@ export function pruneSessions(e2eRoot, current, keep, isRunning) {
   const rootPath = path.resolve(e2eRoot);
   // ASSUMPTION: a session folder's write time is about when it was last started or stopped, because start writes its
   // logs and session.json directly inside it and stop removes session.json.
+  // Windows folder names ignore case, so `--session Default` reuses the folder `default`.
+  const spared = new Set(['bin', current.toLowerCase()]);
   const stopped = fs.readdirSync(rootPath)
-    .filter((entry) => entry !== 'bin' && entry !== current)
+    .filter((entry) => !spared.has(entry.toLowerCase()))
     .map((entry) => ({ entry, dir: path.join(rootPath, entry), stat: fs.lstatSync(path.join(rootPath, entry)) }))
     // lstat reports a junction or symbolic link as a link, not a directory, so a link is never followed or removed.
     .filter(({ stat }) => stat.isDirectory())
