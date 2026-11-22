@@ -23,7 +23,7 @@ internal static class DependencyBaseline
 
     public const string UpdateCommand = SwitchVariable + "=1 <godot console exe> --headless --path . -s " +
                                         "res://addons/gdUnit4/bin/GdUnitCmdTool.gd -c --ignoreHeadlessMode " +
-                                        "-rc 100000 -rd reports/ci -a res://Tests/Architecture/DependencyGateTest.cs";
+                                        "-rd reports/ci -a res://Tests/Architecture/DependencyGateTest.cs";
 
     private const string NoListsNote = "baseline records no lists; run the update command to record them";
 

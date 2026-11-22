@@ -839,8 +839,8 @@ function Test-CleanRun {
     Assert-Equal 1 @($calls | Where-Object { $_ -like '* --import *' }).Count 'one project import'
     $tests = @(Get-RunnerTestCalls -Context $Context)
     Assert-Equal 1 $tests.Count 'one test invocation'
-    $fullRunArguments = '-rd reports/ci -rc 100000 -a res://Tests'
-    Assert-That $tests[0].EndsWith($fullRunArguments) 'a full run passes -rc 100000 and starts from the Tests folder'
+    Assert-That $tests[0].EndsWith('-rd reports/ci -a res://Tests') 'a full run starts from the Tests folder'
+    Assert-That (-not $tests[0].Contains(' -rc ')) 'a full run leaves the report count to gdUnit, which keeps 20'
 }
 
 function Test-SingleSuite {
@@ -853,8 +853,55 @@ function Test-SingleSuite {
     Assert-Line $result.Stdout 'GdUnit passed: 1 of 1 suite files ran.' 'only the named suite is expected'
     $tests = @(Get-RunnerTestCalls -Context $Context)
     Assert-Equal 1 $tests.Count 'one test invocation'
-    Assert-That $tests[0].EndsWith("-rd reports/single -rc 100000 -a $SuiteBeta") 'the call names the suite and the folder'
+    Assert-That $tests[0].EndsWith("-rd reports/single -a $SuiteBeta") 'the call names the suite and the folder'
     Assert-That (Test-Path -LiteralPath (Join-Path $Context.Repo 'reports\single\godot.stdout.log') -PathType Leaf) 'logs go to the chosen folder'
+}
+
+function Test-OldReportFoldersPruned {
+    param($Context)
+
+    $reports = Join-Path $Context.Repo 'reports'
+    $outside = Join-Path $Context.Root 'outside'
+    Write-FileText -Path (Join-Path $outside 'sentinel.txt') -Text 'what a junction points at'
+    # Eleven earlier run folders: old1 is the newest, old11 the oldest.
+    for ($i = 1; $i -le 11; $i++) {
+        Write-FileText -Path (Join-Path $reports "old$i\report_1\index.html") -Text 'an earlier report'
+    }
+    # The oldest folder holds a junction, so its delete must remove the link and leave what it points at.
+    New-Item -ItemType Junction -Path (Join-Path $reports 'old11\link') -Target $outside | Out-Null
+    # A junction directly under reports/ is no run folder and stays.
+    New-Item -ItemType Junction -Path (Join-Path $reports 'toplink') -Target $outside | Out-Null
+    Write-FileText -Path (Join-Path $reports 'e2e\stopped\shots\shot.png') -Text 'an e2e screenshot'
+    Write-FileText -Path (Join-Path $reports 'notes.md') -Text 'a file directly under reports/'
+    Write-FileText -Path (Join-Path $reports 'single\earlier.log') -Text 'from an earlier run in this folder'
+    # Writing into a folder updates its write time, so the dates are set after the contents. Every old folder is dated
+    # after now, so the junction made just now is older than all of them and only its type keeps it. The current run's
+    # folder and reports/e2e are older still, so only their names keep them.
+    $now = [DateTime]::UtcNow
+    for ($i = 1; $i -le 11; $i++) {
+        [IO.Directory]::SetLastWriteTimeUtc((Join-Path $reports "old$i"), $now.AddHours(12 - $i))
+    }
+    [IO.Directory]::SetLastWriteTimeUtc((Join-Path $reports 'single'), $now.AddDays(-60))
+    [IO.Directory]::SetLastWriteTimeUtc((Join-Path $reports 'e2e'), $now.AddDays(-60))
+    [IO.File]::SetLastWriteTimeUtc((Join-Path $reports 'notes.md'), $now.AddDays(-60))
+    Set-FakePlan -Context $Context -Index 0 -Lines @(
+        (Get-SuiteStart $SuiteBeta), (Get-SuiteStats -Cases 2), 'report r1 0 0', 'exit 0')
+
+    $result = Invoke-Runner -Context $Context -Suite @($SuiteBeta) -ReportDirectory 'reports\single'
+
+    Assert-ExitCode -Result $result -Expected 0 -Message 'a run that prunes old report folders exits 0'
+    $left = @(Get-ChildItem -LiteralPath $reports -Force | ForEach-Object { $_.Name } | Sort-Object) -join ' '
+    $expected = '.gdignore e2e notes.md old1 old2 old3 old4 old5 old6 old7 old8 old9 single toplink'
+    Assert-Equal $expected $left 'the current folder and the 9 newest others stay, with every file, e2e and the link'
+    Assert-Line $result.Stdout 'Removed old report folder: reports/old10' 'the runner names each folder it removes'
+    Assert-Line $result.Stdout 'Removed old report folder: reports/old11' 'the runner names each folder it removes'
+    Assert-That (Test-Path -LiteralPath (Join-Path $outside 'sentinel.txt') -PathType Leaf) `
+        'removing a folder that holds a junction leaves what the junction points at'
+    Assert-That (Test-Path -LiteralPath (Join-Path $reports 'e2e\stopped\shots\shot.png') -PathType Leaf) `
+        'the runner leaves e2e sessions to the e2e tool'
+    Assert-That (Test-Path -LiteralPath (Join-Path $reports 'single\earlier.log') -PathType Leaf) `
+        'the current run folder keeps its earlier files'
+    Assert-That (-not (Get-RunnerOutput $result).Contains('WARNING:')) 'a prune that removes every old folder prints no WARNING'
 }
 
 function Test-CommaSuiteList {
@@ -874,6 +921,10 @@ function Test-CommaSuiteList {
 function Test-InvalidSuiteParameters {
     param($Context)
 
+    # More earlier run folders than a run keeps, so a prune before the argument checks would remove one.
+    for ($i = 1; $i -le 10; $i++) {
+        Write-FileText -Path (Join-Path $Context.Repo "reports\old$i\report_1\index.html") -Text 'an earlier report'
+    }
     foreach ($case in @(
             @{ Suite = @('res://Tests/Nope/NopeTest.cs'); Dir = ''; Expect = 'Unknown -Suite value(s): res://Tests/Nope/NopeTest.cs' },
             @{ Suite = @($SuiteAlpha, 'res://Tests/Nope/NopeTest.cs'); Dir = ''; Expect = 'Unknown -Suite value(s): res://Tests/Nope/NopeTest.cs' },
@@ -889,6 +940,8 @@ function Test-InvalidSuiteParameters {
     Assert-ExitCode -Result $result -Expected 1 -Message '-Suite with -SkipDaily fails the run'
     Assert-Contains $result.Stderr '-Suite and -SkipDaily cannot be combined' 'the error names the conflict'
     Assert-Equal 0 @(Get-FakeCalls -Context $Context).Count 'neither the build nor Godot started'
+    $oldFolders = @(Get-ChildItem -LiteralPath (Join-Path $Context.Repo 'reports') -Directory -Filter 'old*')
+    Assert-Equal 10 $oldFolders.Count 'a run refused for its arguments removes no report folder'
 }
 
 function Test-SingleSuiteStall {
@@ -1455,7 +1508,8 @@ $AllChecks = @(
     'RepeatedStallFails',
     'CrashNoReport', 'CrashAfterEarlierReportResumes', 'RepeatedCrashFails', 'StallThenCrashFails',
     'CrashResumeNoProgressFails', 'InterruptionBudget', 'GdUnitExitCodes', 'ReportAggregation', 'GateAndSummary',
-    'PatternLockstep', 'SingleSuite', 'CommaSuiteList', 'InvalidSuiteParameters', 'SingleSuiteStall')
+    'PatternLockstep', 'SingleSuite', 'OldReportFoldersPruned', 'CommaSuiteList', 'InvalidSuiteParameters',
+    'SingleSuiteStall')
 if ([string]::IsNullOrWhiteSpace($Only)) {
     $checks = $AllChecks
 }

@@ -23,6 +23,12 @@ Screenshots land in `reports/e2e/<session>/shots/<name>.png`. Open them with the
 Every verb takes `--session <name>` (default `default`). Each session has its own port, folder, hidden desktop and
 save data, so several can run at once.
 
+`start` keeps 5 session folders under `reports/e2e`, the one it starts included, and removes the older stopped ones
+by their folder's write time, with their save data and screenshots. It names them on stderr. It never removes a
+running session or the launcher in `reports/e2e/bin`. A session restarted with `--keep-data` keeps its save data only
+while it is one of those 5, so copy a screenshot or a save you want to keep out of `reports/e2e`.
+`node tools/e2e/e2e.test.mjs` checks the prune against a throwaway folder.
+
 | Verb | What it does |
 |------|--------------|
 | `start [--scene res://..tscn] [--resolution 1280x720] [--no-build] [--keep-data] [--timeout-min 120]` | Builds the launcher (when stale) and the game, starts Godot on a hidden desktop, waits for the agent to answer `ping` (up to 180 s). Without `--keep-data` the session's save data is wiped first. `--timeout-min` kills the game after that long. |
