@@ -1,10 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/godot,jetbrains+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=godot,jetbrains+all
 
-Card_Context.txt
 .Serena
 reports
-.venv-poc
 
 ### Godot ###
 # Godot 4+ specific ignores
@@ -113,6 +111,11 @@ fabric.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/godot,jetbrains+all
 
+# Rider writes each developer's own solution settings here
+*.DotSettings.user
+# gdUnit4.api writes its runner scene here when an IDE runs Godot-runtime tests through gdUnit4.test.adapter
+/gdunit4_testadapter_v5/
+
 # Claude Code solve session
 .solve-session/
 # Test artifacts
@@ -128,10 +131,6 @@ addons/gdUnit4/GdUnitRunner.cfg
 
 # Tiled editor session files
 *.tiled-session
-
-# POC generated images
-Scripts/Tools/*.png
-Scripts/Tools/*.png.import
 
 # Godot auto-generated files
 *.uid
