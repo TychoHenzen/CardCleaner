@@ -604,6 +604,39 @@ function Remove-StaleAttemptLogs {
     }
 }
 
+# Each -ReportDirectory name leaves its own folder directly under reports/, and nothing else removes them, so this
+# keeps the newest $Keep folders, the current run's included, and removes the rest. It never touches a file directly
+# under reports/ (.gdignore), reports/e2e (the e2e tool prunes its own sessions) or a junction or symbolic link.
+function Remove-OldReportFolders {
+    param([string]$ReportsRoot, [string]$CurrentFolder, [int]$Keep)
+
+    $directorySeparator = [IO.Path]::DirectorySeparatorChar
+    $alternateSeparator = [IO.Path]::AltDirectorySeparatorChar
+    $rootPath = [IO.Path]::GetFullPath($ReportsRoot).TrimEnd([char[]]@($directorySeparator, $alternateSeparator))
+    # ASSUMPTION: a folder's write time is about when a run last wrote into it, because every run adds a report_<n>
+    # folder and attempt logs directly inside its report folder, and that updates the folder's own write time.
+    $older = @(Get-ChildItem -LiteralPath $rootPath -Directory -Force | Where-Object {
+            $_.Name -ne 'e2e' -and $_.Name -ne $CurrentFolder -and
+            -not ($_.Attributes -band [IO.FileAttributes]::ReparsePoint)
+        } | Sort-Object LastWriteTimeUtc -Descending | Select-Object -Skip ([Math]::Max(0, $Keep - 1)))
+    foreach ($folder in $older) {
+        $target = [IO.Path]::GetFullPath($folder.FullName)
+        $parent = [IO.Path]::GetDirectoryName($target)
+        if (-not [string]::Equals($parent, $rootPath, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing to delete report folder outside $rootPath`: $target"
+        }
+        # Report folders hold paths longer than 260 characters, which Remove-Item reaches only through \\?\. Remove-Item
+        # deletes a junction inside the folder as a link and leaves what it points at (Test-RunGdUnit.ps1 checks it).
+        $longTarget = if ($target -match '^[A-Za-z]:\\') { '\\?\' + $target } else { $target }
+        try {
+            Remove-Item -LiteralPath $longTarget -Recurse -Force -ErrorAction Stop
+            Write-Host "Removed old report folder: reports/$($folder.Name)"
+        } catch {
+            Write-Warning "Could not remove old report folder $target`: $($_.Exception.Message)"
+        }
+    }
+}
+
 if ([string]::IsNullOrWhiteSpace($GodotBinary)) {
     throw 'Godot executable is required. Pass -GodotBinary or set GODOT_BIN.'
 }
@@ -656,16 +689,19 @@ if ($SkipDaily) {
 if ($expected.Count -eq 0) {
     throw 'GdUnit found no [TestSuite] files to run.'
 }
+# After every argument check, so a mistyped -Suite removes nothing.
+Remove-OldReportFolders -ReportsRoot (Join-Path $repositoryRoot 'reports') -CurrentFolder $reportSegments[1] -Keep 10
 
 Invoke-Build -RepositoryRoot $repositoryRoot -ReportRoot $reportRoot
 Invoke-ImportWhenChanged -GodotPath $godotPath -RepositoryRoot $repositoryRoot -ReportRoot $reportRoot `
     -Force $ForceImport.IsPresent
 
-# -rc 100000 keeps every report folder of a run; gdUnit would otherwise keep only the newest 20. That is a choice,
-# not a workaround: gdUnit 6.2.3 cleans a relative -rd folder correctly.
+# Without -rc, gdUnit keeps the newest 20 report_<n> folders in the report folder and removes older ones (6.2.3 cleans
+# a relative -rd folder correctly). One run writes at most MaxResumes + 1 of them, 11 at the limit, so the cleanup
+# never removes a report of the current run.
 $baseArguments = @(
     '--headless', '--path', '.', '-s', 'res://addons/gdUnit4/bin/GdUnitCmdTool.gd', '-c', '--ignoreHeadlessMode',
-    '-rd', ($reportRelative -replace '\\', '/'), '-rc', '100000'
+    '-rd', ($reportRelative -replace '\\', '/')
 )
 $finished = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
 $interruptions = New-Object System.Collections.Generic.List[object]

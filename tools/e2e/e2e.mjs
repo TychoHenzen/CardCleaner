@@ -21,6 +21,8 @@ const launcherProject = path.join(root, 'tools', 'HiddenDesktop');
 const launcherExe = path.join(root, 'reports', 'e2e', 'bin', 'HiddenDesktop.exe');
 const readyTimeoutMs = 180_000;
 const commandTimeoutMs = 600_000;
+// Sessions kept below reports/e2e when one starts, the starting session included; running sessions are never removed.
+const keptSessions = 5;
 
 export function parseArgs(argv) {
   const options = { session: 'default', positional: [] };
@@ -71,6 +73,49 @@ function alive(pid) {
   } catch {
     return false;
   }
+}
+
+/** A session folder counts as running while its session.json names a live launcher; an unreadable one counts too. */
+function sessionRunning(dir) {
+  const file = path.join(dir, 'session.json');
+  if (!fs.existsSync(file)) return false;
+  try {
+    return alive(JSON.parse(fs.readFileSync(file, 'utf8')).launcherPid);
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * Removes the oldest stopped session folders directly below `e2eRoot`, so `keep` remain, `current` included. It never
+ * removes `bin` (the launcher), `current`, a running session (`isRunning(dir)`), a file, or a junction or symbolic
+ * link. Returns the names it removed; a folder it cannot remove is reported on stderr and left.
+ */
+export function pruneSessions(e2eRoot, current, keep, isRunning) {
+  if (!fs.existsSync(e2eRoot)) return [];
+  const rootPath = path.resolve(e2eRoot);
+  // ASSUMPTION: a session folder's write time is about when it was last started or stopped, because start writes its
+  // logs and session.json directly inside it and stop removes session.json.
+  // Windows folder names ignore case, so `--session Default` reuses the folder `default`.
+  const spared = new Set(['bin', current.toLowerCase()]);
+  const stopped = fs.readdirSync(rootPath)
+    .filter((entry) => !spared.has(entry.toLowerCase()))
+    .map((entry) => ({ entry, dir: path.join(rootPath, entry), stat: fs.lstatSync(path.join(rootPath, entry)) }))
+    // lstat reports a junction or symbolic link as a link, not a directory, so a link is never followed or removed.
+    .filter(({ stat }) => stat.isDirectory())
+    .filter(({ dir }) => !isRunning(dir))
+    .sort((a, b) => b.stat.mtimeMs - a.stat.mtimeMs);
+  const removed = [];
+  for (const { entry, dir } of stopped.slice(Math.max(0, keep - 1))) {
+    if (path.dirname(dir) !== rootPath) throw new Error(`refusing to remove ${dir}: not directly below ${rootPath}`);
+    try {
+      fs.rmSync(dir, { recursive: true, force: true });
+      removed.push(entry);
+    } catch (error) {
+      process.stderr.write(`could not remove old e2e session ${entry}: ${error.message}\n`);
+    }
+  }
+  return removed;
 }
 
 function run(command, args, what) {
@@ -146,6 +191,8 @@ async function start(options) {
   const name = options.session;
   if (fs.existsSync(sessionFile(name)) && alive(readSession(name).launcherPid))
     throw new Error(`session "${name}" is already running; stop it first`);
+  const pruned = pruneSessions(path.join(root, 'reports', 'e2e'), name, keptSessions, sessionRunning);
+  if (pruned.length > 0) console.error(`removed old e2e sessions: ${pruned.join(', ')}`);
   const dir = sessionDir(name);
   if (!options['keep-data']) fs.rmSync(path.join(dir, 'appdata'), { recursive: true, force: true });
   fs.mkdirSync(path.join(dir, 'shots'), { recursive: true });
