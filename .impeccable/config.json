@@ -5,5 +5,47 @@
       "maxFindings": 5,
       "maxChars": 8000
     }
+  },
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "reports/*/report_*/**"
+        ],
+        "createdAt": "2026-11-22T08:40:21.545Z",
+        "reason": "Claude decided: gdUnit4 writes these HTML test reports into the git-ignored reports/ folder; generated tool output, not project design"
+      },
+      {
+        "rule": "gray-on-color",
+        "value": "*",
+        "files": [
+          "reports/*/report_*/**"
+        ],
+        "createdAt": "2026-11-22T08:40:22.408Z",
+        "reason": "Claude decided: gdUnit4 writes these HTML test reports into the git-ignored reports/ folder; generated tool output, not project design"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "reports/*/report_*/**"
+        ],
+        "createdAt": "2026-11-22T08:40:23.190Z",
+        "reason": "Claude decided: gdUnit4 writes these HTML test reports into the git-ignored reports/ folder; generated tool output, not project design"
+      },
+      {
+        "rule": "skipped-heading",
+        "value": "*",
+        "files": [
+          "reports/*/report_*/**"
+        ],
+        "createdAt": "2026-11-22T08:40:23.981Z",
+        "reason": "Claude decided: gdUnit4 writes these HTML test reports into the git-ignored reports/ folder; generated tool output, not project design"
+      }
+    ]
   }
 }
