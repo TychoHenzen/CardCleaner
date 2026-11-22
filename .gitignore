@@ -118,6 +118,12 @@ fabric.properties
 
 # Claude Code solve session
 .solve-session/
+# Agent skill folders: Claude Code reads project skills from .claude/skills, Codex and other agents from .agents.
+# Installed skills stay on the machine that installed them (Archon's setup put its archon-cli skill in both).
+/.claude/skills/
+/.agents/
+# Archon writes its project config here
+/.archon/
 # Test artifacts
 /build.log
 /CardCleaner.csproj.old*
