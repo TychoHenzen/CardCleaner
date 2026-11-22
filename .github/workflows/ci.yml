@@ -172,6 +172,9 @@ jobs:
       - name: Run the Asset Manager sync fixture
         run: node tools/asset-manager/sync.test.mjs
 
+      - name: Run the e2e session prune fixture
+        run: node tools/e2e/e2e.test.mjs
+
   dependency-audit:
     name: NuGet vulnerability check
     runs-on: windows-latest

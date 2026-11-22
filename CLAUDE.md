@@ -71,9 +71,9 @@ about 145 frames a second), and gdUnit then lost suite starts on every run.
 The vendored gdUnit4 is 6.2.3, which cleans a relative `-rd` report folder correctly: `GdUnitFileAccess.delete_directory`
 resolves the folder to its absolute path before it deletes, so a direct `GdUnitCmdTool.gd` run with a relative `-rd` (as
 `Run-GdUnit.ps1` uses with `-rd reports/ci`) logs no `ERROR: Delete` lines. Without `-rc`, gdUnit keeps the newest 20
-report folders and removes the older ones. `Run-GdUnit.ps1` and the one-liners below still pass `-rc 100000`, so every
-report folder of a run is kept; that is a choice, not a requirement of the cleanup. A run without `-rd` uses gdUnit's
-absolute default report path.
+`report_<n>` folders in its report folder and removes the older ones. `Run-GdUnit.ps1` and the one-liners below pass no
+`-rc`. One run through the runner writes at most `-MaxResumes` + 1 report folders (11 at the limit of 10), so the cleanup
+never removes a report of the current run. A run without `-rd` uses gdUnit's absolute default report path.
 
 **Project patch in the vendored addon (issue 448).** gdUnit4.api runs each C# suite on a thread-pool thread, and the
 suite first awaits Godot's `process_frame` through a `SignalAwaiter`, which is not thread-safe. When the frame lands
@@ -112,8 +112,8 @@ the fork first. `node tools/asset-manager/sync.test.mjs` runs it against a throw
 **Without PowerShell.** Start Godot from Bash through node, so no console window opens:
 
 ```bash
-# One suite, the same arguments as Run-GdUnit.ps1 uses for a single suite (reports/<dir> is relative; -rc 100000 keeps every report folder, see above)
-node -e "const r=require('child_process').spawnSync('<godot console exe>',['--headless','--path','.','-s','res://addons/gdUnit4/bin/GdUnitCmdTool.gd','-c','--ignoreHeadlessMode','-rc','100000','-rd','reports/<dir>','-a','res://Tests/<path>Test.cs'],{stdio:'inherit',windowsHide:true});process.exit(r.status??1)"
+# One suite, the same arguments as Run-GdUnit.ps1 uses for a single suite (reports/<dir> is relative; gdUnit keeps its newest 20 report folders, see above)
+node -e "const r=require('child_process').spawnSync('<godot console exe>',['--headless','--path','.','-s','res://addons/gdUnit4/bin/GdUnitCmdTool.gd','-c','--ignoreHeadlessMode','-rd','reports/<dir>','-a','res://Tests/<path>Test.cs'],{stdio:'inherit',windowsHide:true});process.exit(r.status??1)"
 
 # The .uid import (writes only the sidecars, see Godot .uid Sidecars)
 node -e "const r=require('child_process').spawnSync('<godot console exe>',['--headless','--path','.','--import'],{stdio:'inherit',windowsHide:true});process.exit(r.status??1)"
@@ -187,13 +187,16 @@ written, and the run fails naming the script errors), and an abnormal exit after
 `reports/ci`; before the first Godot attempt, stale generated attempt logs directly in that directory matching
 `godot.stdout.log`, `godot.stderr.log`, `godot.resume*.stdout.log`, or `godot.resume*.stderr.log` are removed, while
 report folders and other files survive. Each attempt then has one log pair (`godot.stdout.log`, then
-`godot.resume<n>.stdout.log`). Every stall or crash also appends a line such as `crash 0xC000001D in <suite> (logs: ...)`
+`godot.resume<n>.stdout.log`). Every `-ReportDirectory` name leaves its own folder directly under `reports/`, so after
+its argument checks the runner keeps the 10 newest of those folders by write time, the current run's included, and
+removes the rest (`Removed old report folder: reports/<name>` for each; a folder it cannot remove is a warning, not a
+failed run). It never touches a file directly under `reports/` (`.gdignore`), `reports/e2e`, or a junction or link. Every stall or crash also appends a line such as `crash 0xC000001D in <suite> (logs: ...)`
 to `reports/ci/interruptions.txt` (a marker left by an earlier run is removed at start). CI uploads `reports/ci`
 as the `gdunit-reports` artifact on failure, on the
 daily and `full=true` runs, on a pull request that runs every suite, and whenever that marker exists, so a crash inside a run that resumed to green keeps its
 logs. `Test-RunGdUnit.ps1` runs the real runner against a fake Godot and covers its build wait (a build that leaves a
-worker running), build failure, watchdog, resume, repeated-stall, crash, repeated-crash, exit-code, interruption-marker
-and report-aggregation paths, the Daily skip (`-SkipDaily`, on the first attempt and on a resume), and the import skip
+worker running), build failure, watchdog, resume, repeated-stall, crash, repeated-crash, exit-code, interruption-marker,
+report-aggregation and old-report-folder paths, the Daily skip (`-SkipDaily`, on the first attempt and on a resume), and the import skip
 (an unchanged project, `-ForceImport`, a missing `.godot/imported`, an edited `.cs`, a new script, a changed resource
 and a failed import). It also checks that the suite-detection and Daily patterns in `Run-GdUnit.ps1` match the ones in
 `TestSuiteNamingTest.cs`.
@@ -219,7 +222,10 @@ The runner prints its results to the job log, so no artifact download is needed 
 
 `node tools/e2e/e2e.mjs` runs the real, rendering game on a hidden Win32 desktop (no window ever reaches the user's
 screen) and drives it over a local socket: keys, mouse, `walk_to`, `look_at`, `use`, scene inspection and
-screenshots into `reports/e2e/<session>/shots/`. Use it to look at a change in-game; see `tools/e2e/README.md`. The
+screenshots into `reports/e2e/<session>/shots/`. Use it to look at a change in-game; see `tools/e2e/README.md`.
+Starting a session keeps 5 session folders, the started one included, and removes the older stopped ones with their
+save data and screenshots; it never removes a running session or the launcher in `reports/e2e/bin`
+(`node tools/e2e/e2e.test.mjs`, run by the `runner-fixture` CI job, checks that). The
 in-game side is the `Automation` autoload (`Scripts/Features/Automation`), dormant unless a debug build gets
 `-- --automation-port=<n>`. In that mode `CursorOwner` never captures the mouse, because a captured mouse clips the
 user's real cursor even from a hidden desktop.
@@ -448,7 +454,7 @@ each such rise is named in the failure and printed as a `dependency gate:` line 
 switch set:
 
 ```bash
-CARDCLEANER_UPDATE_DEPENDENCY_BASELINE=1 <godot console exe> --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -c --ignoreHeadlessMode -rc 100000 -rd reports/ci -a res://Tests/Architecture/DependencyGateTest.cs
+CARDCLEANER_UPDATE_DEPENDENCY_BASELINE=1 <godot console exe> --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -c --ignoreHeadlessMode -rd reports/ci -a res://Tests/Architecture/DependencyGateTest.cs
 ```
 
 The switch rewrites the file only when the deciding number went down (it still prints the accepted rises), refuses
@@ -527,7 +533,7 @@ Signatures influence card generation, combat calculations, map generation parame
 A card's look is its own scene, `Scenes/Components/CardFace.tscn` (`CardFace`: the renderer, the name and flavor labels, the blacklight, the material manager and the mesh), which the card body `Scenes/Components/CardShader.tscn` instances as `Face` and a pile instances once per card it shows; `CardFace.Dress` builds a face from a signature and look seed, so a face on a pile looks exactly like the same card loose. The card body is a committed mesh, `Data/Card/CardMesh.tres`, shown by the `OuterBox_Baked` node in `CardFace.tscn`; no card builds CSG at runtime. Its source is `Tests/Features/Card/Components/CardMeshRecipe.cs` (test code: a CSG tree for a 0.32 x 0.45 x 0.005 m card with 0.032 m rounded corners, baked and given the card's UV layout). `CardMeshBakeTest.CommittedMeshMatchesRecipe` fails when the file and the recipe differ, and `CardShaderSceneTest` fails when the `Designer` dimensions or the `OutlineBox` size (mesh plus 0.01 m) no longer match the mesh. To change the shape, edit the recipe (and the size constants in `CardMeshBakeTest`), then regenerate with the switch set:
 
 ```bash
-CARDCLEANER_REGENERATE_CARD_MESH=1 <godot console exe> --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -c --ignoreHeadlessMode -rc 100000 -rd reports/ci -a res://Tests/Features/Card/Components/CardMeshBakeTest.cs
+CARDCLEANER_REGENERATE_CARD_MESH=1 <godot console exe> --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -c --ignoreHeadlessMode -rd reports/ci -a res://Tests/Features/Card/Components/CardMeshBakeTest.cs
 ```
 
 The drift test can fail in that run because it may compare against the old file; run the suite again without the switch. For a size change, also update the `Designer` `Width`/`Height`/`Thickness`, the `CardCollision` box and the `OutlineBox` mesh size in `CardShader.tscn`. Never edit the `.tres` by hand.
@@ -560,7 +566,7 @@ committed mesh differs from the recipe. To change a shape, edit the recipe, rege
 suite again without it:
 
 ```bash
-CARDCLEANER_REGENERATE_CONTAINER_MESHES=1 <godot console exe> --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -c --ignoreHeadlessMode -rc 100000 -rd reports/ci -a res://Tests/Features/Packs/Components/ContainerMeshBakeTest.cs
+CARDCLEANER_REGENERATE_CONTAINER_MESHES=1 <godot console exe> --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -c --ignoreHeadlessMode -rd reports/ci -a res://Tests/Features/Packs/Components/ContainerMeshBakeTest.cs
 ```
 
 Never edit the mesh `.tres` files by hand. The words printed on a container (brand, count, THIS SIDE UP) are flat,
