@@ -2,7 +2,7 @@ using System.Linq;
 using System.Text.Json;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services.TilesJsonValidationScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.TilesJsonValidationScenarios;
 
 /// <summary>
 ///     Validates tiles.json atlas coordinates and auto-tile variant structure; split out of TilesJsonValidationTest.

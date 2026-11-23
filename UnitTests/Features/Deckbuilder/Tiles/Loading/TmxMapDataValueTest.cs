@@ -9,7 +9,7 @@ using Godot;
 using GdUnit4;
 using static GdUnit4.Assertions;
 
-namespace CardCleaner.Tests.Core.Services;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading;
 
 /// <summary>
 /// TmxMapData is an immutable value record: it is a record type, every property is get-only or init-only, and every

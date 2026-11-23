@@ -2,7 +2,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.TilesetLoading;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
 
-namespace CardCleaner.Tests.Core.Services.VariationGroupScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.VariationGroupScenarios;
 
 /// <summary>
 ///     Tests for numbered and lettered tile variation name pattern detection; split out of VariationGroupTest.

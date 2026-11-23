@@ -10,7 +10,7 @@ using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services.TileRegistryScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.TileRegistryScenarios;
 
 /// <summary>
 ///     TileRegistry loading, biome filtering and missing tile lookup scenarios split out of TileRegistryTest.

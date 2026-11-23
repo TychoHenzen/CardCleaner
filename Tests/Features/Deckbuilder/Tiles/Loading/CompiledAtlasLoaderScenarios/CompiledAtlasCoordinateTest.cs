@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services.CompiledAtlasLoaderScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.CompiledAtlasLoaderScenarios;
 
 /// <summary>
 ///     Validates CompiledAtlasLoader coordinate translation and atlas bounds; split out of CompiledAtlasLoaderTest.

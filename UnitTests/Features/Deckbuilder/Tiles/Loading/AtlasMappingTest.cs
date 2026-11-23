@@ -5,7 +5,7 @@ using System.Reflection;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading;
 
 /// <summary>
 /// The engine-free atlas mapping reads JSON from an absolute path, returns null for a missing or invalid file,

@@ -7,7 +7,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services.TileRegistryScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.TileRegistryScenarios;
 
 /// <summary>
 ///     TileRegistry transition classification, registration edge cases, dominance and variant

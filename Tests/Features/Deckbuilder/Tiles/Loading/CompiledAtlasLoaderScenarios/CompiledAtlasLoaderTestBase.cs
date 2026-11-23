@@ -6,7 +6,7 @@ using System.Text.Json;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services.CompiledAtlasLoaderScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.CompiledAtlasLoaderScenarios;
 
 /// <summary>
 ///     Shared atlas fixtures, constants and temporary file helpers for the CompiledAtlasLoader scenario suites.

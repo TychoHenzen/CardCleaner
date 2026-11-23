@@ -9,7 +9,7 @@ using GdUnit4;
 using Godot;
 using static GdUnit4.Assertions;
 
-namespace CardCleaner.Tests.Core.Services;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading;
 
 /// <summary>
 /// Tests that verify TiledTilesetLoader creates TileDefinitions from TMX/TSX files,

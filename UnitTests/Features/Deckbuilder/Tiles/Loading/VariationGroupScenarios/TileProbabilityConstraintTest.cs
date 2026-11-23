@@ -8,7 +8,7 @@ using CardCleaner.Tests.Mocks;
 using Godot;
 
 
-namespace CardCleaner.Tests.Core.Services.VariationGroupScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.VariationGroupScenarios;
 
 /// <summary>
 ///     Tests that PerGeneration variant selection excludes non-selected variants during WFC tile

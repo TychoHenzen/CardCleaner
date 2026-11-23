@@ -5,7 +5,7 @@ using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services.CompiledAtlasLoaderScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.CompiledAtlasLoaderScenarios;
 
 /// <summary>
 ///     Validates CompiledAtlasLoader file presence, mapping structure, atlas dimensions and

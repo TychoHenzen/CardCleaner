@@ -4,7 +4,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services.TileRegistryScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.TileRegistryScenarios;
 
 /// <summary>
 ///     TileRegistry auto-tile variant and compiled atlas scenarios split out of TileRegistryTest.

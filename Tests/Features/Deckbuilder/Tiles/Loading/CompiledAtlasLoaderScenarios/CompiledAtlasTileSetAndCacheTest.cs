@@ -5,7 +5,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services.CompiledAtlasLoaderScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.CompiledAtlasLoaderScenarios;
 
 /// <summary>
 ///     Validates CompiledAtlasLoader TileSet creation and cache retry behavior; split out of CompiledAtlasLoaderTest.

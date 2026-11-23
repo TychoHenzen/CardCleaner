@@ -5,7 +5,7 @@ using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services.TilesJsonValidationScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.TilesJsonValidationScenarios;
 
 /// <summary>
 ///     Shared tiles.json document and TileRegistry fixture for the tiles.json validation scenario suites.

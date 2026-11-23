@@ -1,7 +1,7 @@
 using System.Linq;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services.TilesJsonValidationScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.TilesJsonValidationScenarios;
 
 /// <summary>
 ///     Validates tiles.json cross-references and TileRegistry loading; split out of TilesJsonValidationTest.

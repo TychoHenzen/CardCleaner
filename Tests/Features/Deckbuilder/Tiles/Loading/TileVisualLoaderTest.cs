@@ -9,7 +9,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading;
 
 /// <summary>
 ///     TileVisualLoader chooses the compiled atlas or the original tileset for the tile catalog. The loader is internal

@@ -3,7 +3,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
 
-namespace CardCleaner.Tests.Core.Services.VariationGroupScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.VariationGroupScenarios;
 
 /// <summary>
 ///     Tests for VariationGroup, VariationGroupCollection and probability weight handling; split

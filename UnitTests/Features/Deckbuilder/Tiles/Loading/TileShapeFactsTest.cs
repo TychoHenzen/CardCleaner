@@ -3,7 +3,7 @@ using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading;
 
 /// <summary>
 /// Pins the shape facts TileShapeFacts resolves for an auto-tile format name: the allowed bitmasks and the largest

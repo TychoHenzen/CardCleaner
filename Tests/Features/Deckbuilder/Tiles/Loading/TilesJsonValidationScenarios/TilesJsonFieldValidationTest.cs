@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using Godot;
 
-namespace CardCleaner.Tests.Core.Services.TilesJsonValidationScenarios;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.TilesJsonValidationScenarios;
 
 /// <summary>
 ///     Validates tiles.json required fields, identifiers, passability, layers, auto-tile formats

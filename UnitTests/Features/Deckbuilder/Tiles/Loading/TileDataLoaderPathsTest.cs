@@ -4,7 +4,7 @@ using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
 using static GdUnit4.Assertions;
 
-namespace CardCleaner.Tests.Core.Services;
+namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading;
 
 /// <summary>
 /// Tests that the tile loaders resolve res:// paths through the injected IAssetPaths: a fake project root with
