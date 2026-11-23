@@ -10,7 +10,7 @@ using Godot;
 using Newtonsoft.Json;
 using Saveable.Extensions;
 
-namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
+namespace CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 
 /// <summary>
 ///     Writes the sealed containers lying in the scene into a slot and rebuilds them from one. Only sealed

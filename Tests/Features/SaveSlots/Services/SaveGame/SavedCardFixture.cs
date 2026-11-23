@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
+namespace CardCleaner.Tests.Features.SaveSlots.Services.SaveGame;
 
 /// <summary>
 /// The committed save written by the save addon (#172 U1, U4): two cards, the first one held by the player camera.
@@ -10,7 +10,7 @@ namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
 internal static class SavedCardFixture
 {
     internal const string FilePath =
-        "res://Tests/Features/Card/Services/SaveGame/Fixtures/game_save_two_cards.json";
+        "res://Tests/Features/SaveSlots/Services/SaveGame/Fixtures/game_save_two_cards.json";
 
     internal static readonly float[] HeldElements = [0.1f, -0.2f, 0.3f, -0.4f, 0.5f, -0.6f, 0.7f, -0.8f];
     internal static readonly float[] PlacedElements = [-0.9f, 0.8f, -0.7f, 0.6f, -0.5f, 0.4f, -0.3f, 0.2f];

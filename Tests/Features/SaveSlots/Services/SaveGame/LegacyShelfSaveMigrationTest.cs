@@ -3,22 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Components;
-using CardCleaner.Scripts.Features.Card.Services.SaveGame;
+using CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Tests.Features.Packs;
-using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.Scenes;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 using Godot;
 using Saveable;
 using Saveable.Extensions;
 
-namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
+namespace CardCleaner.Tests.Features.SaveSlots.Services.SaveGame;
 
 /// <summary>
 /// A save made before the shop's starting product shelf and storage rack became furniture kept their stock at the old

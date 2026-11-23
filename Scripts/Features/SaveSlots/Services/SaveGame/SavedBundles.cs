@@ -7,7 +7,7 @@ using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
 using Saveable.Extensions;
 
-namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
+namespace CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 
 /// <summary>
 ///     Writes the decks and piles lying in the scene into a slot and rebuilds them from one: each with its pose, its

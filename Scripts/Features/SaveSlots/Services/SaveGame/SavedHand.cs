@@ -9,7 +9,7 @@ using CardCleaner.Scripts.Features.Packs.Models;
 using Godot;
 using Saveable.Extensions;
 
-namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
+namespace CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 
 /// <summary>
 ///     Writes the player's hand into a slot as one ordered record, every item in hand order with the front item

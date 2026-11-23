@@ -4,7 +4,7 @@ using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
+namespace CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 
 /// <summary>
 /// Spawns saved cards back into the current scene and locks a card saved under a slot back into that slot. Cards the
