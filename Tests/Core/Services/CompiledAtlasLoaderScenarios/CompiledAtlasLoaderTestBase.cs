@@ -1,9 +1,9 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using Godot;
 
 namespace CardCleaner.Tests.Core.Services.CompiledAtlasLoaderScenarios;

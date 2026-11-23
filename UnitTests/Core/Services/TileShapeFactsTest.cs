@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using CardCleaner.Features.Worldgen.AutoTiling;
-using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using Godot;
 
 namespace CardCleaner.Tests.Core.Services;

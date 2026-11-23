@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Core.Services.TilesetLoading;
-using CardCleaner.Scripts.Core.Services.TilesetLoading.TmxMapping;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.TilesetLoading;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.TilesetLoading.TmxMapping;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using Godot;
 using GdUnit4;
