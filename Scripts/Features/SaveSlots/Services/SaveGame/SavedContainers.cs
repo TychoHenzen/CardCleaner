@@ -14,10 +14,7 @@ namespace CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 
 /// <summary>
 ///     Writes the sealed containers lying in the scene into a slot and rebuilds them from one. Only sealed
-///     containers placed from a scene file can be rebuilt; an opened one has spilled its contents. A carried
-///     container is saved with the hand (<see cref="SavedHand" />), in hand order, not here. A cardboard box keeps its
-///     open flaps and what it holds (cards, boosters and booster boxes, each with its seed and price, in the order they
-///     went in), and every container the price the player set on it.
+///     containers placed from a scene file can be rebuilt, since an opened one has spilled its contents.
 /// </summary>
 internal static class SavedContainers
 {
