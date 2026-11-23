@@ -392,7 +392,9 @@ The project uses a custom DI container with no static service state: an instance
   builds once from the registered registry. `CompositionRoot` builds only the registry (`TileCatalogLoad.Load`) and
   the data it registers by instance. `TileCatalogConsumersTest` fails if a file under
   `Scripts/Features/Deckbuilder/Services` or `Scripts/Features/Worldgen/IrregularMesh` names `TileCatalogData`.
-  The compiled atlas is loaded by the stateless
+  The tile loaders (`TileCatalogLoad`, `TileDataLoader`, `TiledTilesetLoader`, `CompiledAtlasLoader`, `TileRegistry` and
+  the TMX, Wang and atlas code behind them) live in `Scripts/Features/Deckbuilder/Tiles/Loading`, so `Scripts/Core`
+  names no Deckbuilder type (`CoreDeckbuilderBoundaryTest`). The compiled atlas is loaded by the stateless
   `TileVisualLoader`, which returns a `TileVisualCatalog` that `TileRegistry` exposes as `Visuals` (UI users read the
   tileset path, atlas flag and `TilesetConfig` there). `AtlasMapping` holds no static cache: `Load` reads its file on
   every call, and `WorldMapComponents` passes the loaded mapping to `TerrainTransitions.Create`. The compiled
