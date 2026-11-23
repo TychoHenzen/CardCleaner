@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Checkout;
+using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
 using Godot;

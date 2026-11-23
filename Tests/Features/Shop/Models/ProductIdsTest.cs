@@ -1,7 +1,7 @@
 using System.Linq;
 using CardCleaner.Scripts.Features.Packs.Models;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Ordering;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 

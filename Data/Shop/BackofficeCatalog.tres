@@ -3,8 +3,8 @@
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/CardboardBox.tscn" id="CardboardBox"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Pack.tscn" id="Pack"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/Booster.tscn" id="Booster"]
-[ext_resource type="Script" uid="uid://ddvfbixqpsql6" path="res://Scripts/Features/Shop/Models/OrderCatalog.cs" id="OrderCatalogScript"]
-[ext_resource type="Script" uid="uid://d144tmal3smw7" path="res://Scripts/Features/Shop/Models/OrderItem.cs" id="OrderItemScript"]
+[ext_resource type="Script" uid="uid://ddvfbixqpsql6" path="res://Scripts/Features/Shop/Ordering/OrderCatalog.cs" id="OrderCatalogScript"]
+[ext_resource type="Script" uid="uid://d144tmal3smw7" path="res://Scripts/Features/Shop/Ordering/OrderItem.cs" id="OrderItemScript"]
 
 [sub_resource type="Resource" id="CardboardBoxItem"]
 script = ExtResource("OrderItemScript")

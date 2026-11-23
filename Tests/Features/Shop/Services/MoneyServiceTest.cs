@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Features.Shop.Services;
 using Saveable;
+using CardCleaner.Scripts.Features.Shop.Day;
 
 namespace CardCleaner.Tests.Features.Shop.Services;
 

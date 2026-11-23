@@ -1,5 +1,6 @@
-using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Day;
+using CardCleaner.Scripts.Features.Shop.Progression;
+using CardCleaner.Scripts.Features.Shop.Staff;
 
 namespace CardCleaner.Tests.Features.Shop.Services;
 

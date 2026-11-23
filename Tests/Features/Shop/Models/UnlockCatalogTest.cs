@@ -1,6 +1,8 @@
 using System;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Ordering;
+using CardCleaner.Scripts.Features.Shop.Progression;
+using CardCleaner.Scripts.Features.Shop.Staff;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 

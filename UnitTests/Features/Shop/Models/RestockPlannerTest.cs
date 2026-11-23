@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Restocking;
+using CardCleaner.Scripts.Features.Shop.Shelves;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 

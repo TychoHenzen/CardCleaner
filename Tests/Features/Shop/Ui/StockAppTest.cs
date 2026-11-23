@@ -1,4 +1,4 @@
-using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Scripts.Features.Shop.Ordering;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 

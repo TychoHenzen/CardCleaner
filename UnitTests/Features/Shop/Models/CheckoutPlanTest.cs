@@ -1,4 +1,5 @@
-using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Checkout;
+using CardCleaner.Scripts.Features.Shop.Ordering;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 

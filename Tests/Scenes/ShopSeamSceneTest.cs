@@ -4,8 +4,8 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Portal.Components;
 using CardCleaner.Scripts.Features.Portal.Models;
-using CardCleaner.Scripts.Features.Shop.Components;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Building;
 using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;

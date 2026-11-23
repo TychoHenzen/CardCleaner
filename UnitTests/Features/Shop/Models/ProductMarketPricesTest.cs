@@ -1,6 +1,6 @@
 using System;
 using CardCleaner.Scripts.Features.Packs.Models;
-using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Pricing;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 

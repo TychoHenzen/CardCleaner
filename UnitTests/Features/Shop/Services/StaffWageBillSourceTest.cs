@@ -1,6 +1,5 @@
 using System.Linq;
-using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Staff;
 using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Shop.Services;

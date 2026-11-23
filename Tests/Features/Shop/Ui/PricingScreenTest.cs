@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Pause.Models;
-using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Scripts.Features.Shop.Pricing;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 

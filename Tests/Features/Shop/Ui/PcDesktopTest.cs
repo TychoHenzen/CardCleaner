@@ -2,10 +2,9 @@
 // because the Stock app holding those rows is built later; its forwarded click to checkout is covered end to end by
 // Tests/Scenes/ShopStockAppClickPathSceneTest.cs, the equivalent of that removed test.
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Ui;
 using GdUnit4;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Screens;
 
 namespace CardCleaner.Tests.Features.Shop.Ui;
 

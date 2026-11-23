@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Furniture;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 

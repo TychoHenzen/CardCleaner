@@ -7,7 +7,7 @@ using CardCleaner.Scripts.Features.Card.Services.SaveGame;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
-using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Tests.Features.Card.Services.SaveGame;
 using CardCleaner.Tests.Features.SaveSlots.Services;
 using GdUnit4;

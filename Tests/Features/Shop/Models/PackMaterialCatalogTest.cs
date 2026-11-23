@@ -1,6 +1,6 @@
 using System.Linq;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Building;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 

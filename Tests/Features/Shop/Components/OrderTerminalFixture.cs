@@ -1,9 +1,7 @@
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Day;
+using CardCleaner.Scripts.Features.Shop.Ordering;
 using CardCleaner.Tests.TestUtilities;
-using CardCleaner.Scripts.Features.Shop.Ui;
-using CardCleaner.Scripts.Features.Shop.Services;
-using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Pause.Components;
 

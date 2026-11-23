@@ -1,6 +1,6 @@
 using System;
-using CardCleaner.Scripts.Features.Shop.Components;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Screens;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
 

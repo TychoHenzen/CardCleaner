@@ -1,5 +1,5 @@
 using System;
-using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Customers;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 

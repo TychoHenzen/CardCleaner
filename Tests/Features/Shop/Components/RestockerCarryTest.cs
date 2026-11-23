@@ -1,9 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Packs.Models;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.People;
+using CardCleaner.Scripts.Features.Shop.Restocking;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
 

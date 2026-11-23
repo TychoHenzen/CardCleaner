@@ -1,5 +1,4 @@
-using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Scripts.Features.Shop.Ordering;
 using CardCleaner.Tests.Features.Shop.Components;
 using CardCleaner.Tests.TestUtilities;
 

@@ -1,5 +1,5 @@
-using CardCleaner.Scripts.Features.Shop.Components;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Building;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
 

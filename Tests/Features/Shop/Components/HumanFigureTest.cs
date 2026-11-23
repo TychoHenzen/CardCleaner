@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.People;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 

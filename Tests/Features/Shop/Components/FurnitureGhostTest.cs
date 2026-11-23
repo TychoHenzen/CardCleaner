@@ -1,7 +1,6 @@
 using System;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Furniture;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
 

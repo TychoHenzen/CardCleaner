@@ -1,4 +1,4 @@
-using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Day;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 

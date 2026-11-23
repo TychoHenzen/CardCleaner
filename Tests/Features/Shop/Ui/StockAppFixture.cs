@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Services;
-using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Scripts.Features.Shop.Day;
+using CardCleaner.Scripts.Features.Shop.Ordering;
+using CardCleaner.Scripts.Features.Shop.Progression;
 using CardCleaner.Tests.Features.Shop.Components;
 using CardCleaner.Tests.TestUtilities;
 using Godot;

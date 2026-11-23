@@ -1,6 +1,6 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Furniture;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 

@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Features.Shop.Models;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 

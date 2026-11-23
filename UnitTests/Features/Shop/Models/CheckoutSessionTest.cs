@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Checkout;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 

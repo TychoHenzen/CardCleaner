@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Building/ShopArtSlot.cs" id="ShopArtSlot"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/DeckSlot.tscn" id="DeckSlot"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CardSlot.tscn" id="CardSlot"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/button.tscn" id="Button"]
