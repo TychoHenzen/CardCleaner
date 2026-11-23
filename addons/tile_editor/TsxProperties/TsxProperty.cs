@@ -1,12 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml.Linq;
-using CardCleaner.Scripts.Core.Interfaces;
-using Godot;
-
-namespace CardCleaner.Scripts.Core.Services;
+#if TOOLS
+namespace CardCleaner.Addons.TileEditor;
 
 /// <summary>
 /// Represents a typed property for TSX files.
@@ -58,3 +51,4 @@ public class TsxProperty
         System.Globalization.CultureInfo.InvariantCulture, out var v) ? v : 0f;
     public bool AsBool() => Value.ToLowerInvariant() is "true" or "1";
 }
+#endif
