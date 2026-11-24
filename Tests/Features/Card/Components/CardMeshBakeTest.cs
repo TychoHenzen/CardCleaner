@@ -42,8 +42,9 @@ public class CardMeshBakeTest
         Assertions.AssertString(body.Mesh.ResourcePath).IsEqual(MeshPath);
     }
 
-    // Rewrites Data/Card/CardMesh.tres from CardMeshRecipe. See "Card Mesh" in CLAUDE.md for the command and for the
-    // scene values to update after a shape change. Without the switch it does nothing, so normal runs pass it.
+    // Rewrites Data/Card/CardMesh.tres from CardMeshRecipe. See "Regenerating Committed Meshes" in CLAUDE.md for the
+    // command and for the scene values to update after a shape change. Without the switch it does nothing, so normal
+    // runs pass it.
     [TestCase]
     public static async Task RegenerateCommittedMesh()
     {
