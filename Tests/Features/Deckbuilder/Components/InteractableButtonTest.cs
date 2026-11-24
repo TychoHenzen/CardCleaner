@@ -1,5 +1,4 @@
 ﻿using CardCleaner.Scripts.Features.Deckbuilder.Components;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Components;

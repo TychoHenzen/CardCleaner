@@ -1,5 +1,4 @@
 using CardCleaner.Scripts.Core.Enumeration;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 
 namespace CardCleaner.Scripts.Core.Services.TilesetLoading.TileBuilding;
 

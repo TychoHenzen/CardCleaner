@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 

@@ -2,7 +2,6 @@ using System;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Ui;
 

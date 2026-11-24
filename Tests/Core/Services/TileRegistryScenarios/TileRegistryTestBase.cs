@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Services;
 
 namespace CardCleaner.Tests.Core.Services.TileRegistryScenarios;

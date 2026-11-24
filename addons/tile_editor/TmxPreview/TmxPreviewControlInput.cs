@@ -1,6 +1,5 @@
 #if TOOLS
 using System.IO;
-using CardCleaner.Scripts.Core.Services.TilesetLoading;
 using CardCleaner.Scripts.Core.Services.TilesetLoading.TmxMapping;
 using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;

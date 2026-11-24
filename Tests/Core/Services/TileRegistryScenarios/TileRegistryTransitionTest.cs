@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Scripts.Core.Services;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;

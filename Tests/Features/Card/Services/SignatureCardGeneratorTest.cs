@@ -4,7 +4,6 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Models.Effects;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 using NSubstitute;

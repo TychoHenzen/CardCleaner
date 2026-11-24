@@ -1,9 +1,7 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Linq;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;
 using CardCleaner.Tests.TestUtilities;

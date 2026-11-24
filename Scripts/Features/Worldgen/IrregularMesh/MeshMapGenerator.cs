@@ -10,7 +10,6 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.WorldMap;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Core.Randomness;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 

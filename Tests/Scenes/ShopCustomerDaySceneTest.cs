@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Tests.TestUtilities;
-using Godot;
 using static CardCleaner.Tests.Scenes.ShopCustomerRig;
 
 namespace CardCleaner.Tests.Scenes;

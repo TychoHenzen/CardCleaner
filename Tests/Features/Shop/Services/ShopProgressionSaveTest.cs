@@ -4,7 +4,6 @@ using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.Features.SaveSlots;
 using CardCleaner.Tests.Features.SaveSlots.Services;
-using Godot;
 using Saveable;
 
 namespace CardCleaner.Tests.Features.Shop.Services;

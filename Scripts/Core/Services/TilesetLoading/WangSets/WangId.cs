@@ -1,4 +1,3 @@
-using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 
 namespace CardCleaner.Scripts.Core.Services.TilesetLoading.WangSets;

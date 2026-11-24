@@ -5,7 +5,6 @@ using System.Threading;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
-using CardCleaner.Scripts.Features.Worldgen.Wfc.Contracts;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Wfc;

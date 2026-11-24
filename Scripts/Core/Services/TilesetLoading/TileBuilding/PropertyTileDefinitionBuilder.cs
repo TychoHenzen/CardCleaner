@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Services.TilesetLoading.TileProperties;
 using System.Linq;
 using CardCleaner.Features.Worldgen.AutoTiling;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 

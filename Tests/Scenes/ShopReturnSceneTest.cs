@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Portal.Components;
 using CardCleaner.Scripts.Features.Portal.Models;
 using Godot;

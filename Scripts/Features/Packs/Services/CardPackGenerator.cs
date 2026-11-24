@@ -2,7 +2,6 @@ using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Core.Interfaces;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Packs.Services;
 

@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Tests.TestUtilities;
 using System;
 using System.Collections.Generic;

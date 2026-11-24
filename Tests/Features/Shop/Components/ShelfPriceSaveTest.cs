@@ -17,7 +17,6 @@ using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.Scenes;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 using Godot;
 using Saveable;
 using Saveable.Extensions;

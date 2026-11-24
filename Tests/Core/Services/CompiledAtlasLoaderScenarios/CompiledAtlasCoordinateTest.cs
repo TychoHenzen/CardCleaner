@@ -1,7 +1,6 @@
 using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Linq;
 using System.Text.Json;
-using CardCleaner.Scripts.Core.Services;
 using Godot;
 
 namespace CardCleaner.Tests.Core.Services.CompiledAtlasLoaderScenarios;

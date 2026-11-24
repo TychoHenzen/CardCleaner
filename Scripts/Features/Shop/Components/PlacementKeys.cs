@@ -1,4 +1,3 @@
-using System;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 

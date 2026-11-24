@@ -7,7 +7,6 @@ using CardCleaner.Scripts.Features.Pause.Controllers;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Menu;

@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,5 +1,4 @@
 using CardCleaner.Scripts.Features.Shop.Services;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Services;
 

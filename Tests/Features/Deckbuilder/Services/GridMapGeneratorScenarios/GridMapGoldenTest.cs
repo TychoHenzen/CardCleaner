@@ -1,8 +1,6 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Tests.TestUtilities;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
