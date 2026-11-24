@@ -5,9 +5,9 @@ using System.Linq;
 namespace CardCleaner.Tests.Architecture.DependencyGate;
 
 /// <summary>
-/// Consensus clustering of the middle layer (#240 requirement 6): omnipresent and loose classes are left out,
-/// Louvain at resolution 0.7 runs with seeds 0 to 49, and pairs together in at least half the runs form a consensus
-/// graph clustered at resolution 1.0, seed 0.
+/// Consensus clustering of the middle layer (#240 requirement 6) and of the UI layer (UiModules, #484): omnipresent
+/// and loose classes are left out, Louvain at resolution 0.7 runs with seeds 0 to 49, and pairs together in at least
+/// half the runs form a consensus graph clustered at resolution 1.0, seed 0.
 /// </summary>
 internal static class ModuleConsensus
 {
