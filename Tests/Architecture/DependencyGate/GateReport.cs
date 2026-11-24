@@ -45,12 +45,39 @@ internal static class GateReport
                       string.Join(", ", seam.Concrete) + (seam.ConcreteBack ? " (concrete back)" : ""));
         }
 
+        lines.AddRange(UiLines(m));
         foreach (var component in m.Order.GreedyComponents)
         {
             lines.Add($"greedy order for {component.Count} modules: " +
                       string.Join(", ", component.Select(x => names[x])));
         }
 
+        return lines;
+    }
+
+    // The UI layer seen from inside (#484): its modules, their order, every up edge and every loop between them.
+    private static List<string> UiLines(GateMeasurement m)
+    {
+        var ui = m.Ui;
+        var names = ui.Modules.Names;
+        var lines = new List<string>
+        {
+            $"ui modules {ui.Modules.Module.Values.Distinct().Count()}, loose {ui.Modules.Loose.Count}",
+        };
+        var sizes = ui.Modules.Module.GroupBy(p => p.Value).ToDictionary(g => g.Key, g => g.Count());
+        var position = 0;
+        foreach (var module in ui.Order.Order.Where(sizes.ContainsKey))
+            lines.Add($"ui order {++position}: {names[module]} ({sizes[module]} classes)");
+        lines.Add("ui loose: " + string.Join(", ", ui.Modules.Loose));
+        foreach (var key in ui.Order.UpEdges)
+        {
+            var edge = ui.Edges[key];
+            lines.Add($"ui up edge: {names[key.From]} -> {names[key.To]} weight {edge.Weight}: " +
+                      string.Join(", ", edge.Pairs.Select(p => $"{p.From} -> {p.To} {p.Weight}")));
+        }
+
+        foreach (var loop in ui.Order.Loops)
+            lines.Add($"ui loop of {loop.Count}: " + string.Join(", ", loop.Select(x => names[x])));
         return lines;
     }
 
