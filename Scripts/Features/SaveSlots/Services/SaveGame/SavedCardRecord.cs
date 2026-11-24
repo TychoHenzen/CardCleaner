@@ -1,7 +1,7 @@
 using CardCleaner.Scripts.Features.Card.Models;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
+namespace CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 
 /// <summary>
 /// One persisted card read back from save data, ready to be spawned again. <see cref="Price" /> is the shop price the

@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Features.Card.Services.SaveGame;
-using GdUnit4;
+using CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 using Saveable;
 using Saveable.Extensions;
 
-namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
+namespace CardCleaner.Tests.Features.SaveSlots.Services.SaveGame;
 
 /// <summary>
 /// Reads the committed save written by the save addon (#172 U4). The fixture holds no CLR type names, so moving the

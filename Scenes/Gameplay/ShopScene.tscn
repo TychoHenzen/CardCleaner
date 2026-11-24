@@ -16,7 +16,7 @@
 [ext_resource type="Script" uid="uid://cnhbpfnxfixnn" path="res://Scripts/Features/Shop/Ui/PricingScreen.cs" id="PricingScreen"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/ShopProgression.cs" id="ShopProgression"]
 [ext_resource type="Script" path="res://Scripts/Features/Shop/Services/OrderingService.cs" id="OrderingService"]
-[ext_resource type="Script" path="res://Scripts/Features/Card/Services/SaveGame/GameSaveService.cs" id="GameSaveService"]
+[ext_resource type="Script" path="res://Scripts/Features/SaveSlots/Services/SaveGame/GameSaveService.cs" id="GameSaveService"]
 [ext_resource type="Script" path="res://Scripts/Features/Pause/Controllers/PauseController.cs" id="PauseController"]
 [ext_resource type="Script" path="res://Scripts/Features/Pause/Components/CursorOwner.cs" id="CursorOwner"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/PauseMenu.tscn" id="PauseMenuScene"]

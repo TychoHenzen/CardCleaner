@@ -8,16 +8,14 @@ using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
-using CardCleaner.Scripts.Features.Card.Services.SaveGame;
+using CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
-using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.Scenes;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 using Godot;
 
-namespace CardCleaner.Tests.Features.Card.Services.SaveGame;
+namespace CardCleaner.Tests.Features.SaveSlots.Services.SaveGame;
 
 /// <summary>
 /// A card's flavor sentence is not saved: it is chosen again from the saved signature and look seed. Real cards of
