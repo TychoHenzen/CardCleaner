@@ -387,15 +387,6 @@ public class CartonStorageTest
         return (holder, camera);
     }
 
-    private static async Task<bool> Until(Func<bool> done, int frames = FallFrames)
-    {
-        for (var i = 0; i < frames; i++)
-        {
-            if (done())
-                return true;
-            await ISceneRunner.SyncPhysicsFrame;
-        }
-
-        return done();
-    }
+    private static Task<bool> Until(Func<bool> done, int frames = FallFrames) =>
+        BoundedWait.SyncPhysicsFramesUntil(done, frames);
 }

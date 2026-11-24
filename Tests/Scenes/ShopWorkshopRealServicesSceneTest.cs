@@ -16,6 +16,7 @@ using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
@@ -122,8 +123,7 @@ public class ShopWorkshopRealServicesSceneTest
 
         button.Interact();
         AssertBool(toggle.Enabled).IsFalse();
-        for (var frame = 0; frame < FirstStepFrameBudget && steps == 0; frame++)
-            await ISceneRunner.SyncProcessFrame;
+        await BoundedWait.ProcessFramesUntil(() => steps != 0, FirstStepFrameBudget);
 
         AssertBool(screen.Visible).IsTrue();
         AssertBool(screen.IsInitialized).IsTrue();

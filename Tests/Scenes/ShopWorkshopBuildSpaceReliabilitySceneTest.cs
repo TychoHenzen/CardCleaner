@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Workshop.Components;
 using CardCleaner.Scripts.Features.Workshop.Models;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using CardCleaner.Tests.TestUtilities;
 
@@ -128,8 +129,7 @@ public class ShopWorkshopBuildSpaceReliabilitySceneTest
     {
         var hallway = _grid.GetNode<Node3D>("Sections/NorthHallway").GlobalPosition;
         _player.GlobalPosition = hallway + Vector3.Up * 1.2f;
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
 
         var cells = _grid.GetUsedCells().Count;
         var withGrid = TypicalQueryMicroseconds();

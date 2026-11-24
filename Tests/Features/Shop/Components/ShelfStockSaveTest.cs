@@ -251,11 +251,7 @@ public class ShelfStockSaveTest
             .Where(container => container.ContentSeed == seed)
             .ToArray();
 
-    private static async Task SettleAsync()
-    {
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
+    private static Task SettleAsync() => BoundedWait.SyncPhysicsFrames(SettleFrames);
 
     private sealed class RecordingLog : ILog
     {

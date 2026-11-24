@@ -27,7 +27,6 @@ public class CardSpawningServiceTest
     private Node3D _cardParent = null!;
     private PackedScene _mockCardScene = null!;
 
-
     [BeforeTest]
     public void Setup()
     {
@@ -55,7 +54,6 @@ public class CardSpawningServiceTest
         // Force _Ready() to be called and wait for dependency resolution
         _service._Ready();
     }
-
 
     [AfterTest]
     public static void TearDown()
@@ -121,7 +119,6 @@ public class CardSpawningServiceTest
         var signature = ((CardController)spawnedCard!).Signature;
         Assertions.AssertThat(signature.Elements).IsEqual(expected.Elements);
     }
-
 
     [TestCase]
     public void TestSpawnCardWithSpecificSignature()

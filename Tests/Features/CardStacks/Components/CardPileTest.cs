@@ -129,8 +129,7 @@ public class CardPileTest
         eye.AddChild(held);
         held.GlobalPosition = new Vector3(0f, CardBundleRules.PileHeight(PileCount), 0f);
 
-        for (var i = 0; i < 3; i++)
-            await ISceneRunner.SyncPhysicsFrame;
+        await BoundedWait.SyncPhysicsFrames(3);
 
         AssertBool(held.IsInsideTree()).IsTrue();
         AssertThat(pile.Count).IsEqual(PileCount);
@@ -240,12 +239,7 @@ public class CardPileTest
     private static bool IsLoose(CardController card) => GodotObject.IsInstanceValid(card) && card.IsInsideTree();
 
     // A face's material is applied a frame after it is dressed (CardShaderRenderer bakes deferred).
-    private static async Task BakeFrames()
-    {
-        var tree = (SceneTree)Engine.GetMainLoop();
-        for (var i = 0; i < 2; i++)
-            await tree.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
-    }
+    private static Task BakeFrames() => BoundedWait.ProcessFrames(2);
 
     // The art texture a face's material draws: its layer at the art layer's index in the template.
     private static Texture2D? ArtOf(CardFace face)
