@@ -6,7 +6,6 @@ using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Hand.Components;
-using CardCleaner.Scripts.Features.Hand.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
@@ -17,11 +16,10 @@ using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Tests.TestUtilities.Helpers;
-using GdUnit4;
 using Godot;
 using NSubstitute;
 
-namespace CardCleaner.Tests.Features.Card.Components;
+namespace CardCleaner.Tests.Features.Hand.Components;
 
 [TestSuite]
 [RequireGodotRuntime]

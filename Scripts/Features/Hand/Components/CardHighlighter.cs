@@ -1,17 +1,12 @@
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Utilities;
-using CardCleaner.Scripts.Features.Card.Controllers;
-using CardCleaner.Scripts.Features.Card.Services;
-using CardCleaner.Scripts.Features.Hand.Components;
+using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Hand.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
-using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Card.Components;
+namespace CardCleaner.Scripts.Features.Hand.Components;
 
 /// <summary>
 ///     The player's hand router: the one place that decides what a left click on an item does (<see cref="IClickRouter"
@@ -88,7 +83,6 @@ public partial class CardHighlighter : Node3D, IDependent, IClickRouter
 
     public override void _PhysicsProcess(double delta)
     {
-        // Update drop preview while preparing drop
         if (CardDropper.IsPreparingDrop) CardDropper.UpdateDropPreview();
 
         // The board drops repeated identical hints, so publishing every frame costs one comparison. While a booster
