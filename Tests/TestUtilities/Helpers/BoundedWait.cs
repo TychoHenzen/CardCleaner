@@ -6,7 +6,9 @@ using Godot;
 namespace CardCleaner.Tests.TestUtilities.Helpers;
 
 // Waits that a headless test cannot hang on. The tick is the process frame and the bound is wall-clock time: a wait
-// counted in physics frames never ends when physics-frame signals stop while the main loop runs.
+// counted in physics frames never ends when physics-frame signals stop while the main loop runs. The frame-count
+// waits (SyncPhysicsFrames, ProcessFramesUntil, SyncPhysicsFramesUntil) have no wall-clock bound; they are the one
+// place a test's frame loop is written, so a bound added here reaches every suite.
 public static class BoundedWait
 {
     public const double DefaultMaxSeconds = 45;
@@ -50,6 +52,33 @@ public static class BoundedWait
         var tree = (SceneTree)Engine.GetMainLoop();
         for (var i = 0; i < count; i++)
             await tree.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+    }
+
+    // Waits count physics frames, one physics_frame signal each, the tick of ISceneRunner.SyncPhysicsFrame. Unlike
+    // PhysicsFrames it has no wall-clock bound: it never ends when physics-frame signals stop.
+    public static async Task SyncPhysicsFrames(int count)
+    {
+        for (var i = 0; i < count; i++)
+            await ISceneRunner.SyncPhysicsFrame;
+    }
+
+    // Waits process frames until done() holds or maxFrames of them have passed, and returns whether done() holds.
+    public static async Task<bool> ProcessFramesUntil(Func<bool> done, int maxFrames)
+    {
+        var tree = (SceneTree)Engine.GetMainLoop();
+        for (var i = 0; i < maxFrames && !done(); i++)
+            await tree.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+
+        return done();
+    }
+
+    // The same with physics frames, one physics_frame signal each, and no wall-clock bound either.
+    public static async Task<bool> SyncPhysicsFramesUntil(Func<bool> done, int maxFrames)
+    {
+        for (var i = 0; i < maxFrames && !done(); i++)
+            await ISceneRunner.SyncPhysicsFrame;
+
+        return done();
     }
 
     // Lets the current frame end, which frees every node queued with QueueFree. A test whose action took a body out
