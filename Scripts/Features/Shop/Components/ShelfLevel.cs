@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Components;
-using CardCleaner.Scripts.Features.Card.Controllers;
-using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Hand.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
@@ -19,8 +17,8 @@ namespace CardCleaner.Scripts.Features.Shop.Components;
 ///     into the next free seat, and a take removes the last one put in. When a body leaves from the middle (a card
 ///     picked up by hand, a load clearing the shelf) the later stock closes up, so the seats stay filled in order. On a
 ///     product shelf every item on the level asks one price (<see cref="ShelfPlacementRule.PriceOnPut" />). As an <see
-///     cref="IItemStore" /> it moves cards, booster packs and booster boxes as records; a cardboard box is no record,
-///     so it goes on and off a rack level as a body (<see cref="TryLock" />).
+///     cref="IItemStore" /> it moves cards, booster packs, booster boxes and cardboard boxes as records; a body that
+///     lands on the board is locked into a seat by <see cref="TryLock" />.
 /// </summary>
 public partial class ShelfLevel : Node3D, IItemStore, IDependent
 {
@@ -159,7 +157,7 @@ public partial class ShelfLevel : Node3D, IItemStore, IDependent
     private int? LevelPrice() => Stock is [var first, ..] ? StockPrices.Of(first) : null;
 
     public StoredItem? Peek() =>
-        Last is { } last && StoredItemBodies.ShapeOf(last) != null ? StoredItemBodies.CurrentRecordOf(last) : null;
+        Last is { } last && StoredItemBodies.IsRecorded(last) ? StoredItemBodies.CurrentRecordOf(last) : null;
 
     public bool CanPut(StoredItem item) => IsVisibleInTree() && CanTake(ShelfPlacementRule.From(item));
 
@@ -185,7 +183,7 @@ public partial class ShelfLevel : Node3D, IItemStore, IDependent
     // with it.
     public StoredItem? TakeLast()
     {
-        if (Last is not { } last || StoredItemBodies.ShapeOf(last) == null || last.GetParent() is not DeckSlot seat)
+        if (Last is not { } last || !StoredItemBodies.IsRecorded(last) || last.GetParent() is not DeckSlot seat)
             return null;
 
         var record = StoredItemBodies.RecordOf(last);

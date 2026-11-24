@@ -6,7 +6,6 @@ using CardCleaner.Scripts.Features.Hand.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
 namespace CardCleaner.Scripts.Features.Hand.Components;
@@ -91,9 +90,6 @@ internal static class HandClickPlans
                 () => ItemTransfer.ApplyFromHeldBox(fromBox, box, aimed.Store) > 0);
         }
 
-        if (aimed.Store is ShelfLevel level && BoxBodyOnLevel(hand, level, aimed.Part, out var boxPlan))
-            return boxPlan;
-
         var room = RoomFor(hand, aimed.Store);
         var decision = ItemTransfer.Decide(hand, room, aimed.Store, aimed.Kind, aimed.Part, shift);
         if (decision.Move == TransferMove.PickUp)
@@ -107,44 +103,6 @@ internal static class HandClickPlans
         var item = decision.Move == TransferMove.Put ? hand.Peek() : aimed.Store.Peek();
         return Plan(TransferPrompt.For(decision, item, aimed.Kind, aimed.Store.Count),
             () => ItemTransfer.Apply(decision, hand, aimed.Store) > 0);
-    }
-
-    // A cardboard box is no record, so it goes on and off a rack level as a body: a shut box in front goes onto free
-    // space, and a box in stock comes off whole. True when the click concerns such a box, with its plan (null when the
-    // hand cannot take it).
-    // ASSUMPTION (Low): the transfer rule's records cannot carry a cardboard box, which a rack level holds, so a shut
-    // box moves as a body and every other item as a record.
-    private static bool BoxBodyOnLevel(IHand hand, ShelfLevel level, AimPart part, out ClickPlan? plan)
-    {
-        var boxName = CardContainerKindText.NameOf(CardContainerKind.Box);
-        plan = null;
-        if (part == AimPart.Space && hand.Front is CardContainer { Kind: CardContainerKind.Box } held)
-        {
-            if (level.CanTake(StockKind.Box))
-                plan = new ClickPlan($"Put the {boxName} here", () => PutBoxOn(hand, held, level));
-            return true;
-        }
-
-        if (part != AimPart.Stock || level.Last is not CardContainer { Kind: CardContainerKind.Box } stocked)
-            return false;
-
-        if (hand.CanTake(stocked))
-            plan = new ClickPlan($"Pick up {boxName}", () => hand.TryTake(stocked));
-        return true;
-    }
-
-    // The box must leave the hand before the level can lock it (a held body is no free stock), and the hand-over leaves
-    // it frozen where it hung, so a level that refuses it after all hands it back rather than leaving it in the air.
-    private static bool PutBoxOn(IHand hand, CardContainer box, ShelfLevel level)
-    {
-        if (!hand.HandOver(box))
-            return false;
-        if (level.TryLock(box))
-            return true;
-
-        if (!hand.TryTake(box))
-            box.Freeze = false;
-        return false;
     }
 
     private static ClickPlan? Trash(IHand hand)

@@ -9,8 +9,8 @@ namespace CardCleaner.Scripts.Features.Hand.Components;
 ///     The player's one hand: cards and containers in the order they were taken, with one front item that every hand
 ///     action applies to (see <see cref="Models.HandItems{T}" /> for the order and capacity rules). Held bodies hang
 ///     under the hand anchor (the player's camera), frozen and on no collision layer. As an <see cref="IItemStore" />
-///     the hand peeks and takes its front item (a card, or a whole booster pack or booster box; a cardboard box is no
-///     record, so the hand then peeks nothing), and a put builds the item's body and takes it in as the front.
+///     the hand peeks and takes its front item (a card, a booster pack, a booster box or a cardboard box, each as its
+///     record), and a put builds the item's body and takes it in as the front.
 /// </summary>
 public interface IHand : IItemStore
 {

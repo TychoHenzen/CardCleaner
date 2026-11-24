@@ -198,10 +198,13 @@ public class ShopOpenBoxStockingSceneTest
         AssertThat(_interaction.Prompt).IsEqual("Put the cardboard box here");
         _leftClick!.Invoke(new MouseActionArgs(true, false));
 
+        // The box leaves the hand as a record and the level builds it again, so the stocked box is a new body.
         AssertInt(_holder.Count).IsEqual(0);
-        AssertBool(target.Level.Stock.Contains(box)).IsTrue();
-        AssertBool(box.IsOpened).IsFalse();
-        AssertBool(box.IsLidOpen).IsFalse();
+        AssertInt(target.Level.Stock.Count).IsEqual(1);
+        var stocked = (CardContainer)target.Level.Stock[0];
+        AssertThat(stocked.Kind).IsEqual(CardContainerKind.Box);
+        AssertBool(stocked.IsOpened).IsFalse();
+        AssertBool(stocked.IsLidOpen).IsFalse();
     }
 
     // Orders the cardboard box, picks it up and opens it with the right button, so it stays in hand with its flaps open.

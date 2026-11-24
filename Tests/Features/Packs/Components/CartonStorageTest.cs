@@ -262,7 +262,8 @@ public class CartonStorageTest
         AssertBool(store.CanPut(card) || store.Put(card)).IsFalse();
         box.SetLidOpen(true, instantly: true);
         AssertBool(store.CanPut(card)).IsTrue();
-        AssertBool(store.Put(new StoredContainer(BoxScene, CardContainerKind.Box, 1, null))).IsFalse();
+        AssertBool(store.CanPut(new StoredBox(BoxScene, 1, null, false))).IsFalse();
+        AssertBool(store.Put(new StoredBox(BoxScene, 1, null, false))).IsFalse();
         AssertThat(store.Count).IsEqual(0);
     }
 

@@ -129,7 +129,7 @@ public partial class Hand : Node3D, IHand, IDependent
 
     // A look at the front item must not draw a container's seed, so Peek reads the record as it stands.
     public StoredItem? Peek() =>
-        !IsOpening && Front is RigidBody3D front && StoredItemBodies.ShapeOf(front) != null
+        !IsOpening && Front is RigidBody3D front && StoredItemBodies.IsRecorded(front)
             ? StoredItemBodies.CurrentRecordOf(front)
             : null;
 
@@ -156,7 +156,7 @@ public partial class Hand : Node3D, IHand, IDependent
     // The front body leaves as its record (a container without a seed draws one now) and is freed.
     public StoredItem? TakeLast()
     {
-        if (IsOpening || Front is not RigidBody3D front || StoredItemBodies.ShapeOf(front) == null)
+        if (IsOpening || Front is not RigidBody3D front || !StoredItemBodies.IsRecorded(front))
             return null;
 
         var record = StoredItemBodies.RecordOf(front);
