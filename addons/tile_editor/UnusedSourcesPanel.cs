@@ -62,6 +62,8 @@ public partial class UnusedSourcesPanel : ScrollContainer
 
     private void RemoveAllUnusedSources()
     {
+        if (_service == null) return;
+
         var sourceIds = _currentUnusedSources.Select(s => s.SourceId).ToList();
         var removed = 0;
         var failed = 0;
@@ -80,6 +82,8 @@ public partial class UnusedSourcesPanel : ScrollContainer
 
     private void OnCompactIdsPressed()
     {
+        if (_service == null) return;
+
         if (_service.AreSourceIdsContiguous())
         {
             var infoDialog = new AcceptDialog
@@ -119,6 +123,8 @@ public partial class UnusedSourcesPanel : ScrollContainer
 
     private void ExecuteCompactIds()
     {
+        if (_service == null) return;
+
         var mapping = _service.CompactAtlasSourceIds();
 
         if (mapping.Count == 0)
@@ -168,6 +174,8 @@ public partial class UnusedSourcesPanel : ScrollContainer
 
     private void OnRemoveDuplicatesPressed()
     {
+        if (_service == null) return;
+
         var duplicateGroups = _service.FindDuplicateSources();
         if (duplicateGroups.Count == 0)
         {
@@ -218,6 +226,8 @@ public partial class UnusedSourcesPanel : ScrollContainer
 
     private void ExecuteRemoveDuplicates()
     {
+        if (_service == null) return;
+
         var removedCount = _service.RemoveDuplicateSources();
 
         if (removedCount == 0)

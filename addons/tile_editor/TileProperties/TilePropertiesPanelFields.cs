@@ -172,7 +172,8 @@ public partial class TilePropertiesPanel
 
     private void PopulateDecorationDensity()
     {
-        var isDecorationLayer = _currentTile!.Layer.ToLowerInvariant() == "decoration";
+        var isDecorationLayer =
+            string.Equals(_currentTile!.Layer, "decoration", StringComparison.OrdinalIgnoreCase);
         _decorationDensityRow!.Visible = isDecorationLayer;
         _decorationDensityField!.Value = _currentTile.DecorationDensity * 100;
     }
@@ -246,7 +247,8 @@ public partial class TilePropertiesPanel
 
     private void UpdateDecorationField()
     {
-        var isDecorationLayer = _currentTile!.Layer.ToLowerInvariant() == "decoration";
+        var isDecorationLayer =
+            string.Equals(_currentTile!.Layer, "decoration", StringComparison.OrdinalIgnoreCase);
         _decorationDensityRow!.Visible = isDecorationLayer;
         _currentTile.DecorationDensity = (float)(_decorationDensityField!.Value / 100.0);
     }
