@@ -5,7 +5,7 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Models;
 
-namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
+namespace CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 
 /// <summary>
 ///     The slot record of one stored item, the way a cardboard box, a deck and a pile keep it: a card (signature, look

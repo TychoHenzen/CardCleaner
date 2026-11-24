@@ -4,14 +4,11 @@ using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
-using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
-using CardCleaner.Scripts.Features.SaveSlots.Services;
 using Godot;
 using Saveable;
-using Saveable.Extensions;
 
-namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
+namespace CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 
 // Names ISaveable (the save file's owner) and ISaveGameCommand (the pause menu's Save button).
 [Service(typeof(ISaveable), typeof(ISaveGameCommand))]

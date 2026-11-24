@@ -7,7 +7,7 @@ using Godot;
 using Saveable;
 using Saveable.Extensions;
 
-namespace CardCleaner.Scripts.Features.Card.Services.SaveGame;
+namespace CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 
 /// <summary>
 ///     Brings a save made before the shop's starting product shelf and storage rack became furniture onto the
