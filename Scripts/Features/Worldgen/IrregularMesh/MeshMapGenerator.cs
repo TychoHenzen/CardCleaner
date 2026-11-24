@@ -44,6 +44,9 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
     /// <summary>
     /// The scanned constructor: every parameter is a registered service, so the container picks it.
     /// </summary>
+    /// <param name="tiles">The tile catalog the terrain is built from.</param>
+    /// <param name="biomes">The biomes the terrain is shaped by.</param>
+    /// <param name="transitionPairs">The tile pairs that may touch.</param>
     /// <param name="solverFactory">Builds the WFC terrain solver the mesh terrain solves with.</param>
     public MeshMapGenerator(
         ITileCatalog tiles,
@@ -54,6 +57,9 @@ public sealed class MeshMapGenerator : IMeshMapGenerator
     {
     }
 
+    /// <param name="tiles">The tile catalog the terrain is built from.</param>
+    /// <param name="biomes">The biomes the terrain is shaped by.</param>
+    /// <param name="transitionPairs">The tile pairs that may touch.</param>
     /// <param name="solverFactory">Builds the WFC terrain solver the mesh terrain solves with.</param>
     /// <param name="rings">Rings of hexes around the mesh centre; more rings make a larger map.</param>
     internal MeshMapGenerator(
