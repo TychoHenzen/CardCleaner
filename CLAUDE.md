@@ -785,11 +785,11 @@ all. New saved state still gets its round-trip test. `LegacyShelfSaveMigration` 
 
 Code is organized by feature under `Scripts/Features/`:
 - **Card/**: Card models, controllers, components, and services (spawning, generation, rarity and flavor text, see
-  Card Rarity and Flavor Text). `CardHighlighter` is the player's hand router (see Moving items: one rule under
-  Container Meshes and Opening); a card on the floor offers no pick-up while the hand is full.
-- **Hand/**: The player's one hand (`Hand`, `IHand`) and the Godot-free rules it and the router use: `HandItems`
-  (order, front item, capacity), `ItemTransfer` (the one move rule), `TakePolicy`, `TransferPrompt` and `HandHints`. See
-  The hand under Container Meshes and Opening.
+  Card Rarity and Flavor Text). A card on the floor offers no pick-up while the hand is full.
+- **Hand/**: The player's one hand (`Hand`, `IHand`), its click router (`CardHighlighter` with `HandClickPlans`, see
+  Moving items: one rule under Container Meshes and Opening) and the Godot-free rules both use: `HandItems` (order,
+  front item, capacity), `ItemTransfer` (the one move rule), `TakePolicy`, `TransferPrompt` and `HandHints`. See The
+  hand under Container Meshes and Opening.
 - **CardStacks/**: Decks and piles, both a `CardBundle` (one `RigidBody3D` in group `card_bundles` that keeps every
   card as a `StoredCard`, in the order they went in, and is an `IItemStore`). A deck is drawn as one block with a strap
   (`CardBundleLook`). `CardBundler` (in `player.tscn`) straps the hand's cards into a deck on V (`card_strap`, at least

@@ -83,7 +83,6 @@ public partial class CardHighlighter : Node3D, IDependent, IClickRouter
 
     public override void _PhysicsProcess(double delta)
     {
-        // Update drop preview while preparing drop
         if (CardDropper.IsPreparingDrop) CardDropper.UpdateDropPreview();
 
         // The board drops repeated identical hints, so publishing every frame costs one comparison. While a booster
