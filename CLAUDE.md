@@ -503,32 +503,35 @@ The baseline records `seams_leaky_or_missing` 0 with an empty `seam_classes` lis
 
 ### Quality Gate
 
-The `quality-guard` pull-request check (`.github/workflows/ci.yml`, dod-guard pinned by SHA) scans the `Scripts` files a
-pull request changes at their merge base and at HEAD. A high finding that exists only at HEAD blocks (for line length
+The `quality-guard` pull-request check (`.github/workflows/ci.yml`, dod-guard pinned by SHA) scans the whole checkout at
+a pull request's merge base and at HEAD, and judges the files the pull request changes. A high finding that exists only
+at HEAD blocks (for line length
 that means above 120 columns, as in `.editorconfig`); a finding that was already there never blocks. New medium findings
 do not block either, but they are counted and listed. The pull request must also remove at least one medium/high finding
 that was already in those files, so medium cleanups count toward the quota. Every pre-existing finding is listed in the
 `quality-gate-report` artifact, linked from the pull request's single quality gate comment, so none of them needs an
 individual fix. Tighten the policy with the flags on the gate step (`--block-on=medium`,
-`--rule-block-on=<rule>:<severity>`, `--fix-medium-high`, `--fix-low`). After moving the dod-guard pin, check that
-`.github/quality-guard-godot.patch` still applies; the job's own patch step fails when it does not.
+`--rule-block-on=<rule>:<severity>`, `--fix-medium-high`, `--fix-low`).
 
-The patch changes two scanner files. `rules-reachability.mjs` counts a class marked `[GlobalClass]` or `[Service]`
-(with or without the `Godot.` prefix or the `Attribute` suffix) as reached, so it is no dead export.
-`rules-duplicate.mjs` treats a C# `using` directive (plain, `static`, `global` or an alias, never a `using var`
-statement) as an import, so files that open with the same namespace list are not reported as a duplicate block.
-`.github/quality-guard-godot.test.mjs` pins both on fixtures and runs in the `quality-guard` job. A patch that changes
-another file needs that file added to the list in the job's patch step and in `.github/quality-gate-cache.mjs`, which
-both check that the patch changed exactly those files.
+`.quality-guard.json` holds the scan settings, and the gate reads it from the merge base, so a pull request cannot
+loosen its own scan. `excludePaths` lists the vendored addons (`asset_manager`, `gdUnit4`, `godot_ai`, `godot_omni`,
+`saveable`), which are other people's code; `tile_editor` is ours and is scanned. `registeredAttributes` lists
+`Service`: the service container builds every `[Service]` class by reflection, so the `dead-export` rule counts those
+classes as reached, as it does Godot's `[GlobalClass]`. review-pr's scanner reads the same file, so CI and reviews judge
+the same code the same way. The gate step's `--exclude=/.dod-guard/` keeps the gate's own dod-guard clone out of the
+scan. The scanner runs unpatched: a Godot case it gets wrong is fixed in dod-guard, and then the pin moves.
 
-Run the same gate locally with `node .github/quality-gate-local.mjs [--base=<sha>]` on the committed head before pushing a
-change under `Scripts/`. It reads the dod-guard pin, root and block-on setting from the `quality-guard` job in
-`.github/workflows/ci.yml`, keeps a clone of that pin in the system temp directory, applies
-`.github/quality-guard-godot.patch`, and writes `reports/quality-gate-report.md`. The gate diffs a base against HEAD, so
-the command refuses a dirty working tree: commit or revert first. `.github/quality-gate-parse.mjs` reads `ci.yml`,
-`.github/quality-gate-cache.mjs` keeps the clone (it resets and reapplies the patched files on every run, so a stale or
-hand-edited cache is repaired), and `.github/quality-gate-local.test.mjs` pins the reading of `ci.yml` and runs in the
-`quality-guard` job.
+`.github/quality-guard-godot.test.mjs` runs the pinned scanner on fixtures in the `quality-guard` job. It checks that
+`[GlobalClass]` and `[Service]` classes are reached, so they are no dead exports, and that C# `using` directives count
+as imports, so files that open with the same namespace list are not reported as a duplicate block.
+
+Run the same gate locally with `node .github/quality-gate-local.mjs [--base=<sha>]` on the committed head before
+pushing. It reads the dod-guard pin, `--exclude` flags and block-on setting from the `quality-guard` job in
+`.github/workflows/ci.yml`, keeps a clone of that pin in the system temp directory, and writes
+`reports/quality-gate-report.md`. The gate diffs a base against HEAD, so the command refuses a dirty working tree:
+commit or revert first. `.github/quality-gate-parse.mjs` reads `ci.yml`, `.github/quality-gate-cache.mjs` keeps the
+clone (a hand-edited clone fails the run by name), and `.github/quality-gate-local.test.mjs` pins the reading of
+`ci.yml` and runs in the `quality-guard` job.
 
 ### Card Signature System
 

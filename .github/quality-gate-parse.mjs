@@ -1,4 +1,4 @@
-// Pure readers for the local quality gate: the pin, root and block level
+// Pure readers for the local quality gate: the pin, excludes and block level
 // come from .github/workflows/ci.yml, so the local run and the workflow
 // cannot drift apart silently.
 const JOB_HEADER = "  quality-guard:";
@@ -6,6 +6,7 @@ const JOB_KEY = /^  [a-z][\w-]*:$/;
 const STEP_START = /^      - /;
 const PIN_STEP = /^      - name: .*dod-guard quality-guard gate[ \t]*$/m;
 const SHA = /^[0-9a-f]{40}$/;
+const EXCLUDE = /--exclude=(\S+)/g;
 
 function qualityGuardJob(ciText) {
   const lines = ciText.split(/\r?\n/);
@@ -52,7 +53,7 @@ function runOf(steps) {
   );
   if (!step) throw new Error("ci.yml quality-guard job has no gate step");
   return {
-    root: fieldOf(step, /--root=(\S+)/, "root"),
+    excludes: [...step.matchAll(EXCLUDE)].map((match) => match[1]),
     blockOn: fieldOf(step, /--block-on=(\S+)/, "block-on"),
   };
 }
@@ -62,10 +63,10 @@ export function parseGate(ciText) {
   return { ...pinOf(steps), ...runOf(steps) };
 }
 
-export function gateArgv({ base, root, blockOn, report }) {
+export function gateArgv({ base, excludes, blockOn, report }) {
   return [
     `--base=${base}`,
-    `--root=${root}`,
+    ...excludes.map((fragment) => `--exclude=${fragment}`),
     `--block-on=${blockOn}`,
     `--report=${report}`,
   ];
