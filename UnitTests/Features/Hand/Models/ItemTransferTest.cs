@@ -157,6 +157,27 @@ public class ItemTransferTest
     }
 
     [TestCase]
+    public static void ACardboardBoxRecordMovesOnAndOffALevelThroughTheOneRule()
+    {
+        var shutBox = new StoredBox("res://Scenes/Shop/Items/CardboardBox.tscn", 5UL, null, false);
+        var hand = new ListStore(item => item is StoredBox, 1, [shutBox]);
+        var rack = new ListStore(_ => true, 2);
+
+        var put = ItemTransfer.Decide(hand, 0, rack, StoreKind.ShelfLevel, AimPart.Space, shift: false);
+
+        AssertThat(put).IsEqual(new TransferDecision(TransferMove.Put, 1));
+        AssertThat(ItemTransfer.Apply(put, hand, rack)).IsEqual(1);
+        AssertThat(rack.Peek()).IsEqual(shutBox);
+
+        var emptyHand = new ListStore(item => item is StoredBox, 1);
+        var take = ItemTransfer.Decide(emptyHand, 1, rack, StoreKind.ShelfLevel, AimPart.Stock, shift: false);
+
+        AssertThat(take).IsEqual(new TransferDecision(TransferMove.TakeOne, 1));
+        AssertThat(ItemTransfer.Apply(take, emptyHand, rack)).IsEqual(1);
+        AssertThat(emptyHand.Peek()).IsEqual(shutBox);
+    }
+
+    [TestCase]
     public static void AClickOnNothingWithAHeldOpenBoxSetsItsLastItemDownWhileItHoldsAny()
     {
         AssertThat(ItemTransfer.DecideFromHeldBoxOntoNothing(new PickingStore(Card(1))))

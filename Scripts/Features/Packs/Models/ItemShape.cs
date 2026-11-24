@@ -5,5 +5,6 @@ public enum ItemShape
 {
     Card,
     Booster,
-    Pack
+    Pack,
+    Box
 }

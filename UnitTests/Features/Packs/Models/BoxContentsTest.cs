@@ -14,6 +14,16 @@ public class BoxContentsTest
         new("res://Scenes/Shop/Items/Booster.tscn", CardContainerKind.Booster, 12UL, 40);
 
     [TestCase]
+    public static void ACardboardBoxNeverFitsInsideACardboardBox()
+    {
+        var empty = BoxContents.Empty(CartonSpace.Packer());
+        var box = new StoredBox("res://Scenes/Shop/Items/CardboardBox.tscn", null, null, false);
+
+        AssertThat(empty.HasRoomFor(ItemShape.Box)).IsFalse();
+        AssertThat(empty.With(box)).IsNull();
+    }
+
+    [TestCase]
     public static void TakingTheLastItemLeavesTheRestWhereTheyLay()
     {
         var contents = Contents(BoosterBox, Card(1), Booster);

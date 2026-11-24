@@ -63,6 +63,7 @@ public static class ShelfPlacementRule
         return item switch
         {
             StoredCard => StockKind.Card,
+            StoredBox => StockKind.Box,
             StoredContainer container => From(container.Kind),
             _ => throw new ArgumentOutOfRangeException(nameof(item), item, "Unknown stored item.")
         };

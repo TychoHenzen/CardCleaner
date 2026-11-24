@@ -1,3 +1,4 @@
+using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Models;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
@@ -26,6 +27,16 @@ public class ShelfPlacementRuleTest
 
         foreach (var (shelf, stock, expected) in table)
             AssertThat(ShelfPlacementRule.Accepts(shelf, stock)).IsEqual(expected);
+    }
+
+    [TestCase]
+    public static void ACardboardBoxRecordIsBoxStock()
+    {
+        var box = new StoredBox("res://Scenes/Shop/Items/CardboardBox.tscn", null, null, false);
+
+        AssertThat(ShelfPlacementRule.From(box)).IsEqual(StockKind.Box);
+        AssertThat(ShelfPlacementRule.Accepts(ShelfKind.StorageRack, ShelfPlacementRule.From(box))).IsTrue();
+        AssertThat(ShelfPlacementRule.Accepts(ShelfKind.ProductShelf, ShelfPlacementRule.From(box))).IsFalse();
     }
 
     [TestCase]
