@@ -2,7 +2,6 @@ using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.CardStacks.Components;
 using CardCleaner.Scripts.Features.CardStacks.Models;
-using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Hand.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
@@ -10,7 +9,7 @@ using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 
-namespace CardCleaner.Scripts.Features.Card.Components;
+namespace CardCleaner.Scripts.Features.Hand.Components;
 
 /// <summary>
 ///     What a left click on an item does, for every target the hand router claims. A store (a shelf board, a pile or
