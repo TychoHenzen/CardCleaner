@@ -65,7 +65,7 @@ public class OptionsSlotIsolationTest
         try
         {
             applier.Apply(loaded, _window);
-            applier.ApplyMouse(loaded, settings);
+            OptionsApplier.ApplyMouse(loaded, settings);
         }
         finally
         {

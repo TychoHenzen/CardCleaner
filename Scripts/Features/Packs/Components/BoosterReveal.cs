@@ -76,7 +76,7 @@ internal sealed class BoosterReveal
 
         _time += delta;
         PoseWrapper();
-        if (Released < _signatures.Count && _time >= _plan.ReleaseAt(Released))
+        if (Released < _signatures.Count && _time >= BoosterRevealPlan.ReleaseAt(Released))
             Release();
 
         if (_intoHandAt < 0f)
@@ -126,8 +126,9 @@ internal sealed class BoosterReveal
         if (!GodotObject.IsInstanceValid(_wrapper))
             return;
 
-        _wrapper.Transform = _from.InterpolateWith(Presented, OpeningTime.Ease(_plan.PresentProgress(_time)));
-        var tear = _plan.TearProgress(_time);
+        _wrapper.Transform = _from.InterpolateWith(
+            Presented, OpeningTime.Ease(BoosterRevealPlan.PresentProgress(_time)));
+        var tear = BoosterRevealPlan.TearProgress(_time);
         foreach (var part in _parts)
             part.Pose(tear);
 
@@ -161,7 +162,7 @@ internal sealed class BoosterReveal
             if (!StillOurs(_cards[i]))
                 continue;
 
-            var rise = OpeningTime.Ease(_plan.RiseProgress(i, _time));
+            var rise = OpeningTime.Ease(BoosterRevealPlan.RiseProgress(i, _time));
             _cards[i].Transform = CardStart.InterpolateWith(RevealFan.Pose(i, _signatures.Count), rise);
         }
     }
