@@ -189,7 +189,8 @@ public class CompiledAtlasTileSetAndCacheTest : CompiledAtlasLoaderTestBase
 
                 foreach (var coords in options.EnumerateArray())
                 {
-                    var atlasCoords = new Vector2I(coords.GetProperty("x").GetInt32(), coords.GetProperty("y").GetInt32());
+                    var atlasCoords = new Vector2I(
+                        coords.GetProperty("x").GetInt32(), coords.GetProperty("y").GetInt32());
                     if (atlasCoords.X >= 0 && atlasCoords.Y >= 0)
                         yield return atlasCoords;
                 }

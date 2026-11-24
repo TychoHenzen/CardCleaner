@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using CardCleaner.Tests.TestUtilities;
 using GdUnit4;
-using Godot;
 
 namespace CardCleaner.Tests.Core;
 
@@ -19,17 +19,16 @@ namespace CardCleaner.Tests.Core;
 public class CoreDeckbuilderBoundaryTest
 {
     private const string ScriptsRoot = "res://Scripts";
-    private const string DeckbuilderFolder = "Features/Deckbuilder/";
-    private const string CoreFolder = "Core/";
+    private const string DeckbuilderFolder = "Scripts/Features/Deckbuilder/";
+    private const string CoreFolder = "Scripts/Core/";
 
     private static readonly Regex DeckbuilderNamespace = new(@"\bFeatures\.Deckbuilder\b", RegexOptions.Compiled);
 
     [TestCase]
     public static void CoreFilesNameNoDeckbuilderType()
     {
-        var root = ProjectSettings.GlobalizePath(ScriptsRoot);
-        var sources = Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories)
-            .Select(path => (Folder: RelativePath(root, path), Source: File.ReadAllText(path)))
+        var sources = SourceScan.CsFiles(ScriptsRoot)
+            .Select(path => (Folder: SourceScan.RelativePath(path), Source: File.ReadAllText(path)))
             .ToList();
         var deckbuilderTypes = sources
             .Where(file => file.Folder.StartsWith(DeckbuilderFolder, StringComparison.Ordinal))
@@ -42,14 +41,12 @@ public class CoreDeckbuilderBoundaryTest
             .SelectMany(file => DeckbuilderViolations(file.Folder, file.Source, deckbuilderTypes));
 
         // A scan that found no Core file or no Deckbuilder type passes trivially, so the guard must have seen both.
+        // The tile loading types left Core, so the scan must now count them as Deckbuilder types.
         AssertThat(coreFiles).IsNotEmpty();
-        AssertThat(deckbuilderTypes).Contains("GridMapGenerator");
+        AssertThat(deckbuilderTypes).Contains("GridMapGenerator", "TileRegistry", "TileDataLoader");
 
         // Joined into one string so a failure names every offending file, not just how many there are.
         AssertThat(string.Join(System.Environment.NewLine, violations)).IsEmpty();
-
-        // The tile loading types left Core, so the scan must now count them as Deckbuilder types.
-        AssertThat(deckbuilderTypes).Contains("TileRegistry", "TileDataLoader");
     }
 
     [TestCase]
@@ -97,7 +94,4 @@ public class CoreDeckbuilderBoundaryTest
         foreach (var name in typeUse.Matches(code).Select(match => match.Value).Distinct())
             yield return $"{folder} names the Deckbuilder type {name}";
     }
-
-    private static string RelativePath(string root, string path) =>
-        Path.GetRelativePath(root, path).Replace('\\', '/');
 }
