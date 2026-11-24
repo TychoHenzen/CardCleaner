@@ -242,6 +242,10 @@ The project uses `.editorconfig` for code style enforcement with Godot-specific 
   - CA2000/CA1816 relaxed (Godot manages node lifecycle)
   - CA1031 lenient (game code exception handling)
 - **Tests/Addons**: Tests have relaxed null checking; addons folder has all analyzers disabled
+- **Warnings**: the build prints none, and the CI steps `Build with analyzers` and `Build the unit test project` run
+  with `-warnaserror`, so a pull request that adds a compiler or analyzer warning fails with an error that names it
+  (check with `dotnet build --no-incremental -warnaserror`, because an incremental build that compiles nothing prints
+  no warnings); fix the warning, or suppress it beside the code with a `SuppressMessage` or `#pragma` that says why.
 
 ### [Tool] Attribute Usage
 
