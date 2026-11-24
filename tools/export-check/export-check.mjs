@@ -24,7 +24,8 @@ export const TEST_MARKERS = ['CardCleaner.Tests', 'GdUnit4', 'FsCheck', 'NSubsti
 /** The folders addons/export_guard/export_policy.gd skips, as a pck file table stores them (no res:// prefix). */
 export const SKIPPED_FOLDERS = ['Tests/', 'UnitTests/', 'addons/gdUnit4/', 'addons/godot_ai/', 'addons/export_guard/'];
 
-/** The one file of a skipped folder an exported game still holds: the empty node that stands in for the helper autoload. */
+/** The one file of a skipped folder an exported game still holds: the empty node that stands in for the helper
+ * autoload. */
 export const STUB_PATH = 'addons/godot_ai/runtime/game_helper.gd';
 export const STUB_MAX_BYTES = 64;
 
@@ -32,7 +33,8 @@ export const STUB_MAX_BYTES = 64;
  * file in a skipped folder may stay in the pck. Its source may not: the largest stand-in allowed is this many bytes. */
 export const CS_STAND_IN_MAX_BYTES = 16;
 
-/** Problems in a publish folder: `files` are its relative paths with `/`, `gameDllText` is CardCleaner.dll as latin1. */
+/** Problems in a publish folder: `files` are its relative paths with `/`, `gameDllText` is CardCleaner.dll as
+ * latin1. */
 export function checkPublish({ files, gameDllText }) {
   const problems = [];
   for (const file of files.filter((f) => f.toLowerCase().endsWith('.dll')).sort()) {
@@ -137,7 +139,9 @@ function main(argv) {
       const given = rest.find((a) => a.startsWith('--dir='))?.slice('--dir='.length);
       const dir = given ?? publishToScratch();
       const files = listFiles(dir);
-      const gameDllText = files.includes('CardCleaner.dll') ? readFileSync(path.join(dir, 'CardCleaner.dll')).toString('latin1') : '';
+      const gameDllText = files.includes('CardCleaner.dll')
+        ? readFileSync(path.join(dir, 'CardCleaner.dll')).toString('latin1')
+        : '';
       return report(checkPublish({ files, gameDllText }), `${files.length} files in ${dir}`);
     }
     if (command === 'pck' && rest[0]) {
