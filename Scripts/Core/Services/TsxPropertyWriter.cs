@@ -33,11 +33,12 @@ public class TsxProperty
     }
 
     // Factory methods for type-safe property creation
-    public static TsxProperty String(string name, string value) => new(name, "string", value);
-    public static TsxProperty Int(string name, int value) => new(name, "int", value.ToString());
-    public static TsxProperty Float(string name, float value) =>
+    public static TsxProperty FromString(string name, string value) => new(name, "string", value);
+    public static TsxProperty FromInt(string name, int value) => new(name, "int", value.ToString());
+    public static TsxProperty FromFloat(string name, float value) =>
         new(name, "float", value.ToString(System.Globalization.CultureInfo.InvariantCulture));
-    public static TsxProperty Bool(string name, bool value) => new(name, "bool", value.ToString().ToLowerInvariant());
+    public static TsxProperty FromBool(string name, bool value) =>
+        new(name, "bool", value.ToString().ToLowerInvariant());
 
     /// <summary>
     /// Creates a property with a custom enum type (string storage).

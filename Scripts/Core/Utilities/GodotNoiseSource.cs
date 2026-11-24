@@ -1,9 +1,13 @@
+using System.Diagnostics.CodeAnalysis;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 
 namespace CardCleaner.Scripts.Core.Utilities;
 
 /// <summary>FastNoiseLite behind INoiseSource. Create is a stateless static factory on the class.</summary>
+[SuppressMessage("Reliability", "CA1001:Types that own disposable fields should be disposable",
+    Justification = "FastNoiseLite is a RefCounted: Godot frees it when the managed wrapper is collected, " +
+                    "and callers hold the source as INoiseSource, which has no Dispose.")]
 internal sealed class GodotNoiseSource : INoiseSource
 {
     private readonly FastNoiseLite _noise;

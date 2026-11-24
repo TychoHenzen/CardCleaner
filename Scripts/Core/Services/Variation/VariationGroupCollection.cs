@@ -1,10 +1,14 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CardCleaner.Scripts.Core.Services;
 
 /// <summary>
 /// Collection of variation groups with O(1) lookup by base name or tile ID.
 /// </summary>
+[SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix",
+    Justification = "A keyed lookup of variation groups with its own AddGroup and Clear API; it is not an " +
+                    "ICollection, and nothing treats it as one.")]
 public class VariationGroupCollection
 {
     private readonly Dictionary<string, VariationGroup> _groupsByBase = new();
