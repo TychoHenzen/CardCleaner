@@ -60,7 +60,7 @@ internal static class DependencyBaseline
     }
 
     /// <summary>
-    /// The four lists are optional as a group: none present means a numbers-only file (Lists null); some present
+    /// The six lists are optional as a group: none present means a numbers-only file (Lists null); some present
     /// without all of them, or one that is not an array of strings, is malformed.
     /// </summary>
     private static (NamedLists? Lists, string? Failure) ReadLists(string path, System.Text.Json.JsonElement root)
@@ -181,7 +181,7 @@ internal static class DependencyBaseline
         before.Except(after, StringComparer.Ordinal).Any() || after.Except(before, StringComparer.Ordinal).Any();
 
     /// <summary>
-    /// Writes the numbers in GatedNumbers.Fields order, then the four class lists in NamedLists.Fields order, each
+    /// Writes the numbers in GatedNumbers.Fields order, then the six class lists in NamedLists.Fields order, each
     /// list sorted ordinally. Internal so the fixture suite can record a baseline file.
     /// </summary>
     internal static void Write(string path, GatedNumbers numbers, NamedLists lists)

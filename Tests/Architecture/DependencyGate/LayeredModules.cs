@@ -47,9 +47,9 @@ internal static class LayeredModules
     }
 
     /// <summary>
-    /// Anchors by layer name; a middle module by its id and its class with the highest intra-module degree.
+    /// Anchors by layer name; a middle or UI module by its id and its class with the highest intra-module degree.
     /// </summary>
-    private static SortedDictionary<string, string> Names(ClassGraph graph, SortedDictionary<string, string> module,
+    internal static SortedDictionary<string, string> Names(ClassGraph graph, SortedDictionary<string, string> module,
         SortedDictionary<string, Layer> moduleLayer, SortedSet<string> clustered)
     {
         var degree = new SortedDictionary<string, double>(StringComparer.Ordinal);
