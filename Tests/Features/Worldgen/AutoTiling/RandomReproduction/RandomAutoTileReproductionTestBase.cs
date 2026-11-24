@@ -11,6 +11,7 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.RandomReproduction;
 /// <summary>
 ///     Shared fixture for the RandomAutoTileReproductionTest scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class RandomAutoTileReproductionTestBase
 {
     protected const string TransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";

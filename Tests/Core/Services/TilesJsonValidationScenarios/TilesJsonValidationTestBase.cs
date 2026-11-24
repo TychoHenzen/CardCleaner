@@ -9,6 +9,7 @@ namespace CardCleaner.Tests.Core.Services.TilesJsonValidationScenarios;
 /// <summary>
 ///     Shared tiles.json document and TileRegistry fixture for the tiles.json validation scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class TilesJsonValidationTestBase
 {
     protected const string TilesJsonPath = "res://Data/Tiles/tiles.json";

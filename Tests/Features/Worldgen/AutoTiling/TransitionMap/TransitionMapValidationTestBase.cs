@@ -10,6 +10,7 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.TransitionMap;
 /// <summary>
 ///     Shared fixture for the TransitionMapValidationTest scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class TransitionMapValidationTestBase
 {
     protected const string TransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";

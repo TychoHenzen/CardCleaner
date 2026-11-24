@@ -9,6 +9,7 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.CompiledResolver;
 /// <summary>
 ///     Shared fixture for the CompiledTransitionResolverTest scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class CompiledTransitionResolverTestBase
 {
     protected CompiledTransitionResolver _resolver = null!;

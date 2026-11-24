@@ -11,6 +11,7 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.BlackTile;
 /// <summary>
 ///     Shared fixture for the BlackTileReproductionTest scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class BlackTileReproductionTestBase
 {
     protected const string TransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";

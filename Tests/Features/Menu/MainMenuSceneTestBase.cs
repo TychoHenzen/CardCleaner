@@ -20,6 +20,7 @@ namespace CardCleaner.Tests.Features.Menu;
 /// throw-away user:// file. ChangeScene and Quit are replaced with recorders. The teardown restores the audio buses
 /// and the window size.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class MainMenuSceneTestBase
 {
     protected const string ScenePath = "res://Scenes/UI/MainMenu.tscn";
