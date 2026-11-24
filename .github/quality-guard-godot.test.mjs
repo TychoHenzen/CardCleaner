@@ -29,8 +29,9 @@ const [
   import(moduleAt("lib/exclusion-config.mjs")),
 ]);
 
-// This repository's own .quality-guard.json, which the CI gate and review-pr read too. It registers [Service],
-// because the service container builds those classes by reflection and nothing else references them.
+// This repository's own .quality-guard.json, which the CI gate and review-pr
+// read too. It registers [Service], because the service container builds
+// those classes by reflection and nothing else references them.
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const { registeredAttributes } = loadRepoConfig(repoRoot);
 assert.deepEqual(registeredAttributes, ["Service"]);
