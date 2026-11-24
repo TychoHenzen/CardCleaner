@@ -24,7 +24,7 @@ public class ConnectivityConstraint : IWfcConstraint, IEntropyInvalidator
     public int CorridorTolerance { get; set; } = 1;
 
     /// <summary>Enables proactive corridor forcing between disconnected regions.</summary>
-    public bool EnableProactiveCorridors { get; set; } = false;
+    public bool EnableProactiveCorridors { get; set; }
 
     public ConnectivityConstraint(PassabilityGraph graph, Func<string, bool> isPassable)
     {
