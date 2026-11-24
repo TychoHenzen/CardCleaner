@@ -8,14 +8,8 @@ using System.Text.Json;
 namespace CardCleaner.Tests.Architecture.DependencyGate;
 
 /// <summary>
-/// The ratchet over Tests/Architecture/dependency-baseline.json (#240, #299). The measured numbers are compared with
-/// the baseline in priority order (GatedNumbers.Fields) and the first number that differs decides: if it went up the
-/// gate fails naming it; if it went down the step is accepted, a rise in a lower-priority number with it, and the gate
-/// fails until the baseline is re-recorded with the update switch; if no number differs the gate passes. The switch
-/// writes the baseline when the deciding number went down, or when no number differs but the class lists are missing
-/// or changed (record-only); it never writes after a refused rise. A missing or malformed baseline fails with its
-/// path, switch or not. The class-name lists (NamedLists) never fail the gate: they join the failure text of the number
-/// they explain and are printed as note lines.
+/// The ratchet over Tests/Architecture/dependency-baseline.json (#240, #299): the first measured number that differs
+/// from the baseline, in GatedNumbers.Fields order, decides. The rules are in CLAUDE.md under Dependency Gate.
 /// </summary>
 internal static class DependencyBaseline
 {
@@ -49,9 +43,9 @@ internal static class DependencyBaseline
                         null);
             }
 
-            var (lists, listFailure) = ReadLists(path, document.RootElement);
-            if (listFailure is not null) return new BaselineReadResult(null, listFailure, null);
-            return new BaselineReadResult(GatedNumbers.FromValues(values), null, lists);
+            var lists = ReadLists(path, document.RootElement);
+            if (lists.Failure is not null) return new BaselineReadResult(null, lists.Failure, null);
+            return new BaselineReadResult(GatedNumbers.FromValues(values), null, lists.Lists);
         }
         catch (Exception e) when (e is JsonException or InvalidOperationException or IOException)
         {
@@ -63,13 +57,14 @@ internal static class DependencyBaseline
     /// The six lists are optional as a group: none present means a numbers-only file (Lists null); some present
     /// without all of them, or one that is not an array of strings, is malformed.
     /// </summary>
-    private static (NamedLists? Lists, string? Failure) ReadLists(string path, System.Text.Json.JsonElement root)
+    private static ListsRead ReadLists(string path, JsonElement root)
     {
         var names = NamedLists.Fields.Select(f => f.Name).ToList();
-        if (!names.Any(n => root.TryGetProperty(n, out _))) return (null, null);
+        if (!names.Any(n => root.TryGetProperty(n, out _))) return new ListsRead(null, null);
 
         var absent = names.FirstOrDefault(n => !root.TryGetProperty(n, out _));
-        if (absent is not null) return (null, $"dependency baseline {path} is malformed: no list {absent}");
+        if (absent is not null)
+            return new ListsRead(null, $"dependency baseline {path} is malformed: no list {absent}");
 
         var items = new List<IReadOnlyList<string>>();
         foreach (var name in names)
@@ -77,12 +72,15 @@ internal static class DependencyBaseline
             var element = root.GetProperty(name);
             if (element.ValueKind != JsonValueKind.Array ||
                 element.EnumerateArray().Any(e => e.ValueKind != JsonValueKind.String))
-                return (null, $"dependency baseline {path} is malformed: list {name} is not an array of strings");
+                return new ListsRead(
+                    null, $"dependency baseline {path} is malformed: list {name} is not an array of strings");
             items.Add(element.EnumerateArray().Select(e => e.GetString()!).ToList());
         }
 
-        return (NamedLists.FromItems(items), null);
+        return new ListsRead(NamedLists.FromItems(items), null);
     }
+
+    private sealed record ListsRead(NamedLists? Lists, string? Failure);
 
     /// <summary>One diff per number that differs from its baseline, in priority order (GatedNumbers.Fields).</summary>
     public static List<NumberDiff> Compare(GatedNumbers baseline, GatedNumbers measured) =>
