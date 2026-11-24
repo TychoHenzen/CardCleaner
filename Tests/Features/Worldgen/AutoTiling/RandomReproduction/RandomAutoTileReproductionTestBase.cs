@@ -16,6 +16,8 @@ public abstract class RandomAutoTileReproductionTestBase
 {
     protected const string TransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";
 
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
+
     protected TileRegistry _registry = null!;
 
     protected CompiledTransitionResolver _resolver = null!;
@@ -32,8 +34,7 @@ public abstract class RandomAutoTileReproductionTestBase
         if (File.Exists(transitionPath))
         {
             var json = File.ReadAllText(transitionPath);
-            _transitionMap = JsonSerializer.Deserialize<CompiledTransitionMap>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            _transitionMap = JsonSerializer.Deserialize<CompiledTransitionMap>(json, JsonOptions);
         }
     }
 }

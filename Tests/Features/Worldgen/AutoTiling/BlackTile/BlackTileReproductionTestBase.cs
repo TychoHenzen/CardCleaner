@@ -18,6 +18,8 @@ public abstract class BlackTileReproductionTestBase
 
     protected const int CompiledAtlasSourceId = 0;
 
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
+
     protected TileRegistry _registry = null!;
 
     protected CompiledTransitionResolver _resolver = null!;
@@ -37,8 +39,7 @@ public abstract class BlackTileReproductionTestBase
         if (File.Exists(transitionPath))
         {
             var json = File.ReadAllText(transitionPath);
-            _transitionMap = JsonSerializer.Deserialize<CompiledTransitionMap>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            _transitionMap = JsonSerializer.Deserialize<CompiledTransitionMap>(json, JsonOptions);
         }
     }
 }
