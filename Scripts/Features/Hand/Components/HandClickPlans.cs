@@ -61,10 +61,11 @@ internal static class HandClickPlans
     /// </summary>
     public static int ShiftTakes(IHand hand, IInteractable? target, Vector3 point)
     {
-        if (target == null || HeldOpenBox(hand) != null || StoreAt(target, point) is not { } aimed)
+        if (target == null || StoreAt(target, point) is not { } aimed)
             return 0;
 
-        var decision = ItemTransfer.Decide(hand, RoomFor(hand, aimed.Store), aimed.Store, aimed.Kind, aimed.Part, true);
+        var decision = ItemTransfer.Decide(SourceOf(hand), RoomFor(hand, aimed.Store), aimed.Store, aimed.Kind,
+            aimed.Part, true);
         return decision.Move == TransferMove.TakeMany ? decision.Count : 0;
     }
 
@@ -82,16 +83,9 @@ internal static class HandClickPlans
 
     private static ClickPlan? Store(IHand hand, IInteractable target, Aimed aimed, bool shift)
     {
-        // An open cardboard box in front is the source: a click stocks its last item the store takes.
-        if (HeldOpenBox(hand) is { } box)
-        {
-            var fromBox = ItemTransfer.DecideFromHeldBox(box, aimed.Store, aimed.Kind);
-            return Plan(TransferPrompt.For(fromBox, box.PeekLast(aimed.Store.CanPut), aimed.Kind, aimed.Store.Count),
-                () => ItemTransfer.ApplyFromHeldBox(fromBox, box, aimed.Store) > 0);
-        }
-
-        var room = RoomFor(hand, aimed.Store);
-        var decision = ItemTransfer.Decide(hand, room, aimed.Store, aimed.Kind, aimed.Part, shift);
+        var source = SourceOf(hand);
+        var decision = ItemTransfer.Decide(source, RoomFor(hand, aimed.Store), aimed.Store, aimed.Kind, aimed.Part,
+            shift);
         if (decision.Move == TransferMove.PickUp)
         {
             return target is CardContainer container && hand.CanTake(container)
@@ -100,9 +94,9 @@ internal static class HandClickPlans
                 : null;
         }
 
-        var item = decision.Move == TransferMove.Put ? hand.Peek() : aimed.Store.Peek();
+        var item = decision.Move == TransferMove.Put ? ItemTransfer.NextToPut(source, aimed.Store) : aimed.Store.Peek();
         return Plan(TransferPrompt.For(decision, item, aimed.Kind, aimed.Store.Count),
-            () => ItemTransfer.Apply(decision, hand, aimed.Store) > 0);
+            () => ItemTransfer.Apply(decision, source, aimed.Store) > 0);
     }
 
     private static ClickPlan? Trash(IHand hand)
@@ -118,6 +112,9 @@ internal static class HandClickPlans
     // boxes takes one.
     private static int RoomFor(IHand hand, IItemStore store) =>
         store.Peek() is { } next ? hand.RoomFor(next) : hand.Room;
+
+    // What a click takes from: the open cardboard box in front, else the hand itself.
+    private static IItemStore SourceOf(IHand hand) => HeldOpenBox(hand) ?? (IItemStore)hand;
 
     // The store of the open cardboard box in front, which is then the source of a click.
     private static CartonStorage? HeldOpenBox(IHand hand) =>
