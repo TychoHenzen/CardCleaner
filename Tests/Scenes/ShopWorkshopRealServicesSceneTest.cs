@@ -1,8 +1,9 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Services;

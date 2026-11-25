@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
-using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen;
