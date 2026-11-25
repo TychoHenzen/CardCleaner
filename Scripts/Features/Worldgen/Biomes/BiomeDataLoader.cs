@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 
 namespace CardCleaner.Scripts.Features.Worldgen.Biomes;
 
