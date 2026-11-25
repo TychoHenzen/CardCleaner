@@ -38,7 +38,8 @@ public class GameSessionPacingTest : GameSessionServiceTestBase
         AssertThat(_service.CurrentState).IsEqual(SessionState.Exploring);
 
         _service.ReportStepShown();
-        await BoundedWait.ProcessFramesUntil(() => moves > 1 || _service.CurrentState != SessionState.Exploring, FrameBudget);
+        await BoundedWait.ProcessFramesUntil(
+            () => moves > 1 || _service.CurrentState != SessionState.Exploring, FrameBudget);
         AssertBool(moves > 1 || _service.CurrentState != SessionState.Exploring)
             .OverrideFailureMessage("The session did not resume after the view's report")
             .IsTrue();
