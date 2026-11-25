@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const scannerArgument = process.argv.find((arg) =>
   arg.startsWith("--scanner-root="),
@@ -13,14 +13,28 @@ const scannerRoot = resolve(
 );
 const moduleAt = (relativePath) =>
   pathToFileURL(resolve(scannerRoot, relativePath)).href;
-const [{ checkReachability }, { strip }, { lineIndex }, { buildConfig }, { checkDuplication }] =
-  await Promise.all([
-    import(moduleAt("lib/rules-reachability.mjs")),
-    import(moduleAt("lib/strip.mjs")),
-    import(moduleAt("lib/offsets.mjs")),
-    import(moduleAt("lib/config.mjs")),
-    import(moduleAt("lib/rules-duplicate.mjs")),
-  ]);
+const [
+  { checkReachability },
+  { strip },
+  { lineIndex },
+  { buildConfig },
+  { checkDuplication },
+  { loadRepoConfig },
+] = await Promise.all([
+  import(moduleAt("lib/rules-reachability.mjs")),
+  import(moduleAt("lib/strip.mjs")),
+  import(moduleAt("lib/offsets.mjs")),
+  import(moduleAt("lib/config.mjs")),
+  import(moduleAt("lib/rules-duplicate.mjs")),
+  import(moduleAt("lib/exclusion-config.mjs")),
+]);
+
+// This repository's own .quality-guard.json, which the CI gate and review-pr
+// read too. It registers [Service], because the service container builds
+// those classes by reflection and nothing else references them.
+const repoRoot = fileURLToPath(new URL("..", import.meta.url));
+const { registeredAttributes } = loadRepoConfig(repoRoot);
+assert.deepEqual(registeredAttributes, ["Service"]);
 
 function fileAt(rel, source, isTest = false) {
   return { rel, source, lang: "cs", isTest };
@@ -35,7 +49,7 @@ function reachabilityFor(files) {
   return checkReachability({
     files,
     scans: new Map(files.map((file) => [file.rel, scanAt(file)])),
-    config: buildConfig(),
+    config: buildConfig({ registeredAttributes }),
   });
 }
 

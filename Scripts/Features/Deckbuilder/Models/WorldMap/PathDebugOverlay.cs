@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using Godot;
 
