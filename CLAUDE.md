@@ -242,6 +242,11 @@ The project uses `.editorconfig` for code style enforcement with Godot-specific 
   - CA2000/CA1816 relaxed (Godot manages node lifecycle)
   - CA1031 lenient (game code exception handling)
 - **Tests/Addons**: Tests have relaxed null checking; addons folder has all analyzers disabled
+- **Unused usings**: the build reports an unused `using` as warning IDE0005 in our own code, because both project
+  files set `GenerateDocumentationFile` (the compiler reports IDE0005 on a command-line build only while it parses XML
+  comments), and `.editorconfig` turns IDE0005 off for the vendored `addons/asset_manager` and `addons/gdUnit4` only;
+  the game project sets `PublishDocumentationFile` to false so no XML file is exported, and the fix is to delete the
+  `using` line that the warning names.
 
 ### [Tool] Attribute Usage
 

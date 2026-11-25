@@ -13,6 +13,7 @@ using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Tests.Features.Packs.Components;
 using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
@@ -42,9 +43,6 @@ public class ShopShelfBoosterOpeningSceneTest
 
     // Half the 1.8 m capsule in Scenes/Components/player.tscn: the body stands on the floor.
     private const float PlayerStandHeight = 0.9f;
-
-    // A booster opens in under two seconds of game time; FastClock runs that in a few dozen physics frames.
-    private const int MostOpeningFrames = 600;
 
     // CardContainer's interaction layer bit (layer 3), which a booster on a shelf keeps.
     private const uint InteractableLayerBit = 4;
@@ -301,8 +299,7 @@ public class ShopShelfBoosterOpeningSceneTest
                     $"layer={booster.CollisionLayer}, mask={booster.CollisionMask}, frozen={booster.Freeze}, " +
                     $"process={booster.ProcessMode}, seeded={booster.ContentSeed != null}")
                 .IsTrue();
-            for (var frame = 0; frame < MostOpeningFrames && _hand.IsOpening; frame++)
-                await PhysicsFrames(1);
+            await ContainerOpeningWait.Until(() => !_hand.IsOpening, "the booster opening in the hand");
         }
 
         AssertBool(_hand.IsOpening).IsFalse();
