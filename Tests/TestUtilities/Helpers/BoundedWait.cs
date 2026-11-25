@@ -5,10 +5,10 @@ using Godot;
 
 namespace CardCleaner.Tests.TestUtilities.Helpers;
 
-// Waits that a headless test cannot hang on. The tick is the process frame and the bound is wall-clock time: a wait
-// counted in physics frames never ends when physics-frame signals stop while the main loop runs. The frame-count
-// waits (SyncPhysicsFrames, ProcessFramesUntil, SyncPhysicsFramesUntil) have no wall-clock bound; they are the one
-// place a test's frame loop is written, so a bound added here reaches every suite.
+// The waits a test uses. Until, Expect and PhysicsFrames cannot hang a headless test: they tick on the process
+// frame and stop at a wall-clock bound, because a wait counted in physics frames never ends when physics-frame
+// signals stop while the main loop runs. ProcessFrames, ForQueuedFrees and the frame-count waits (SyncPhysicsFrames,
+// ProcessFramesUntil, SyncPhysicsFramesUntil) have no wall-clock bound; a bound added to them reaches every suite.
 public static class BoundedWait
 {
     public const double DefaultMaxSeconds = 45;
