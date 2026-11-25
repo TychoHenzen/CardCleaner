@@ -48,6 +48,8 @@ public class ExportPolicyTest
     {
         var enabled = ProjectSettings.GetSetting("editor_plugins/enabled").AsStringArray();
         AssertThat(enabled.Contains(PluginConfig)).IsTrue();
+        // The setting still lists the plugin when its folder is missing, so the config file itself must exist.
+        AssertThat(FileAccess.FileExists(PluginConfig)).IsTrue();
     }
 
     [TestCase]
