@@ -96,7 +96,6 @@ public class IrregularTerrainRendererTest
         AssertThat(_renderer.VariantSeed).IsEqual(99999);
     }
 
-
     [TestCase]
     public void TestShowWireframeCanBeToggled()
     {

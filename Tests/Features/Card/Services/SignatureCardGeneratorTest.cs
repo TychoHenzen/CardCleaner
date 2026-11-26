@@ -47,7 +47,6 @@ public class SignatureCardGeneratorTest
     {
         var signature = new CardSignature(new[] { 0.7f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f });
 
-
         _generator.GenerateCardRenderer(_renderer, signature, null, _template);
 
         // Should have called SetGemEmission for gems with non-zero values
@@ -59,7 +58,6 @@ public class SignatureCardGeneratorTest
     {
         var signature = new CardSignature();
         signature = signature.With(Element.Solidum, 0.8f); // Positive value for element 0
-
 
         _generator.GenerateCardRenderer(_renderer, signature, null, _template);
 
@@ -74,7 +72,6 @@ public class SignatureCardGeneratorTest
     {
         var signature = new CardSignature();
         signature = signature.With(Element.Solidum, -0.8f); // Negative value for element 0
-
 
         _generator.GenerateCardRenderer(_renderer, signature, null, _template);
 
@@ -393,11 +390,9 @@ public class SignatureCardGeneratorTest
         realRenderer.FlavorLabel = new Label3D();
         realRenderer.AddChild(realRenderer.FlavorLabel);
 
-
         Assertions.AddNode(realRenderer);
 
         _generator.GenerateCardRenderer(realRenderer, signature, null, _template);
-
 
         // Verify the expected behavior without relying on custom mock implementations
         Assertions.AssertThat(realRenderer.NameLabel.Text).IsEqual("Rare");

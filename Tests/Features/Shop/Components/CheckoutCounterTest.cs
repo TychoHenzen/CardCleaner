@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -203,8 +204,7 @@ public class CheckoutCounterTest
 
         first.Waiting = false;
         // The counter drops the customer in its _Process, which may run a frame after SyncProcessFrame resolves.
-        for (var frame = 0; frame < MaxProcessFrames && !ReferenceEquals(_counter.Front, second); frame++)
-            await ISceneRunner.SyncProcessFrame;
+        await BoundedWait.ProcessFramesUntil(() => ReferenceEquals(_counter.Front, second), MaxProcessFrames);
 
         AssertThat(ReferenceEquals(_counter.Front, second)).IsTrue();
         AssertThat(_money.Balance).IsEqual(StartingBalance);

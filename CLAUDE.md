@@ -68,6 +68,17 @@ about 0.11 s of game time, so a test that checks an animation stage by stage pas
 Godot instead: it drops the frame sleep that a headless Godot otherwise takes (its low-processor delay, about 6.9 ms, so
 about 145 frames a second), and gdUnit then lost suite starts on every run.
 
+**Waiting on frames.** A test that only waits on frames, for a count or for a condition within a frame budget, calls
+`BoundedWait` (`Tests/TestUtilities/Helpers/BoundedWait.cs`) and writes no loop of its own for it. `Until` and `Expect`
+poll a condition against a wall-clock bound, `PhysicsFrames` waits a count of physics frames against one, and
+`ProcessFrames` waits a count of process frames. `SyncPhysicsFrames`, `ProcessFramesUntil` and `SyncPhysicsFramesUntil`
+count `physics_frame` or `process_frame` signals, the tick of gdUnit's `ISceneRunner.SyncPhysicsFrame` and
+`SyncProcessFrame`, and carry no wall-clock bound; the two `Until` forms stop after a frame budget. A suite may bind a
+count it needs to one name (`Settle()` is `SyncPhysicsFrames(SettleFrames)`). Three kinds of wait stay outside it: a
+single `await ISceneRunner.SyncPhysicsFrame;` or `SyncProcessFrame` in a test body, a loop that does other work on every
+frame (`PlayerWalker.WalkTo` steers the body and tracks its height), and a loop bounded by its own wall-clock budget or
+whose counter a failure message reads.
+
 The vendored gdUnit4 is 6.2.3, which cleans a relative `-rd` report folder correctly: `GdUnitFileAccess.delete_directory`
 resolves the folder to its absolute path before it deletes, so a direct `GdUnitCmdTool.gd` run with a relative `-rd` (as
 `Run-GdUnit.ps1` uses with `-rd reports/ci`) logs no `ERROR: Delete` lines. Without `-rc`, gdUnit keeps the newest 20
@@ -397,7 +408,9 @@ The project uses a custom DI container with no static service state: an instance
   builds once from the registered registry. `CompositionRoot` builds only the registry (`TileCatalogLoad.Load`) and
   the data it registers by instance. `TileCatalogConsumersTest` fails if a file under
   `Scripts/Features/Deckbuilder/Services` or `Scripts/Features/Worldgen/IrregularMesh` names `TileCatalogData`.
-  The compiled atlas is loaded by the stateless
+  The tile loaders (`TileCatalogLoad`, `TileDataLoader`, `TiledTilesetLoader`, `CompiledAtlasLoader`, `TileRegistry` and
+  the TMX, Wang and atlas code behind them) live in `Scripts/Features/Deckbuilder/Tiles/Loading`, so `Scripts/Core`
+  names no Deckbuilder type (`CoreDeckbuilderBoundaryTest`). The compiled atlas is loaded by the stateless
   `TileVisualLoader`, which returns a `TileVisualCatalog` that `TileRegistry` exposes as `Visuals` (UI users read the
   tileset path, atlas flag and `TilesetConfig` there). `AtlasMapping` holds no static cache: `Load` reads its file on
   every call, and `WorldMapComponents` passes the loaded mapping to `TerrainTransitions.Create`. The compiled

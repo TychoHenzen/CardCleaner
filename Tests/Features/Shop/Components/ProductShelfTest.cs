@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -28,7 +29,7 @@ public class ProductShelfTest
         // Away from the origin, where the containers are made, so none lands in a bottom-board slot's trigger on its own.
         _shelf.Position = new Vector3(0, 0, -5);
         AddNode(_shelf);
-        await Frames(SettleFrames);
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
     }
 
     [TestCase]
@@ -156,15 +157,9 @@ public class ProductShelfTest
         return AddNode(GD.Load<PackedScene>(scenePath).Instantiate<CardContainer>());
     }
 
-    private static async Task Frames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
-
     private static async Task Drop(DeckSlot slot, RigidBody3D body)
     {
         slot.Area.EmitSignal(Area3D.SignalName.BodyEntered, body);
-        await Frames(2);
+        await BoundedWait.SyncPhysicsFrames(2);
     }
 }

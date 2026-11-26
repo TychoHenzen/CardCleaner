@@ -121,7 +121,7 @@ public class SaveSlotRoundTripTest
         SaveWorld.Activate(slots, slot);
         scene.Service!.LoadGame();
         // Load defers the card respawn and frees the old containers at the end of the frame: wait for both.
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
     }
 
     /// <summary>The real player, built with the Head, Camera3D and SpotLight3D nodes its _Ready reads.</summary>

@@ -132,7 +132,7 @@ public class HandSaveTest
         });
 
         AssertThrown(() => rig.Scene.Service.Load(save)).IsInstanceOf<FormatException>();
-        await rig.Scene.TwoFrames();
+        await SaveWorld.TwoFrames();
 
         AssertThat(rig.Hand.Items).ContainsExactly(card, booster);
         AssertThat(rig.Hand.FrontIndex).IsEqual(0);
@@ -193,7 +193,7 @@ public class HandSaveTest
         AssertThat(restored.ContentSeed).IsEqual(Seed);
 
         // Restore queue-frees the scene's own box; a frame lets Godot free it before the test ends.
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
     }
 
     [TestCase]
@@ -311,7 +311,7 @@ public class HandSaveTest
         {
             AssertBool(Scene.Service!.ManualSave()).IsTrue();
             Scene.Service.LoadGame();
-            await Scene.TwoFrames();
+            await SaveWorld.TwoFrames();
         }
 
         public List<CardController> LooseCards() =>

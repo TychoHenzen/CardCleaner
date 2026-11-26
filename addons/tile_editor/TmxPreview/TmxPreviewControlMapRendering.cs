@@ -1,5 +1,5 @@
 #if TOOLS
-using CardCleaner.Scripts.Core.Services.TilesetLoading.TmxMapping;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.TilesetLoading.TmxMapping;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 

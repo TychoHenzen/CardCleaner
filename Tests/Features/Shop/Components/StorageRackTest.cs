@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -24,7 +25,7 @@ public class StorageRackTest
     {
         _rack = GD.Load<PackedScene>(StorageRackScene).Instantiate<CardShelf>();
         AddNode(_rack);
-        await Frames(SettleFrames);
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
     }
 
     [TestCase]
@@ -64,15 +65,9 @@ public class StorageRackTest
         AssertThat(_rack.StockedCount).IsEqual(0);
     }
 
-    private static async Task Frames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
-
     private static async Task Drop(DeckSlot slot, RigidBody3D body)
     {
         slot.Area.EmitSignal(Area3D.SignalName.BodyEntered, body);
-        await Frames(2);
+        await BoundedWait.SyncPhysicsFrames(2);
     }
 }

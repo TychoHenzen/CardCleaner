@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CardCleaner.Addons.TileEditor;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Addons.TileEditor;
@@ -38,22 +39,17 @@ public class TileEditorDockHostTest
             }
         };
         AddNode(host);
-        await WaitForFrames(3);
+        await BoundedWait.ProcessFrames(3);
 
         AssertThat(host.Dock).IsNull();
         AssertThat(host.GetChildCount()).IsEqual(0);
 
         host.Visible = true;
-        await WaitForFrames(2);
+        await BoundedWait.ProcessFrames(2);
 
         AssertThat(host.Dock).IsNotNull();
         AssertThat(host.Dock!.GetParent()).IsSame(host);
     }
 
-    private static async Task WaitForFrames(int count)
-    {
-        for (var index = 0; index < count; index++)
-            await ISceneRunner.SyncProcessFrame;
-    }
 }
 #endif

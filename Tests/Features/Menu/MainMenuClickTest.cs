@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Menu.Controllers;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Menu;
@@ -197,7 +198,7 @@ public class MainMenuClickTest : MainMenuSceneTestBase
         await Frame();
     }
 
-    private static async Task Frame() => await ISceneRunner.SyncProcessFrame;
+    private static Task Frame() => BoundedWait.ProcessFrames(1);
 
     private static void Send(InputEvent input)
     {

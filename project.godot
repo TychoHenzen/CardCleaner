@@ -53,7 +53,7 @@ project/assembly_name="CardCleaner"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/godot_omni/plugin.cfg", "res://addons/saveable/plugin.cfg", "res://addons/tile_editor/plugin.cfg", "res://addons/asset_manager/plugin.cfg")
+enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/godot_omni/plugin.cfg", "res://addons/saveable/plugin.cfg", "res://addons/tile_editor/plugin.cfg", "res://addons/asset_manager/plugin.cfg", "res://addons/export_guard/plugin.cfg")
 
 [gdunit4]
 

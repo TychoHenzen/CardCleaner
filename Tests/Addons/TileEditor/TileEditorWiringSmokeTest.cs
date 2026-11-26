@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Addons.TileEditor;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Addons.TileEditor;
@@ -65,7 +66,7 @@ public class TileEditorWiringSmokeTest
             SkipInitialTileLoad = true
         };
         Assertions.AddNode(_dock);
-        await WaitForFrames(2);
+        await BoundedWait.ProcessFrames(2);
 
         var compileButton = _dock.CompileTmxButton;
         var insertButton = _dock.InsertTsxPropsButton;
@@ -75,14 +76,14 @@ public class TileEditorWiringSmokeTest
         Assertions.AssertThat(insertButton!.Text).IsEqual("Insert TSX Props");
 
         compileButton.EmitSignal(Button.SignalName.Pressed);
-        await WaitForFrames(2);
+        await BoundedWait.ProcessFrames(2);
         var failed = FindDescendants<Label>(_dock)
             .Any(label => label.Text.Contains("TMX compilation failed"));
         Assertions.AssertThat(failed).IsTrue();
 
         WriteValidFixture();
         compileButton.EmitSignal(Button.SignalName.Pressed);
-        await WaitForFrames(2);
+        await BoundedWait.ProcessFrames(2);
         var completed = FindDescendants<Label>(_dock)
             .Any(label => label.Text == "TMX compilation complete!");
         Assertions.AssertThat(completed).IsTrue();
@@ -96,7 +97,7 @@ public class TileEditorWiringSmokeTest
         }
 
         insertButton.EmitSignal(Button.SignalName.Pressed);
-        await WaitForFrames(1);
+        await BoundedWait.ProcessFrames(1);
         var inserted = FindDescendants<Label>(_dock)
             .Any(label => label.Text.StartsWith("Inserted properties into"));
         Assertions.AssertThat(inserted).IsTrue();
@@ -129,12 +130,6 @@ public class TileEditorWiringSmokeTest
 
     private string GetFixturePath(string fileName) =>
         Path.Combine(ProjectSettings.GlobalizePath(_fixtureDirectory), fileName);
-
-    private static async Task WaitForFrames(int count)
-    {
-        for (var index = 0; index < count; index++)
-            await ISceneRunner.SyncProcessFrame;
-    }
 
     private static IEnumerable<T> FindDescendants<T>(Node root) where T : Node
     {

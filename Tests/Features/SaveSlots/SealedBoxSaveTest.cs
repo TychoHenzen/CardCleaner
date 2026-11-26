@@ -34,7 +34,7 @@ public class SealedBoxSaveTest
         service.SaveGame();
 
         service.LoadGame();
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
 
         var reloaded = OnlyBox(scene);
         AssertThat(reloaded.ContentSeed).IsEqual(BoxSeed);
@@ -64,7 +64,7 @@ public class SealedBoxSaveTest
         service.SaveGame();
 
         service.LoadGame();
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
 
         var reloaded = OnlyBox(scene);
         AssertBool(reloaded.Storage!.IsFresh).IsFalse();
@@ -83,7 +83,7 @@ public class SealedBoxSaveTest
         service.SaveGame();
 
         service.LoadGame();
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
 
         var reloaded = OnlyBox(scene);
         AssertThat(reloaded.Remaining).IsEqual(512);
@@ -98,7 +98,7 @@ public class SealedBoxSaveTest
         service.SaveGame();
 
         service.LoadGame();
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
 
         var reloaded = OnlyBox(scene);
         AssertBool(reloaded.Storage!.IsFresh).IsFalse();

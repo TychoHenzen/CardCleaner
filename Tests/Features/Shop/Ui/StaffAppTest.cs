@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Ui;
@@ -174,12 +175,9 @@ public class StaffAppTest
 
     // A button's action runs deferred, so the test waits frame by frame until its effect shows. A fixed single
     // frame raced the deferred call on a loaded CI runner.
-    private static async Task WaitUntil(Func<bool> done)
-    {
-        const int FrameLimit = 60;
-        for (var index = 0; index < FrameLimit && !done(); index++)
-            await ISceneRunner.SyncProcessFrame;
-    }
+    private const int FrameLimit = 60;
+
+    private static Task WaitUntil(Func<bool> done) => BoundedWait.ProcessFramesUntil(done, FrameLimit);
 
     private sealed class RecordingLog : ILog
     {

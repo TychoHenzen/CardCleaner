@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -57,11 +58,7 @@ public class IrregularWorldMapScreenSessionTest
     [AfterTest]
     public static void Teardown() => TestServices.Reset();
 
-    private static async Task WaitFor(Func<bool> condition)
-    {
-        for (var frame = 0; frame < FrameBudget && !condition(); frame++)
-            await ISceneRunner.SyncProcessFrame;
-    }
+    private static Task WaitFor(Func<bool> condition) => BoundedWait.ProcessFramesUntil(condition, FrameBudget);
 
     [TestCase]
     public async Task ASessionTheScreenDidNotStartLeavesItEmpty()
