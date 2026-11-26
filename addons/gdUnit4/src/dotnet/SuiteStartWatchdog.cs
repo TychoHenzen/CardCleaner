@@ -1,5 +1,5 @@
 // Project patch to the vendored gdUnit4 addon (issue 448). Keep it, and its call in GdUnit4CSharpApi.ExecuteAsync,
-// when the addon is updated; CLAUDE.md names it and SuiteStartGuardTest fails without it.
+// when the addon is updated; docs/VENDORED_ADDONS.md names it and SuiteStartGuardTest fails without it.
 #pragma warning disable IDE1006
 namespace gdUnit4.addons.gdUnit4.src.dotnet;
 #pragma warning restore IDE1006
@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 ///     </para>
 ///     <para>
 ///         The last attempt is awaited without a bound, so the runner's stall watchdog still reports a suite that
-///         never starts. CLAUDE.md names this patch and SuiteStartGuardTest keeps it in place.
+///         never starts. docs/VENDORED_ADDONS.md names this patch and SuiteStartGuardTest keeps it in place.
 ///     </para>
 /// </summary>
 public static class SuiteStartWatchdog

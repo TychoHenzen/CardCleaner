@@ -21,8 +21,8 @@ namespace CardCleaner.Scripts.Features.CardStacks.Components;
 public partial class PileLook : Node3D, IDependent
 {
     /// <summary>A pile draws only its newest this many cards; older ones lie inside the mound.</summary>
-    // About 0.65 ms a frame per pile, whatever its size (PileFrameCostProbe, see CLAUDE.md). ASSUMPTION (Medium): a
-    // shop holds only a few piles; nothing caps the count, and 9 piles take over a third of a 60 fps frame.
+    // About 0.65 ms a frame per pile, whatever its size (PileFrameCostProbe, see docs/FEATURES.md). ASSUMPTION
+    // (Medium): a shop holds only a few piles; nothing caps the count, and 9 piles take over a third of a 60 fps frame.
     public const int FacesShown = 64;
 
     // The mound sits a little inside the dome the cards lie on, so it never shows through them.
