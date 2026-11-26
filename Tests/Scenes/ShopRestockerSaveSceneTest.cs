@@ -101,8 +101,7 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
 
         using (FastClock.Start())
         {
-            for (var i = 0; i < IdleFrames; i++)
-                await ISceneRunner.SyncPhysicsFrame;
+            await BoundedWait.SyncPhysicsFrames(IdleFrames);
         }
 
         AssertBool(_rig.Restocker.Visible).IsFalse();

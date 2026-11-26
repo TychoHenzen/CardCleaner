@@ -12,7 +12,6 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 
-
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.GameSessionScenarios;
 
 /// <summary>
@@ -82,19 +81,6 @@ public abstract class GameSessionServiceTestBase
     }
 
     protected static IMapGenerator CreateFastMapGenerator() => new FastMapGenerator();
-
-    /// <summary>
-    ///     Advances process frames until the condition holds or the frame budget is spent.
-    /// </summary>
-    protected async Task WaitForFrames(Func<bool> done, int maxFrames)
-    {
-        var frameCount = 0;
-        while (!done() && frameCount < maxFrames)
-        {
-            await _service.ToSignal(_service.GetTree(), SceneTree.SignalName.ProcessFrame);
-            frameCount++;
-        }
-    }
 
     private sealed class FastMapGenerator : IMapGenerator
     {

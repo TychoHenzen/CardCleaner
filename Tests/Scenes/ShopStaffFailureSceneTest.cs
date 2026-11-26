@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using StaffApp = CardCleaner.Scripts.Features.Shop.Ui.StaffApp;
 using FakeCheckoutCustomer = CardCleaner.Tests.Features.Shop.FakeCheckoutCustomer;
@@ -132,15 +133,13 @@ public class ShopStaffFailureSceneTest
         var tree = (SceneTree)Engine.GetMainLoop();
         tree.Paused = true;
 
-        for (var i = 0; i < ClaimSteps; i++)
-            await ISceneRunner.SyncProcessFrame;
+        await BoundedWait.ProcessFrames(ClaimSteps);
 
         AssertBool(_counter.IsClaimed).IsFalse();
 
         // The same shop claims the customer on its next frame once the tree runs again.
         tree.Paused = false;
-        for (var i = 0; i < ClaimSteps; i++)
-            await ISceneRunner.SyncProcessFrame;
+        await BoundedWait.ProcessFrames(ClaimSteps);
 
         AssertBool(_counter.IsClaimed).IsTrue();
     }

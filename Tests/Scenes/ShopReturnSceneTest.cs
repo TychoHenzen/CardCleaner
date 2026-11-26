@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Portal.Components;
 using CardCleaner.Scripts.Features.Portal.Models;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using CardCleaner.Tests.TestUtilities;
 
@@ -69,8 +70,7 @@ public class ShopReturnSceneTest
         await _rig.Hold(ShopSeamRig.Special());
         await _rig.MovePlayer(_workshop.GlobalPosition + NearTheReturn);
         await _rig.MovePlayer(_workshop.GlobalPosition + InTheReturnDoorway);
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
 
         AssertThat(_return.CrossingCount).IsEqual(1);
         AssertThat(_rig.Seam.CrossingCount).IsEqual(0);
@@ -83,8 +83,7 @@ public class ShopReturnSceneTest
         await _rig.MovePlayer(ShopSeamRig.BackofficeMiddle);
         await _rig.Hold(ShopSeamRig.Special());
         await _rig.MovePlayer(ShopSeamRig.InTheDoorway);
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
 
         AssertThat(_rig.Seam.CrossingCount).IsEqual(1);
         AssertThat(_return.CrossingCount).IsEqual(0);

@@ -193,7 +193,6 @@ public class ShelfUnpackTest
         return AddNode(shelf);
     }
 
-
     private CardContainer MakeContainer(string scenePath, ulong seed, Node3D? parent = null)
     {
         var container = GD.Load<PackedScene>(scenePath).Instantiate<CardContainer>();

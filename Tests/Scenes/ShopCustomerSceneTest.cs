@@ -10,6 +10,7 @@ using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using static CardCleaner.Tests.Scenes.ShopCustomerRig;
 
@@ -187,10 +188,7 @@ public class ShopCustomerSceneTest
     {
         _rig.StockBooster();
         var customer = _rig.Spawner.SpawnNow()!;
-        for (var i = 0; i < 30; i++)
-        {
-            await ISceneRunner.SyncPhysicsFrame;
-        }
+        await BoundedWait.SyncPhysicsFrames(30);
 
         AssertBool(Gone(customer)).IsFalse();
         AssertBool(XzDistance(customer.GlobalPosition, _rig.Marker("CustomerSpawn")) >= 2.0f).IsTrue();
