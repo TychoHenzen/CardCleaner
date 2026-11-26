@@ -95,7 +95,7 @@ public class ShopShelfBoosterOpeningSceneTest
             .Do(ci => _rightPress = ci.Arg<Action<MouseActionArgs>>());
 
         AddNode(_shop);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
     }
 
     [AfterTest]
@@ -114,7 +114,7 @@ public class ShopShelfBoosterOpeningSceneTest
     public async Task PuttingBoostersOnAShelfWhileHoldingBoostersPutsEachWholeInTheLevelsNextSeat()
     {
         var boosterBox = Order("pack");
-        await PhysicsFrames(1);
+        await BoundedWait.SyncPhysicsFrames(1);
         AssertBool(_hand.TryTake(boosterBox)).IsTrue();
         _rightPress!.Invoke(new MouseActionArgs(true, false));
         _rightPress.Invoke(new MouseActionArgs(false, false));
@@ -137,7 +137,7 @@ public class ShopShelfBoosterOpeningSceneTest
             // Boosters out of an unseeded booster box draw their seed when one is asked for, as the move does.
             var seed = ((CardContainer)_hand.Front!).SeedForSave();
             _leftClick!.Invoke(new MouseActionArgs(true, false));
-            await PhysicsFrames(AimFrames);
+            await BoundedWait.SyncPhysicsFrames(AimFrames);
 
             AssertBool(_player.GlobalPosition.IsEqualApprox(standing))
                 .OverrideFailureMessage($"placing moved the player from {standing} to {_player.GlobalPosition}")
@@ -201,7 +201,7 @@ public class ShopShelfBoosterOpeningSceneTest
     public async Task ABoosterFromABoosterBoxEmptiedIntoTheHandOpensAfterAShelfRound()
     {
         var boosterBox = Order("pack");
-        await PhysicsFrames(1);
+        await BoundedWait.SyncPhysicsFrames(1);
         AssertBool(_hand.TryTake(boosterBox)).IsTrue();
         _rightPress!.Invoke(new MouseActionArgs(true, false));
         _rightPress.Invoke(new MouseActionArgs(false, false));
@@ -212,7 +212,7 @@ public class ShopShelfBoosterOpeningSceneTest
         for (var i = 0; i < ShelfPlacementRule.BoostersPerProductSlot; i++)
         {
             _leftClick!.Invoke(new MouseActionArgs(true, false));
-            await PhysicsFrames(AimFrames);
+            await BoundedWait.SyncPhysicsFrames(AimFrames);
         }
 
         var level = target.Level!;
@@ -224,7 +224,7 @@ public class ShopShelfBoosterOpeningSceneTest
     public async Task ABoosterTheRestockerStockedOpensInTheHand()
     {
         var booster = Order("booster");
-        await PhysicsFrames(1);
+        await BoundedWait.SyncPhysicsFrames(1);
         var (target, _) = TargetOf(FirstSeat);
         var level = target.Level!;
 
@@ -236,7 +236,7 @@ public class ShopShelfBoosterOpeningSceneTest
         var hands = new RestockerHands(restocker, carry);
         AssertBool(hands.Take(booster)).IsTrue();
         AssertBool(hands.Shelve(level)).IsTrue();
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
 
         // The restocker moves the body itself; an ordered booster draws its seed when it leaves the shelf.
         await TakeOffAndOpen(level, level.Seats[0], booster.ContentSeed);
@@ -249,7 +249,7 @@ public class ShopShelfBoosterOpeningSceneTest
         var boosters = new List<CardContainer>();
         for (var i = 0; i < count; i++)
             boosters.Add(Order("booster"));
-        await PhysicsFrames(1);
+        await BoundedWait.SyncPhysicsFrames(1);
         foreach (var booster in boosters)
             AssertBool(_hand.TryTake(booster)).IsTrue();
 
@@ -261,7 +261,7 @@ public class ShopShelfBoosterOpeningSceneTest
                 .OverrideFailureMessage($"click {i + 1} aimed at {Describe(_interaction.Target)}, expected {target.Name}")
                 .IsTrue();
             _leftClick!.Invoke(new MouseActionArgs(true, false));
-            await PhysicsFrames(AimFrames);
+            await BoundedWait.SyncPhysicsFrames(AimFrames);
         }
 
         AssertThat(target.Level!.Count).IsEqual(count);
@@ -289,7 +289,7 @@ public class ShopShelfBoosterOpeningSceneTest
         if (seed is { } expected)
             AssertThat(booster.ContentSeed).IsEqual(expected);
         AssertBool(_hand.SetFront(_hand.Items.ToList().IndexOf(booster))).IsTrue();
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
 
         using (FastClock.Start())
         {
@@ -302,7 +302,7 @@ public class ShopShelfBoosterOpeningSceneTest
                     $"process={booster.ProcessMode}, seeded={booster.ContentSeed != null}")
                 .IsTrue();
             for (var frame = 0; frame < MostOpeningFrames && _hand.IsOpening; frame++)
-                await PhysicsFrames(1);
+                await BoundedWait.SyncPhysicsFrames(1);
         }
 
         AssertBool(_hand.IsOpening).IsFalse();
@@ -340,15 +340,10 @@ public class ShopShelfBoosterOpeningSceneTest
         _player.GlobalPosition = new Vector3(standing.X, PlayerStandHeight, standing.Z);
         _player.Rotation = Vector3.Zero;
         _interaction.Camera!.LookAt(point);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
     }
 
     private static string Describe(IInteractable? target) =>
         target is Node node ? node.Name.ToString() : "nothing";
 
-    private static async Task PhysicsFrames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
 }

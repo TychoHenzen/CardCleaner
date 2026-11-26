@@ -148,8 +148,7 @@ public class ShopWorkshopDeliverySceneTest
         _rig.Terminal.Close();
         // The settle counts physics steps, each still 1/60 s of game time; the fast clock only runs them sooner.
         using var clock = FastClock.Start();
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
 
         var offset = cabinet.GlobalPosition - _rig.Delivery.GlobalPosition;
         AssertBool(cabinet.GlobalBasis.Y.Dot(Vector3.Up) > UprightDot)

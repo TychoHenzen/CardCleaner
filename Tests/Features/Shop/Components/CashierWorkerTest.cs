@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -141,8 +142,7 @@ public class CashierWorkerTest
         tree.Paused = true;
         try
         {
-            for (var i = 0; i < 5; i++)
-                await ISceneRunner.SyncPhysicsFrame;
+            await BoundedWait.SyncPhysicsFrames(5);
 
             AssertThat(_counter.IsClaimed).IsFalse();
             AssertThat(customer.LeaveCount).IsEqual(0);

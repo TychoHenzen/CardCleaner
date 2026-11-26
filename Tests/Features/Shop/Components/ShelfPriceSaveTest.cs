@@ -17,6 +17,7 @@ using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.Scenes;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using GdUnit4;
 using Godot;
 using Saveable;
@@ -176,9 +177,5 @@ public class ShelfPriceSaveTest
         return container;
     }
 
-    private static async Task SettleAsync()
-    {
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
+    private static Task SettleAsync() => BoundedWait.SyncPhysicsFrames(SettleFrames);
 }

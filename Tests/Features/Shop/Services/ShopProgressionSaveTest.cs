@@ -116,13 +116,13 @@ public class ShopProgressionSaveTest
 
         SaveWorld.Activate(slots, "b");
         scene.Service!.LoadGame();
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
         AssertThat(progression.Xp).IsEqual(10);
         AssertThat(progression.Level).IsEqual(1);
 
         SaveWorld.Activate(slots, "a");
         scene.Service!.LoadGame();
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
         AssertThat(progression.Xp).IsEqual(120);
         AssertThat(progression.Level).IsEqual(2);
     }

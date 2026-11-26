@@ -8,6 +8,7 @@ using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -168,11 +169,7 @@ public sealed class ShopExpansionRig
         return box;
     }
 
-    public static async Task SettleAsync()
-    {
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
+    public static Task SettleAsync() => BoundedWait.SyncPhysicsFrames(SettleFrames);
 
     private void RegisterSlot(InMemorySlotFileSystem files)
     {

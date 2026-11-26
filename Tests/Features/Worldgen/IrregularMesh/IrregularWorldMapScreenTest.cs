@@ -70,11 +70,7 @@ public class IrregularWorldMapScreenTest
     [AfterTest]
     public static void Teardown() => TestServices.Reset();
 
-    private static async Task WaitFor(Func<bool> condition)
-    {
-        for (var frame = 0; frame < FrameBudget && !condition(); frame++)
-            await ISceneRunner.SyncProcessFrame;
-    }
+    private static Task WaitFor(Func<bool> condition) => BoundedWait.ProcessFramesUntil(condition, FrameBudget);
 
     private async Task ShowMap()
     {
@@ -244,8 +240,7 @@ public class IrregularWorldMapScreenTest
         _screen.PlayerMoved += (_, _) => moves++;
 
         _screen.Reset();
-        for (var frame = 0; frame < 30; frame++)
-            await ISceneRunner.SyncProcessFrame;
+        await BoundedWait.ProcessFrames(30);
 
         AssertBool(_screen.IsInitialized).IsFalse();
         AssertThat(_screen.Mesh).IsNull();
