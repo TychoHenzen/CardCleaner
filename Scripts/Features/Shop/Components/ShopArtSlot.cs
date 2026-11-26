@@ -103,8 +103,12 @@ public partial class ShopArtSlot : Node3D
     {
         // Only the editor sends these. Saving with the placeholder hidden would store visible = false in the scene.
         if (what == NotificationEditorPreSave)
+        {
             ShowPlaceholder();
-        else if (what == NotificationEditorPostSave)
+            return;
+        }
+
+        if (what == NotificationEditorPostSave)
             SyncPlaceholderWithArt();
     }
 
