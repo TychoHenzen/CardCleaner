@@ -403,7 +403,9 @@ The project uses a custom DI container with no static service state: an instance
   builds once from the registered registry. `CompositionRoot` builds only the registry (`TileCatalogLoad.Load`) and
   the data it registers by instance. `TileCatalogConsumersTest` fails if a file under
   `Scripts/Features/Deckbuilder/Services` or `Scripts/Features/Worldgen/IrregularMesh` names `TileCatalogData`.
-  The compiled atlas is loaded by the stateless
+  The tile loaders (`TileCatalogLoad`, `TileDataLoader`, `TiledTilesetLoader`, `CompiledAtlasLoader`, `TileRegistry` and
+  the TMX, Wang and atlas code behind them) live in `Scripts/Features/Deckbuilder/Tiles/Loading`, so `Scripts/Core`
+  names no Deckbuilder type (`CoreDeckbuilderBoundaryTest`). The compiled atlas is loaded by the stateless
   `TileVisualLoader`, which returns a `TileVisualCatalog` that `TileRegistry` exposes as `Visuals` (UI users read the
   tileset path, atlas flag and `TilesetConfig` there). `AtlasMapping` holds no static cache: `Load` reads its file on
   every call, and `WorldMapComponents` passes the loaded mapping to `TerrainTransitions.Create`. The compiled
@@ -448,13 +450,24 @@ so does every class of a community under 4 classes. Modules are ordered Data, Co
 layer every loop of up to 20 modules takes the order with the fewest up edges, and a bigger loop is ordered greedily
 (the report names it).
 
+The UI layer is also measured from inside (#484, `UiModules`), because the four older numbers see it as one module,
+so no reference between two UI classes can move them. Only the UI classes are clustered, over only the references
+between them, with the same consensus as the middle (omnipresent and loose classes and the 4-class minimum
+included). The clusters are `U<n>` modules, a UI class in no cluster is its own `loose <class>` module, and they
+are ordered on their own. Their up edges and their biggest loop are the gated numbers `ui_up_edges` and
+`ui_biggest_loop`, the last two in the priority order. A reference between two UI modules is never rated as a
+seam: node scripts reach each other through exported node references, and an interface for each would only satisfy
+the gate. These two numbers are not at a floor: they record the hand, shelf, checkout, customer and PC tangle, so
+the ratchet only stops it from growing until work on that tangle lowers them.
+
 The test prints a report (`dependency gate:` lines): counts, the module order, the loose classes, every up edge with
-its class pairs (heaviest first), every loop, and every leaky or missing seam with the concrete classes it crosses.
+its class pairs (heaviest first), every loop, and every leaky or missing seam with the concrete classes it crosses,
+then the UI view (`ui modules`, `ui order`, `ui loose`, `ui up edge` and `ui loop` lines).
 It measures the class graph built once per test run (`RepositoryClassGraph.Shared`, which `SignatureLayerTest` reads
 too). The Daily suite `DependencyGateRepeatabilityTest` builds a second graph on a worker thread at the same time and
 fails if its report differs from the shared graph's; it is Daily because the second Roslyn compilation costs several
-seconds. The gate then ratchets four gated numbers (`up_edges`,
-`biggest_loop`, `seams_leaky_or_missing`, `refs_from_non_ui_to_ui`) against
+seconds. The gate then ratchets six gated numbers (`up_edges`, `biggest_loop`, `seams_leaky_or_missing`,
+`refs_from_non_ui_to_ui`, `ui_up_edges`, `ui_biggest_loop`) against
 `Tests/Architecture/dependency-baseline.json` in that priority order (#299). The label of one seam can flip between
 leaky and missing when Louvain membership changes, so the report still prints both counts but only their sum,
 `seams_leaky_or_missing`, is gated (#278). The first number that differs from its baseline decides; if no number
@@ -471,56 +484,67 @@ CARDCLEANER_UPDATE_DEPENDENCY_BASELINE=1 <godot console exe> --headless --path .
 The switch rewrites the file only when the deciding number went down (it still prints the accepted rises), refuses
 and leaves the file unchanged when the deciding number went up, leaves it untouched when no number differs, and a
 missing or malformed baseline fails with its path whether the switch is set or not and is never written. A first
-baseline is created by committing the file. CI prints the report lines (`Show the dependency gate report` step and
+baseline is created by committing the file, and so is a number the file lacks: add it by hand at the value that
+the failing run's `gated:` line prints, then run the switch once to record its lists (#484). CI prints the report
+lines (`Show the dependency gate report` step and
 the job summary) on every run, pull requests included. Every step of plan v4 (#239) ends with this test green and
 the baseline re-recorded to what the step achieved. The fixture suites beside it
 (`LayerAnchorsTest`, `LouvainClusteringTest`, `ModuleOrderTest`, `SeamRaterTest`, `GateMetricsTest`,
-`ClassGraphExtractorTest`, `SceneLinkReaderTest`, `DependencyBaselineTest`) pin each rule on small graphs.
+`ClassGraphExtractorTest`, `SceneLinkReaderTest`, `DependencyBaselineTest`, `UiModulesTest`) pin each rule on
+small graphs.
 
-The baseline also records four class-name lists behind the gated numbers: `up_edge_pairs` (for `up_edges`),
-`biggest_loop_classes` (for `biggest_loop`), `seam_classes` (for `seams_leaky_or_missing`) and `ui_ref_pairs` (for
-`refs_from_non_ui_to_ui`), each sorted and written as "A -> B" pairs or class names. The lists never fail the gate. When
+The baseline also records six class-name lists behind the gated numbers: `up_edge_pairs` (for `up_edges`),
+`biggest_loop_classes` (for `biggest_loop`), `seam_classes` (for `seams_leaky_or_missing`), `ui_ref_pairs` (for
+`refs_from_non_ui_to_ui`), `ui_up_edge_pairs` (for `ui_up_edges`) and `ui_loop_classes` (for `ui_biggest_loop`),
+each sorted and written as "A -> B" pairs or class names. The lists never fail the gate. When
 a number is refused or lowered, the failure text names the classes joined and left in its list. When no number differs
 but a list changed, the gate passes and prints a `dependency gate:` note with the joined and left classes. The switch
 records the lists when no number differs and they are missing or changed; it still never writes after a refused rise.
 Recovery when a step moves a gated number: run the gate on the base as a control, and try at most three placements of
-the new class before recording a seam. Leaky and missing are already one gated sum (`GateMeasurement.Gated`), so a
+the new class before recording a seam. The UI clusters move with membership as the middle's do (dropping one UI
+class at a time moved `ui_up_edges` by at most 1 and `ui_biggest_loop` by at most 2 in a probe), so a UI number
+that rises with no class of the change in its list is checked on the base first. Leaky and missing are already one
+gated sum (`GateMeasurement.Gated`), so a
 missing-to-leaky relabel is not a rise.
 The Louvain visit order is sorted by a hash of the seed, level and class name, so adding a class no longer reshuffles
 every seed; the total weight and the termination threshold stay global, so stability under every change is not promised.
 
-The baseline records `seams_leaky_or_missing` 0 with an empty `seam_classes` list. The WFC constraint
+The baseline records `seams_leaky_or_missing` 0 with an empty `seam_classes` list, and `ui_up_edges` and
+`ui_biggest_loop` at the values the UI view first measured (#484). The WFC constraint
 `BiomeAffinityConstraint` reads biome strengths through `IBiomeStrengthField` (`Scripts/Features/Worldgen/Wfc`), which
 `BiomeStrengthField` implements.
 
 ### Quality Gate
 
-The `quality-guard` pull-request check (`.github/workflows/ci.yml`, dod-guard pinned by SHA) scans the `Scripts` files a
-pull request changes at their merge base and at HEAD. A high finding that exists only at HEAD blocks (for line length
+The `quality-guard` pull-request check (`.github/workflows/ci.yml`, dod-guard pinned by SHA) scans the whole checkout at
+a pull request's merge base and at HEAD, and judges the files the pull request changes. A high finding that exists only
+at HEAD blocks (for line length
 that means above 120 columns, as in `.editorconfig`); a finding that was already there never blocks. New medium findings
 do not block either, but they are counted and listed. The pull request must also remove at least one medium/high finding
 that was already in those files, so medium cleanups count toward the quota. Every pre-existing finding is listed in the
 `quality-gate-report` artifact, linked from the pull request's single quality gate comment, so none of them needs an
 individual fix. Tighten the policy with the flags on the gate step (`--block-on=medium`,
-`--rule-block-on=<rule>:<severity>`, `--fix-medium-high`, `--fix-low`). After moving the dod-guard pin, check that
-`.github/quality-guard-godot.patch` still applies; the job's own patch step fails when it does not.
+`--rule-block-on=<rule>:<severity>`, `--fix-medium-high`, `--fix-low`).
 
-The patch changes two scanner files. `rules-reachability.mjs` counts a class marked `[GlobalClass]` or `[Service]`
-(with or without the `Godot.` prefix or the `Attribute` suffix) as reached, so it is no dead export.
-`rules-duplicate.mjs` treats a C# `using` directive (plain, `static`, `global` or an alias, never a `using var`
-statement) as an import, so files that open with the same namespace list are not reported as a duplicate block.
-`.github/quality-guard-godot.test.mjs` pins both on fixtures and runs in the `quality-guard` job. A patch that changes
-another file needs that file added to the list in the job's patch step and in `.github/quality-gate-cache.mjs`, which
-both check that the patch changed exactly those files.
+`.quality-guard.json` holds the scan settings, and the gate reads it from the merge base, so a pull request cannot
+loosen its own scan. `excludePaths` lists the vendored addons (`asset_manager`, `gdUnit4`, `godot_ai`, `godot_omni`,
+`saveable`), which are other people's code; `tile_editor` is ours and is scanned. `registeredAttributes` lists
+`Service`: the service container builds every `[Service]` class by reflection, so the `dead-export` rule counts those
+classes as reached, as it does Godot's `[GlobalClass]`. review-pr's scanner reads the same file, so CI and reviews judge
+the same code the same way. The gate step's `--exclude=/.dod-guard/` keeps the gate's own dod-guard clone out of the
+scan. The scanner runs unpatched: a Godot case it gets wrong is fixed in dod-guard, and then the pin moves.
 
-Run the same gate locally with `node .github/quality-gate-local.mjs [--base=<sha>]` on the committed head before pushing a
-change under `Scripts/`. It reads the dod-guard pin, root and block-on setting from the `quality-guard` job in
-`.github/workflows/ci.yml`, keeps a clone of that pin in the system temp directory, applies
-`.github/quality-guard-godot.patch`, and writes `reports/quality-gate-report.md`. The gate diffs a base against HEAD, so
-the command refuses a dirty working tree: commit or revert first. `.github/quality-gate-parse.mjs` reads `ci.yml`,
-`.github/quality-gate-cache.mjs` keeps the clone (it resets and reapplies the patched files on every run, so a stale or
-hand-edited cache is repaired), and `.github/quality-gate-local.test.mjs` pins the reading of `ci.yml` and runs in the
-`quality-guard` job.
+`.github/quality-guard-godot.test.mjs` runs the pinned scanner on fixtures in the `quality-guard` job. It checks that
+`[GlobalClass]` and `[Service]` classes are reached, so they are no dead exports, and that C# `using` directives count
+as imports, so files that open with the same namespace list are not reported as a duplicate block.
+
+Run the same gate locally with `node .github/quality-gate-local.mjs [--base=<sha>]` on the committed head before
+pushing. It reads the dod-guard pin, `--exclude` flags and block-on setting from the `quality-guard` job in
+`.github/workflows/ci.yml`, keeps a clone of that pin in the system temp directory, and writes
+`reports/quality-gate-report.md`. The gate diffs a base against HEAD, so the command refuses a dirty working tree:
+commit or revert first. `.github/quality-gate-parse.mjs` reads `ci.yml`, `.github/quality-gate-cache.mjs` keeps the
+clone (a hand-edited clone fails the run by name), and `.github/quality-gate-local.test.mjs` pins the reading of
+`ci.yml` and runs in the `quality-guard` job.
 
 ### Card Signature System
 

@@ -17,12 +17,14 @@ function refuses(text, pattern) {
   );
 }
 
-// 1. The real workflow yields the pin, the root and the block level.
+// 1. The real workflow yields the pin, the excludes and the block level. The
+// gate takes no --root: it scans the whole checkout, minus its own clone.
 const gate = parseGate(ciText);
 assert.equal(gate.repository, "TychoHenzen/dod-guard");
 assert.match(gate.ref, /^[0-9a-f]{40}$/);
-assert.equal(gate.root, "Scripts");
+assert.deepEqual(gate.excludes, ["/.dod-guard/"]);
 assert.equal(gate.blockOn, "high");
+assert.doesNotMatch(ciText, /--root=/);
 
 // 2. Without the ref line the parser names the missing ref.
 refuses(ciText.replace(/^\s*ref:.*$/m, ""), /ref/);
@@ -48,15 +50,21 @@ assert.throws(
     error.message.includes("x.tmp"),
 );
 
-// 6. The gate arguments keep their order.
+// 6. The gate arguments keep their order, with one --exclude per fragment.
 assert.deepEqual(
   gateArgv({
     base: "abc",
-    root: "Scripts",
+    excludes: ["/.dod-guard/", "/x/"],
     blockOn: "high",
     report: "reports/q.md",
   }),
-  ["--base=abc", "--root=Scripts", "--block-on=high", "--report=reports/q.md"],
+  [
+    "--base=abc",
+    "--exclude=/.dod-guard/",
+    "--exclude=/x/",
+    "--block-on=high",
+    "--report=reports/q.md",
+  ],
 );
 
 console.log("quality-gate-local ok");

@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using CardCleaner.Tests.TestUtilities;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.Session;

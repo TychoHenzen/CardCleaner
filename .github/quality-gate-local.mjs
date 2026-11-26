@@ -1,16 +1,11 @@
 // Local runner for the dod-guard quality gate that the quality-guard CI job
-// runs. quality-gate-parse.mjs reads the pin, root and block level from ci.yml.
+// runs. quality-gate-parse.mjs reads the pin, excludes and block level from
+// ci.yml.
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import {
-  SCRIPTS,
-  applyPatch,
-  ensureCache,
-  fail,
-  git,
-} from "./quality-gate-cache.mjs";
+import { SCRIPTS, ensureCache, fail, git } from "./quality-gate-cache.mjs";
 import { assertClean, gateArgv, parseGate } from "./quality-gate-parse.mjs";
 
 const REPORT = "reports/quality-gate-report.md";
@@ -44,7 +39,6 @@ function main(argv) {
   const gate = parseGate(readFileSync(ciPath, "utf8"));
   const base = baseOf(repo, argv);
   const cache = ensureCache(repo, gate);
-  applyPatch(repo, cache);
   return runGate({ repo, cache, gate, base });
 }
 

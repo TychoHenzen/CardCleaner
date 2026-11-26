@@ -41,6 +41,11 @@ jobs:
       - name: Run the unit tests
         run: dotnet test UnitTests/CardCleaner.UnitTests.csproj --no-build --blame --logger "trx;LogFileName=unit.trx" --results-directory reports/unit
 
+      # The exported game carries no test code and no test package (tools/export-check/README.md). The check publishes
+      # into a scratch folder of its own, so the Debug packages the steps above restored stay put.
+      - name: Check what an export carries
+        run: node tools/export-check/export-check.mjs publish
+
       - name: Upload unit reports
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -175,6 +180,9 @@ jobs:
       - name: Run the e2e session prune fixture
         run: node tools/e2e/e2e.test.mjs
 
+      - name: Run the export check fixture
+        run: node tools/export-check/export-check.test.mjs
+
   dependency-audit:
     name: NuGet vulnerability check
     runs-on: windows-latest
@@ -243,25 +251,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Pinned to the dod-guard commit that ships quality-pr-gate.mjs and quality-pr-gate-comment.mjs.
+      # Pinned to the dod-guard commit that releases quality-guard 0.8.7, the first to read registeredAttributes
+      # from .quality-guard.json. The scanner runs unpatched, the same as review-pr's.
       - name: Check out dod-guard quality-guard gate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: TychoHenzen/dod-guard
-          ref: 28023b82249276c989cb9a642b665a1f219e6644
+          ref: bf6a8a6de57095cd45ec91bfccbb0a958237baa9
           path: .dod-guard
-
-      - name: Apply Godot quality-guard compatibility patch
-        shell: bash
-        run: |
-          set -euo pipefail
-          patch_file="$GITHUB_WORKSPACE/.github/quality-guard-godot.patch"
-          lib="packages/quality-guard/skills/quality-refactor/scripts/lib"
-          # Every file the patch changes, sorted; .github/quality-gate-cache.mjs checks the same list.
-          expected="$(printf '%s\n' "$lib/rules-duplicate.mjs" "$lib/rules-reachability.mjs" | sort)"
-          git -C .dod-guard apply --check --whitespace=error "$patch_file"
-          git -C .dod-guard apply --whitespace=error "$patch_file"
-          test "$(git -C .dod-guard diff --name-only | sort)" = "$expected"
 
       - name: Test Godot quality-guard reachability and duplicate compatibility
         run: node .github/quality-guard-godot.test.mjs --scanner-root=.dod-guard/packages/quality-guard/skills/quality-refactor/scripts
@@ -269,15 +266,17 @@ jobs:
       - name: Test the local quality gate script
         run: node .github/quality-gate-local.test.mjs
 
-      # Blocks high findings this pull request adds to the Scripts files it changes, and asks it to remove at least
-      # one medium/high finding that was already there. Medium findings never block but are counted: new ones are
+      # Blocks high findings this pull request adds to the files it changes, and asks it to remove at least one
+      # medium/high finding that was already there. Medium findings never block but are counted: new ones are
       # listed in the report, and removing existing ones pays the quota. Findings that were already there never
       # block; the full list is the quality-gate-report artifact, referenced from one pull request comment.
+      # The gate scans the whole checkout. Vendored addons and registered attributes come from the merge base's
+      # .quality-guard.json; --exclude keeps the gate's own .dod-guard clone out of the scan.
       # Tighten later with --block-on=medium, or per rule with --rule-block-on=<rule>:medium.
-      - name: Block new findings in changed Scripts files
+      - name: Block new findings in changed files
         run: >-
           node .dod-guard/packages/quality-guard/skills/quality-refactor/scripts/quality-pr-gate.mjs
-          --base=${{ github.event.pull_request.base.sha }} --root=Scripts
+          --base=${{ github.event.pull_request.base.sha }} --exclude=/.dod-guard/
           --block-on=high
           --report=quality-gate-report.md --comment=quality-gate-comment.md
           --report-link=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
