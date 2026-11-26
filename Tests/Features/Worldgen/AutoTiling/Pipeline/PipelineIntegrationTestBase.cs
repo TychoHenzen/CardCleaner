@@ -1,6 +1,7 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 using CardCleaner.Tests.TestUtilities;

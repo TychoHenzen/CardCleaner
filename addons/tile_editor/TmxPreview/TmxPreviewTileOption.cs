@@ -1,6 +1,6 @@
 #if TOOLS
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Core.Services.TilesetLoading;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.TilesetLoading;
 
 namespace CardCleaner.Addons.TileEditor;
 

@@ -1,6 +1,6 @@
 #if TOOLS
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Services.TilesetLoading;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.TilesetLoading;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using Godot;
 
