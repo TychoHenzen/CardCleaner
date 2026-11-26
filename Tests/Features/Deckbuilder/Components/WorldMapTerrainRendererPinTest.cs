@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
@@ -12,7 +11,6 @@ using CardCleaner.Scripts.Features.Deckbuilder.Components.WorldMapTerrainRendere
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using Godot;

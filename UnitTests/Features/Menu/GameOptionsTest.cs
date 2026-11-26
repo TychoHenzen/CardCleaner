@@ -1,5 +1,4 @@
 using CardCleaner.Scripts.Features.Menu.Models;
-using GdUnit4;
 
 namespace CardCleaner.Tests.Features.Menu;
 

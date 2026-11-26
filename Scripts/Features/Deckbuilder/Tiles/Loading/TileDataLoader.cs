@@ -4,7 +4,6 @@ using System.IO;
 using System.Text.Json;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using CardCleaner.Features.Worldgen.AutoTiling;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.TilesetLoading;
 using Godot;

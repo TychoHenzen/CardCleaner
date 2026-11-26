@@ -5,7 +5,6 @@ using CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Tests.Features.SaveSlots.Services;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.SaveSlots;

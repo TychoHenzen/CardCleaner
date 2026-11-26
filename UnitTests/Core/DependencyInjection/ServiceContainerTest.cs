@@ -1,7 +1,6 @@
 ﻿using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Tests.Mocking;
-using GdUnit4;
 
 namespace CardCleaner.Tests.Core.DependencyInjection;
 

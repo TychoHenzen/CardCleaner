@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Shop.Models;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Models;
 

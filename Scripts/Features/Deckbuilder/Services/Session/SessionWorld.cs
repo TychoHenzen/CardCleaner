@@ -1,6 +1,5 @@
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.Session;
 

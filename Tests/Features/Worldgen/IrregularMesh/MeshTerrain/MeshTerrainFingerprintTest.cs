@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using CardCleaner.Tests.TestUtilities;
 using System;
 using System.Linq;

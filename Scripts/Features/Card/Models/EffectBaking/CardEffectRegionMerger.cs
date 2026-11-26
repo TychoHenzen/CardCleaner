@@ -24,7 +24,9 @@ internal sealed class CardEffectRegionMerger
         _width = width;
     }
 
+    /// <param name="regions">The regions; a merged-away one is emptied.</param>
     /// <param name="owner">The region id of each pixel, or -1; kept in step as regions merge.</param>
+    /// <param name="width">The row length of the pixel grid.</param>
     public static void MergeSmallRegions(List<CardEffectRegion> regions, int[] owner, int width)
     {
         new CardEffectRegionMerger(regions, owner, width).MergeAll();

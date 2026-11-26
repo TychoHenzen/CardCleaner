@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CardCleaner.Addons.TileEditor;
 using CardCleaner.Tests.TestUtilities.Helpers;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Addons.TileEditor;

@@ -1,6 +1,5 @@
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Ui;
 

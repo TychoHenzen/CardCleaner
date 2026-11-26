@@ -2,7 +2,6 @@
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Core.Services;

@@ -1,8 +1,6 @@
 using System;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
-using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
-using CardCleaner.Tests.TestUtilities;
 using Godot;
 using Saveable;
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Utilities;
-using GdUnit4;
 
 namespace CardCleaner.Tests.Core.Utilities;
 
