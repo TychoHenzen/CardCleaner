@@ -255,8 +255,21 @@ The project uses `.editorconfig` for code style enforcement with Godot-specific 
 - **Tests/Addons**: Tests have relaxed null checking; addons folder has all analyzers disabled
 - **Warnings**: the build prints none, and the CI steps `Build with analyzers` and `Build the unit test project` run
   with `-warnaserror`, so a pull request that adds a compiler or analyzer warning fails with an error that names it
-  (check with `dotnet build --no-incremental -warnaserror`, because an incremental build that compiles nothing prints
-  no warnings); fix the warning, or suppress it beside the code with a `SuppressMessage` or `#pragma` that says why.
+  (check with the commands below, which build what those two steps build); fix the warning, or suppress it beside the
+  code with a `SuppressMessage` or `#pragma` that says why. Each step builds after a restore of its own and passes
+  `-p:EmitAssetsLogMessages=false`, so a NuGet restore warning (an advisory on a pinned package) stays a warning and
+  fails no build. Locally `--no-incremental` matters: an incremental build that compiles nothing prints no warnings.
+
+  ```bash
+  # Restores the game project too, through the project reference
+  dotnet restore UnitTests/CardCleaner.UnitTests.csproj
+  # Build the unit test project: the unit tests, and the game in Debug through the project reference
+  dotnet build UnitTests/CardCleaner.UnitTests.csproj --no-restore --no-incremental --configuration Debug \
+    -warnaserror -p:EmitAssetsLogMessages=false
+  # Build with analyzers: the game in Release
+  dotnet build CardCleaner.csproj --no-restore --no-incremental --configuration Release \
+    -p:EnableNETAnalyzers=true -p:EnforceCodeStyleInBuild=true -warnaserror -p:EmitAssetsLogMessages=false
+  ```
 
 ### [Tool] Attribute Usage
 
