@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Tiles;
 

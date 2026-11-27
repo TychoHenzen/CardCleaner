@@ -10,7 +10,6 @@ using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.Features.SaveSlots.Services.SaveGame;
 using CardCleaner.Tests.Features.SaveSlots.Services;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.SaveSlots;

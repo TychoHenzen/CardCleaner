@@ -1,6 +1,5 @@
 using System;
 using CardCleaner.Scripts.Core.DependencyInjection;
-using GdUnit4;
 
 namespace CardCleaner.Tests.Core.DependencyInjection;
 

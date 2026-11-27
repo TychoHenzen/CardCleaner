@@ -7,7 +7,6 @@ using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Tests.TestUtilities.Helpers;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Ui;

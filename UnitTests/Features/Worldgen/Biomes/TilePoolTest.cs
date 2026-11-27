@@ -1,7 +1,6 @@
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 

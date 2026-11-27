@@ -8,7 +8,12 @@
         <AnalysisLevel>8.0-recommended</AnalysisLevel>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
-        <NoWarn>$(NoWarn);EnableGenerateDocumentationFile</NoWarn>
+        <!-- A build reports IDE0005 (unused using) only while the compiler parses XML comments. -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <!-- The XML file is only a by-product of that: keep it out of an export. -->
+        <PublishDocumentationFile>false</PublishDocumentationFile>
+        <!-- CS1591 (public member without a comment) is no rule of this project. -->
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <Folder Include="addons\" />

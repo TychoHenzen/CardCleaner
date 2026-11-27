@@ -278,6 +278,10 @@ jobs:
       - name: Test the local quality gate script
         run: node .github/quality-gate-local.test.mjs
 
+      # Every agent session loads CLAUDE.md, so it stays under 16 KB and feature notes go to docs/.
+      - name: Check the CLAUDE.md size and its docs index
+        run: node .github/claude-md-size.mjs
+
       # Blocks high findings this pull request adds to the files it changes, and asks it to remove at least one
       # medium/high finding that was already there. Medium findings never block but are counted: new ones are
       # listed in the report, and removing existing ones pays the quota. Findings that were already there never

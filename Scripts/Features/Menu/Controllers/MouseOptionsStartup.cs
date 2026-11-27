@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Menu.Services;
 using Godot;

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Tests.Core.PropertyTesting;
 using CardCleaner.Tests.Core.PropertyTesting.Generators;
-using FsCheck;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Properties;

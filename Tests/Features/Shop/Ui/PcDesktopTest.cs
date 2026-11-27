@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities.Helpers;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Ui;

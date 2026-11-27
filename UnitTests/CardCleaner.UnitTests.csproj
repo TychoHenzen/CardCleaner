@@ -15,7 +15,10 @@
         <RootNamespace>CardCleaner.Tests</RootNamespace>
         <AnalysisLevel>8.0-recommended</AnalysisLevel>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
-        <NoWarn>$(NoWarn);EnableGenerateDocumentationFile</NoWarn>
+        <!-- A build reports IDE0005 (unused using) only with code-style rules on and XML comments parsed. -->
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />

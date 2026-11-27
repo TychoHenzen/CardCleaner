@@ -8,7 +8,6 @@ using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 using Godot;
 using NSubstitute;
 

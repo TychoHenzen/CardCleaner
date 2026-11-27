@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 
 namespace CardCleaner.Tests.Core;
 

@@ -1,5 +1,4 @@
 #if TOOLS
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Features.Worldgen.AutoTiling;

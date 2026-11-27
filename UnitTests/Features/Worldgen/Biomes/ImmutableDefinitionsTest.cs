@@ -7,7 +7,6 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh.MeshGeneration;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Biomes;
 

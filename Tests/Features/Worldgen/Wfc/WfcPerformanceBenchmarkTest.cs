@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
@@ -230,7 +229,7 @@ public class WfcPerformanceBenchmarkTest
         GD.Print($"  Time per cell: {timePerCell:F3}ms");
 
         // NOTE: Current implementation with full entropy calculation has higher per-cell overhead.
-        // The CLAUDE.md documents that entropy must be calculated using weighted probabilities
+        // docs/WORLDGEN_ARCHITECTURE.md documents that entropy must be calculated using weighted probabilities
         // from constraint evaluation (not simple tile counts), which adds computational cost.
         // Target: under 10ms per cell (allows for constraint evaluation overhead)
         AssertThat(timePerCell).IsLess(10.0);

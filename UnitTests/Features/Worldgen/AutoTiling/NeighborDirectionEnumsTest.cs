@@ -1,5 +1,4 @@
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
-using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Worldgen.AutoTiling;
 

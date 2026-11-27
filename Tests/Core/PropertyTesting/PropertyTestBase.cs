@@ -1,6 +1,5 @@
 using System;
 using FsCheck;
-using GdUnit4;
 
 namespace CardCleaner.Tests.Core.PropertyTesting;
 

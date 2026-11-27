@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Menu.Controllers;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
-using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
