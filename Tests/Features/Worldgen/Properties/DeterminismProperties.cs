@@ -3,7 +3,6 @@ using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Tests.Features.Worldgen.Support;
-using FsCheck;
 using CardCleaner.Scripts.Core.Randomness;
 using Godot;
 

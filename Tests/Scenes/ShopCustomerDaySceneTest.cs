@@ -4,7 +4,6 @@ using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Shop.Customers;
 using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Tests.TestUtilities;
-using Godot;
 using static CardCleaner.Tests.Scenes.ShopCustomerRig;
 
 namespace CardCleaner.Tests.Scenes;

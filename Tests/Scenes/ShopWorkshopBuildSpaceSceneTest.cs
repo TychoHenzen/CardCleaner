@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Workshop.Components;
 using Godot;

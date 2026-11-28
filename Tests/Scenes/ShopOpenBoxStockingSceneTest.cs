@@ -12,6 +12,7 @@ using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Scripts.Features.Shop.Ordering;
 using CardCleaner.Scripts.Features.Shop.Shelves;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using NSubstitute;
 
@@ -80,7 +81,7 @@ public class ShopOpenBoxStockingSceneTest
             .Do(ci => _rightPress = ci.Arg<Action<MouseActionArgs>>());
 
         AddNode(_shop);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
     }
 
     [AfterTest]
@@ -131,7 +132,7 @@ public class ShopOpenBoxStockingSceneTest
         AssertThat(_productShelf.StockedCount).IsEqual(CardContainerLayout.ItemsPerContainer);
         AssertBool(_productShelf.StockedCards.All(c => c is CardContainer { Kind: CardContainerKind.Pack })).IsTrue();
         // The emptied box stays in the hand until the player throws it in a trash can.
-        await PhysicsFrames(1);
+        await BoundedWait.SyncPhysicsFrames(1);
         AssertThat(_holder.Front).IsSame(box);
         AssertThat(box.Remaining).IsEqual(0);
     }
@@ -140,7 +141,7 @@ public class ShopOpenBoxStockingSceneTest
     public async Task EightBoosterPacksPutAnywhereOnALevelStackFourToASeatInOrder()
     {
         var boosterBox = Order("pack");
-        await PhysicsFrames(1);
+        await BoundedWait.SyncPhysicsFrames(1);
         AssertBool(_holder.TryTake(boosterBox)).IsTrue();
         _rightPress!.Invoke(new MouseActionArgs(true, false));
         _rightPress.Invoke(new MouseActionArgs(false, false));
@@ -165,7 +166,7 @@ public class ShopOpenBoxStockingSceneTest
                     $"player={_player.GlobalPosition}")
                 .IsTrue();
             _leftClick!.Invoke(new MouseActionArgs(true, false));
-            await PhysicsFrames(AimFrames);
+            await BoundedWait.SyncPhysicsFrames(AimFrames);
             // A stocked booster once got its collision back while it still hung inside the player's capsule, and
             // the player was pushed out of it toward the shelf.
             AssertBool(_player.GlobalPosition.IsEqualApprox(standing))
@@ -185,7 +186,7 @@ public class ShopOpenBoxStockingSceneTest
     {
         var rack = _shop.GetNode<CardShelf>(StorageRackPath);
         var box = Order("cardboard_box");
-        await PhysicsFrames(1);
+        await BoundedWait.SyncPhysicsFrames(1);
         AssertBool(_holder.TryTake(box)).IsTrue();
         // The upper of the rack's two stocked levels, where no board above stands in the way of a standing aim.
         var target = rack.LevelTargets.OrderByDescending(t => t.GlobalPosition.Y).First();
@@ -207,7 +208,7 @@ public class ShopOpenBoxStockingSceneTest
     private async Task<CardContainer> CarryOpenedBox()
     {
         var container = Order("cardboard_box");
-        await PhysicsFrames(1);
+        await BoundedWait.SyncPhysicsFrames(1);
         AssertBool(_holder.TryTake(container)).IsTrue();
         _rightPress!.Invoke(new MouseActionArgs(true, false));
         _rightPress.Invoke(new MouseActionArgs(false, false));
@@ -245,15 +246,10 @@ public class ShopOpenBoxStockingSceneTest
         _player.GlobalPosition = new Vector3(standing.X, PlayerStandHeight, standing.Z);
         _player.Rotation = Vector3.Zero;
         _interaction.Camera!.LookAt(seat.GlobalPosition);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
     }
 
     private static string Describe(IInteractable? target) =>
         target is Node node ? node.Name.ToString() : "nothing";
 
-    private static async Task PhysicsFrames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
 }

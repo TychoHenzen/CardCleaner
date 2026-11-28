@@ -4,6 +4,7 @@ using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Scripts.Features.Shop.Ordering;
 using CardCleaner.Scripts.Features.Shop.Screens;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -50,11 +51,7 @@ internal sealed class WorkshopDeliveryRig
     public DeliveryMarker ShopDelivery { get; }
 
     /// <summary>Waits two physics frames so the scene's bodies are registered with the physics space.</summary>
-    public static async Task SettleAsync()
-    {
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-    }
+    public static Task SettleAsync() => BoundedWait.SyncPhysicsFrames(2);
 
     /// <summary>The workshop catalog index of an item id, or -1 when the catalog has none.</summary>
     public int IndexOf(string id) => Terminal.Catalog!.Items.ToList().FindIndex(i => i.Id == id);

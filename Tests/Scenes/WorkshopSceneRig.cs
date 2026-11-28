@@ -1,7 +1,5 @@
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
@@ -16,6 +14,7 @@ using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using CardCleaner.Tests.TestUtilities;
 
@@ -113,11 +112,7 @@ public sealed class WorkshopSceneRig
         return card;
     }
 
-    public static async Task Settle()
-    {
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
+    public static Task Settle() => BoundedWait.SyncPhysicsFrames(SettleFrames);
 
     /// <summary>
     /// Waits, at most <see cref="MapFrameBudget"/> frames, for the irregular map to show, and fails when it does not;
@@ -125,8 +120,7 @@ public sealed class WorkshopSceneRig
     /// </summary>
     public async Task WaitForMap()
     {
-        for (var frame = 0; frame < MapFrameBudget && !Screen.IsInitialized; frame++)
-            await ISceneRunner.SyncProcessFrame;
+        await BoundedWait.ProcessFramesUntil(() => Screen.IsInitialized, MapFrameBudget);
 
         AssertBool(Screen.IsInitialized)
             .OverrideFailureMessage($"The irregular map did not show within {MapFrameBudget} frames")

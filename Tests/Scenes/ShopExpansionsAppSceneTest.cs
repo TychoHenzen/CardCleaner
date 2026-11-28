@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Shop.Expansion;
 using CardCleaner.Scripts.Features.Shop.Screens;
 using CardCleaner.Tests.Features.SaveSlots.Services;
-using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;

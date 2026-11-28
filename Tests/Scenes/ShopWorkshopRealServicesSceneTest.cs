@@ -1,12 +1,9 @@
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Components;
-using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Components;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
@@ -17,6 +14,7 @@ using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Scripts.Core.Enumeration;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using IServiceProvider = CardCleaner.Scripts.Core.Interfaces.IServiceProvider;
 
@@ -123,8 +121,7 @@ public class ShopWorkshopRealServicesSceneTest
 
         button.Interact();
         AssertBool(toggle.Enabled).IsFalse();
-        for (var frame = 0; frame < FirstStepFrameBudget && steps == 0; frame++)
-            await ISceneRunner.SyncProcessFrame;
+        await BoundedWait.ProcessFramesUntil(() => steps != 0, FirstStepFrameBudget);
 
         AssertBool(screen.Visible).IsTrue();
         AssertBool(screen.IsInitialized).IsTrue();
