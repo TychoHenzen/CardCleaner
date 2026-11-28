@@ -38,5 +38,11 @@ Code is organized by feature under `Scripts/Features/`:
 - **Conveyor/**: Conveyor belt mechanics
 - **Portal/**: Backoffice wall seam that opens to a doorway and teleports the player (pure rules in `Models/`)
 - **Pause/**: Pause menu controller
+- **Shop/**: The shop game, one folder per topic with that topic's components, rules, services and screens together:
+  `Building/`, `Checkout/`, `Customers/`, `Day/`, `Expansion/`, `Furniture/`, `Ordering/`, `People/`, `Pricing/`,
+  `Progression/`, `Restocking/`, `Screens/`, `Shelves/` and `Staff/`. A topic's namespace is its folder
+  (`CardCleaner.Scripts.Features.Shop.Checkout`) and its tests mirror it under `Tests/Features/Shop` and
+  `UnitTests/Features/Shop`; test helpers that several topics share stay in the root of those folders. A topic folder
+  never takes the name of a class in it (`Restocking`, not `Restocker`): a namespace of that name hides the class.
 
 Core utilities and interfaces are in `Scripts/Core/`.
