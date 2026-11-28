@@ -1,5 +1,4 @@
 using System;
-using Godot;
 using CardCleaner.Scripts.Features.Shop.Day;
 
 namespace CardCleaner.Tests.Features.Shop.Day;

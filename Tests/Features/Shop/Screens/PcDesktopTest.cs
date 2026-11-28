@@ -2,7 +2,7 @@
 // because the Stock app holding those rows is built later; its forwarded click to checkout is covered end to end by
 // Tests/Scenes/ShopStockAppClickPathSceneTest.cs, the equivalent of that removed test.
 using System.Threading.Tasks;
-using GdUnit4;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using CardCleaner.Scripts.Features.Shop.Screens;
 
@@ -164,7 +164,7 @@ public class PcDesktopTest
         desktop.CloseRequested += () => closes++;
 
         Click(overlay, Centre(desktop.GetNode<Button>("Icons/FurnitureIcon")));
-        await WaitForFrames(1);
+        await BoundedWait.ProcessFrames(1);
 
         AssertThat(stockApp.Visible).IsFalse();
         AssertThat(closes).IsEqual(0);
@@ -190,7 +190,7 @@ public class PcDesktopTest
         host.AddChild(overlay);
         overlay.Activate(0f);
 
-        await WaitForFrames(2);
+        await BoundedWait.ProcessFrames(2);
         return (desktop, stockApp, overlay);
     }
 
@@ -210,12 +210,6 @@ public class PcDesktopTest
 
     /// <summary>The SubViewport pixel at the centre of a control.</summary>
     private static Vector2 Centre(Control control) => control.GlobalPosition + control.Size / 2f;
-
-    private static async Task WaitForFrames(int count)
-    {
-        for (var index = 0; index < count; index++)
-            await ISceneRunner.SyncProcessFrame;
-    }
 
     /// <summary>
     ///     Instantiates the desktop scene and gives it two hidden plain Control apps, named StockApp and BillsApp.

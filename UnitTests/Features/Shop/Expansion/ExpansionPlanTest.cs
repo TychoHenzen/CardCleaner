@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Godot;
 using CardCleaner.Scripts.Features.Shop.Expansion;
 
 namespace CardCleaner.Tests.Features.Shop.Expansion;

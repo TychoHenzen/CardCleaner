@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Shop.Checkout;
 using CardCleaner.Scripts.Features.Shop.Day;
-using CardCleaner.Tests.Features.Shop;
 
 namespace CardCleaner.Tests.Features.Shop.Checkout;
 

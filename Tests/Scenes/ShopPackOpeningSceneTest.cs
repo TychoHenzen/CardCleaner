@@ -1,11 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
-using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
@@ -16,7 +11,6 @@ using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Scripts.Features.Shop.Ordering;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
-using NSubstitute;
 using CardCleaner.Tests.TestUtilities;
 using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 

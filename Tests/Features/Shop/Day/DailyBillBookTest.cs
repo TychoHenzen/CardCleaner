@@ -4,7 +4,6 @@ using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Scripts.Features.Shop.Expansion;
 using CardCleaner.Scripts.Features.Shop.Staff;
-using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.Shop.Day;

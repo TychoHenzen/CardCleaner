@@ -1,7 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
-using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Scripts.Features.Shop.Ordering;

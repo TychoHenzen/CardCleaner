@@ -93,13 +93,7 @@ public sealed class ShopCustomerRig : IDisposable
         return rig;
     }
 
-    public static async Task WaitUntil(Func<bool> done)
-    {
-        for (var i = 0; i < FrameBudget && !done(); i++)
-        {
-            await ISceneRunner.SyncPhysicsFrame;
-        }
-    }
+    public static Task WaitUntil(Func<bool> done) => BoundedWait.SyncPhysicsFramesUntil(done, FrameBudget);
 
     public static bool Gone(Customer customer) => !GodotObject.IsInstanceValid(customer);
 

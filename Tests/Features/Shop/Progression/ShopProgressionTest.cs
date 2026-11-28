@@ -1,4 +1,3 @@
-using Godot;
 using CardCleaner.Scripts.Features.Shop.Progression;
 
 namespace CardCleaner.Tests.Features.Shop.Progression;

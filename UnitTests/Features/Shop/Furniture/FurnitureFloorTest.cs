@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Godot;
 using CardCleaner.Scripts.Features.Shop.Expansion;
 using CardCleaner.Scripts.Features.Shop.Furniture;
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 using CardCleaner.Scripts.Features.Shop.Checkout;
 using CardCleaner.Scripts.Features.Shop.People;

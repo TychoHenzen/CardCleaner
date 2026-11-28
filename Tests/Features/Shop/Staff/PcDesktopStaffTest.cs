@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using GdUnit4;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using CardCleaner.Scripts.Features.Shop.Screens;
 
@@ -66,11 +66,11 @@ public class PcDesktopStaffTest
         var (desktop, staffApp, overlay) = await BuildForwardedDesktop();
 
         Click(overlay, Centre(desktop.GetNode<Button>(IconPath)));
-        await WaitForFrames(1);
+        await BoundedWait.ProcessFrames(1);
         AssertThat(staffApp.Visible).IsTrue();
 
         Click(overlay, Centre(desktop.GetNode<Button>("Taskbar/HomeButton")));
-        await WaitForFrames(1);
+        await BoundedWait.ProcessFrames(1);
 
         AssertThat(staffApp.Visible).IsFalse();
     }
@@ -115,7 +115,7 @@ public class PcDesktopStaffTest
         host.AddChild(overlay);
         overlay.Activate(0f);
 
-        await WaitForFrames(2);
+        await BoundedWait.ProcessFrames(2);
         return (desktop, staffApp, overlay);
     }
 
@@ -135,12 +135,6 @@ public class PcDesktopStaffTest
 
     /// <summary>The SubViewport pixel at the centre of a control.</summary>
     private static Vector2 Centre(Control control) => control.GlobalPosition + control.Size / 2f;
-
-    private static async Task WaitForFrames(int count)
-    {
-        for (var index = 0; index < count; index++)
-            await ISceneRunner.SyncProcessFrame;
-    }
 
     private static Control NewApp(string name, Node parent)
     {

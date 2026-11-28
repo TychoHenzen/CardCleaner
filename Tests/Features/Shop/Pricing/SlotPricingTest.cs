@@ -3,7 +3,6 @@ using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
-using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Ordering;
 using CardCleaner.Scripts.Features.Shop.Pricing;
 using CardCleaner.Scripts.Features.Shop.Shelves;

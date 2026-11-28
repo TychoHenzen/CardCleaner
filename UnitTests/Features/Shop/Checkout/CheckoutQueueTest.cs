@@ -1,6 +1,5 @@
 using System.Linq;
 using CardCleaner.Scripts.Features.Shop.Checkout;
-using CardCleaner.Tests.Features.Shop;
 
 namespace CardCleaner.Tests.Features.Shop.Checkout;
 
