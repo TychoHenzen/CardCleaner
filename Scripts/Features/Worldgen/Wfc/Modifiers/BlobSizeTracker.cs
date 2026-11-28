@@ -29,8 +29,8 @@ public class BlobSizeTracker
     /// </summary>
     public void Initialize(int width, int height)
     {
-        if (width <= 0) throw new ArgumentOutOfRangeException(nameof(width));
-        if (height <= 0) throw new ArgumentOutOfRangeException(nameof(height));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
 
         _width = width;
         _cellCount = width * height;
@@ -49,7 +49,7 @@ public class BlobSizeTracker
     /// </summary>
     public void Initialize(int cellCount)
     {
-        if (cellCount <= 0) throw new ArgumentOutOfRangeException(nameof(cellCount));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(cellCount);
 
         _width = 0;
         _cellCount = cellCount;

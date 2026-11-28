@@ -103,7 +103,7 @@ public class WfcTileSelector
     /// Selects a tile with uniform probability (no biome weighting).
     /// Useful for testing or biome-agnostic selection.
     /// </summary>
-    public string? SelectUniform(IReadOnlyCollection<string> validTiles, IRandom rng)
+    public static string? SelectUniform(IReadOnlyCollection<string> validTiles, IRandom rng)
     {
         if (validTiles.Count == 0)
             return null;

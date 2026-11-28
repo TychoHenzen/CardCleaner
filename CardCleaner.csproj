@@ -41,7 +41,7 @@
         <PackageReference Update="Godot.SourceGenerators" Version="4.7.1" />
     </ItemGroup>
     <ItemGroup Condition="'$(ExportBuild)' != 'true'">
-        <PackageReference Include="gdUnit4.analyzers" Version="1.0.0">
+        <PackageReference Include="gdUnit4.analyzers" Version="1.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

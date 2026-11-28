@@ -94,7 +94,7 @@ public class WfcTileSelectorTest
 
         for (var i = 0; i < 100; i++)
         {
-            var result = _selector.SelectUniform(tiles, _rng)!;
+            var result = WfcTileSelector.SelectUniform(tiles, _rng)!;
             counts[result]++;
         }
 

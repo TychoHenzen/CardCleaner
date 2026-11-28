@@ -82,7 +82,7 @@ public partial class OptionsMenuController : Control, IDependent
         _store.Save(options);
         _applier.Apply(options, GetWindow());
         if (_services!.Has<IGameSettings>())
-            _applier.ApplyMouse(options, _services.Get<IGameSettings>());
+            OptionsApplier.ApplyMouse(options, _services.Get<IGameSettings>());
     }
 
     private GameOptions ReadControls()

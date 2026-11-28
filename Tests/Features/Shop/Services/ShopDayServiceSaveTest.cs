@@ -10,8 +10,6 @@ namespace CardCleaner.Tests.Features.Shop.Services;
 [RequireGodotRuntime]
 public class ShopDayServiceSaveTest
 {
-    private const int RentAmount = 40;
-
     [TestCase]
     public void SaveRunsAfterTheDayAdvances()
     {

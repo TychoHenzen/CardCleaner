@@ -11,6 +11,7 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading.CompiledAtlasLoad
 /// <summary>
 ///     Shared atlas fixtures, constants and temporary file helpers for the CompiledAtlasLoader scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class CompiledAtlasLoaderTestBase
 {
     protected const string AtlasMappingPath = "res://Data/CompiledAtlas/atlas_mapping.json";

@@ -13,6 +13,7 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services.GridMapGeneratorScenar
 /// <summary>
 ///     Shared fixture for the grid map generator scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class GridMapGeneratorTestBase
 {
     private protected GridMapGenerationPipeline _generator = null!;

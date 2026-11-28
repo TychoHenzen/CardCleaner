@@ -205,6 +205,9 @@ public partial class BiomePoolPanel : VBoxContainer
         if (!Regex.IsMatch(id, @"^[a-z][a-z0-9_]*$"))
             return new BiomeIdValidation(false, "ID must be snake_case starting with a letter");
 
+        if (_service == null)
+            return new BiomeIdValidation(false, "The tile editor service is not available");
+
         if (_service.GetBiome(id) != null)
             return new BiomeIdValidation(false, $"Biome '{id}' already exists");
 
@@ -213,7 +216,7 @@ public partial class BiomePoolPanel : VBoxContainer
 
     private void OnAddBiomeConfirmed()
     {
-        if (_biomeIdField == null || _biomeDisplayNameField == null) return;
+        if (_service == null || _biomeIdField == null || _biomeDisplayNameField == null) return;
 
         var id = _biomeIdField.Text.Trim();
         var displayName = _biomeDisplayNameField.Text.Trim();

@@ -9,8 +9,12 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.CompiledResolver;
 /// <summary>
 ///     Shared fixture for the CompiledTransitionResolverTest scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class CompiledTransitionResolverTestBase
 {
+    private static readonly System.Text.Json.JsonSerializerOptions JsonOptions =
+        new() { PropertyNameCaseInsensitive = true };
+
     protected CompiledTransitionResolver _resolver = null!;
 
     protected TileRegistry _registry = null!;
@@ -34,7 +38,6 @@ public abstract class CompiledTransitionResolverTestBase
         // Load transition map for direct inspection
         var json = System.IO.File.ReadAllText(
             ProjectSettings.GlobalizePath("res://Data/CompiledAtlas/transition_map.json"));
-        _transitionMap = System.Text.Json.JsonSerializer.Deserialize<CompiledTransitionMap>(json,
-            new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        _transitionMap = System.Text.Json.JsonSerializer.Deserialize<CompiledTransitionMap>(json, JsonOptions)!;
     }
 }
