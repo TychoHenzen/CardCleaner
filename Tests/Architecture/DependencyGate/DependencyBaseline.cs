@@ -9,7 +9,7 @@ namespace CardCleaner.Tests.Architecture.DependencyGate;
 
 /// <summary>
 /// The ratchet over Tests/Architecture/dependency-baseline.json (#240, #299): the first measured number that differs
-/// from the baseline, in GatedNumbers.Fields order, decides. The rules are in CLAUDE.md under Dependency Gate.
+/// from the baseline, in GatedNumbers.Fields order, decides. The rules are in docs/DEPENDENCY_GATE.md.
 /// </summary>
 internal static class DependencyBaseline
 {

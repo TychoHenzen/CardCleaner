@@ -1,6 +1,5 @@
 ﻿using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Services;
-using GdUnit4;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
 using ResidualEnergyModifier = CardCleaner.Scripts.Features.Card.Services.ResidualEnergyModifier;
 

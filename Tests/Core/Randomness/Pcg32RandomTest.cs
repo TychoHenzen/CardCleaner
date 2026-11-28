@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Core.Randomness;

@@ -13,6 +13,7 @@ using CardCleaner.Scripts.Features.Deckbuilder.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Tests.Features.Worldgen.IrregularMesh;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Models;
@@ -115,8 +116,7 @@ public class SimpleWorldMapScreenInitializeTest
 
         // The irregular generator gives a real map that is not a grid map.
         screen.Initialize(MeshMapGeneratorFixture.TerrainCards(), new[] { new CardSignature() }, MeshGenerator);
-        for (var frame = 0; frame < FrameBudget && !_states.Contains(SessionState.WaitingForCards); frame++)
-            await ISceneRunner.SyncProcessFrame;
+        await BoundedWait.ProcessFramesUntil(() => _states.Contains(SessionState.WaitingForCards), FrameBudget);
 
         AssertThat(_states).Contains(SessionState.GeneratingMap, SessionState.WaitingForCards);
         AssertThat(_states).NotContains(SessionState.Exploring);

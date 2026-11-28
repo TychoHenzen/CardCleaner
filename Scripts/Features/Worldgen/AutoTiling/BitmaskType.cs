@@ -8,13 +8,13 @@ public enum BitmaskType
 {
     /// <summary>
     /// 4-bit diagonal corner format checking only NE, SE, SW, NW neighbors.
-    /// Produces bitmask values 0-15. Maps to <see cref="NeighborBitmaskCorner"/>.
+    /// Produces bitmask values 0-15. Maps to <c>NeighborBitmaskCorner</c>.
     /// </summary>
     Corner4 = 0,
 
     /// <summary>
     /// 4-bit cardinal edge format checking only N, E, S, W neighbors.
-    /// Produces bitmask values 0-15. Maps to <see cref="NeighborBitmask"/>.
+    /// Produces bitmask values 0-15. Maps to <c>NeighborBitmask</c>.
     /// </summary>
     Edge4 = 1,
 

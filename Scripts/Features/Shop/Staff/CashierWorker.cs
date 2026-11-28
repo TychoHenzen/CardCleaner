@@ -1,5 +1,4 @@
 using System.Linq;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using Godot;
 using CardCleaner.Scripts.Features.Shop.Checkout;

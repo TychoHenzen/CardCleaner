@@ -2,7 +2,6 @@
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Models.Effects;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Components;
