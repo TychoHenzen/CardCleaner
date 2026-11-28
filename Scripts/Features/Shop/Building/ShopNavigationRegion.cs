@@ -59,7 +59,12 @@ public partial class ShopNavigationRegion : NavigationRegion3D
         NavigationServer3D.BakeFromSourceGeometryData(mesh, source);
 
         NavigationMesh = mesh;
+        // MapForceUpdate is obsolete because it does not fit asynchronous map updates. The project builds
+        // navigation maps synchronously (navigation/world/map_use_async_iterations=false, pinned by
+        // NavigationMapSyncSettingTest), the one mode in which a forced update is supported, so the call stays.
+#pragma warning disable CS0618
         NavigationServer3D.MapForceUpdate(GetNavigationMap());
+#pragma warning restore CS0618
         RebakeCount++;
     }
 

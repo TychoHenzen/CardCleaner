@@ -12,11 +12,14 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.BlackTile;
 /// <summary>
 ///     Shared fixture for the BlackTileReproductionTest scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class BlackTileReproductionTestBase
 {
     protected const string TransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";
 
     protected const int CompiledAtlasSourceId = 0;
+
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     protected TileRegistry _registry = null!;
 
@@ -37,8 +40,7 @@ public abstract class BlackTileReproductionTestBase
         if (File.Exists(transitionPath))
         {
             var json = File.ReadAllText(transitionPath);
-            _transitionMap = JsonSerializer.Deserialize<CompiledTransitionMap>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            _transitionMap = JsonSerializer.Deserialize<CompiledTransitionMap>(json, JsonOptions);
         }
     }
 }

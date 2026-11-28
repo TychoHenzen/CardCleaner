@@ -13,15 +13,15 @@ public static class TsxPropertySchema
     public static readonly List<TsxProperty> TileProperties = new()
     {
         // Display name - shown in UI (the 'type' attribute is the tile ID)
-        TsxProperty.String("name", ""),
+        TsxProperty.FromString("name", ""),
 
         // Gameplay properties (use Tiled custom enum types from Tiles.tiled-project)
         TsxProperty.StringEnum("passability", "Passability", "passable"),
         TsxProperty.StringEnum("layer", "Layer", "terrain"),
         TsxProperty.IntEnum("biome", "Biome", 0),  // Flags enum (bitfield, 0 = no biomes)
 
-        TsxProperty.Float("elevation", 0f),
-        TsxProperty.Bool("istransparent", true),
+        TsxProperty.FromFloat("elevation", 0f),
+        TsxProperty.FromBool("istransparent", true),
     };
 
     /// <summary>
@@ -35,18 +35,18 @@ public static class TsxPropertySchema
         TsxProperty.StringEnum("passability", "Passability", "passable"),
         TsxProperty.StringEnum("layer", "Layer", "terrain"),
         TsxProperty.IntEnum("biome", "Biome", 0),  // Flags enum (bitfield, 0 = no biomes)
-        TsxProperty.Float("elevation", 0f),
+        TsxProperty.FromFloat("elevation", 0f),
 
         // Whether the auto-tile has transparent background (border-only)
         // If true, the border is composited onto base terrains at atlas compile time
         // Default true since wang tilesets effectively always have transparent backgrounds
-        TsxProperty.Bool("TransparentBackground", true),
+        TsxProperty.FromBool("TransparentBackground", true),
 
         // Terrain references for auto-tile transitions
         // "$self" = use this tile's ID as inner terrain (default)
         // "*" = compositable with any outer terrain (default)
-        TsxProperty.String("InnerTerrain", "$self"),
-        TsxProperty.String("OuterTerrain", "*"),
+        TsxProperty.FromString("InnerTerrain", "$self"),
+        TsxProperty.FromString("OuterTerrain", "*"),
     };
 
     /// <summary>
@@ -110,12 +110,12 @@ public static class TsxPropertySchema
     {
         return new List<TsxProperty>
         {
-            TsxProperty.String("name", name),
+            TsxProperty.FromString("name", name),
             TsxProperty.StringEnum("passability", "Passability", "passable"),
             TsxProperty.StringEnum("layer", "Layer", "terrain"),
             TsxProperty.IntEnum("biome", "Biome", biomeFlags),
-            TsxProperty.Float("elevation", 0f),
-            TsxProperty.Bool("istransparent", true),
+            TsxProperty.FromFloat("elevation", 0f),
+            TsxProperty.FromBool("istransparent", true),
         };
     }
 
@@ -131,10 +131,10 @@ public static class TsxPropertySchema
             TsxProperty.StringEnum("passability", "Passability", "passable"),
             TsxProperty.StringEnum("layer", "Layer", "terrain"),
             TsxProperty.IntEnum("biome", "Biome", biomeFlags),
-            TsxProperty.Float("elevation", 0f),
-            TsxProperty.Bool("TransparentBackground", isTransparent),
-            TsxProperty.String("InnerTerrain", "$self"),
-            TsxProperty.String("OuterTerrain", "*"),
+            TsxProperty.FromFloat("elevation", 0f),
+            TsxProperty.FromBool("TransparentBackground", isTransparent),
+            TsxProperty.FromString("InnerTerrain", "$self"),
+            TsxProperty.FromString("OuterTerrain", "*"),
         };
     }
 

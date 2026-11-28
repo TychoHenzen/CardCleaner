@@ -12,8 +12,8 @@ public class EditableFormatVariant
     public int SizeY { get; set; } = 1;
 
     /// <summary>Offset from anchor cell (default 0,0).</summary>
-    public int OffsetX { get; set; } = 0;
-    public int OffsetY { get; set; } = 0;
+    public int OffsetX { get; set; }
+    public int OffsetY { get; set; }
 
     public EditableFormatVariant Clone()
     {

@@ -12,7 +12,7 @@ public partial class AutoTileFormatEditorPanel
 
         SizeFlagsVertical = SizeFlags.ExpandFill;
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
-        SplitOffset = 200;
+        SplitOffsets = [200];
         SetupLeftPanel();
         SetupRightPanel();
         _service.TilesLoaded += OnTilesLoaded;

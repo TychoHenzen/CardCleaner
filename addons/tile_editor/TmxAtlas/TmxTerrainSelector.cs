@@ -1,4 +1,5 @@
 #if TOOLS
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static CardCleaner.Addons.TileEditor.TmxAtlasCompilerModels;
@@ -39,7 +40,7 @@ internal static class TmxTerrainSelector
         List<TsxWangSetData> allWangSets)
         => allTiles
             .Where(tile => tile.HasClassAttribute
-                && tile.Layer.ToLowerInvariant() == "terrain"
+                && string.Equals(tile.Layer, "terrain", StringComparison.OrdinalIgnoreCase)
                 && !allWangSets.Any(wangSet =>
                     wangSet.AllMemberTileIds.Contains(tile.TileId)
                     && wangSet.TsxPath == tile.TsxPath))

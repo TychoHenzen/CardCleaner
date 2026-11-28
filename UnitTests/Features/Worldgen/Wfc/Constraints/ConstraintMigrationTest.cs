@@ -154,7 +154,7 @@ public class ConstraintMigrationTest
         AssertThat(clearModifiersMethod).IsNull();
     }
 
-    private class TestHalfConstraint : IWfcConstraint
+    private sealed class TestHalfConstraint : IWfcConstraint
     {
         public int CallCount { get; private set; }
 

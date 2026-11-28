@@ -33,8 +33,16 @@ jobs:
         with:
           dotnet-version: 8.0.410
 
+      # A restore warning, such as a NuGet advisory on a pinned package, is not a code warning, so the restore runs on
+      # its own and prints it as a warning. A build repeats every warning the restore stored in obj/project.assets.json,
+      # so the build below passes -p:EmitAssetsLogMessages=false, and its -warnaserror fails only on code warnings.
+      - name: Restore the unit test project
+        run: dotnet restore UnitTests/CardCleaner.UnitTests.csproj
+
+      # -warnaserror fails the build on any compiler or analyzer warning; the error line names the code and the file.
       - name: Build the unit test project
-        run: dotnet build UnitTests/CardCleaner.UnitTests.csproj --configuration Debug
+        run: dotnet build UnitTests/CardCleaner.UnitTests.csproj --no-restore --configuration Debug -warnaserror
+          -p:EmitAssetsLogMessages=false
 
       # --blame names the test that was running when the test host crashed. --blame-crash also wrote a full dump,
       # which made a 3.6 GB unit-reports artifact.
@@ -71,11 +79,15 @@ jobs:
         with:
           dotnet-version: 8.0.410
 
+      # The restore prints its warnings as warnings; EmitAssetsLogMessages=false keeps the build from repeating them
+      # (see the restore step of the unit test job).
       - name: Restore dependencies
         run: dotnet restore CardCleaner.csproj
 
+      # -warnaserror fails the build on any compiler or analyzer warning; the error line names the code and the file.
       - name: Build with analyzers
-        run: dotnet build CardCleaner.csproj --no-restore --configuration Release /p:EnableNETAnalyzers=true /p:EnforceCodeStyleInBuild=true
+        run: dotnet build CardCleaner.csproj --no-restore --configuration Release /p:EnableNETAnalyzers=true /p:EnforceCodeStyleInBuild=true -warnaserror
+          -p:EmitAssetsLogMessages=false
 
       - name: Download Godot 4.7.1 .NET
         # Install-Godot.ps1 retries a failed download or unzip (3 attempts, 15 s then 30 s apart) and warns on each failure.

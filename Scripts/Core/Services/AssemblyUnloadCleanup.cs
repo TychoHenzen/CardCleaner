@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
@@ -33,6 +34,9 @@ internal static class AssemblyUnloadCleanup
     /// Called automatically when the assembly is loaded.
     /// Registers cleanup handlers for assembly unloading.
     /// </summary>
+    [SuppressMessage("Usage", "CA2255:The 'ModuleInitializer' attribute should not be used in libraries",
+        Justification = "The game assembly is application code: this hook must run when Godot loads it, before " +
+                        "any other code, to clear the System.Text.Json caches (Godot issue 78513).")]
     [ModuleInitializer]
     public static void Initialize()
     {

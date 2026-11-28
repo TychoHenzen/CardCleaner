@@ -7,6 +7,7 @@ namespace CardCleaner.Tests.Features.Card.Controllers.CardControllerScenarios;
 /// <summary>
 ///     Shared fixture for the CardController scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class CardControllerTestBase
 {
     protected CardController _cardController = null!;

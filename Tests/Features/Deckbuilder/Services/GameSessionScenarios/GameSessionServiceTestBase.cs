@@ -16,6 +16,7 @@ namespace CardCleaner.Tests.Features.Deckbuilder.Services.GameSessionScenarios;
 /// <summary>
 ///     Shared fixture for the GameSessionService scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class GameSessionServiceTestBase
 {
     protected GameSessionService _service = null!;

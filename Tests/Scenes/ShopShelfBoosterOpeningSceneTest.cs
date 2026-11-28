@@ -299,10 +299,12 @@ public class ShopShelfBoosterOpeningSceneTest
                     $"layer={booster.CollisionLayer}, mask={booster.CollisionMask}, frozen={booster.Freeze}, " +
                     $"process={booster.ProcessMode}, seeded={booster.ContentSeed != null}")
                 .IsTrue();
-            await ContainerOpeningWait.Until(() => !_hand.IsOpening, "the booster opening in the hand");
+            await ContainerOpeningWait.Until(() => !_hand.IsOpening,
+                $"the booster with seed {booster.ContentSeed} to open in the hand (at the press: opening=" +
+                $"{_hand.IsOpening}, cards={_hand.Cards.Count}, held={_hand.Items.Contains(booster)}, " +
+                $"valid={GodotObject.IsInstanceValid(booster)})");
         }
 
-        AssertBool(_hand.IsOpening).IsFalse();
         AssertThat(_hand.Cards.Count).IsEqual(CardContainerLayout.ItemsPerContainer);
         AssertBool(_hand.Items.Contains(booster)).IsFalse();
         AssertBool(GodotObject.IsInstanceValid(booster) && !booster.IsQueuedForDeletion()).IsFalse();

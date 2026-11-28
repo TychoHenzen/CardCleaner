@@ -9,6 +9,7 @@ using Godot;
 namespace CardCleaner.Tests.Features.Shop.Shelves;
 
 // Shared setup for the CardShelf suites: a floor, one shelf settled on it, and the drop and wait helpers.
+[RequireGodotRuntime]
 public abstract class CardShelfTestBase
 {
     private const string ShelfScene = "res://Scenes/Shop/Items/Shelf.tscn";

@@ -10,6 +10,9 @@ namespace CardCleaner.Scripts.Features.Shop.Progression;
 /// </summary>
 public sealed class ShopLevelTable
 {
+    // The shipped curve. The constructor copies it, so every Default shares this one array safely.
+    private static readonly int[] DefaultThresholds = [0, 50, 150, 300, 500];
+
     private readonly int[] _thresholds;
 
     /// <summary>
@@ -33,7 +36,7 @@ public sealed class ShopLevelTable
     }
 
     /// <summary>The curve the shop ships with.</summary>
-    public static ShopLevelTable Default => new ShopLevelTable(new[] { 0, 50, 150, 300, 500 });
+    public static ShopLevelTable Default => new ShopLevelTable(DefaultThresholds);
 
     /// <summary>The highest level the table reaches.</summary>
     public int MaxLevel => _thresholds.Length;
