@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.GameSessionScenarios;
@@ -29,7 +30,7 @@ public class GameSessionPacingTest : GameSessionServiceTestBase
             new List<CardSignature> { new() },
             _generator);
 
-        await WaitForFrames(() => moves > 0, FrameBudget);
+        await BoundedWait.ProcessFramesUntil(() => moves > 0, FrameBudget);
         AssertThat(moves).OverrideFailureMessage("The session never moved the player").IsEqual(1);
 
         await _service.ToSignal(_service.GetTree().CreateTimer(HoldSeconds), SceneTreeTimer.SignalName.Timeout);
@@ -37,7 +38,8 @@ public class GameSessionPacingTest : GameSessionServiceTestBase
         AssertThat(_service.CurrentState).IsEqual(SessionState.Exploring);
 
         _service.ReportStepShown();
-        await WaitForFrames(() => moves > 1 || _service.CurrentState != SessionState.Exploring, FrameBudget);
+        await BoundedWait.ProcessFramesUntil(
+            () => moves > 1 || _service.CurrentState != SessionState.Exploring, FrameBudget);
         AssertBool(moves > 1 || _service.CurrentState != SessionState.Exploring)
             .OverrideFailureMessage("The session did not resume after the view's report")
             .IsTrue();

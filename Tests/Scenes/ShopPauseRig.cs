@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -13,11 +14,7 @@ public static class ShopPauseRig
     public static InputEventAction EscapeEvent() =>
         new() { Action = "ui_cancel", Pressed = true };
 
-    public static async Task SettleAsync()
-    {
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-    }
+    public static Task SettleAsync() => BoundedWait.SyncPhysicsFrames(2);
 
     public static void Teardown()
     {

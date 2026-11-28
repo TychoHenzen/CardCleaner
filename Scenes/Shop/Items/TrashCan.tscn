@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3]
 
-[ext_resource type="Script" uid="uid://dl8ny444uhjng" path="res://Scripts/Features/Shop/Components/TrashCan.cs" id="TrashCan"]
-[ext_resource type="Script" uid="uid://8o8bslklscp8" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="Script" uid="uid://dl8ny444uhjng" path="res://Scripts/Features/Shop/Building/TrashCan.cs" id="TrashCan"]
+[ext_resource type="Script" uid="uid://8o8bslklscp8" path="res://Scripts/Features/Shop/Building/ShopArtSlot.cs" id="ShopArtSlot"]
 [ext_resource type="Material" path="res://Data/Ui/AimHighlightMaterial.tres" id="AimHighlight"]
 
 [sub_resource type="BoxShape3D" id="Shape"]

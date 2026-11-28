@@ -62,7 +62,7 @@ public class OptionsApplier
         _displaySink(DisplayFor(options), window);
     }
 
-    public void ApplyMouse(GameOptions options, IGameSettings settings)
+    public static void ApplyMouse(GameOptions options, IGameSettings settings)
     {
         settings.MouseSensitivity = options.MouseSensitivity;
         settings.InvertY = options.InvertY;

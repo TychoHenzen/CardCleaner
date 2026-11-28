@@ -1,0 +1,19 @@
+using CardCleaner.Scripts.Features.Shop.Progression;
+
+namespace CardCleaner.Tests.Features.Shop.Progression;
+
+[TestSuite]
+public class CheckoutXpTest
+{
+    [TestCase(10, 1)]
+    [TestCase(5, 1)]
+    [TestCase(7, 1)]
+    [TestCase(95, 9)]
+    [TestCase(100, 10)]
+    [TestCase(0, 0)]
+    [TestCase(-3, 0)]
+    public static void XpIsOnePerTenPaidWithAtLeastOneForAnySale(int amountPaid, int expectedXp)
+    {
+        AssertThat(CheckoutXp.For(amountPaid)).IsEqual(expectedXp);
+    }
+}

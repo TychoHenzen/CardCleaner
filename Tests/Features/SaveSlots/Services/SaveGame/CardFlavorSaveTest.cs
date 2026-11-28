@@ -13,6 +13,7 @@ using CardCleaner.Scripts.Features.SaveSlots.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Tests.Scenes;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.SaveSlots.Services.SaveGame;
@@ -125,9 +126,5 @@ public class CardFlavorSaveTest
                 card => Identity(card.Signature, card.LookSeed),
                 card => card.GetNode<CardFace>("Face").Renderer.FlavorLabel.Text);
 
-    private static async Task SettleAsync()
-    {
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
+    private static Task SettleAsync() => BoundedWait.SyncPhysicsFrames(SettleFrames);
 }

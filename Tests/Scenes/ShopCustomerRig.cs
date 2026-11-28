@@ -5,9 +5,10 @@ using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Building;
+using CardCleaner.Scripts.Features.Shop.Checkout;
+using CardCleaner.Scripts.Features.Shop.Customers;
+using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
@@ -92,13 +93,7 @@ public sealed class ShopCustomerRig : IDisposable
         return rig;
     }
 
-    public static async Task WaitUntil(Func<bool> done)
-    {
-        for (var i = 0; i < FrameBudget && !done(); i++)
-        {
-            await ISceneRunner.SyncPhysicsFrame;
-        }
-    }
+    public static Task WaitUntil(Func<bool> done) => BoundedWait.SyncPhysicsFramesUntil(done, FrameBudget);
 
     public static bool Gone(Customer customer) => !GodotObject.IsInstanceValid(customer);
 

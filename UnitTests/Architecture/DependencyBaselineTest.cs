@@ -11,10 +11,10 @@ public class DependencyBaselineTest
 {
     private const string LoweringInstruction = "lower the baseline with";
 
-    private static readonly GatedNumbers Baseline = new(10, 4, 5, 50);
+    private static readonly GatedNumbers Baseline = new(10, 4, 5, 50, 6, 3);
 
     private const string BaselineJson = "{\"up_edges\": 10, \"biggest_loop\": 4, \"seams_leaky_or_missing\": 5, " +
-                                        "\"refs_from_non_ui_to_ui\": 50}";
+                                        "\"refs_from_non_ui_to_ui\": 50, \"ui_up_edges\": 6, \"ui_biggest_loop\": 3}";
 
     private string _path = null!;
 
@@ -31,8 +31,8 @@ public class DependencyBaselineTest
     [TestCase]
     public static void PriorityOrderIsPinned()
     {
-        AssertThat(string.Join(",", GatedNumbers.Fields.Select(f => f.Name)))
-            .IsEqual("up_edges,biggest_loop,seams_leaky_or_missing,refs_from_non_ui_to_ui");
+        AssertThat(string.Join(",", GatedNumbers.Fields.Select(f => f.Name))).IsEqual(
+            "up_edges,biggest_loop,seams_leaky_or_missing,refs_from_non_ui_to_ui,ui_up_edges,ui_biggest_loop");
     }
 
     [TestCase]
@@ -124,8 +124,10 @@ public class DependencyBaselineTest
         AssertThat(File.ReadAllText(_path)).IsEqual(
             "{\n  \"up_edges\": 10,\n  \"biggest_loop\": 4,\n" +
             "  \"seams_leaky_or_missing\": 4,\n  \"refs_from_non_ui_to_ui\": 51,\n" +
+            "  \"ui_up_edges\": 6,\n  \"ui_biggest_loop\": 3,\n" +
             "  \"up_edge_pairs\": [],\n  \"biggest_loop_classes\": [],\n" +
-            "  \"seam_classes\": [],\n  \"ui_ref_pairs\": []\n}\n");
+            "  \"seam_classes\": [],\n  \"ui_ref_pairs\": [],\n" +
+            "  \"ui_up_edge_pairs\": [],\n  \"ui_loop_classes\": []\n}\n");
         AssertThat(DependencyBaseline.Read(_path).Numbers!.ToString()).IsEqual(accepted.ToString());
         var after = DependencyBaseline.Apply(_path, accepted, Lists(), update: false);
         AssertThat(after.Failures.Count).IsEqual(0);
@@ -186,19 +188,20 @@ public class DependencyBaselineTest
     public void IssueTwoFiftyFiveMeasurementsDecideByPriority()
     {
         Record("{\"up_edges\": 33, \"biggest_loop\": 35, \"seams_leaky_or_missing\": 21, " +
-               "\"refs_from_non_ui_to_ui\": 148}");
+               "\"refs_from_non_ui_to_ui\": 148, \"ui_up_edges\": 6, \"ui_biggest_loop\": 3}");
 
-        var fullStep = DependencyBaseline.Apply(_path, new GatedNumbers(33, 35, 18, 143), Lists(), update: false);
+        var fullStep = DependencyBaseline.Apply(_path, new GatedNumbers(33, 35, 18, 143, 6, 3), Lists(), update: false);
         AssertThat(fullStep.Failures[0])
             .StartsWith("seams_leaky_or_missing is 18, below the baseline 21: " + LoweringInstruction);
         AssertThat(fullStep.AcceptedRises.Count).IsEqual(0);
 
-        var lootHalf = DependencyBaseline.Apply(_path, new GatedNumbers(34, 36, 18, 144), Lists(), update: false);
+        var lootHalf = DependencyBaseline.Apply(_path, new GatedNumbers(34, 36, 18, 144, 6, 3), Lists(), update: false);
         AssertThat(lootHalf.Failures[0]).IsEqual("up_edges is 34, above the baseline 33");
         AssertThat(lootHalf.Failures.Any(f => f.Contains(LoweringInstruction, StringComparison.Ordinal))).IsFalse();
         AssertThat(lootHalf.AcceptedRises.Count).IsEqual(0);
 
-        var previewHalf = DependencyBaseline.Apply(_path, new GatedNumbers(32, 34, 21, 147), Lists(), update: false);
+        var previewHalf = DependencyBaseline.Apply(_path, new GatedNumbers(32, 34, 21, 147, 6, 3), Lists(),
+            update: false);
         AssertThat(previewHalf.Failures.Count).IsEqual(3);
         AssertThat(previewHalf.Failures.All(f => f.Contains(LoweringInstruction, StringComparison.Ordinal)))
             .IsTrue();
@@ -260,7 +263,7 @@ public class DependencyBaselineTest
             .IsEqual($"dependency baseline {_path} is malformed: no list biggest_loop_classes");
 
         Record(BaselineJson[..^1] + ", \"up_edge_pairs\": [], \"biggest_loop_classes\": [], " +
-               "\"seam_classes\": 5, \"ui_ref_pairs\": []}");
+               "\"seam_classes\": 5, \"ui_ref_pairs\": [], \"ui_up_edge_pairs\": [], \"ui_loop_classes\": []}");
         AssertThat(DependencyBaseline.Read(_path).Failure)
             .IsEqual($"dependency baseline {_path} is malformed: list seam_classes is not an array of strings");
     }
@@ -270,7 +273,7 @@ public class DependencyBaselineTest
     {
         DependencyBaseline.Write(_path, Baseline, Lists("A -> B", "C -> D"));
 
-        var result = DependencyBaseline.Apply(_path, new GatedNumbers(11, 4, 5, 50), Lists("A -> B", "E -> F"),
+        var result = DependencyBaseline.Apply(_path, new GatedNumbers(11, 4, 5, 50, 6, 3), Lists("A -> B", "E -> F"),
             update: false);
 
         AssertThat(result.Failures.Count).IsEqual(1);
@@ -283,8 +286,8 @@ public class DependencyBaselineTest
     {
         DependencyBaseline.Write(_path, Baseline, Lists());
 
-        var result = DependencyBaseline.Apply(_path, new GatedNumbers(10, 4, 4, 51),
-            new NamedLists([], [], [], ["X -> Y"]), update: false);
+        var result = DependencyBaseline.Apply(_path, new GatedNumbers(10, 4, 4, 51, 6, 3),
+            new NamedLists([], [], [], ["X -> Y"], [], []), update: false);
 
         AssertThat(result.Failures.Count).IsEqual(2);
         AssertThat(result.Failures[1]).IsEqual("refs_from_non_ui_to_ui is 51, above the baseline 50: " +
@@ -296,9 +299,10 @@ public class DependencyBaselineTest
     [TestCase]
     public void ListOnlyDifferenceDoesNotFailButIsNoted()
     {
-        DependencyBaseline.Write(_path, Baseline, new NamedLists([], [], ["S1"], []));
+        DependencyBaseline.Write(_path, Baseline, new NamedLists([], [], ["S1"], [], [], []));
 
-        var result = DependencyBaseline.Apply(_path, Baseline, new NamedLists([], [], ["S2"], []), update: false);
+        var result = DependencyBaseline.Apply(_path, Baseline, new NamedLists([], [], ["S2"], [], [], []),
+            update: false);
 
         AssertThat(result.Failures.Count).IsEqual(0);
         AssertThat(result.ListNotes.Count).IsEqual(1);
@@ -318,7 +322,38 @@ public class DependencyBaselineTest
             .IsEqual("baseline records no lists; run the update command to record them");
     }
 
-    private static NamedLists Lists(params string[] upEdgePairs) => new(upEdgePairs, [], [], []);
+    [TestCase]
+    public void UiNumbersAreRatchetedAfterTheFourOlderOnes()
+    {
+        Record(BaselineJson);
+
+        var refused = DependencyBaseline.Apply(_path, Baseline with { UiUpEdges = 7 }, Lists(), update: false);
+        AssertThat(refused.Failures.Count).IsEqual(1);
+        AssertThat(refused.Failures[0]).IsEqual("ui_up_edges is 7, above the baseline 6");
+
+        var accepted = DependencyBaseline.Apply(_path, Baseline with { UpEdges = 9, UiBiggestLoop = 4 }, Lists(),
+            update: false);
+        AssertThat(accepted.Failures.Count).IsEqual(2);
+        AssertThat(accepted.Failures[0]).StartsWith("up_edges is 9, below the baseline 10: " + LoweringInstruction);
+        AssertThat(accepted.Failures[1]).IsEqual(
+            "ui_biggest_loop is 4, above the baseline 3: accepted because up_edges went down");
+    }
+
+    [TestCase]
+    public void RefusedUiRiseNamesJoinedAndLeftUiClasses()
+    {
+        DependencyBaseline.Write(_path, Baseline, new NamedLists([], [], [], [], ["A -> B"], ["P", "Q"]));
+
+        var result = DependencyBaseline.Apply(_path, Baseline with { UiBiggestLoop = 4 },
+            new NamedLists([], [], [], [], ["A -> B"], ["P", "R"]), update: false);
+
+        AssertThat(result.Failures.Count).IsEqual(1);
+        AssertThat(result.Failures[0])
+            .IsEqual("ui_biggest_loop is 4, above the baseline 3; ui_loop_classes joined: R; left: Q");
+        AssertThat(result.ListNotes.Count).IsEqual(1);
+    }
+
+    private static NamedLists Lists(params string[] upEdgePairs) => new(upEdgePairs, [], [], [], [], []);
 
     private void Record(string json) => File.WriteAllText(_path, json);
 }

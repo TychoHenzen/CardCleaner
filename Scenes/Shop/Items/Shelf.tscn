@@ -1,11 +1,11 @@
 [gd_scene load_steps=12 format=3]
 
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/CardShelf.cs" id="CardShelf"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Building/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Shelves/CardShelf.cs" id="CardShelf"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/CardStand.tscn" id="CardStand"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/CardRest.tscn" id="CardRest"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/PriceTag.tscn" id="PriceTag"]
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShelfLevel.cs" id="ShelfLevel"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Shelves/ShelfLevel.cs" id="ShelfLevel"]
 
 [sub_resource type="BoxShape3D" id="Base"]
 size = Vector3(2.288, 0.0648, 0.6628)

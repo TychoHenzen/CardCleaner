@@ -1,0 +1,29 @@
+using CardCleaner.Scripts.Features.Shop.Restocking;
+using CardCleaner.Scripts.Features.Shop.Shelves;
+
+namespace CardCleaner.Tests.Features.Shop.Restocking;
+
+[TestSuite]
+public class RestockRecordsTest
+{
+    [TestCase]
+    public static void Records_compare_by_value()
+    {
+        AssertThat(new StockSource(1, StockKind.Pack, true, 2f, 1))
+            .IsEqual(new StockSource(1, StockKind.Pack, true, 2f, 1));
+        AssertThat(new StockSource(1, StockKind.Pack, true, 2f, 1))
+            .IsNotEqual(new StockSource(2, StockKind.Pack, true, 2f, 1));
+        AssertThat(new FreeSlot(3, 4, ShelfKind.ProductShelf)).IsEqual(new FreeSlot(3, 4, ShelfKind.ProductShelf));
+        AssertThat(new FreeSlot(3, 4, ShelfKind.ProductShelf)).IsNotEqual(new FreeSlot(3, 5, ShelfKind.ProductShelf));
+        AssertThat(new RestockStep(RestockStepKind.Move, 1, 2)).IsEqual(new RestockStep(RestockStepKind.Move, 1, 2));
+        AssertThat(new RestockStep(RestockStepKind.Move, 1, 2)).IsNotEqual(new RestockStep(RestockStepKind.Move, 2, 1));
+    }
+
+    [TestCase]
+    public static void Idle_step_has_kind_Idle_and_ids_of_minus_one()
+    {
+        AssertThat(RestockStep.Idle.Kind).IsEqual(RestockStepKind.Idle);
+        AssertThat(RestockStep.Idle.SourceId).IsEqual(-1);
+        AssertThat(RestockStep.Idle.TargetId).IsEqual(-1);
+    }
+}

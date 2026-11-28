@@ -1,4 +1,3 @@
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Menu.Services;
 using Godot;
@@ -23,7 +22,6 @@ public partial class MouseOptionsStartup : Node, IDependent
     {
         var services = _services!;
         services.Get<OptionsStore>(store =>
-            services.Get<IGameSettings>(settings =>
-                services.Get<OptionsApplier>(applier => applier.ApplyMouse(store.Load(), settings))));
+            services.Get<IGameSettings>(settings => OptionsApplier.ApplyMouse(store.Load(), settings)));
     }
 }

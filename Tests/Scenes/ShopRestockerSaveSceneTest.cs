@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Day;
+using CardCleaner.Scripts.Features.Shop.Shelves;
+using CardCleaner.Scripts.Features.Shop.Staff;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
@@ -101,8 +102,7 @@ public class ShopRestockerSaveSceneTest : ShopStaffSaveSceneTestBase
 
         using (FastClock.Start())
         {
-            for (var i = 0; i < IdleFrames; i++)
-                await ISceneRunner.SyncPhysicsFrame;
+            await BoundedWait.SyncPhysicsFrames(IdleFrames);
         }
 
         AssertBool(_rig.Restocker.Visible).IsFalse();

@@ -1,7 +1,7 @@
 #if TOOLS
 using System.IO;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Core.Services.TilesetLoading;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using Godot;
 
 namespace CardCleaner.Addons.TileEditor;

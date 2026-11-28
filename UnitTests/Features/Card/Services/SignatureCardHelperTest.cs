@@ -5,7 +5,6 @@ using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Card.Services;
-using GdUnit4;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
 
 namespace CardCleaner.Tests.Features.Card.Services;

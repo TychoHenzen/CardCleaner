@@ -6,7 +6,7 @@ namespace CardCleaner.Tests.Architecture;
 
 /// <summary>
 /// The dependency gate (#240): measures the layered module structure of Scripts/ and ratchets it against
-/// Tests/Architecture/dependency-baseline.json. See "Dependency Gate" in CLAUDE.md.
+/// Tests/Architecture/dependency-baseline.json. See docs/DEPENDENCY_GATE.md.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]

@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Features.Menu.Controllers;
 using CardCleaner.Scripts.Features.Menu.Models;
 using CardCleaner.Scripts.Features.Menu.Services;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Menu;

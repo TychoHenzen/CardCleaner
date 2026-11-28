@@ -3,8 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CardCleaner.Scripts.Core.Resources;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Ordering;
 
 namespace CardCleaner.Tests.Core.Resources;
 

@@ -1,7 +1,7 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.IO;
 using System.Text.Json;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
@@ -10,9 +10,12 @@ namespace CardCleaner.Tests.Features.Worldgen.AutoTiling.TransitionMap;
 /// <summary>
 ///     Shared fixture for the TransitionMapValidationTest scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class TransitionMapValidationTestBase
 {
     protected const string TransitionMapPath = "res://Data/CompiledAtlas/transition_map.json";
+
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     protected JsonDocument? _transitionDoc;
 
@@ -28,10 +31,7 @@ public abstract class TransitionMapValidationTestBase
         {
             var json = File.ReadAllText(absolutePath);
             _transitionDoc = JsonDocument.Parse(json);
-            _transitionMap = JsonSerializer.Deserialize<CompiledTransitionMap>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            _transitionMap = JsonSerializer.Deserialize<CompiledTransitionMap>(json, JsonOptions);
         }
         // Load from Tiled source to match transition_map.json source
         _registry = TileCatalogLoad.Load(new GodotAssetPaths(), new CompiledAtlasSource());

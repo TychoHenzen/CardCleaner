@@ -9,7 +9,6 @@ using CardCleaner.Tests.Core.PropertyTesting.Generators;
 using CardCleaner.Tests.Mocks;
 using FsCheck;
 using CardCleaner.Scripts.Core.Randomness;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Support;
 

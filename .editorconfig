@@ -141,6 +141,7 @@ dotnet_diagnostic.CS8619.severity = warning
 dotnet_diagnostic.CS8625.severity = warning
 
 # IDE analyzers
+# A build reports IDE0005 only while the compiler parses XML comments: both projects set GenerateDocumentationFile.
 dotnet_diagnostic.IDE0005.severity = warning
 dotnet_diagnostic.IDE0044.severity = suggestion
 dotnet_diagnostic.IDE0051.severity = warning
@@ -156,6 +157,12 @@ dotnet_diagnostic.CA1001.severity = none
 dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.CA1833.severity = none
 dotnet_diagnostic.CA5351.severity = none
+
+# Vendored addons: a pinned copy of the Asset Manager fork and the gdUnit4 package files. A change to them goes to
+# the fork or upstream, so their unused usings and malformed XML comments stay as written there.
+[addons/{asset_manager,gdUnit4}/**/*.cs]
+dotnet_diagnostic.IDE0005.severity = none
+dotnet_diagnostic.CS1570.severity = none
 
 # Tests (Godot-hosted Tests/ and plain .NET UnitTests/) - allow more flexibility
 [{Tests,UnitTests}/**/*.cs]
@@ -174,6 +181,9 @@ dotnet_diagnostic.CA1825.severity = none
 dotnet_diagnostic.CA1806.severity = none
 # CA1711: Allow Impl suffix for test mocks
 dotnet_diagnostic.CA1711.severity = none
+# CA1822: a gdUnit test method that needs no fixture state may stay an instance method; making lifecycle hooks and
+# members of the test base classes static would change how derived suites hide and chain them.
+dotnet_diagnostic.CA1822.severity = none
 
 [*.{csproj,props,targets}]
 indent_size = 4

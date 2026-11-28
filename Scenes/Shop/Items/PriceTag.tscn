@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3]
 
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/SlotPricing.cs" id="SlotPricing"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Pricing/SlotPricing.cs" id="SlotPricing"]
 [ext_resource type="Material" path="res://Data/Ui/AimHighlightMaterial.tres" id="AimHighlight"]
 
 [sub_resource type="BoxShape3D" id="TagShape"]

@@ -46,8 +46,7 @@ public class ShopScenePlayerWalkTest
     [TestCase]
     public async Task PlayerSettlesOnTheFloorAtSpawn()
     {
-        for (int frame = 0; frame < 30; frame++)
-            await ISceneRunner.SyncPhysicsFrame;
+        await BoundedWait.SyncPhysicsFrames(30);
 
         AssertBool(_player.IsOnFloor()).IsTrue();
         AssertBool(_player.GlobalPosition.Y > FallLimitY).IsTrue();

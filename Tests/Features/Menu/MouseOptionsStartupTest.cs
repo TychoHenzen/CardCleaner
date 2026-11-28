@@ -5,7 +5,6 @@ using CardCleaner.Scripts.Features.Menu.Controllers;
 using CardCleaner.Scripts.Features.Menu.Models;
 using CardCleaner.Scripts.Features.Menu.Services;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Menu;
@@ -30,7 +29,6 @@ public class MouseOptionsStartupTest
         _path = $"user://test_mouse_startup_{Guid.NewGuid():N}.cfg";
         _settings = new GameSettings();
         TestServices.Container.RegisterSingleton<IGameSettings>(_settings);
-        TestServices.Container.RegisterSingleton<OptionsApplier>(new OptionsApplier());
     }
 
     [AfterTest]

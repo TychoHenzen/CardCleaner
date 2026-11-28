@@ -1,8 +1,5 @@
 #if TOOLS
-using System;
 using System.IO;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using Godot;
 
 namespace CardCleaner.Addons.TileEditor;
 

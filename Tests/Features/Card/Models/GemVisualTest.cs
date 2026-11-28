@@ -1,6 +1,5 @@
 ﻿using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Card.Models;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Models;

@@ -7,7 +7,6 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using Godot;
 
-
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.GameSessionScenarios;
 
 /// <summary>

@@ -35,8 +35,10 @@ public sealed class ViewAim
     }
 
     /// <summary>
-    ///     Aims at <paramref name="wanted" /> (yaw, pitch in degrees; a null pitch keeps the current one). Returns the
-    ///     angles reached and whether pitch hit the game's limit before reaching the target.
+    ///     Aims at the wanted yaw and pitch, in degrees. A null
+    ///     <paramref name="wantedPitch" /> keeps the current pitch.
+    ///     Returns the angles reached and whether pitch hit the game's
+    ///     limit before reaching the target.
     /// </summary>
     public async Task<(Vector2 Reached, bool PitchLimited)> Aim(AutomationCommands commands, float wantedYaw,
         float? wantedPitch, float tolerance)

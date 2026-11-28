@@ -8,7 +8,7 @@ namespace CardCleaner.Scripts.Features.Worldgen;
 
 internal class NoiseGradient(Func<int, float, INoiseSource> noiseSourceFactory) : BaselineGradient
 {
-    public CardSignature BaseSignature { get; set; } = new();
+    public CardSignature BaseSignature { get; set; }
     public float NoiseScale { get; set; } = 0.1f;
     public float NoiseStrength { get; set; } = 0.3f;
     public int NoiseSeed { get; set; } = 42;

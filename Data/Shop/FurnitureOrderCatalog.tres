@@ -4,8 +4,8 @@
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/ProductShelfBox.tscn" id="ProductShelfBox"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/StorageRackBox.tscn" id="StorageRackBox"]
 [ext_resource type="PackedScene" path="res://Scenes/Shop/Items/PackingStationBox.tscn" id="PackingStationBox"]
-[ext_resource type="Script" uid="uid://ddvfbixqpsql6" path="res://Scripts/Features/Shop/Models/OrderCatalog.cs" id="OrderCatalogScript"]
-[ext_resource type="Script" uid="uid://d144tmal3smw7" path="res://Scripts/Features/Shop/Models/OrderItem.cs" id="OrderItemScript"]
+[ext_resource type="Script" uid="uid://ddvfbixqpsql6" path="res://Scripts/Features/Shop/Ordering/OrderCatalog.cs" id="OrderCatalogScript"]
+[ext_resource type="Script" uid="uid://d144tmal3smw7" path="res://Scripts/Features/Shop/Ordering/OrderItem.cs" id="OrderItemScript"]
 
 [sub_resource type="Resource" id="ShelfUnitItem"]
 script = ExtResource("OrderItemScript")

@@ -15,16 +15,19 @@
         <RootNamespace>CardCleaner.Tests</RootNamespace>
         <AnalysisLevel>8.0-recommended</AnalysisLevel>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
-        <NoWarn>$(NoWarn);EnableGenerateDocumentationFile</NoWarn>
+        <!-- A build reports IDE0005 (unused using) only with code-style rules on and XML comments parsed. -->
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
         <PackageReference Include="gdUnit4.api" Version="5.1.0-rc5" />
         <PackageReference Include="gdUnit4.test.adapter" Version="3.1.1" />
-        <PackageReference Include="gdUnit4.analyzers" Version="1.0.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <!--
+          No gdUnit4.analyzers here: 1.1.0 raises GdUnit0500 and GdUnit0501 as errors for every test that names a Godot
+          type, and this tier runs without the engine by design. 1.0.0 needs a newer compiler than SDK 8.0.410 (CS9057).
+        -->
         <PackageReference Include="FsCheck" Version="3.4.0" />
         <PackageReference Include="NSubstitute" Version="6.2.0" />
     </ItemGroup>

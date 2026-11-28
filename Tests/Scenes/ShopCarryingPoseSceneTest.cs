@@ -1,21 +1,15 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Services;
-using CardCleaner.Scripts.Core.Randomness;
-using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Scripts.Features.Shop.Day;
+using CardCleaner.Scripts.Features.Shop.Ordering;
 using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
-using NSubstitute;
 using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
 namespace CardCleaner.Tests.Scenes;
@@ -92,7 +86,7 @@ public class ShopCarryingPoseSceneTest
         var box = OrderBox();
         await PlaceFacing(box);
         await ClickAsync(MouseButton.Left);
-        await PhysicsFrames(2);
+        await BoundedWait.SyncPhysicsFrames(2);
 
         var camera = Camera();
         var holder = Holder();
@@ -119,7 +113,7 @@ public class ShopCarryingPoseSceneTest
         var mask = box.CollisionMask;
         await PlaceFacing(box);
         await ClickAsync(MouseButton.Left);
-        await PhysicsFrames(2);
+        await BoundedWait.SyncPhysicsFrames(2);
         var holder = Holder();
         AssertBool(ReferenceEquals(holder.Front, box)).IsTrue();
 
@@ -130,7 +124,7 @@ public class ShopCarryingPoseSceneTest
         AssertBool(StorageRoom.HasPoint(target)).IsTrue();
 
         await PlayerWalker.WalkTo(_player, target);
-        await PhysicsFrames(CarryFrames);
+        await BoundedWait.SyncPhysicsFrames(CarryFrames);
 
         AssertBool(ReferenceEquals(holder.Front, box)).IsTrue();
         AssertBool(box.Transform.IsEqualApprox(carriedTransform)).IsTrue();
@@ -143,7 +137,7 @@ public class ShopCarryingPoseSceneTest
 
         await FaceBox(box);
         await ClickAsync(MouseButton.Left);
-        await PhysicsFrames(2);
+        await BoundedWait.SyncPhysicsFrames(2);
         AssertBool(ReferenceEquals(holder.Front, box))
             .OverrideFailureMessage(Describe(box))
             .IsTrue();
@@ -209,7 +203,7 @@ public class ShopCarryingPoseSceneTest
             .OverrideFailureMessage($"box dropped at {box.GlobalPosition}, expected {expected}")
             .IsTrue();
 
-        await PhysicsFrames(SettleFrames);
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
         AssertBool(box.GlobalPosition.Y > FallLimitY)
             .OverrideFailureMessage($"box fell to y={box.GlobalPosition.Y}")
             .IsTrue();
@@ -259,7 +253,7 @@ public class ShopCarryingPoseSceneTest
         // The yaw alone leaves the camera level, above the box, so the ray misses it. Pitch the camera at the box the
         // way ShopCarryingSceneTest.Aim does.
         Camera().LookAt(box.GlobalPosition + new Vector3(0f, 0.2f, 0f));
-        await PhysicsFrames(InteractFrames);
+        await BoundedWait.SyncPhysicsFrames(InteractFrames);
     }
 
     // A press and a release through the input pipeline, with a physics frame between them so the press
@@ -284,9 +278,4 @@ public class ShopCarryingPoseSceneTest
         Input.FlushBufferedEvents();
     }
 
-    private static async Task PhysicsFrames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
 }

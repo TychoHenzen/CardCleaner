@@ -7,7 +7,6 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Connectivity;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Constraints;
-using CardCleaner.Scripts.Features.Worldgen.Wfc.Contracts;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers;
 using CardCleaner.Scripts.Features.Worldgen.Wfc.Modifiers.Soft;
 using Godot;

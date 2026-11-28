@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Progression;
 
 namespace CardCleaner.Tests.Features.Shop;
 

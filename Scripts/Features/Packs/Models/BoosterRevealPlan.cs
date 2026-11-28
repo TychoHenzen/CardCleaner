@@ -30,7 +30,7 @@ public sealed class BoosterRevealPlan
     public int Cards { get; }
 
     /// <summary>When the card at <paramref name="index" /> leaves the booster.</summary>
-    public float ReleaseAt(int index) => Present + Tear + index * ReleaseStep;
+    public static float ReleaseAt(int index) => Present + Tear + index * ReleaseStep;
 
     /// <summary>When the last card has left the booster and the wrapper starts to shrink.</summary>
     public float VanishStart => Cards == 0 ? Present + Tear : ReleaseAt(Cards - 1);
@@ -40,11 +40,11 @@ public sealed class BoosterRevealPlan
 
     public float Duration => Math.Max(IntoHandStart + IntoHand, VanishStart + Vanish);
 
-    public float PresentProgress(float time) => OpeningTime.Fraction(time, 0f, Present);
+    public static float PresentProgress(float time) => OpeningTime.Fraction(time, 0f, Present);
 
-    public float TearProgress(float time) => OpeningTime.Fraction(time, Present, Tear);
+    public static float TearProgress(float time) => OpeningTime.Fraction(time, Present, Tear);
 
-    public float RiseProgress(int index, float time) => OpeningTime.Fraction(time, ReleaseAt(index), Rise);
+    public static float RiseProgress(int index, float time) => OpeningTime.Fraction(time, ReleaseAt(index), Rise);
 
     public float VanishProgress(float time) => OpeningTime.Fraction(time, VanishStart, Vanish);
 

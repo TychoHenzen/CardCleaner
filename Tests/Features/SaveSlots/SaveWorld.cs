@@ -5,6 +5,7 @@ using CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.SaveSlots;
@@ -66,11 +67,7 @@ internal sealed class SaveWorld : IDisposable
     public void Enter() => Tree.CurrentScene = World;
 
     /// <summary>Waits two frames: load defers the card respawn, and the respawn defers the held card's reparent.</summary>
-    public async Task TwoFrames()
-    {
-        await World.ToSignal(Tree, SceneTree.SignalName.ProcessFrame);
-        await World.ToSignal(Tree, SceneTree.SignalName.ProcessFrame);
-    }
+    public static Task TwoFrames() => BoundedWait.ProcessFrames(2);
 
     public void Dispose()
     {

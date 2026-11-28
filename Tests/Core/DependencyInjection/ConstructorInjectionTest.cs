@@ -3,7 +3,7 @@ using System.Linq;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Tests.Mocking;
 using CardCleaner.Tests.TestUtilities;
 
