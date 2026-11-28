@@ -2,7 +2,6 @@ using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Tests.Core.PropertyTesting.Generators;
 using FsCheck;
-using GdUnit4;
 using CardCleaner.Scripts.Core.Enumeration;
 using Godot;
 

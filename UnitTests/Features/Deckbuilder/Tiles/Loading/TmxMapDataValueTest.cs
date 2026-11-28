@@ -6,8 +6,6 @@ using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.TilesetLoading;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.TilesetLoading.TmxMapping;
 using CardCleaner.Features.Deckbuilder.Tiles;
 using Godot;
-using GdUnit4;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Tiles.Loading;
 

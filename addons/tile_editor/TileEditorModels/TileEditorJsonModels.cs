@@ -1,7 +1,6 @@
 #if TOOLS
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Godot;
 
 namespace CardCleaner.Addons.TileEditor;
 

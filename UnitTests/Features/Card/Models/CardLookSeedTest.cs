@@ -1,6 +1,5 @@
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Card.Models;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Models;
 

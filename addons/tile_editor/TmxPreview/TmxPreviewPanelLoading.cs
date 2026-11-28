@@ -2,7 +2,6 @@
 using System.IO;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.TilesetLoading;
 using Godot;
 
 namespace CardCleaner.Addons.TileEditor;
