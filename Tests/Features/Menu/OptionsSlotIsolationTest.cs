@@ -4,7 +4,6 @@ using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Features.Menu.Models;
 using CardCleaner.Scripts.Features.Menu.Services;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Menu;

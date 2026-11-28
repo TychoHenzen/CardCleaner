@@ -1,9 +1,5 @@
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
-using CardCleaner.Tests.Mocks;
-using GdUnit4;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Services;
 

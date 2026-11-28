@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using gdUnit4.addons.gdUnit4.src.dotnet;
-using GdUnit4;
 using GdUnit4.Core.Discovery;
 using Godot;
 

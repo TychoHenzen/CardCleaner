@@ -1,8 +1,6 @@
 using System.Linq;
 using CardCleaner.Scripts.Core.Randomness;
-using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Packs.Services;
 

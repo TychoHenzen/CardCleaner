@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 
-
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.GameSessionScenarios;
 
 /// <summary>

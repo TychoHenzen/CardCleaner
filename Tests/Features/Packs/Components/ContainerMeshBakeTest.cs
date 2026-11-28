@@ -1,12 +1,12 @@
 using System;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Packs.Components;
 
 /// <summary>
 ///     Pins the committed booster, pack and box meshes under res://Data/Packs/Meshes to
-///     <see cref="ContainerMeshRecipe" />. See "Container Meshes and Opening" in CLAUDE.md for the regenerate command.
+///     <see cref="ContainerMeshRecipe" />. See "Container Meshes and Opening" in docs/CONTAINERS_AND_HAND.md
+///     for the regenerate command.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]

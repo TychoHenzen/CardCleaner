@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Controllers;

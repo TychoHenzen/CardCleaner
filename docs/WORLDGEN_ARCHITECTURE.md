@@ -2,6 +2,57 @@
 
 This document describes the architecture for CardCleaner's procedural world generation system, built on a **Soft WFC** approach using probability-based tile selection with composable weight modifiers.
 
+## Quick Reference
+
+**Active System**: Two-Phase WFC via **GridMapGenerator** (`Scripts/Features/Deckbuilder/Services/GridMapGenerator.cs`)
+
+The map generator uses a **two-phase Wave Function Collapse** approach with dual-layer terrain:
+
+1. **Background Layer (Phase 1)**: WFC generates simple (non-auto-tile) terrain tiles
+   - Gap tiles fill the entire map with biome-influenced probability
+   - Creates the base visual layer seen through gaps in foreground terrain
+
+2. **Foreground Layer (Phase 2)**: WFC generates auto-tile terrain with gap constraints
+   - `AutoTileGapConstraint` enforces 1-tile gaps between different auto-tile types (8-way check)
+   - Gap tiles (non-auto-tiles) separate auto-tile regions, eliminating bitmask conflicts
+   - Dual-grid rendering samples 4 data corners per visual tile; gap constraint ensures at most one auto-tile type per 2x2 window
+
+3. **Merge**: Foreground takes precedence where present; background shows through gaps
+
+**Key Files** (all in `Scripts/Features/Worldgen/Wfc/`):
+- `WfcMapGenerator.cs`: High-level generator that configures and runs WFC
+- Outside this folder, code holds `IWfcMapGenerator`, `IWfcTerrainSolver` or the factory interfaces `IWfcMapGeneratorFactory` and `IWfcTerrainSolver.IFactory`, never `WfcMapGenerator` or `WfcAdjacencyRules`; the production factory is the internal `WfcMapGenerator.Factory` (one class for both factory interfaces), found by the `[Service]` scan. `WfcMapGenerator` implements `IWfcTerrainSolver` itself (RuleTileIds snapshot, GenerateBackground, SolveGraphWithCatalog). `WfcSolveRunner` times the retrying solve and builds the `WfcGenerationResult`.
+- `WfcSolver.cs`: Core WFC algorithm (cell selection, collapse, propagation)
+- `WfcPropagator.cs`: Constraint propagation using adjacency rules
+- `WfcTileSelector.cs`: Weighted tile selection with soft constraints
+- `Constraints/AutoTileGapConstraint.cs`: Prevents adjacent different auto-tiles (hard constraint)
+- `Constraints/SpatialCoherenceConstraint.cs`: Encourages contiguous tile regions
+
+Map generators and `BiomeStrengthGrid` take a signature sampler, a `Func<Vector2I, Vector2I, CardSignature>`
+(position, map size), not a gradient. The map builders create the gradient for a map: `GridMapGenerator` for the grid
+path and `TerrainGeneratorFactory.CardSampler` for the mesh path, each from one seeded rng, so the draw order and the
+seeded maps stay the same. `BiomeDistributionCalculator` also builds one, per simulation run, to estimate biome
+shares. A null sampler on the mesh path means fallback terrain.
+
+**CRITICAL - WFC Soft Constraints and Entropy**:
+- **Tiles are NOT removed from possibility sets** - constraints set weights to 0 instead
+- `cell.GetPossibleTiles().Count` is MEANINGLESS for entropy - it includes 0-weight tiles
+- Entropy MUST be calculated using weighted probabilities from constraint evaluation
+- **DO NOT** try to optimize cell selection by counting tiles - this breaks WFC completely
+- Any entropy optimization must preserve full constraint weight calculation
+
+**Dual-Grid Auto-Tiling**:
+- Visual tiles offset by half a cell from data grid
+- Each visual tile samples 4 data corners -> 4-bit bitmask (Corner16 format)
+- The gap constraint ensures each visual tile sees at most ONE auto-tile type
+- `Dominance` property on tiles determines which terrain renders "on top"
+
+**Gradient Systems**:
+- `CardBasedGradient`: Creates gradients from input cards (sphere/capsule/Bezier)
+- `RadialGradient`: Center-to-edge signature blending
+- `NoiseGradient`: FastNoiseLite-based variation
+- Gradients influence biome selection via `BiomeAffinityConstraint`
+
 ## Table of Contents
 
 1. [Core Concept: Soft WFC](#core-concept-soft-wfc)

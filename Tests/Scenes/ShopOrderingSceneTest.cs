@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Pause.Components;
@@ -11,6 +9,7 @@ using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using CardCleaner.Tests.TestUtilities;
 
@@ -165,8 +164,7 @@ public class ShopOrderingSceneTest
     [TestCase]
     public async Task PlayerStaysPutWhileThePcIsOpenAndWalksAgainAfterClosing()
     {
-        for (var frame = 0; frame < 30; frame++)
-            await ISceneRunner.SyncPhysicsFrame;
+        await BoundedWait.SyncPhysicsFrames(30);
         var start = _player.GlobalPosition;
         Vector3 whileOpen;
         Vector3 afterClose;
@@ -175,12 +173,10 @@ public class ShopOrderingSceneTest
         {
             _terminal.Interact();
 
-            for (var frame = 0; frame < 20; frame++)
-                await ISceneRunner.SyncPhysicsFrame;
+            await BoundedWait.SyncPhysicsFrames(20);
             whileOpen = _player.GlobalPosition;
             _terminal.Close();
-            for (var frame = 0; frame < 20; frame++)
-                await ISceneRunner.SyncPhysicsFrame;
+            await BoundedWait.SyncPhysicsFrames(20);
             afterClose = _player.GlobalPosition;
         }
         finally

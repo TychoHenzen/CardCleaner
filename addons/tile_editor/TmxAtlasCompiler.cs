@@ -1,6 +1,5 @@
 #if TOOLS
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Godot;
 using static CardCleaner.Addons.TileEditor.TmxAtlasCompilerModels;

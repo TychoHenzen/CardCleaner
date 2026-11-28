@@ -2,9 +2,7 @@ using System;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Deckbuilder.Services.Exploration;
-using Godot;
 
 namespace CardCleaner.Scripts.Features.Deckbuilder.Services.ExplorationAISupport;
 

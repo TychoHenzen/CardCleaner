@@ -2,9 +2,7 @@ using CardCleaner.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
-using GdUnit4;
 using Godot;
-using static GdUnit4.Assertions;
 
 namespace CardCleaner.Tests.Features.Worldgen.AutoTiling;
 

@@ -4,7 +4,6 @@ using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 
 namespace CardCleaner.Tests.Features.Card.Services;
 

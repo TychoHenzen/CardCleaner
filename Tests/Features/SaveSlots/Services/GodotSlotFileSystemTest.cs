@@ -1,5 +1,4 @@
 using CardCleaner.Scripts.Features.SaveSlots.Services;
-using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.SaveSlots.Services;

@@ -4,7 +4,6 @@ using CardCleaner.Scripts.Core.Utilities;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Worldgen;
 using CardCleaner.Tests.Core.PropertyTesting.Generators;
-using FsCheck;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Properties.GradientSuites;

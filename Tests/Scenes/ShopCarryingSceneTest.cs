@@ -1,22 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
-using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
-using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Scripts.Features.Player.Controllers;
-using CardCleaner.Scripts.Features.Shop.Components;
 using CardCleaner.Scripts.Features.Shop.Models;
 using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.Shop.Ui;
-using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Tests.Features.Packs.Components;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
@@ -87,7 +80,7 @@ public class ShopCarryingSceneTest
         _world.AddChild(_card);
 
         AddNode(_shop);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
     }
 
     // Captures the four callbacks the scene registers, so the test presses them the way the device would.
@@ -118,9 +111,9 @@ public class ShopCarryingSceneTest
     public async Task LeftClick_PicksUpBox()
     {
         var box = OrderBox();
-        await PhysicsFrames(SettleFrames);
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
         Aim(box);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
 
         var hit = AimedHit();
         AssertBool(hit == box).OverrideFailureMessage($"aimed ray hit {hit?.Name ?? "nothing"}, expected {box.Name}")
@@ -135,9 +128,9 @@ public class ShopCarryingSceneTest
     public async Task Q_PutsTheBoxDown_InFrontOfCamera()
     {
         var box = OrderBox();
-        await PhysicsFrames(SettleFrames);
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
         Aim(box);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
         _leftClick!.Invoke(new MouseActionArgs(true, false));
         var camera = _interaction.Camera!;
         var expected = camera.GlobalPosition + (-camera.GlobalBasis.Z * ((Scripts.Features.Hand.Components.Hand)_hand).PutDownDistance);
@@ -155,14 +148,14 @@ public class ShopCarryingSceneTest
     public async Task RightPress_OpensTheHeldBoxInHandAndSpillsNothing()
     {
         var box = OrderBox();
-        await PhysicsFrames(SettleFrames);
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
         Aim(box);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
         _leftClick!.Invoke(new MouseActionArgs(true, false));
 
         _rightPress!.Invoke(new MouseActionArgs(true, false));
         _rightPress.Invoke(new MouseActionArgs(false, false));
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
 
         AssertThat(_hand.Front).IsSame(box);
         AssertBool(box.IsLidOpen).IsTrue();
@@ -174,9 +167,9 @@ public class ShopCarryingSceneTest
     public async Task CardsHeld_BlocksBoxPickup()
     {
         var box = OrderBox();
-        await PhysicsFrames(SettleFrames);
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
         Aim(box);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
         AssertBool(_hand.TryTake(_card)).IsTrue();
 
         _leftClick!.Invoke(new MouseActionArgs(true, false));
@@ -192,9 +185,9 @@ public class ShopCarryingSceneTest
     public async Task ABoosterPickedUpWithACardInHandOpensIntoTheHand()
     {
         var booster = Order("booster");
-        await PhysicsFrames(SettleFrames);
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
         Aim(booster);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
         AssertBool(_hand.TryTake(_card)).IsTrue();
 
         _leftClick!.Invoke(new MouseActionArgs(true, false));
@@ -220,9 +213,9 @@ public class ShopCarryingSceneTest
     public async Task ContainerHeld_BlocksCardPickup()
     {
         var box = OrderBox();
-        await PhysicsFrames(SettleFrames);
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
         Aim(box);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
         _leftClick!.Invoke(new MouseActionArgs(true, false));
         AssertThat(_hand.Items).ContainsExactly(box);
 
@@ -240,16 +233,16 @@ public class ShopCarryingSceneTest
     public async Task PickUpDropPickUp_Works()
     {
         var box = OrderBox();
-        await PhysicsFrames(SettleFrames);
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
         Aim(box);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
         _leftClick!.Invoke(new MouseActionArgs(true, false));
         _qPress!.Invoke();
         AssertInt(_hand.Count).IsEqual(0);
 
-        await PhysicsFrames(SettleFrames);
+        await BoundedWait.SyncPhysicsFrames(SettleFrames);
         Aim(box);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
         _leftClick!.Invoke(new MouseActionArgs(true, false));
 
         AssertThat(_hand.Items).ContainsExactly(box);
@@ -309,9 +302,4 @@ public class ShopCarryingSceneTest
         }
     }
 
-    private static async Task PhysicsFrames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
 }

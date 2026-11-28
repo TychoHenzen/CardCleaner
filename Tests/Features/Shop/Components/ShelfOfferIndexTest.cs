@@ -1,11 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
-using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Components;
@@ -34,7 +32,7 @@ public class ShelfOfferIndexTest
         _shelf = GD.Load<PackedScene>(ProductShelfScene).Instantiate<CardShelf>();
         _shelf.Freeze = true;
         AddNode(_shelf);
-        await Frames(2);
+        await BoundedWait.SyncPhysicsFrames(2);
         _index = new ShelfOfferIndex(_shelf.GetTree());
     }
 
@@ -75,10 +73,10 @@ public class ShelfOfferIndexTest
     public async Task Storage_rack_stock_is_not_offered()
     {
         var rack = AddNode(GD.Load<PackedScene>(StorageRackScene).Instantiate<CardShelf>());
-        await Frames(2);
+        await BoundedWait.SyncPhysicsFrames(2);
         var booster = MakeContainer();
         AssertBool(rack.Levels.First().TryLock(booster)).IsTrue();
-        await Frames(2);
+        await BoundedWait.SyncPhysicsFrames(2);
 
         AssertThat(rack.Levels.First().Count).IsEqual(1);
         AssertThat(_index.Collect().Count).IsEqual(0);
@@ -118,7 +116,7 @@ public class ShelfOfferIndexTest
     public async Task BrowsePoints_cover_every_shown_sales_level_and_skip_racks_and_hidden_shelves()
     {
         var rack = AddNode(GD.Load<PackedScene>(StorageRackScene).Instantiate<CardShelf>());
-        await Frames(2);
+        await BoundedWait.SyncPhysicsFrames(2);
 
         var points = _index.BrowsePoints();
 
@@ -136,7 +134,7 @@ public class ShelfOfferIndexTest
     {
         var booster = MakeContainer();
         AssertBool(level.TryLock(booster)).IsTrue();
-        await Frames(2);
+        await BoundedWait.SyncPhysicsFrames(2);
     }
 
     private static CardContainer MakeContainer()
@@ -144,9 +142,4 @@ public class ShelfOfferIndexTest
         return AddNode(GD.Load<PackedScene>(BoosterScene).Instantiate<CardContainer>());
     }
 
-    private static async Task Frames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
 }

@@ -4,7 +4,6 @@ using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 using Godot;
 using NSubstitute;
 
