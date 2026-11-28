@@ -4,7 +4,6 @@ using CardCleaner.Scripts.Features.Worldgen.Biomes;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Randomness;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Worldgen.Wfc;
 
@@ -95,7 +94,7 @@ public class WfcTileSelectorTest
 
         for (var i = 0; i < 100; i++)
         {
-            var result = _selector.SelectUniform(tiles, _rng)!;
+            var result = WfcTileSelector.SelectUniform(tiles, _rng)!;
             counts[result]++;
         }
 

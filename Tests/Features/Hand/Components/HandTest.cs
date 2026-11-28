@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
@@ -527,15 +526,44 @@ public partial class HandTest
     }
 
     [TestCase]
-    public void WhileACardboardBoxIsHeldTheHandPeeksNothingTakesNothingAndTakesNoPut()
+    public void WhileACardboardBoxIsHeldTheHandPeeksItsRecordAndTakesNoOtherPut()
     {
         var box = Make(BoxScene);
         _hand.TryTake(box);
 
-        AssertThat(_hand.Peek()).IsNull();
-        AssertThat(_hand.TakeLast()).IsNull();
+        AssertThat(_hand.Peek()).IsEqual(new StoredBox(BoxScene, null, null, false));
         AssertBool(_hand.CanPut(new StoredCard(null, 1, null))).IsFalse();
+        AssertBool(_hand.CanPut(new StoredBox(BoxScene, null, null, false))).IsFalse();
         AssertBool(_hand.Front == box).IsTrue();
+    }
+
+    [TestCase]
+    public void ACardboardBoxLeavesTheHandAsItsRecordAndComesBackWithItsContentsSeedAndFlaps()
+    {
+        var box = Make(BoxScene);
+        var held = new StoredCard(null, 3, null);
+        box.Storage!.Restore(new StoredItem[] { held });
+        box.ContentSeed = 11UL;
+        box.SetLidOpen(true, instantly: true);
+        _hand.TryTake(box);
+
+        // Contents is a list, which a record compares by reference, so its fields are checked one by one.
+        var peeked = (StoredBox)_hand.Peek()!;
+        AssertThat(peeked.ScenePath).IsEqual(BoxScene);
+        AssertThat(peeked.Seed).IsEqual(11UL);
+        AssertBool(peeked.LidOpen).IsTrue();
+        AssertThat(peeked.Contents!.ToArray()).ContainsExactly(held);
+        var taken = (StoredBox)_hand.TakeLast()!;
+        AssertThat(taken.Contents!.ToArray()).ContainsExactly(held);
+        AssertThat(_hand.Count).IsEqual(0);
+
+        AssertBool(_hand.Put(taken)).IsTrue();
+
+        var again = (CardContainer)_hand.Front!;
+        AssertThat(again.ContentSeed).IsEqual(11UL);
+        AssertBool(again.IsLidOpen).IsTrue();
+        AssertThat(again.Storage!.Items.ToArray()).ContainsExactly(held);
+        AssertBool(again == box).IsFalse();
     }
 
     private CardController MakeCard(string name)

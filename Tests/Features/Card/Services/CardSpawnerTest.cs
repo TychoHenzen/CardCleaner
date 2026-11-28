@@ -1,6 +1,5 @@
 ﻿using CardCleaner.Scripts.Features.Card.Services;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Services;

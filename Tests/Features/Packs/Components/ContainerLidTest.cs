@@ -2,12 +2,11 @@ using CardCleaner.Scripts.Features.Hand.Components;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
-using CardCleaner.Scripts.Features.Shop.Components;
 using Godot;
 using NSubstitute;
+using CardCleaner.Scripts.Features.Shop.Shelves;
 using static CardCleaner.Tests.Features.Packs.Components.ContainerOpeningWait;
 
 namespace CardCleaner.Tests.Features.Packs.Components;

@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Core.Resources;
@@ -108,10 +109,5 @@ public class ScriptedResourceRevivalTest
 
     // A test resumes inside the process_frame signal, before that frame flushes its deferred calls, so a call queued
     // after the previous frame's last flush is still waiting one frame later. After two frames it has run.
-    private static async Task DeferredCallsRan()
-    {
-        var tree = (SceneTree)Engine.GetMainLoop();
-        await tree.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
-        await tree.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
-    }
+    private static Task DeferredCallsRan() => BoundedWait.ProcessFrames(2);
 }

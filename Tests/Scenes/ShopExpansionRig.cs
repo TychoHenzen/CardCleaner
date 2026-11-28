@@ -3,11 +3,18 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Building;
+using CardCleaner.Scripts.Features.Shop.Checkout;
+using CardCleaner.Scripts.Features.Shop.Customers;
+using CardCleaner.Scripts.Features.Shop.Day;
+using CardCleaner.Scripts.Features.Shop.Expansion;
+using CardCleaner.Scripts.Features.Shop.Furniture;
+using CardCleaner.Scripts.Features.Shop.Progression;
+using CardCleaner.Scripts.Features.Shop.Restocking;
+using CardCleaner.Scripts.Features.Shop.Staff;
 using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -168,11 +175,7 @@ public sealed class ShopExpansionRig
         return box;
     }
 
-    public static async Task SettleAsync()
-    {
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
+    public static Task SettleAsync() => BoundedWait.SyncPhysicsFrames(SettleFrames);
 
     private void RegisterSlot(InMemorySlotFileSystem files)
     {

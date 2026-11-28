@@ -1,9 +1,11 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Services;
 using static CardCleaner.Tests.TestUtilities.DefaultDeliveryGrid;
-using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Scripts.Features.Shop.Day;
+using CardCleaner.Scripts.Features.Shop.Furniture;
+using CardCleaner.Scripts.Features.Shop.Ordering;
+using CardCleaner.Scripts.Features.Shop.Screens;
+using CardCleaner.Scripts.Features.Shop.Shelves;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 

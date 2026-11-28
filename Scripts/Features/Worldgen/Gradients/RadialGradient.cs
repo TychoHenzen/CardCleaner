@@ -9,8 +9,8 @@ internal class RadialGradient : BaselineGradient
     // Default values as constants
     private const float DefaultFalloff = 1.0f;
 
-    public CardSignature CenterSignature { get; set; } = new();
-    public CardSignature EdgeSignature { get; set; } = new();
+    public CardSignature CenterSignature { get; set; }
+    public CardSignature EdgeSignature { get; set; }
     public float Falloff { get; set; } = DefaultFalloff;
 
     public override CardSignature GetSignatureAt(Vector2I position, Vector2I mapSize)

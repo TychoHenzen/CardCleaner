@@ -4,9 +4,10 @@ using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Player.Ui;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Customers;
+using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -114,8 +115,7 @@ public class ShopInteractionHudSceneTest
 
     private static async Task WaitForScan()
     {
-        for (var frame = 0; frame < AimFrames; frame++)
-            await ISceneRunner.SyncPhysicsFrame;
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
         // An awaited process frame resumes before the nodes' _Process of that frame, so the HUD shows a scan from
         // the last physics step only one process frame later.
         await ISceneRunner.SyncProcessFrame;

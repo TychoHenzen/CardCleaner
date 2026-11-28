@@ -1,7 +1,9 @@
 using System.Linq;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Ui;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Furniture;
+using CardCleaner.Scripts.Features.Shop.Ordering;
+using CardCleaner.Scripts.Features.Shop.Restocking;
+using CardCleaner.Scripts.Features.Shop.Screens;
 
 namespace CardCleaner.Tests.Scenes;
 

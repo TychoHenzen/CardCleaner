@@ -1,11 +1,10 @@
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Randomness;
 using CardCleaner.Scripts.Features.Player.Controllers;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
-using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Scripts.Features.Shop.Customers;
+using CardCleaner.Scripts.Features.Shop.Day;
+using CardCleaner.Scripts.Features.Shop.Screens;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 

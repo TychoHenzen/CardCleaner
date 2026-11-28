@@ -1,7 +1,6 @@
 using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Features.Menu.Models;
 using CardCleaner.Scripts.Features.Menu.Services;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Menu;
@@ -39,7 +38,7 @@ public class OptionsApplierTest
         {
             var options = GameOptions.Defaults with { MouseSensitivity = 0.25f, InvertY = true };
 
-            new OptionsApplier().ApplyMouse(options, settings);
+            OptionsApplier.ApplyMouse(options, settings);
 
             Assertions.AssertFloat(settings.MouseSensitivity).IsEqual(0.25f);
             Assertions.AssertThat(settings.InvertY).IsTrue();

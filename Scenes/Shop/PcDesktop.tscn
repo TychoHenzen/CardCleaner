@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Ui/PcDesktop.cs" id="1_desktop"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Screens/PcDesktop.cs" id="1_desktop"]
 
 [sub_resource type="Gradient" id="WallpaperColours"]
 colors = PackedColorArray(0.09, 0.2, 0.3, 1, 0.04, 0.08, 0.13, 1)

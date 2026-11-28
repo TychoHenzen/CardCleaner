@@ -1,5 +1,4 @@
 using CardCleaner.Scripts.Features.CardStacks.Models;
-using Godot;
 
 namespace CardCleaner.Tests.Features.CardStacks.Models;
 

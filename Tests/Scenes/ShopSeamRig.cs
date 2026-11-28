@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
@@ -9,6 +8,7 @@ using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.Portal.Components;
 using CardCleaner.Tests.Features.Shop;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using CardCleaner.Tests.TestUtilities;
 
@@ -82,9 +82,5 @@ public sealed class ShopSeamRig
         await Settle();
     }
 
-    public static async Task Settle()
-    {
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
+    public static Task Settle() => BoundedWait.SyncPhysicsFrames(SettleFrames);
 }

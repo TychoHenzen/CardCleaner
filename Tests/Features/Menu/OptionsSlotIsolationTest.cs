@@ -4,7 +4,6 @@ using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Features.Menu.Models;
 using CardCleaner.Scripts.Features.Menu.Services;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Menu;
@@ -65,7 +64,7 @@ public class OptionsSlotIsolationTest
         try
         {
             applier.Apply(loaded, _window);
-            applier.ApplyMouse(loaded, settings);
+            OptionsApplier.ApplyMouse(loaded, settings);
         }
         finally
         {

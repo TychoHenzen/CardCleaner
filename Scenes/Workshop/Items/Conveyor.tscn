@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="PackedScene" path="res://Scenes/Components/Conveyor_Straight.tscn" id="Belt"]
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Building/ShopArtSlot.cs" id="ShopArtSlot"]
 
 [node name="Conveyor" type="Node3D"]
 

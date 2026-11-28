@@ -1,14 +1,17 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Randomness;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Checkout;
+using CardCleaner.Scripts.Features.Shop.Customers;
+using CardCleaner.Scripts.Features.Shop.Day;
+using CardCleaner.Scripts.Features.Shop.Progression;
+using CardCleaner.Scripts.Features.Shop.Screens;
+using CardCleaner.Scripts.Features.Shop.Staff;
 using CardCleaner.Tests.Features.Shop;
-using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
-using PcDesktop = CardCleaner.Scripts.Features.Shop.Ui.PcDesktop;
-using StaffApp = CardCleaner.Scripts.Features.Shop.Ui.StaffApp;
+using PcDesktop = CardCleaner.Scripts.Features.Shop.Screens.PcDesktop;
+using StaffApp = CardCleaner.Scripts.Features.Shop.Staff.StaffApp;
 using FakeCheckoutCustomer = CardCleaner.Tests.Features.Shop.FakeCheckoutCustomer;
 
 namespace CardCleaner.Tests.Scenes;

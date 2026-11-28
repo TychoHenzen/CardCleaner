@@ -6,6 +6,7 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using IrregularMeshNs = CardCleaner.Scripts.Features.Worldgen.IrregularMesh;
 
@@ -47,8 +48,7 @@ public class IrregularWorldMapScreenEnemyFogTest
         await ISceneRunner.SyncProcessFrame;
 
         _screen.Initialize(MeshMapGeneratorFixture.TerrainCards(), Abilities, Generator);
-        for (var frame = 0; frame < MapFrameBudget && !_screen.IsInitialized; frame++)
-            await ISceneRunner.SyncProcessFrame;
+        await BoundedWait.ProcessFramesUntil(() => _screen.IsInitialized, MapFrameBudget);
 
         session.ResetSession();
         AssertBool(_screen.IsInitialized).IsTrue();

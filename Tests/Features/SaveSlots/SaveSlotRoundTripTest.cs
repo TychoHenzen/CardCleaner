@@ -7,10 +7,9 @@ using CardCleaner.Scripts.Features.SaveSlots.Services.SaveGame;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Player.Controllers;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
-using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Tests.Features.SaveSlots.Services.SaveGame;
 using CardCleaner.Tests.Features.SaveSlots.Services;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.SaveSlots;
@@ -122,7 +121,7 @@ public class SaveSlotRoundTripTest
         SaveWorld.Activate(slots, slot);
         scene.Service!.LoadGame();
         // Load defers the card respawn and frees the old containers at the end of the frame: wait for both.
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
     }
 
     /// <summary>The real player, built with the Head, Camera3D and SpotLight3D nodes its _Ready reads.</summary>

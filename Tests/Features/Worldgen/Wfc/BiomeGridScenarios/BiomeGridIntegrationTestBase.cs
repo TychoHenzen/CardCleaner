@@ -1,7 +1,7 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
 using System.Collections.Generic;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Services;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.Biomes;
@@ -13,6 +13,7 @@ namespace CardCleaner.Tests.Features.Worldgen.Wfc.BiomeGridScenarios;
 /// <summary>
 ///     Shared fixture for the BiomeGridIntegrationTest scenario suites.
 /// </summary>
+[RequireGodotRuntime]
 public abstract class BiomeGridIntegrationTestBase
 {
     protected WfcAdjacencyRules _rules = null!;

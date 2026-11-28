@@ -1,0 +1,10 @@
+{
+  "excludePaths": [
+    "/addons/asset_manager/",
+    "/addons/gdUnit4/",
+    "/addons/godot_ai/",
+    "/addons/godot_omni/",
+    "/addons/saveable/"
+  ],
+  "registeredAttributes": ["Service"]
+}

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Composition;
-using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Core.Services;
 using CardCleaner.Tests.TestUtilities;

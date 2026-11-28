@@ -1,13 +1,16 @@
 using System;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Randomness;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Checkout;
+using CardCleaner.Scripts.Features.Shop.Customers;
+using CardCleaner.Scripts.Features.Shop.Day;
+using CardCleaner.Scripts.Features.Shop.Progression;
+using CardCleaner.Scripts.Features.Shop.Staff;
 using CardCleaner.Tests.Features.Shop;
-using CardCleaner.Scripts.Features.Shop.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
-using StaffApp = CardCleaner.Scripts.Features.Shop.Ui.StaffApp;
+using StaffApp = CardCleaner.Scripts.Features.Shop.Staff.StaffApp;
 using FakeCheckoutCustomer = CardCleaner.Tests.Features.Shop.FakeCheckoutCustomer;
 
 namespace CardCleaner.Tests.Scenes;
@@ -132,15 +135,13 @@ public class ShopStaffFailureSceneTest
         var tree = (SceneTree)Engine.GetMainLoop();
         tree.Paused = true;
 
-        for (var i = 0; i < ClaimSteps; i++)
-            await ISceneRunner.SyncProcessFrame;
+        await BoundedWait.ProcessFrames(ClaimSteps);
 
         AssertBool(_counter.IsClaimed).IsFalse();
 
         // The same shop claims the customer on its next frame once the tree runs again.
         tree.Paused = false;
-        for (var i = 0; i < ClaimSteps; i++)
-            await ISceneRunner.SyncProcessFrame;
+        await BoundedWait.ProcessFrames(ClaimSteps);
 
         AssertBool(_counter.IsClaimed).IsTrue();
     }

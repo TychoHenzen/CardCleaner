@@ -10,24 +10,22 @@ public class BoosterRevealPlanTest
     [TestCase]
     public static void TheBoosterComesToTheMiddleOfTheViewBeforeItsStripTears()
     {
-        var plan = new BoosterRevealPlan(Cards);
-
-        AssertThat(plan.PresentProgress(0f)).IsEqual(0f);
-        AssertThat(plan.PresentProgress(BoosterRevealPlan.Present)).IsEqual(1f);
-        AssertThat(plan.TearProgress(BoosterRevealPlan.Present)).IsEqual(0f);
-        AssertThat(plan.TearProgress(BoosterRevealPlan.Present + BoosterRevealPlan.Tear)).IsEqual(1f);
+        AssertThat(BoosterRevealPlan.PresentProgress(0f)).IsEqual(0f);
+        AssertThat(BoosterRevealPlan.PresentProgress(BoosterRevealPlan.Present)).IsEqual(1f);
+        AssertThat(BoosterRevealPlan.TearProgress(BoosterRevealPlan.Present)).IsEqual(0f);
+        AssertThat(BoosterRevealPlan.TearProgress(BoosterRevealPlan.Present + BoosterRevealPlan.Tear)).IsEqual(1f);
     }
 
     [TestCase]
     public static void TheFirstCardLeavesOnceTheStripIsOffAndTheRestFollowOneStepApart()
     {
-        var plan = new BoosterRevealPlan(Cards);
-
-        AssertThat(plan.ReleaseAt(0)).IsEqual(BoosterRevealPlan.Present + BoosterRevealPlan.Tear);
+        AssertThat(BoosterRevealPlan.ReleaseAt(0)).IsEqual(BoosterRevealPlan.Present + BoosterRevealPlan.Tear);
         for (var i = 1; i < Cards; i++)
-            AssertThat(plan.ReleaseAt(i) - plan.ReleaseAt(i - 1)).IsEqualApprox(BoosterRevealPlan.ReleaseStep, 0.0001f);
-        AssertThat(plan.RiseProgress(5, plan.ReleaseAt(5))).IsEqual(0f);
-        AssertThat(plan.RiseProgress(5, plan.ReleaseAt(5) + BoosterRevealPlan.Rise)).IsEqual(1f);
+            AssertThat(BoosterRevealPlan.ReleaseAt(i) - BoosterRevealPlan.ReleaseAt(i - 1))
+                .IsEqualApprox(BoosterRevealPlan.ReleaseStep, 0.0001f);
+        AssertThat(BoosterRevealPlan.RiseProgress(5, BoosterRevealPlan.ReleaseAt(5))).IsEqual(0f);
+        AssertThat(BoosterRevealPlan.RiseProgress(5, BoosterRevealPlan.ReleaseAt(5) + BoosterRevealPlan.Rise))
+            .IsEqual(1f);
     }
 
     [TestCase]
@@ -35,7 +33,7 @@ public class BoosterRevealPlanTest
     {
         var plan = new BoosterRevealPlan(Cards);
 
-        AssertThat(plan.VanishStart).IsEqual(plan.ReleaseAt(Cards - 1));
+        AssertThat(plan.VanishStart).IsEqual(BoosterRevealPlan.ReleaseAt(Cards - 1));
         AssertThat(plan.VanishProgress(plan.VanishStart + BoosterRevealPlan.Vanish)).IsEqualApprox(1f, 0.0001f);
     }
 
@@ -45,9 +43,9 @@ public class BoosterRevealPlanTest
     {
         var plan = new BoosterRevealPlan(Cards);
 
-        AssertThat(plan.RiseProgress(Cards - 1, plan.IntoHandStart - BoosterRevealPlan.Show))
+        AssertThat(BoosterRevealPlan.RiseProgress(Cards - 1, plan.IntoHandStart - BoosterRevealPlan.Show))
             .IsEqualApprox(1f, 0.0001f);
-        AssertThat(plan.IntoHandStart - plan.ReleaseAt(Cards - 1) - BoosterRevealPlan.Rise)
+        AssertThat(plan.IntoHandStart - BoosterRevealPlan.ReleaseAt(Cards - 1) - BoosterRevealPlan.Rise)
             .IsEqualApprox(BoosterRevealPlan.Show, 0.0001f);
         AssertThat(plan.Duration).IsEqualApprox(plan.IntoHandStart + BoosterRevealPlan.IntoHand, 0.0001f);
     }

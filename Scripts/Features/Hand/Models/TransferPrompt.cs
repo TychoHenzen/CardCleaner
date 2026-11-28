@@ -18,7 +18,7 @@ public static class TransferPrompt
     {
         if (decision.Move == TransferMove.None || decision.Count < 1)
             return null;
-        // The two moves on a cardboard box itself name no item: the box is no record.
+        // The two world moves on a cardboard box (picking one up, throwing one away) name no stored item.
         if (decision.Move == TransferMove.PickUp)
             return $"Pick up {CardContainerKindText.NameOf(CardContainerKind.Box)}";
         if (decision.Move == TransferMove.Discard)
@@ -37,6 +37,7 @@ public static class TransferPrompt
 
     private static string NameOf(StoredItem item) => item switch
     {
+        StoredBox => CardContainerKindText.NameOf(CardContainerKind.Box),
         StoredContainer container => CardContainerKindText.NameOf(container.Kind),
         _ => "card"
     };
@@ -46,7 +47,12 @@ public static class TransferPrompt
     {
         if (count == 1)
             return $"1 {NameOf(item)}";
-        var plural = item is StoredContainer container ? CardContainerKindText.PluralOf(container.Kind) : "cards";
+        var plural = item switch
+        {
+            StoredBox => CardContainerKindText.PluralOf(CardContainerKind.Box),
+            StoredContainer container => CardContainerKindText.PluralOf(container.Kind),
+            _ => "cards"
+        };
         return $"{count} {plural}";
     }
 

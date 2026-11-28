@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Packs.Models;
 
@@ -12,6 +11,16 @@ public class BoxContentsTest
 
     private static readonly StoredContainer Booster =
         new("res://Scenes/Shop/Items/Booster.tscn", CardContainerKind.Booster, 12UL, 40);
+
+    [TestCase]
+    public static void ACardboardBoxNeverFitsInsideACardboardBox()
+    {
+        var empty = BoxContents.Empty(CartonSpace.Packer());
+        var box = new StoredBox("res://Scenes/Shop/Items/CardboardBox.tscn", null, null, false);
+
+        AssertThat(empty.HasRoomFor(ItemShape.Box)).IsFalse();
+        AssertThat(empty.With(box)).IsNull();
+    }
 
     [TestCase]
     public static void TakingTheLastItemLeavesTheRestWhereTheyLay()

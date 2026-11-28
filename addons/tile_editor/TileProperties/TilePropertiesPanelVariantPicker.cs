@@ -1,7 +1,5 @@
 #if TOOLS
-using System;
 using System.Collections.Generic;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;
 
 namespace CardCleaner.Addons.TileEditor;

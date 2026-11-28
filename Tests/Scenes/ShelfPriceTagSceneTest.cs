@@ -1,15 +1,14 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Card.Controllers;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
+using CardCleaner.Scripts.Features.Shop.Pricing;
+using CardCleaner.Scripts.Features.Shop.Shelves;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Scenes;
@@ -166,11 +165,7 @@ public class ShelfPriceTagSceneTest
         return shelf;
     }
 
-    private static async Task Settle()
-    {
-        await ISceneRunner.SyncPhysicsFrame;
-        await ISceneRunner.SyncPhysicsFrame;
-    }
+    private static Task Settle() => BoundedWait.SyncPhysicsFrames(2);
 
     /// <summary>The collider the interaction ray hits, with the same mask the player's interaction uses.</summary>
     private static Node? Cast(PhysicsDirectSpaceState3D space, Vector3 from, Vector3 to)

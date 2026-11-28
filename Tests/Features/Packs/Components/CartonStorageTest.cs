@@ -8,7 +8,8 @@ using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
-using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Building;
+using CardCleaner.Scripts.Features.Shop.Shelves;
 using CardCleaner.Tests.Features.Shop;
 using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Tests.TestUtilities.Helpers;
@@ -262,7 +263,8 @@ public class CartonStorageTest
         AssertBool(store.CanPut(card) || store.Put(card)).IsFalse();
         box.SetLidOpen(true, instantly: true);
         AssertBool(store.CanPut(card)).IsTrue();
-        AssertBool(store.Put(new StoredContainer(BoxScene, CardContainerKind.Box, 1, null))).IsFalse();
+        AssertBool(store.CanPut(new StoredBox(BoxScene, 1, null, false))).IsFalse();
+        AssertBool(store.Put(new StoredBox(BoxScene, 1, null, false))).IsFalse();
         AssertThat(store.Count).IsEqual(0);
     }
 
@@ -387,15 +389,6 @@ public class CartonStorageTest
         return (holder, camera);
     }
 
-    private static async Task<bool> Until(Func<bool> done, int frames = FallFrames)
-    {
-        for (var i = 0; i < frames; i++)
-        {
-            if (done())
-                return true;
-            await ISceneRunner.SyncPhysicsFrame;
-        }
-
-        return done();
-    }
+    private static Task<bool> Until(Func<bool> done, int frames = FallFrames) =>
+        BoundedWait.SyncPhysicsFramesUntil(done, frames);
 }

@@ -1,6 +1,5 @@
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Tests.Features.Worldgen.Support;
-using FsCheck;
 
 namespace CardCleaner.Tests.Features.Worldgen.Properties.MapGenerationSuites;
 

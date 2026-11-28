@@ -8,7 +8,7 @@ using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
-using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Shelves;
 using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Tests.TestUtilities.Helpers;
@@ -78,7 +78,7 @@ public class ShopShelfStockSceneTest
         _shop.GetNode<Node3D>("World").AddChild(_card);
 
         AddNode(_shop);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
     }
 
     [AfterTest]
@@ -142,7 +142,7 @@ public class ShopShelfStockSceneTest
         _player.GlobalPosition = new Vector3(standing.X, PlayerStandHeight, standing.Z);
         _player.Rotation = Vector3.Zero;
         _interaction.Camera!.LookAt(seat.GlobalPosition);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
 
         AssertBool(ReferenceEquals(_interaction.Target, target))
             .OverrideFailureMessage($"aimed at {Describe(_interaction.Target)}, expected {target.Name}")
@@ -166,7 +166,7 @@ public class ShopShelfStockSceneTest
         await AimAt(seat);
         AssertThat(_interaction.Prompt).IsEqual("Pick up card");
         _leftClick!.Invoke(new MouseActionArgs(true, false));
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
 
         AssertInt(_hand.Count).IsEqual(1);
         var held = (CardController)_hand.Front!;
@@ -181,7 +181,7 @@ public class ShopShelfStockSceneTest
     public async Task AClickOnAFreeProductSeatStocksTheHeldBooster()
     {
         var booster = NewBooster();
-        await PhysicsFrames(1);
+        await BoundedWait.SyncPhysicsFrames(1);
         AssertBool(_hand.TryTake(booster)).IsTrue();
         var (target, seat) = TargetOf(_productShelf, "Slot1");
 
@@ -202,7 +202,7 @@ public class ShopShelfStockSceneTest
     public async Task ACardShelfLevelRefusesAHeldBooster()
     {
         var booster = NewBooster();
-        await PhysicsFrames(1);
+        await BoundedWait.SyncPhysicsFrames(1);
         AssertBool(_hand.TryTake(booster)).IsTrue();
         var (target, seat) = TargetOf(_cardShelf, "Slot1");
 
@@ -230,7 +230,7 @@ public class ShopShelfStockSceneTest
         _player.GlobalPosition = new Vector3(standing.X, PlayerStandHeight, standing.Z);
         _player.Rotation = Vector3.Zero;
         _interaction.Camera!.LookAt(body.GlobalPosition);
-        await PhysicsFrames(AimFrames);
+        await BoundedWait.SyncPhysicsFrames(AimFrames);
     }
 
     // A slot is turned to hold its card (a card stand's -Z points up and back), so the side a player stands on is
@@ -257,9 +257,4 @@ public class ShopShelfStockSceneTest
     private static string Describe(IInteractable? target) =>
         target is Node node ? node.Name.ToString() : "nothing";
 
-    private static async Task PhysicsFrames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
 }

@@ -1,7 +1,5 @@
 #if TOOLS
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Godot;
 
 namespace CardCleaner.Addons.TileEditor;

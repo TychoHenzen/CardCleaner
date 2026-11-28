@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using CardCleaner.Scripts.Core.Interfaces;
-using CardCleaner.Scripts.Features.Menu.Models;
 using CardCleaner.Scripts.Features.Menu.Services;
 using CardCleaner.Scripts.Features.SaveSlots.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;

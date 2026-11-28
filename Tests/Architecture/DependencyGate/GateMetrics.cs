@@ -3,7 +3,9 @@ using System.Linq;
 
 namespace CardCleaner.Tests.Architecture.DependencyGate;
 
-/// <summary>Measures a class graph: layers, modules, order, up edges, loops, seams and references into UI.</summary>
+/// <summary>
+/// Measures a class graph: layers, modules, order, up edges, loops, seams, references into UI and the UI view.
+/// </summary>
 internal static class GateMetrics
 {
     public static GateMeasurement Measure(ClassGraph graph)
@@ -14,6 +16,7 @@ internal static class GateMetrics
         var order = ModuleOrder.Order(modules.ModuleLayer, spread);
         var seams = SeamRater.Rate(real, graph.Nodes);
         var toUi = graph.Edges.Keys.Count(k => modules.Layers[k.From] != Layer.UI && modules.Layers[k.To] == Layer.UI);
-        return new GateMeasurement(graph, modules, order, spread, seams, toUi);
+        var ui = UiModules.Measure(graph, modules.Layers);
+        return new GateMeasurement(graph, modules, order, spread, seams, toUi, ui);
     }
 }

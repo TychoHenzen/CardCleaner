@@ -1,6 +1,4 @@
 using System.Linq;
-using CardCleaner.Scripts.Core.Services;
-using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using CardCleaner.Scripts.Features.Worldgen.Wfc;
 using CardCleaner.Tests.TestUtilities;
 

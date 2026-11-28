@@ -1,4 +1,4 @@
-using CardCleaner.Scripts.Core.Services.CompiledAtlas;
+using CardCleaner.Scripts.Features.Deckbuilder.Tiles.Loading.CompiledAtlas;
 using CardCleaner.Scripts.Features.Deckbuilder.Tiles;
 using CardCleaner.Scripts.Features.Worldgen.AutoTiling;
 using Godot;

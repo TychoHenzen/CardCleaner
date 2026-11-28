@@ -2,7 +2,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using CardCleaner.Scripts.Core.Enumeration;
 using CardCleaner.Scripts.Core.Randomness;
-using Godot;
 using CardSignature = CardCleaner.Scripts.Features.Card.Models.CardSignature;
 using SignatureRandom = CardCleaner.Scripts.Features.Card.Models.SignatureRandom;
 

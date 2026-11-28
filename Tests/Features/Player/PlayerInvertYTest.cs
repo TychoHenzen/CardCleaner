@@ -3,7 +3,6 @@ using CardCleaner.Scripts.Core.Data;
 using CardCleaner.Scripts.Core.DependencyInjection;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Player.Controllers;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Player;

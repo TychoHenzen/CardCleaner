@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Deckbuilder.Services;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
-
 
 namespace CardCleaner.Tests.Features.Deckbuilder.Services.GameSessionScenarios;
 
@@ -255,7 +255,7 @@ public class GameSessionFlowTest : GameSessionServiceTestBase
             var events = new SessionEvents(_service);
 
             _service.StartSession(mapSeeds, new List<CardSignature> { ability }, _generator);
-            await WaitForFrames(() => events.Completed, 3000);
+            await BoundedWait.ProcessFramesUntil(() => events.Completed, 3000);
 
             AssertBool(events.Completed).OverrideFailureMessage("The session never completed").IsTrue();
             AssertBool(events.Fought).OverrideFailureMessage("The session ended without a fight").IsTrue();

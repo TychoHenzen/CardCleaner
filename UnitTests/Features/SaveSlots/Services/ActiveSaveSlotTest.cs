@@ -1,6 +1,5 @@
 using CardCleaner.Scripts.Features.SaveSlots.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
-using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Features.SaveSlots.Services;
 

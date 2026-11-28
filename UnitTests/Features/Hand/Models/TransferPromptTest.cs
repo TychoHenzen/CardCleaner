@@ -41,6 +41,19 @@ public class TransferPromptTest
     }
 
     [TestCase]
+    public static void ACardboardBoxRecordIsNamedLikeTheBoxItIs()
+    {
+        var box = new StoredBox("res://Scenes/Shop/Items/CardboardBox.tscn", null, null, false);
+
+        AssertThat(TransferPrompt.For(new TransferDecision(TransferMove.Put, 1), box, StoreKind.ShelfLevel, 0))
+            .IsEqual("Put the cardboard box here");
+        AssertThat(TransferPrompt.For(new TransferDecision(TransferMove.TakeOne, 1), box, StoreKind.ShelfLevel, 1))
+            .IsEqual("Pick up cardboard box");
+        AssertThat(TransferPrompt.For(new TransferDecision(TransferMove.TakeMany, 2), box, StoreKind.OpenBox, 2))
+            .IsEqual("Take 2 cardboard boxes from the box (2 in it)");
+    }
+
+    [TestCase]
     public static void ASetDownNamesTheItemThatGoesOnTheFloor()
     {
         var setDown = new TransferDecision(TransferMove.SetDown, 1);

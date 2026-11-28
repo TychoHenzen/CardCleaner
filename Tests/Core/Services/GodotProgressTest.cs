@@ -1,7 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Services;
-using GdUnit4;
 
 namespace CardCleaner.Tests.Core.Services;
 

@@ -1,9 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Randomness;
-using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Customers;
+using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Tests.TestUtilities;
-using Godot;
 using static CardCleaner.Tests.Scenes.ShopCustomerRig;
 
 namespace CardCleaner.Tests.Scenes;

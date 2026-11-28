@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Card.Controllers;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Controllers;

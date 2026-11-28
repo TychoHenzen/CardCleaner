@@ -14,7 +14,9 @@ public class BiomeMapGenerator : IBiomeProvider
     private readonly Vector2I _mapSize;
     private readonly BiomeSet _biomes;
 
+    /// <param name="biomes">The biomes a position can fall in.</param>
     /// <param name="signatureAt">Gives the signature at a position of a map of the given size.</param>
+    /// <param name="mapSize">The size of the map the sampler covers.</param>
     /// <param name="defaultPassableTileId">
     ///     The fallback biome's passable tile; without it the fallback biome's passable pool is empty.
     /// </param>

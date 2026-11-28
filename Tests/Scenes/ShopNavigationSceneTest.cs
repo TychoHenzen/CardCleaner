@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Building;
+using CardCleaner.Scripts.Features.Shop.Furniture;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 

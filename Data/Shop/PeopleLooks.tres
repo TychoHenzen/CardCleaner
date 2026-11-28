@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="FigureLooks" format=3]
 
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Models/FigureLooks.cs" id="1_looks"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/People/FigureLooks.cs" id="1_looks"]
 
 [resource]
 script = ExtResource("1_looks")

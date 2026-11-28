@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using CardCleaner.Tests.Features.Card.Services;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Card.Components;
@@ -42,8 +41,8 @@ public class CardMeshBakeTest
         Assertions.AssertString(body.Mesh.ResourcePath).IsEqual(MeshPath);
     }
 
-    // Rewrites Data/Card/CardMesh.tres from CardMeshRecipe. See "Card Mesh" in CLAUDE.md for the command and for the
-    // scene values to update after a shape change. Without the switch it does nothing, so normal runs pass it.
+    // Rewrites Data/Card/CardMesh.tres from CardMeshRecipe. See "Card Mesh" in docs/CARDS.md for the command and for
+    // the scene values to update after a shape change. Without the switch it does nothing, so normal runs pass it.
     [TestCase]
     public static async Task RegenerateCommittedMesh()
     {

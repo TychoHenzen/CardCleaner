@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Ordering;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 
