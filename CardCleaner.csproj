@@ -8,7 +8,12 @@
         <AnalysisLevel>8.0-recommended</AnalysisLevel>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
-        <NoWarn>$(NoWarn);EnableGenerateDocumentationFile</NoWarn>
+        <!-- A build reports IDE0005 (unused using) only while the compiler parses XML comments. -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <!-- The XML file is only a by-product of that: keep it out of an export. -->
+        <PublishDocumentationFile>false</PublishDocumentationFile>
+        <!-- CS1591 (public member without a comment) is no rule of this project. -->
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <Folder Include="addons\" />
@@ -20,15 +25,28 @@
         <None Remove="UnitTests/**" />
         <InternalsVisibleTo Include="CardCleaner.UnitTests" />
     </ItemGroup>
+    <PropertyGroup>
+        <!-- Godot builds an export in the ExportDebug or ExportRelease configuration. Everything an editor, gdUnit or CI build
+             uses (Debug, Release) keeps the tests and their packages. tools/export-check checks the result. -->
+        <ExportBuild Condition="'$(Configuration)' == 'ExportDebug' Or '$(Configuration)' == 'ExportRelease'">true</ExportBuild>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(ExportBuild)' == 'true'">
+        <Compile Remove="Tests/**" />
+        <Compile Remove="addons/gdUnit4/**" />
+    </ItemGroup>
     <ItemGroup>
+        <!-- Used by the save code and addons/saveable. It used to arrive only through the gdUnit4 packages below. -->
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+        <PackageReference Update="GodotSharp" Version="4.7.1" />
+        <PackageReference Update="Godot.SourceGenerators" Version="4.7.1" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(ExportBuild)' != 'true'">
         <PackageReference Include="gdUnit4.analyzers" Version="1.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="gdUnit4.api" Version="5.1.0-rc5" />
         <PackageReference Include="gdUnit4.test.adapter" Version="3.1.1" />
-        <PackageReference Update="GodotSharp" Version="4.7.1" />
-        <PackageReference Update="Godot.SourceGenerators" Version="4.7.1" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
         <PackageReference Include="FsCheck" Version="3.4.0" />
         <PackageReference Include="NSubstitute" Version="6.2.0" />
