@@ -8,9 +8,9 @@ using Godot;
 namespace CardCleaner.Scripts.Features.Packs.Components;
 
 /// <summary>
-///     Turns a card or a sealed booster pack or booster box into the record a cardboard box keeps
+///     Turns a card, a sealed booster pack or booster box, or a cardboard box into its record
 ///     (<see cref="StoredItem" />), and a record back into a body in the world with the same signature, look, seed and
-///     price.
+///     price, or the same contents and flaps.
 /// </summary>
 internal static class StoredItemBodies
 {
@@ -30,8 +30,17 @@ internal static class StoredItemBodies
     }
 
     /// <summary>
-    ///     The record for a body <see cref="ShapeOf" /> accepts. A container without a seed draws one now, so it opens
-    ///     into the same items when it comes out again.
+    ///     Whether the transfer rule moves <paramref name="body" /> as a record: what <see cref="ShapeOf" /> accepts,
+    ///     and a cardboard box, which no other box keeps.
+    /// </summary>
+    public static bool IsRecorded(RigidBody3D body) =>
+        ShapeOf(body) != null
+        || body is CardContainer { Kind: CardContainerKind.Box, IsOpened: false } box
+        && !string.IsNullOrEmpty(box.SceneFilePath);
+
+    /// <summary>
+    ///     The record for a body <see cref="IsRecorded" /> accepts. A container without a seed draws one now, so it
+    ///     opens into the same items when it comes out again.
     /// </summary>
     public static StoredItem RecordOf(RigidBody3D body)
     {
@@ -39,6 +48,7 @@ internal static class StoredItemBodies
         {
             CardController card => new StoredCard(card.HasSignature ? card.Signature : null, card.LookSeed,
                 card.ShopPrice),
+            CardContainer { Kind: CardContainerKind.Box } box => BoxRecordOf(box),
             CardContainer container => new StoredContainer(container.SceneFilePath, container.Kind,
                 container.SeedForSave(), container.ShopPrice),
             _ => throw new System.ArgumentException($"{body.Name} is not stock a box keeps", nameof(body))
@@ -49,10 +59,17 @@ internal static class StoredItemBodies
     ///     The record <paramref name="body" /> stands for now, without drawing a seed: a look at an item that is not
     ///     moved yet (a prompt, a room check) must not change the shared random source's draw order.
     /// </summary>
-    public static StoredItem CurrentRecordOf(RigidBody3D body) =>
-        body is CardContainer container
-            ? new StoredContainer(container.SceneFilePath, container.Kind, container.ContentSeed, container.ShopPrice)
-            : RecordOf(body);
+    public static StoredItem CurrentRecordOf(RigidBody3D body) => body switch
+    {
+        CardContainer { Kind: CardContainerKind.Box } box => BoxRecordOf(box),
+        CardContainer container =>
+            new StoredContainer(container.SceneFilePath, container.Kind, container.ContentSeed, container.ShopPrice),
+        _ => RecordOf(body)
+    };
+
+    // A box keeps its own seed as it is (a seed is drawn only when a save asks), and what it holds as it stores it.
+    private static StoredBox BoxRecordOf(CardContainer box) =>
+        new(box.SceneFilePath, box.ContentSeed, box.Storage?.SavedItems, box.IsLidOpen);
 
     /// <summary>
     ///     Builds <paramref name="item" /> under <paramref name="parent" /> at <paramref name="at" />, sharing the
@@ -72,6 +89,7 @@ internal static class StoredItemBodies
         return item switch
         {
             StoredCard card => BuildCard(card, parent, at, spawning),
+            StoredBox box => BuildBox(box, parent, at, spawning, generator),
             StoredContainer container => BuildContainer(container, parent, at, spawning, generator),
             _ => null
         };
@@ -97,17 +115,29 @@ internal static class StoredItemBodies
         return card;
     }
 
+    private static CardContainer? BuildBox(StoredBox stored, Node3D parent, Transform3D at,
+        ICardSpawningService? spawning, CardPackGenerator? generator)
+    {
+        if (Instantiate(stored.ScenePath) is not { } box)
+            return null;
+
+        // What the box holds is set before it enters the tree, so it is shown as it was; its flaps swing open after.
+        box.ContentSeed = stored.Seed;
+        box.Spawning = spawning;
+        box.Generator = generator;
+        box.Storage?.Restore(stored.Contents);
+        parent.AddChild(box);
+        box.GlobalTransform = at;
+        if (stored.LidOpen)
+            box.SetLidOpen(true, instantly: true);
+        return box;
+    }
+
     private static CardContainer? BuildContainer(StoredContainer stored, Node3D parent, Transform3D at,
         ICardSpawningService? spawning, CardPackGenerator? generator)
     {
-        var node = ResourceLoader.Load<PackedScene>(stored.ScenePath)?.Instantiate();
-        if (node is not CardContainer container)
-        {
-            // A scene whose root is no container is freed here, since nothing else holds it.
-            node?.Free();
-            ILog.Error($"{stored.ScenePath} is no card container, so its stored item could not be built");
+        if (Instantiate(stored.ScenePath) is not { } container)
             return null;
-        }
 
         // Set before AddChild, so the container never draws a seed of its own.
         container.ContentSeed = stored.Seed;
@@ -117,5 +147,17 @@ internal static class StoredItemBodies
         parent.AddChild(container);
         container.GlobalTransform = at;
         return container;
+    }
+
+    private static CardContainer? Instantiate(string scenePath)
+    {
+        var node = ResourceLoader.Load<PackedScene>(scenePath)?.Instantiate();
+        if (node is CardContainer container)
+            return container;
+
+        // A scene whose root is no container is freed here, since nothing else holds it.
+        node?.Free();
+        ILog.Error($"{scenePath} is no card container, so its stored item could not be built");
+        return null;
     }
 }

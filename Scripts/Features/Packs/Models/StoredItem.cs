@@ -1,8 +1,8 @@
 namespace CardCleaner.Scripts.Features.Packs.Models;
 
 /// <summary>
-///     One item kept in a cardboard box as data instead of as a body in the world: enough to build the item again
-///     exactly as it was when it went in.
+///     One item as data instead of a body in the world, enough to build it again exactly as it was: what a cardboard
+///     box keeps, or the cardboard box itself while a move carries it (<see cref="StoredBox" />).
 /// </summary>
 public abstract record StoredItem
 {

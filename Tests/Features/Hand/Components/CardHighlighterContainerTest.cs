@@ -293,6 +293,39 @@ public class CardHighlighterContainerTest
         AssertThat(SpacePrompt(target)).IsEqual("Put the booster box here");
     }
 
+    // A box moves on and off a rack level as a record: it comes back as a new body with what it held.
+    [TestCase]
+    public void ABoxPutOnARackComesBackOffItWithItsContentsAndSeed()
+    {
+        Build();
+        var rack = FirstLevelTarget(AddShelf(StorageRackScene, new Vector3(-5f, 0f, 0f)));
+        var box = MakeBox();
+        var held = new StoredCard(null, 3, null);
+        box.Storage!.Restore(new StoredItem[] { held });
+        box.ContentSeed = 11UL;
+        Click(box);
+
+        AssertBool(ClickSpace(rack)).IsTrue();
+
+        AssertThat(_hand.Count).IsEqual(0);
+        AssertThat(rack.Level!.Stock.Count).IsEqual(1);
+        var stocked = (CardContainer)rack.Level.Stock[0];
+        // The box left the hand as a record and the level built it again, so the stocked body is a new one.
+        AssertBool(ReferenceEquals(stocked, box)).IsFalse();
+        AssertThat(stocked.Kind).IsEqual(CardContainerKind.Box);
+        AssertThat(stocked.ContentSeed).IsEqual(11UL);
+        AssertThat(stocked.Storage!.Items.ToArray()).ContainsExactly(held);
+        AssertThat(RouterClicks.PromptAt(_router, rack, rack.Level.Seats[0].SeatPosition(0)))
+            .IsEqual("Pick up cardboard box");
+
+        AssertBool(RouterClicks.ClickAt(_router, rack, rack.Level.Seats[0].SeatPosition(0))).IsTrue();
+
+        AssertThat(rack.Level.Stock.Count).IsEqual(0);
+        var back = (CardContainer)_hand.Front!;
+        AssertThat(back.ContentSeed).IsEqual(11UL);
+        AssertThat(back.Storage!.Items.ToArray()).ContainsExactly(held);
+    }
+
     [TestCase]
     public void AShutBoxIsNotStockedOnAProductShelf()
     {

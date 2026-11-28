@@ -20,38 +20,40 @@ public static class ItemTransfer
     /// <summary>Whether a click can put an item into a store of this kind.</summary>
     public static bool HasSpace(StoreKind kind) => kind is StoreKind.ShelfLevel or StoreKind.OpenBox;
 
-    /// <param name="hand">The hand; its <see cref="IItemStore.Peek" /> is its front item.</param>
+    /// <param name="source">
+    ///     What a put takes from: the hand, whose <see cref="IItemStore.Peek" /> is its front item, or the open
+    ///     cardboard box it holds (an <see cref="IPickingStore" />), which gives its last item the store accepts on any
+    ///     part of the store and whose click Shift does not change.
+    /// </param>
     /// <param name="handRoom">How many more one-place items the hand takes.</param>
     /// <param name="store">The aimed store.</param>
     /// <param name="kind">The aimed store's kind.</param>
     /// <param name="part">The part of the store the aim hits.</param>
     /// <param name="shift">Whether Shift is held.</param>
     public static TransferDecision Decide(
-        IItemStore hand,
+        IItemStore source,
         int handRoom,
         IItemStore store,
         StoreKind kind,
         AimPart part,
         bool shift)
     {
+        if (source is IPickingStore)
+            return DecidePut(source, store, kind);
         if (shift)
-            return DecideTakeMany(hand, handRoom, store);
+            return DecideTakeMany(source, handRoom, store);
         // One item comes out of a box by holding it, so an empty hand picks an open box in the world up whole.
-        if (kind == StoreKind.OpenBox && hand.Count == 0)
+        if (kind == StoreKind.OpenBox && source.Count == 0)
             return new TransferDecision(TransferMove.PickUp, 1);
-        return part == AimPart.Stock ? DecideTake(hand, handRoom, store, kind) : DecidePut(hand, store, kind);
+        return part == AimPart.Stock ? DecideTake(source, handRoom, store, kind) : DecidePut(source, store, kind);
     }
 
     /// <summary>
-    ///     A click on a store while the hand's front item is an open cardboard box: the box, not the hand, is the
-    ///     source, so the click puts the box's last item the store accepts, and never the box itself.
+    ///     The item a put from <paramref name="source" /> into <paramref name="store" /> moves, without taking it: the
+    ///     last item of an open box the store accepts, else the hand's front item; null when there is none.
     /// </summary>
-    // ASSUMPTION: with an open box held, the aimed part and Shift do not matter: every click on a store with free
-    // space puts one item, and none takes (Risk Low). The spec says only that a click on a store puts.
-    public static TransferDecision DecideFromHeldBox(IPickingStore box, IItemStore store, StoreKind kind) =>
-        HasSpace(kind) && box.PeekLast(store.CanPut) != null
-            ? new TransferDecision(TransferMove.Put, 1)
-            : TransferDecision.None;
+    public static StoredItem? NextToPut(IItemStore source, IItemStore store) =>
+        source is IPickingStore box ? box.PeekLast(store.CanPut) : source.Peek();
 
     /// <summary>A click on nothing while an open box is held sets its last item down, when it holds any.</summary>
     public static TransferDecision DecideFromHeldBoxOntoNothing(IItemStore box) =>
@@ -65,11 +67,22 @@ public static class ItemTransfer
         heldBox is { Count: 0 } ? new TransferDecision(TransferMove.Discard, 1) : TransferDecision.None;
 
     /// <summary>
-    ///     Carries out a put from a held open box (<see cref="DecideFromHeldBox" />) and returns how many items moved.
+    ///     Carries <paramref name="decision" /> out and returns how many items moved. A take stops early at an item the
+    ///     hand refuses, so the count can be below the decision's. The world moves (pick up, set down, discard) move no
+    ///     record here; the caller carries them out.
     /// </summary>
-    public static int ApplyFromHeldBox(TransferDecision decision, IPickingStore box, IItemStore store)
+    public static int Apply(TransferDecision decision, IItemStore source, IItemStore store) => decision.Move switch
     {
-        if (decision.Move != TransferMove.Put || box.TakeLast(store.CanPut) is not { } item)
+        TransferMove.Put => source is IPickingStore box ? PutFromBox(box, store) : Move(source, store, 1),
+        TransferMove.TakeWhole => MoveWhole(store, source, decision.Count),
+        TransferMove.TakeOne or TransferMove.TakeMany => Move(store, source, decision.Count),
+        _ => 0
+    };
+
+    // The box's last item the store accepts goes in; an item the store refuses after all goes back into the box.
+    private static int PutFromBox(IPickingStore box, IItemStore store)
+    {
+        if (box.TakeLast(store.CanPut) is not { } item)
             return 0;
         if (store.Put(item))
             return 1;
@@ -77,19 +90,6 @@ public static class ItemTransfer
         box.Put(item);
         return 0;
     }
-
-    /// <summary>
-    ///     Carries <paramref name="decision" /> out and returns how many items moved. A take stops early at an item the
-    ///     hand refuses, so the count can be below the decision's. The world moves (pick up, set down, discard) move no
-    ///     record here; the caller carries them out.
-    /// </summary>
-    public static int Apply(TransferDecision decision, IItemStore hand, IItemStore store) => decision.Move switch
-    {
-        TransferMove.Put => Move(hand, store, 1),
-        TransferMove.TakeWhole => MoveWhole(store, hand, decision.Count),
-        TransferMove.TakeOne or TransferMove.TakeMany => Move(store, hand, decision.Count),
-        _ => 0
-    };
 
     private static TransferDecision DecideTakeMany(IItemStore hand, int handRoom, IItemStore store)
     {
@@ -110,8 +110,8 @@ public static class ItemTransfer
             : TransferDecision.None;
     }
 
-    private static TransferDecision DecidePut(IItemStore hand, IItemStore store, StoreKind kind) =>
-        HasSpace(kind) && hand.Peek() is { } front && store.CanPut(front)
+    private static TransferDecision DecidePut(IItemStore source, IItemStore store, StoreKind kind) =>
+        HasSpace(kind) && NextToPut(source, store) is { } item && store.CanPut(item)
             ? new TransferDecision(TransferMove.Put, 1)
             : TransferDecision.None;
 

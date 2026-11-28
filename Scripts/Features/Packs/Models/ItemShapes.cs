@@ -21,6 +21,8 @@ public static class ItemShapes
             ItemShape.Card => new Vector3(0.32f, 0.005f, 0.45f),
             ItemShape.Booster => new Vector3(0.35f, 0.045f, 0.53f),
             ItemShape.Pack => new Vector3(0.38f, 0.20f, 0.55f),
+            // A cardboard box is larger than the inside of one, so no packer ever finds room for it.
+            ItemShape.Box => new Vector3(0.80f, CartonSpace.OutsideHeight, 0.86f),
             _ => throw new ArgumentOutOfRangeException(nameof(shape), shape, "Unknown item shape")
         };
     }

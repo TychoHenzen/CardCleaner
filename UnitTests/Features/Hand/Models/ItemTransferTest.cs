@@ -113,10 +113,10 @@ public class ItemTransferTest
         var box = new PickingStore(BoosterBox(1), BoosterBox(2), Card(3));
         var rackLevel = new ListStore(item => item is StoredContainer { Kind: CardContainerKind.Pack }, 2);
 
-        var decision = ItemTransfer.DecideFromHeldBox(box, rackLevel, StoreKind.ShelfLevel);
+        var decision = ItemTransfer.Decide(box, 0, rackLevel, StoreKind.ShelfLevel, AimPart.Space, shift: false);
 
         AssertThat(decision).IsEqual(new TransferDecision(TransferMove.Put, 1));
-        AssertThat(ItemTransfer.ApplyFromHeldBox(decision, box, rackLevel)).IsEqual(1);
+        AssertThat(ItemTransfer.Apply(decision, box, rackLevel)).IsEqual(1);
         AssertThat(rackLevel.Peek()).IsEqual(BoosterBox(2));
         AssertThat(box.Items).IsEqual(new[] { BoosterBox(1), Card(3) });
     }
@@ -127,7 +127,7 @@ public class ItemTransferTest
         var box = new PickingStore(Card(1), Card(2));
         var rackLevel = new ListStore(item => item is StoredContainer, 2);
 
-        AssertThat(ItemTransfer.DecideFromHeldBox(box, rackLevel, StoreKind.ShelfLevel))
+        AssertThat(ItemTransfer.Decide(box, 0, rackLevel, StoreKind.ShelfLevel, AimPart.Space, shift: false))
             .IsEqual(TransferDecision.None);
     }
 
@@ -137,10 +137,12 @@ public class ItemTransferTest
         var box = new PickingStore(Card(1));
         var fullLevel = new ListStore(_ => true, 1, [Card(9)]);
 
-        AssertThat(ItemTransfer.DecideFromHeldBox(box, fullLevel, StoreKind.ShelfLevel))
+        AssertThat(ItemTransfer.Decide(box, 0, fullLevel, StoreKind.ShelfLevel, AimPart.Space, shift: false))
             .IsEqual(TransferDecision.None);
-        AssertThat(ItemTransfer.DecideFromHeldBox(box, Store(Card(8)), StoreKind.Pile)).IsEqual(TransferDecision.None);
-        AssertThat(ItemTransfer.DecideFromHeldBox(box, Store(Card(8)), StoreKind.Deck)).IsEqual(TransferDecision.None);
+        AssertThat(ItemTransfer.Decide(box, 0, Store(Card(8)), StoreKind.Pile, AimPart.Stock, shift: false))
+            .IsEqual(TransferDecision.None);
+        AssertThat(ItemTransfer.Decide(box, 0, Store(Card(8)), StoreKind.Deck, AimPart.Stock, shift: false))
+            .IsEqual(TransferDecision.None);
     }
 
     [TestCase]
@@ -149,11 +151,45 @@ public class ItemTransferTest
         var box = new PickingStore(Card(1));
         var other = Store();
 
-        var decision = ItemTransfer.DecideFromHeldBox(box, other, StoreKind.OpenBox);
+        var decision = ItemTransfer.Decide(box, 0, other, StoreKind.OpenBox, AimPart.Space, shift: false);
 
-        AssertThat(ItemTransfer.ApplyFromHeldBox(decision, box, other)).IsEqual(1);
+        AssertThat(ItemTransfer.Apply(decision, box, other)).IsEqual(1);
         AssertThat(other.Peek()).IsEqual(Card(1));
         AssertThat(box.Count).IsEqual(0);
+    }
+
+    [TestCase]
+    public static void ACardboardBoxRecordMovesOnAndOffALevelThroughTheOneRule()
+    {
+        var shutBox = new StoredBox("res://Scenes/Shop/Items/CardboardBox.tscn", 5UL, null, false);
+        var hand = new ListStore(item => item is StoredBox, 1, [shutBox]);
+        var rack = new ListStore(_ => true, 2);
+
+        var put = ItemTransfer.Decide(hand, 0, rack, StoreKind.ShelfLevel, AimPart.Space, shift: false);
+
+        AssertThat(put).IsEqual(new TransferDecision(TransferMove.Put, 1));
+        AssertThat(ItemTransfer.Apply(put, hand, rack)).IsEqual(1);
+        AssertThat(rack.Peek()).IsEqual(shutBox);
+
+        var emptyHand = new ListStore(item => item is StoredBox, 1);
+        var take = ItemTransfer.Decide(emptyHand, 1, rack, StoreKind.ShelfLevel, AimPart.Stock, shift: false);
+
+        AssertThat(take).IsEqual(new TransferDecision(TransferMove.TakeOne, 1));
+        AssertThat(ItemTransfer.Apply(take, emptyHand, rack)).IsEqual(1);
+        AssertThat(emptyHand.Peek()).IsEqual(shutBox);
+    }
+
+    [TestCase]
+    public static void AHeldOpenBoxPutsOnTheStockPartOfALevelAndShiftChangesNothing()
+    {
+        var box = new PickingStore(Card(1), Card(2));
+        var level = new ListStore(_ => true, 4, [Card(9)]);
+
+        AssertThat(ItemTransfer.Decide(box, 0, level, StoreKind.ShelfLevel, AimPart.Stock, shift: false))
+            .IsEqual(new TransferDecision(TransferMove.Put, 1));
+        AssertThat(ItemTransfer.Decide(box, 0, level, StoreKind.ShelfLevel, AimPart.Stock, shift: true))
+            .IsEqual(new TransferDecision(TransferMove.Put, 1));
+        AssertThat(ItemTransfer.NextToPut(box, level)).IsEqual(Card(2));
     }
 
     [TestCase]
@@ -179,7 +215,7 @@ public class ItemTransferTest
         var box = new PickingStore(Card(1));
         var level = new RefusesPuts(Store());
 
-        var moved = ItemTransfer.ApplyFromHeldBox(new TransferDecision(TransferMove.Put, 1), box, level);
+        var moved = ItemTransfer.Apply(new TransferDecision(TransferMove.Put, 1), box, level);
 
         AssertThat(moved).IsEqual(0);
         AssertThat(box.Items).IsEqual(new[] { Card(1) });

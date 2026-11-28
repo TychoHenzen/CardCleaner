@@ -12,7 +12,7 @@ public static class HandRoom
     public static int For(StoredItem item, int count, int room) =>
         item switch
         {
-            StoredContainer { Kind: CardContainerKind.Box or CardContainerKind.Pack } => count == 0 ? 1 : 0,
+            StoredBox or StoredContainer { Kind: CardContainerKind.Pack } => count == 0 ? 1 : 0,
             StoredCard or StoredContainer => room,
             _ => 0
         };

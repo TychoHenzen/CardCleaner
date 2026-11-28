@@ -62,9 +62,12 @@ The part of the store the aim hits decides (`AimPart`): a click on stock takes b
 pile, an open box and a shelf level; `WholeIfFits` for a deck) when the hand has room, and a click on free space puts
 the hand's front item when the store accepts it. Shift+click takes as many as the hand has room for, at most
 `ItemTransfer.MostPerShiftClick` (100). Piles and decks have no free space: they grow only from dropped cards and from
-strapping. While the front item is an open cardboard box, the box is the source instead of the hand
-(`DecideFromHeldBox`, through `IPickingStore`, so a click on a rack level stocks the box's last booster box even when
-cards lie on top of it), a click on nothing sets its last item down where the aim meets a level surface within 4.5 m
+strapping. A cardboard box moves as a record too (`StoredBox`: its scene, seed, what it holds and whether its flaps are
+open; the side it arrives on builds it again as a new body), so it goes on and off a rack level through the same rule,
+and never into another box. While the front item is an open cardboard box, the box is the source instead of the hand
+(the same `ItemTransfer.Decide` and `Apply`, through `IPickingStore`, so a click on a rack level stocks the box's last
+booster box even when cards lie on top of it, on any part of the level, and Shift changes nothing), a click on nothing
+sets its last item down where the aim meets a level surface within 4.5 m
 (`IHand.PutOneDown`), and the trash can takes only an empty cardboard box (`DecideTrash`). The player's
 `CardHighlighter` is the one hand router (`IClickRouter`, plans in `HandClickPlans`): `InteractionSystem` asks it about
 every target it claims, and a plan carries the prompt and the move together, so the prompt (`TransferPrompt`) names
@@ -92,8 +95,8 @@ moves items into every free seat that takes one, nothing spilled. Taking
 out an item from under others packs the later ones again, and one that no longer fits is set down beside the box. An
 open box shows what it holds (`CartonView`: a still copy of each container and one block for each of the four card
 stacks, built again on every change, colliding with nothing). An emptied box stays in hand until the player throws it
-in the trash can (`TrashCan`, `World/RightStorage/TrashCan`), which takes only an empty cardboard box. A cardboard box is
-no record, so it moves on and off a rack level as a body. A save stores a box's list
+in the trash can (`TrashCan`, `World/RightStorage/TrashCan`), which takes only an empty cardboard box. A cardboard box
+moves on and off a rack level as a record (see Moving items: one rule). A save stores a box's list
 under `Contents` once it changed, and a fresh box saves none and reloads fresh (`SealedBoxSaveTest`).
 
 **Opening a booster in hand.** A booster pack joins the hand's fan beside any cards held (a booster box or cardboard box
