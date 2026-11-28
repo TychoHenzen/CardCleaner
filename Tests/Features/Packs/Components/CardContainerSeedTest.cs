@@ -7,6 +7,7 @@ using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Packs.Services;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Packs.Components;
@@ -42,7 +43,7 @@ public class CardContainerSeedTest
 
         InHandOpening.Open(SeededBooster(_world, seed, first), hand);
         InHandOpening.Open(SeededBooster(_world, seed, second), hand);
-        await Frames(1);
+        await BoundedWait.ProcessFrames(1);
 
         AssertThat(first.Spawned.Count).IsEqual(CardContainerLayout.ItemsPerContainer);
         AssertBool(first.SpecialCount > 0).IsTrue();
@@ -146,16 +147,11 @@ public class CardContainerSeedTest
             InHandOpening.Open(booster, hand);
         }
 
-        await Frames(1);
+        await BoundedWait.ProcessFrames(1);
         return opened;
     }
 
     private static string Keys(RecordingCardSpawner spawner) =>
         string.Join(";", spawner.Spawned.Select(s => string.Join(",", s.Signature.Elements)));
 
-    private static async Task Frames(int count)
-    {
-        for (var i = 0; i < count; i++)
-            await ISceneRunner.SyncProcessFrame;
-    }
 }

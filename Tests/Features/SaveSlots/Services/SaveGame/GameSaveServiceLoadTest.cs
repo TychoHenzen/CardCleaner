@@ -40,7 +40,7 @@ public class GameSaveServiceLoadTest
         scene.Enter();
 
         service.LoadGame();
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
 
         AssertThat(scene.Spawner.Spawned).HasSize(2);
         AssertSpawn(scene.Spawner.Spawned[0], SavedCardFixture.HeldElements, SavedCardFixture.HeldPosition,
@@ -68,7 +68,7 @@ public class GameSaveServiceLoadTest
         AssertThat(entries).HasSize(1);
 
         service.Load(save);
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
 
         AssertThat(scene.Spawner.Spawned).HasSize(1);
         AssertBool(scene.Spawner.Spawned[0].Card.HasSignature).IsFalse();
@@ -91,7 +91,7 @@ public class GameSaveServiceLoadTest
         service.Save(save);
         scene.Spawner.Spawned.Clear();
         service.Load(save);
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
 
         AssertThat(scene.Spawner.Spawned).HasSize(2);
         var seeds = scene.Spawner.Spawned.Select(s => s.LookSeed).ToList();
@@ -150,7 +150,7 @@ public class GameSaveServiceLoadTest
         var save = new NodeSave();
         service.Save(save);
         service.Load(save);
-        await scene.TwoFrames();
+        await SaveWorld.TwoFrames();
 
         AssertThat(scene.Spawner.Spawned).HasSize(1);
         AssertThat(slot.Cards.Count).IsEqual(1);

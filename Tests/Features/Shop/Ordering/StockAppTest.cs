@@ -1,6 +1,5 @@
 using CardCleaner.Scripts.Features.Shop.Ordering;
 using CardCleaner.Tests.TestUtilities;
-using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Ordering;
 

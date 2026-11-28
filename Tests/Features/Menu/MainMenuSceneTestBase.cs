@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardCleaner.Scripts.Core.Data;
-using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Menu.Controllers;
 using CardCleaner.Scripts.Features.Menu.Models;
 using CardCleaner.Scripts.Features.Menu.Services;
@@ -10,7 +8,6 @@ using CardCleaner.Scripts.Features.SaveSlots.Models;
 using CardCleaner.Scripts.Features.SaveSlots.Services;
 using CardCleaner.Tests.Features.SaveSlots.Services;
 using CardCleaner.Tests.TestUtilities;
-using GdUnit4;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Menu;

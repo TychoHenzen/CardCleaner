@@ -12,6 +12,7 @@ using CardCleaner.Scripts.Features.Shop.Shelves;
 using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.Scenes;
 using CardCleaner.Tests.TestUtilities;
+using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
 using Saveable;
 using Saveable.Extensions;
@@ -162,9 +163,5 @@ public class LegacyShelfSaveMigrationTest
         _tree.GetNodesInGroup("card_containers").OfType<CardContainer>()
             .Count(container => container.ContentSeed == BoosterSeed);
 
-    private static async Task SettleAsync()
-    {
-        for (var i = 0; i < SettleFrames; i++)
-            await ISceneRunner.SyncPhysicsFrame;
-    }
+    private static Task SettleAsync() => BoundedWait.SyncPhysicsFrames(SettleFrames);
 }

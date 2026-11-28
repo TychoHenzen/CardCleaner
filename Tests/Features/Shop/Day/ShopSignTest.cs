@@ -1,7 +1,6 @@
 using System;
 using CardCleaner.Scripts.Features.Shop.Day;
 using CardCleaner.Scripts.Features.Signage;
-using CardCleaner.Tests.TestUtilities;
 using Godot;
 
 namespace CardCleaner.Tests.Features.Shop.Day;
