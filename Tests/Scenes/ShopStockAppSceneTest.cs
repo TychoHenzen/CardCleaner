@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Scripts.Features.Shop.Day;
+using CardCleaner.Scripts.Features.Shop.Ordering;
+using CardCleaner.Scripts.Features.Shop.Screens;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 

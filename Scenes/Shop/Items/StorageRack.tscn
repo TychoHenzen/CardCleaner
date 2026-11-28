@@ -1,9 +1,9 @@
 [gd_scene load_steps=10 format=3]
 
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/CardShelf.cs" id="CardShelf"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Building/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Shelves/CardShelf.cs" id="CardShelf"]
 [ext_resource type="Script" path="res://Scripts/Features/Card/Components/DeckSlot.cs" id="DeckSlot"]
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShelfLevel.cs" id="ShelfLevel"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Shelves/ShelfLevel.cs" id="ShelfLevel"]
 
 [sub_resource type="BoxShape3D" id="Side"]
 size = Vector3(0.03816, 2.12, 1.06)

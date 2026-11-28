@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using CardCleaner.Scripts.Features.Card.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
-using CardCleaner.Scripts.Features.Shop.Components;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Checkout;
 
 namespace CardCleaner.Scripts.Features.Packs.Components;
 

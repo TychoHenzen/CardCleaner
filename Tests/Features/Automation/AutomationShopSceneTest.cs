@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CardCleaner.Scripts.Core.Interfaces;
 using CardCleaner.Scripts.Features.Automation;
 using CardCleaner.Scripts.Features.Player.Controllers;
-using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Screens;
 using CardCleaner.Tests.Scenes;
 using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Tests.TestUtilities.Helpers;

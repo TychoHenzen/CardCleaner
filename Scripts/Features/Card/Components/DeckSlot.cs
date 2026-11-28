@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using CardCleaner.Scripts.Features.Card.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
 using CardController = CardCleaner.Scripts.Features.Card.Controllers.CardController;
+using CardCleaner.Scripts.Features.Shop.Shelves;
 
 namespace CardCleaner.Scripts.Features.Card.Components;
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3]
 
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Building/ShopArtSlot.cs" id="ShopArtSlot"]
 
 [sub_resource type="BoxShape3D" id="Shape"]
 size = Vector3(1.96, 0.75, 0.88)

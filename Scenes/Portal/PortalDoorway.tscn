@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Features/Portal/Components/WallSeam.cs" id="WallSeam"]
-[ext_resource type="Script" path="res://Scripts/Features/Shop/Components/ShopArtSlot.cs" id="ShopArtSlot"]
+[ext_resource type="Script" path="res://Scripts/Features/Shop/Building/ShopArtSlot.cs" id="ShopArtSlot"]
 
 [sub_resource type="StandardMaterial3D" id="SeamGlowMaterial"]
 transparency = 1

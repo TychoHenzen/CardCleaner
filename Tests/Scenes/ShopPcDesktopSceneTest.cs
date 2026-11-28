@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using CardCleaner.Scripts.Features.Pause.Components;
 using CardCleaner.Scripts.Features.Player.Controllers;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Ui;
+using CardCleaner.Scripts.Features.Shop.Ordering;
+using CardCleaner.Scripts.Features.Shop.Screens;
 using CardCleaner.Tests.TestUtilities;
 using Godot;
 

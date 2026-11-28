@@ -5,9 +5,9 @@ using CardCleaner.Scripts.Features.CardStacks.Models;
 using CardCleaner.Scripts.Features.Hand.Models;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Building;
+using CardCleaner.Scripts.Features.Shop.Shelves;
 
 namespace CardCleaner.Scripts.Features.Hand.Components;
 

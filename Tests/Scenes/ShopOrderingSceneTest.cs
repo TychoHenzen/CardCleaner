@@ -6,11 +6,12 @@ using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Pause.Components;
 using CardCleaner.Scripts.Features.Pause.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Services;
-using CardCleaner.Scripts.Features.Shop.Ui;
 using CardCleaner.Tests.TestUtilities.Helpers;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Day;
+using CardCleaner.Scripts.Features.Shop.Ordering;
+using CardCleaner.Scripts.Features.Shop.Progression;
+using CardCleaner.Scripts.Features.Shop.Screens;
 using CardCleaner.Tests.TestUtilities;
 
 namespace CardCleaner.Tests.Scenes;

@@ -8,7 +8,7 @@ using CardCleaner.Scripts.Features.Hand.Components;
 using CardCleaner.Scripts.Features.Packs.Components;
 using CardCleaner.Scripts.Features.Packs.Models;
 using CardCleaner.Scripts.Features.Player.Controllers;
-using CardCleaner.Scripts.Features.Shop.Components;
+using CardCleaner.Scripts.Features.Shop.Shelves;
 using CardCleaner.Tests.Features.Packs;
 using CardCleaner.Tests.TestUtilities;
 using CardCleaner.Tests.TestUtilities.Helpers;

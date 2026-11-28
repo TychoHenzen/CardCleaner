@@ -1,8 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Shop.Components;
-using CardCleaner.Scripts.Features.Shop.Models;
-using CardCleaner.Scripts.Features.Shop.Services;
+using CardCleaner.Scripts.Features.Shop.Expansion;
+using CardCleaner.Scripts.Features.Shop.Furniture;
 using CardCleaner.Tests.Features.SaveSlots.Services;
 using Godot;
 using Saveable;

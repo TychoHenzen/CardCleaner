@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CardCleaner.Scripts.Features.Shop.Components;
 using Godot;
+using CardCleaner.Scripts.Features.Shop.Building;
 
 namespace CardCleaner.Tests.Scenes;
 
